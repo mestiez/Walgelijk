@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WalgelijkCore", "WalgelijkCore\WalgelijkCore.csproj", "{4A50B7E8-4661-439B-8B02-13E0A8469774}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk", "Walgelijk\Walgelijk.csproj", "{4A50B7E8-4661-439B-8B02-13E0A8469774}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{D0041A83-BEDD-47C0-8BF9-8200DD3228FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{D0041A83-BEDD-47C0-8BF9-8200DD3228FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Walgelijk.Silk", "Walgelijk.Silk\Walgelijk.Silk.csproj", "{BDFF01F5-70AA-4029-9AAC-CEC6DA24BD79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{D0041A83-BEDD-47C0-8BF9-8200DD3228FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0041A83-BEDD-47C0-8BF9-8200DD3228FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0041A83-BEDD-47C0-8BF9-8200DD3228FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDFF01F5-70AA-4029-9AAC-CEC6DA24BD79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDFF01F5-70AA-4029-9AAC-CEC6DA24BD79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDFF01F5-70AA-4029-9AAC-CEC6DA24BD79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDFF01F5-70AA-4029-9AAC-CEC6DA24BD79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

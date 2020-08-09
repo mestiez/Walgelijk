@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Numerics;
+using Walgelijk;
+using Walgelijk.SilkImplementation;
 
 namespace Test
 {
@@ -6,7 +9,8 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Game game = new Game(new SilkWindow("hallo daar", new Vector2(128, 128), new Vector2(800, 600)));
+            game.Start();
         }
     }
 }
