@@ -1,7 +1,9 @@
 ﻿using Silk.NET.Input;
 using Silk.NET.Input.Common;
+using Silk.NET.OpenGL;
 using Silk.NET.Windowing.Common;
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Threading;
 
@@ -10,14 +12,37 @@ namespace Walgelijk.SilkImplementation
     public class SilkRenderTarget : Walgelijk.RenderTarget
     {
         private Vector2 size;
+        private VertexBufferCache vertexBufferCache;
+
+        public GL GL { get; internal set; }
 
         public override Vector2 Size { get => size; set => size = value; }
         public override Color ClearColour { get; set; }
 
+        public override void Clear()
+        {
+            GL.ClearColor(ClearColour.R, ClearColour.G, ClearColour.B, ClearColour.A);
+        }
+
         public override void Draw(VertexBuffer vertexBuffer, Material material)
         {
-            
+            uint vba = GL.CreateVertexArray();
+            GL.BindVertexArray(vba);
+            uint vbo = GL.CreateBuffer();
+            GL.BindBuffer(BufferTargetARB.ArrayBuffer, vbo);
+
+            for (int i = 0; i < vertexBuffer.Vertices.Length; i++)
+            {
+                GL.BufferData(BufferTargetARB.ArrayBuffer, )
+            }
         }
+    }
+
+    internal class VertexBufferCache
+    {
+        private Dictionary<VertexBuffer, uint> vertexBuffers = new Dictionary<VertexBuffer, uint>();
+
+        //TODO maak een systeem dat vertex buffers bind en alles
     }
 
     public class SilkWindow : Walgelijk.Window
@@ -26,7 +51,7 @@ namespace Walgelijk.SilkImplementation
         private bool hasFocus;
         private IInputContext input;
         private InputState inputState;
-        private RenderTarget renderTarget;
+        private SilkRenderTarget renderTarget;
 
         public SilkWindow(string title, Vector2 position, Vector2 size) : base(title, position, size)
         {
@@ -92,6 +117,7 @@ namespace Walgelijk.SilkImplementation
 
             renderTarget = new SilkRenderTarget();
             renderTarget.Size = Size;
+            renderTarget.GL = GL.GetApi(window);
 
             input = window.CreateInput();
         }

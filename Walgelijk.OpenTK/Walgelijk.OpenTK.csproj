@@ -1,12 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />
+    <PackageReference Include="OpenTK.NetStandard" Version="1.0.5.22" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
   </ItemGroup>
 

@@ -68,11 +68,6 @@ namespace Walgelijk
         /// </summary>
         public event EventHandler OnClose;
 
-        public Window(string title, Vector2 position, Vector2 size)
-        {
-
-        }
-
         /// <summary>
         /// Start the main game loop
         /// </summary>
