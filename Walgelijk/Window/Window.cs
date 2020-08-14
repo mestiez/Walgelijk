@@ -89,9 +89,27 @@ namespace Walgelijk
         /// <returns></returns>
         public abstract Vector2 WindowToScreenPoint(Vector2 window);
 
+        /// <summary>
+        /// Invoke the resize event
+        /// </summary>
+        /// <param name="newSize"></param>
         protected void InvokeResizeEvent(Vector2 newSize) => OnResize?.Invoke(this, newSize);
+
+        /// <summary>
+        /// Invoke the move event
+        /// </summary>
+        /// <param name="newPosition"></param>
         protected void InvokeMoveEvent(Vector2 newPosition) => OnMove?.Invoke(this, newPosition);
+
+        /// <summary>
+        /// Invoke the file drop event
+        /// </summary>
+        /// <param name="path"></param>
         protected void InvokeFileDropEvent(string[] path) => OnFileDrop?.Invoke(this, path);
+
+        /// <summary>
+        /// Invoke the close event
+        /// </summary>
         protected void InvokeCloseEvent() => OnClose?.Invoke(this, EventArgs.Empty);
     }
 }

@@ -2,7 +2,6 @@
 using OpenTK.Graphics;
 using OpenTK.Input;
 using System;
-using System.Numerics;
 using Vector2 = System.Numerics.Vector2;
 
 namespace Walgelijk.OpenTK
@@ -15,18 +14,6 @@ namespace Walgelijk.OpenTK
         public OpenTKWindow(string title, Vector2 position, Vector2 size)
         {
             window = new GameWindow((int)size.X, (int)size.Y, GraphicsMode.Default, title);
-            //new GameWindowSettings
-            //{
-            //    RenderFrequency = 60,
-            //    UpdateFrequency = 60
-            //},
-            //new NativeWindowSettings
-            //{
-            //    Title = title,
-            //    Location = new OpenToolkit.Mathematics.Vector2i((int)position.X, (int)position.Y),
-            //    Size = new OpenToolkit.Mathematics.Vector2i((int)size.X, (int)size.Y),
-            //});
-
             renderTarget = new OpenTKRenderTarget();
         }
 
@@ -89,8 +76,10 @@ namespace Walgelijk.OpenTK
         VertexBuffer buffer = new VertexBuffer(new[] {
             new Vertex(0,0),
             new Vertex(1,0),
+            new Vertex(1,1),
             new Vertex(0,1),
-            });
+            }, new uint[] {0,1,3,3,1,2});
+
         private void OnRenderFrame(object sender, FrameEventArgs obj)
         {
             RenderTarget.Clear();
