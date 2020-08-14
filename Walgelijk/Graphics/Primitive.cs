@@ -1,5 +1,8 @@
 ﻿namespace Walgelijk
 {
+    /// <summary>
+    /// Way to draw vertices
+    /// </summary>
     public enum Primitive
     {
         Points = 0,

@@ -37,17 +37,26 @@ namespace Walgelijk.OpenTK
 
         public override void Draw(VertexBuffer vertexBuffer, Material material)
         {
-            if (material == null)
-            {
-
-            }
             Handles handles = vertexBufferCache.Load(vertexBuffer);
 
             GL.BindVertexArray(handles.VAO);
-            //GL.BindBuffer(BufferTarget.ArrayBuffer, handles.VBO);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, handles.IBO);
 
             GL.DrawElements(TypeConverter.Convert(vertexBuffer.PrimitiveType), vertexBuffer.IndexCount, DrawElementsType.UnsignedInt, 0);
+        }
+
+        public override void Draw(Vertex[] vertices, Primitive primitive, Material material = null)
+        {
+            GL.Begin(TypeConverter.Convert(primitive));
+
+            foreach (var item in vertices)
+            {
+                GL.Color4(item.Color.R, item.Color.G, item.Color.B, item.Color.A);
+                GL.TexCoord2(item.TexCoords.X, item.TexCoords.Y);
+                GL.Vertex3(item.Position.X, item.Position.Y, item.Position.Z);
+            }
+
+            GL.End();
         }
     }
 }

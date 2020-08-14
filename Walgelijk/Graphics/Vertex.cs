@@ -2,6 +2,9 @@
 
 namespace Walgelijk
 {
+    /// <summary>
+    /// A vertex
+    /// </summary>
     public struct Vertex
     {
         /// <summary>

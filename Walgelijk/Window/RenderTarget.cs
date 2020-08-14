@@ -2,6 +2,9 @@
 
 namespace Walgelijk
 {
+    /// <summary>
+    /// A target that can be rendered to
+    /// </summary>
     public abstract class RenderTarget
     {
         /// <summary>
@@ -24,6 +27,13 @@ namespace Walgelijk
         /// </summary>
         /// <param name="vertexBuffer">VertexBuffer to draw</param>
         /// <param name="material">Material to draw it with</param>
-        public abstract void Draw(VertexBuffer vertexBuffer, Material material);
+        public abstract void Draw(VertexBuffer vertexBuffer, Material material = null);
+
+        /// <summary>
+        /// Draw vertices immediately
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <param name="material"></param>
+        public abstract void Draw(Vertex[] vertices, Primitive primitive, Material material = null);
     }
 }

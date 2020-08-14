@@ -1,5 +1,8 @@
 ﻿namespace Walgelijk
 {
+    /// <summary>
+    /// Holds all the data needed to draw vertices to the screen
+    /// </summary>
     public class VertexBuffer
     {
         private Vertex[] vertices;

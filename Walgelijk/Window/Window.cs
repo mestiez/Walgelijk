@@ -3,6 +3,9 @@ using System.Numerics;
 
 namespace Walgelijk
 {
+    /// <summary>
+    /// A window
+    /// </summary>
     public abstract class Window
     {
         /// <summary>
@@ -45,6 +48,11 @@ namespace Walgelijk
         /// The current input state
         /// </summary>
         public abstract InputState InputState { get; }
+
+        /// <summary>
+        /// The window render queue. It stores the render tasks and is emptied and executed every render frame.
+        /// </summary>
+        public RenderQueue RenderQueue { get; } = new RenderQueue();
 
         /// <summary>
         /// RenderTarget for this window

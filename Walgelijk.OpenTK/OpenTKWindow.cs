@@ -21,10 +21,10 @@ namespace Walgelijk.OpenTK
         public override Vector2 Position { get => new Vector2(window.Location.X, window.Location.Y); set => window.Location = new Point((int)value.X, (int)value.Y); }
         public override Vector2 Size
         {
-            get => new Vector2(window.Width, window.Height); 
+            get => new Vector2(window.Width, window.Height);
             set
             {
-                window.Width = (int)value.X; 
+                window.Width = (int)value.X;
                 window.Height = (int)value.Y;
             }
         }
@@ -73,18 +73,12 @@ namespace Walgelijk.OpenTK
             window.MakeCurrent();
             RenderTarget.Size = Size;
         }
-        VertexBuffer buffer = new VertexBuffer(new[] {
-            new Vertex(0,0),
-            new Vertex(1,0),
-            new Vertex(1,1),
-            new Vertex(0,1),
-            }, new uint[] {0,1,3,3,1,2});
 
         private void OnRenderFrame(object sender, FrameEventArgs obj)
         {
             RenderTarget.Clear();
 
-            RenderTarget.Draw(buffer, null);
+            RenderQueue.RenderAndReset(RenderTarget);
 
             window.SwapBuffers();
         }
