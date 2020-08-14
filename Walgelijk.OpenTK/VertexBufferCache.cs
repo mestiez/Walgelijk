@@ -6,11 +6,11 @@ namespace Walgelijk.OpenTK
 {
     public class VertexBufferCache
     {
-        private Dictionary<VertexBuffer, Handles> vertexBuffers = new Dictionary<VertexBuffer, Handles>();
+        private Dictionary<VertexBuffer, VertexBufferCacheHandles> vertexBuffers = new Dictionary<VertexBuffer, VertexBufferCacheHandles>();
 
-        public Handles Load(VertexBuffer buffer)
+        public VertexBufferCacheHandles Load(VertexBuffer buffer)
         {
-            if (vertexBuffers.TryGetValue(buffer, out Handles handles))
+            if (vertexBuffers.TryGetValue(buffer, out VertexBufferCacheHandles handles))
             {
                 TryUpdateBuffer(buffer, handles);
                 return handles;
@@ -19,7 +19,7 @@ namespace Walgelijk.OpenTK
             return CreateBuffer(buffer);
         }
 
-        private Handles CreateBuffer(VertexBuffer buffer)
+        private VertexBufferCacheHandles CreateBuffer(VertexBuffer buffer)
         {
             int vbo = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
@@ -40,14 +40,14 @@ namespace Walgelijk.OpenTK
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo);
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(buffer.IndexCount * sizeof(uint)), buffer.Indices, BufferUsageHint.StaticDraw);
 
-            Handles handles = new Handles(vbo, vao, ibo);
+            VertexBufferCacheHandles handles = new VertexBufferCacheHandles(vbo, vao, ibo);
 
             buffer.HasChanged = false;
             vertexBuffers.Add(buffer, handles);
             return handles;
         }
 
-        private void TryUpdateBuffer(VertexBuffer buffer, Handles handles)
+        private void TryUpdateBuffer(VertexBuffer buffer, VertexBufferCacheHandles handles)
         {
             if (!buffer.HasChanged) return;
             //upload vertices

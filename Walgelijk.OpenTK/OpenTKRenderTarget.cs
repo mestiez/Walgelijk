@@ -37,7 +37,7 @@ namespace Walgelijk.OpenTK
 
         public override void Draw(VertexBuffer vertexBuffer, Material material)
         {
-            Handles handles = vertexBufferCache.Load(vertexBuffer);
+            VertexBufferCacheHandles handles = vertexBufferCache.Load(vertexBuffer);
 
             GL.BindVertexArray(handles.VAO);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, handles.IBO);

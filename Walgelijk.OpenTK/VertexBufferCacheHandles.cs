@@ -1,6 +1,6 @@
 ﻿namespace Walgelijk.OpenTK
 {
-    public struct Handles
+    public struct VertexBufferCacheHandles
     {
         /// <summary>
         /// Vertex buffer object index
@@ -17,7 +17,7 @@
         /// </summary>
         public int IBO;
 
-        public Handles(int vbo, int vao, int ibo)
+        public VertexBufferCacheHandles(int vbo, int vao, int ibo)
         {
             VBO = vbo;
             VAO = vao;
