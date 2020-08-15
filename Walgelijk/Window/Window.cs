@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Numerics;
+using Walgelijk;
 
 namespace Walgelijk
 {
     /// <summary>
-    /// A window
+    /// A game window
     /// </summary>
     public abstract class Window
     {
@@ -53,6 +54,11 @@ namespace Walgelijk
         /// The window render queue. It stores the render tasks and is emptied and executed every render frame.
         /// </summary>
         public RenderQueue RenderQueue { get; } = new RenderQueue();
+
+        /// <summary>
+        /// The <see cref="Walgelijk.Game"/> this window originates from
+        /// </summary>
+        public Game Game { get; set; }
 
         /// <summary>
         /// RenderTarget for this window

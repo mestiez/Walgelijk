@@ -57,5 +57,10 @@ namespace Walgelijk
         }
 
         public static Color White => new Color(1f, 1f, 1f);
+
+        public override string ToString()
+        {
+            return $"({R},{G},{B},{A})";
+        }
     }
 }

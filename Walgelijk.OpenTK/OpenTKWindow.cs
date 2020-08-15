@@ -85,7 +85,7 @@ namespace Walgelijk.OpenTK
 
         private void OnUpdateFrame(object sender, FrameEventArgs obj)
         {
-
+            Game.Scene?.ExecuteSystems();
         }
 
         private void OnFireDrop(object sender, FileDropEventArgs obj)
