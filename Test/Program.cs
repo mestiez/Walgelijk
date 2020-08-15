@@ -37,8 +37,8 @@ namespace Test
                 });
             }
 
-            var rendererSystem = new RectangleRendererSystem();
-            scene.AddSystem(rendererSystem);
+            scene.AddSystem(new TransformSystem());
+            scene.AddSystem(new RectangleRendererSystem());
 
             game.Scene = scene;
             game.Start();

@@ -9,6 +9,9 @@ namespace Walgelijk
     {
         private static readonly Random rand = new Random();
 
+        public const float RadToDeg = 180f / MathF.PI;
+        public const float DegToRad = MathF.PI / 180f;
+
         /// <summary>
         /// Linearly interpolate between two floats
         /// </summary>
