@@ -16,7 +16,7 @@ namespace Test
 
             var scene = new Scene();
 
-            for (int i = 0; i < 500; i++)
+            for (int i = 0; i < 10; i++)
             {
                 var entity = scene.CreateEntity();
                 var transform = new TransformComponent();
@@ -25,7 +25,7 @@ namespace Test
                 {
                     offset = (float)rand.NextDouble() * 1000,
                     speed = (float)rand.NextDouble() * 1.5f + 0.5f,
-                    Size = new Vector2((float)rand.NextDouble() + 0.05f, (float)rand.NextDouble() + 0.05f)
+                    Size = new Vector2((float)rand.NextDouble() * .1f + 0.1f, (float)rand.NextDouble() * .1f + 0.1f)
                 });
             }
 

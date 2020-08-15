@@ -15,7 +15,7 @@ namespace Walgelijk
         /// </summary>
         public Game Game { get; internal set; }
 
-        private readonly Dictionary<Entity, List<object>> components = new Dictionary<Entity, List<object>>();
+        private readonly Dictionary<Entity, Dictionary<Type, object>> components = new Dictionary<Entity, Dictionary<Type, object>>();
         private readonly Dictionary<int, Entity> entities = new Dictionary<int, Entity>();
         private readonly Dictionary<Type, ISystem> systems = new Dictionary<Type, ISystem>();
 
@@ -61,7 +61,7 @@ namespace Walgelijk
             };
 
             entities.Add(newEntity.Identity, newEntity);
-            components.Add(newEntity, new List<object>());
+            components.Add(newEntity, new Dictionary<Type, object>());
             return newEntity;
         }
 
@@ -91,7 +91,7 @@ namespace Walgelijk
         /// <returns></returns>
         public IEnumerable<object> GetAllComponentsFrom(Entity entity)
         {
-            return components[entity];
+            return components[entity].Values;
         }
 
         /// <summary>
@@ -101,10 +101,14 @@ namespace Walgelijk
         /// <returns></returns>
         public IEnumerable<ComponentEntityTuple<T>> GetAllComponentsOfType<T>() where T : struct
         {
-            foreach (var componentCollection in components)
-                foreach (var component in componentCollection.Value)
-                    if (component is T typedComponent)
-                        yield return new ComponentEntityTuple<T>(typedComponent, componentCollection.Key);
+            foreach (var pair in components)
+            {
+                var componentDictionary = pair.Value;
+                var entity = pair.Key;
+
+                if (componentDictionary.TryGetValue(typeof(T), out object component))
+                    yield return new ComponentEntityTuple<T>((T)component, entity);
+            }
         }
 
         /// <summary>
@@ -113,14 +117,37 @@ namespace Walgelijk
         /// <typeparam name="T">Component type</typeparam>
         /// <param name="entity">Entity ID or entity struct</param>
         /// <returns></returns>
-        public T GetComponentFrom<T>(Entity entity)
+        public T GetComponentFrom<T>(Entity entity) where T : struct
         {
-            var allComponents = GetAllComponentsFrom(entity);
-            foreach (var component in allComponents)
-                if (component is T result)
-                    return result;
+            return (T)components[entity][typeof(T)];
+        }
 
-            return default;
+        /// <summary>
+        /// Retrieve the first component of the specified type on the given entity
+        /// </summary>
+        /// <typeparam name="T">Component type</typeparam>
+        /// <param name="entity">Entity ID or entity struct</param>
+        /// <returns></returns>
+        public bool TryGetComponentFrom<T>(Entity entity, out T component) where T : struct
+        {
+            component = default;
+            if (components[entity].TryGetValue(typeof(T), out object c))
+            {
+                component = (T)c;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Get if an entity has a component
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool HasComponent<T>(Entity entity) where T : struct
+        {
+            return components[entity].ContainsKey(typeof(T));
         }
 
         /// <summary>
@@ -131,7 +158,7 @@ namespace Walgelijk
         /// <param name="component"></param>
         public void AttachComponent<T>(Entity entity, T component) where T : struct
         {
-            components[entity].Add(component);
+            components[entity].Add(typeof(T), component);
         }
 
         /// <summary>
@@ -144,110 +171,6 @@ namespace Walgelijk
         }
 
         //TODO voeg manier to om meerdere componenten te krijgen per keer
-    }
-
-    /// <summary>
-    /// Struct that holds a component and its entity
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public struct ComponentEntityTuple<T> where T : struct
-    {
-        public ComponentEntityTuple(T component, Entity entity)
-        {
-            Component = component;
-            Entity = entity;
-        }
-
-        public T Component { get; set; }
-        public Entity Entity { get; set; }
-    }
-
-    /// <summary>
-    /// Holds game logic
-    /// </summary>
-    public interface ISystem
-    {
-        /// <summary>
-        /// Containing scene
-        /// </summary>
-        public Scene Scene { get; set; }
-
-        /// <summary>
-        /// Run the logic
-        /// </summary>
-        public void Execute();
-    }
-
-    /// <summary>
-    /// An entity. Does nothing, simply holds an identity. Implicitly an integer.
-    /// </summary>
-    public struct Entity
-    {
-        /// <summary>
-        /// The identity of the entity
-        /// </summary>
-        public int Identity { get; set; }
-
-        public override bool Equals(object obj)
-        {
-            return obj is Entity entity &&
-                   Identity == entity.Identity;
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Identity);
-        }
-
-        public static bool operator ==(Entity left, Entity right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(Entity left, Entity right)
-        {
-            return !(left == right);
-        }
-
-        public static implicit operator int(Entity entity)
-        {
-            return entity.Identity;
-        }
-
-        public override string ToString()
-        {
-            return $"Entity {Identity}";
-        }
-    }
-
-    /// <summary>
-    /// Generates entity identities
-    /// </summary>
-    public struct IdentityGenerator
-    {
-        private static int lastIdentity = -1;
-
-        public static int Generate()
-        {
-            lastIdentity++;
-            return lastIdentity;
-        }
-    }
-
-    /// <summary>
-    /// Basic component that holds transformation data
-    /// </summary>
-    public struct TransformComponent
-    {
-        /// <summary>
-        /// Position of the entity in world space
-        /// </summary>
-        public Vector2 Position { get; set; }
-
-        /// <summary>
-        /// Rotation in degrees of the entity in world space
-        /// </summary>
-        public float Rotation { get; set; }
     }
 
     //Test shit
@@ -276,19 +199,27 @@ namespace Walgelijk
 
         public void Execute()
         {
-            var components = Scene.GetAllComponentsOfType<RectangleRendererComponent>();
+            var rectangleRenderers = Scene.GetAllComponentsOfType<RectangleRendererComponent>();
+
             float t = (float)DateTime.Now.TimeOfDay.TotalSeconds;
-            foreach (var pair in components)
+            foreach (var pair in rectangleRenderers)
             {
-                float s = MathF.Sin(t * pair.Component.speed + pair.Component.offset);
-                float x = s * pair.Component.Size.X;
-                float y = s * pair.Component.Size.Y;
+                //float x = s * pair.Component.Size.X;
+                //float y = s * pair.Component.Size.Y;
+
+                var rect = pair.Component;
+                float offset = MathF.Sin(t * rect.speed + rect.offset);
+
+                var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
+                float x = transform.Position.X + offset;
+                float y = transform.Position.Y + offset;
+
                 game.RenderQueue.Enqueue(new ImmediateRenderTask(new[] {
-                new Vertex(s - x, s - y),
-                new Vertex(s - x, s),
-                new Vertex(s, y),
-                new Vertex(s, s - y),
-                }, Primitive.LineLoop));
+                    new Vertex(x,y),
+                    new Vertex(x + rect.Size.X, y),
+                    new Vertex(x + rect.Size.X, y+ rect.Size.Y),
+                    new Vertex(x,y+ rect.Size.Y),
+                }, Primitive.Quads));
             }
         }
     }
