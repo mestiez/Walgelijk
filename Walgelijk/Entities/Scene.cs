@@ -215,10 +215,10 @@ namespace Walgelijk
                 float y = transform.Position.Y + offset;
 
                 game.RenderQueue.Enqueue(new ImmediateRenderTask(new[] {
-                    new Vertex(x,y),
-                    new Vertex(x + rect.Size.X, y),
-                    new Vertex(x + rect.Size.X, y+ rect.Size.Y),
-                    new Vertex(x,y+ rect.Size.Y),
+                    new Vertex(x - rect.Size.X/2 ,y - rect.Size.Y/2),
+                    new Vertex(x + rect.Size.X/2, y - rect.Size.Y/2),
+                    new Vertex(x + rect.Size.X/2, y + rect.Size.Y/2),
+                    new Vertex(x - rect.Size.X/2 ,y + rect.Size.Y/2),
                 }, Primitive.Quads));
             }
         }

@@ -11,8 +11,8 @@ namespace Test
         {
             Random rand = new Random();
 
-            Game game = new Game(new OpenTKWindow("hallo daar", new Vector2(128, 128), new Vector2(800, 600)));
-            game.Window.RenderTarget.ClearColour = new Color("0f3f00");
+            Game game = new Game(new OpenTKWindow("hallo daar", new Vector2(128, 128), new Vector2(512, 512)));
+            game.Window.RenderTarget.ClearColour = new Color("#d42c5e");
 
             var scene = new Scene();
 
