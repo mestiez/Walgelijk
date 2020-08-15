@@ -99,7 +99,7 @@ namespace Walgelijk
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public IEnumerable<ComponentEntityTuple<T>> GetAllComponentsOfType<T>()
+        public IEnumerable<ComponentEntityTuple<T>> GetAllComponentsOfType<T>() where T : struct
         {
             foreach (var componentCollection in components)
                 foreach (var component in componentCollection.Value)
@@ -142,13 +142,15 @@ namespace Walgelijk
             foreach (var system in systems.Values)
                 system.Execute();
         }
+
+        //TODO voeg manier to om meerdere componenten te krijgen per keer
     }
 
     /// <summary>
     /// Struct that holds a component and its entity
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public struct ComponentEntityTuple<T>
+    public struct ComponentEntityTuple<T> where T : struct
     {
         public ComponentEntityTuple(T component, Entity entity)
         {
@@ -248,6 +250,7 @@ namespace Walgelijk
         public float Rotation { get; set; }
     }
 
+    //Test shit
     public struct RectangleRendererComponent
     {
         /// <summary>
@@ -259,8 +262,12 @@ namespace Walgelijk
         /// Size of the rectangle
         /// </summary>
         public Vector2 Size { get; set; }
+
+        public float offset;
+        public float speed;
     }
 
+    //Test shit
     public class RectangleRendererSystem : ISystem
     {
         public Scene Scene { get; set; }
@@ -270,14 +277,17 @@ namespace Walgelijk
         public void Execute()
         {
             var components = Scene.GetAllComponentsOfType<RectangleRendererComponent>();
-            float x = MathF.Sin((float)DateTime.Now.TimeOfDay.TotalSeconds);
-            foreach (var c in components)
+            float t = (float)DateTime.Now.TimeOfDay.TotalSeconds;
+            foreach (var pair in components)
             {
+                float s = MathF.Sin(t * pair.Component.speed + pair.Component.offset);
+                float x = s * pair.Component.Size.X;
+                float y = s * pair.Component.Size.Y;
                 game.RenderQueue.Enqueue(new ImmediateRenderTask(new[] {
-                new Vertex(x-1, x-1),
-                new Vertex(x-1, x),
-                new Vertex(x, x),
-                new Vertex(x, x-1),
+                new Vertex(s - x, s - y),
+                new Vertex(s - x, s),
+                new Vertex(s, y),
+                new Vertex(s, s - y),
                 }, Primitive.LineLoop));
             }
         }
