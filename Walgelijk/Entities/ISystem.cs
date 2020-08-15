@@ -11,6 +11,11 @@
         public Scene Scene { get; set; }
 
         /// <summary>
+        /// Initialise the system
+        /// </summary>
+        public void Initialise();
+
+        /// <summary>
         /// Run the logic
         /// </summary>
         public void Execute();

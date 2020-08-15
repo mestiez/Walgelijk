@@ -4,6 +4,9 @@ using Walgelijk;
 
 namespace Walgelijk
 {
+    /// <summary>
+    /// The link between the scene and the window
+    /// </summary>
     public class Game
     {
         private Scene scene;
@@ -36,6 +39,9 @@ namespace Walgelijk
             window.Game = this;
         }
 
+        /// <summary>
+        /// Start the game loop
+        /// </summary>
         public void Start()
         {
             if (Window == null) throw new InvalidOperationException("Window is null");

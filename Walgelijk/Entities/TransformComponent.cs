@@ -5,7 +5,7 @@ namespace Walgelijk
     /// <summary>
     /// Basic component that holds transformation data
     /// </summary>
-    public struct TransformComponent
+    public class TransformComponent
     {
         /// <summary>
         /// Position of the entity in world space

@@ -19,13 +19,21 @@ namespace Test
             for (int i = 0; i < 10; i++)
             {
                 var entity = scene.CreateEntity();
-                var transform = new TransformComponent();
-                scene.AttachComponent(entity, transform);
+
+                scene.AttachComponent(entity, new TransformComponent
+                {
+                    Position = new Vector2(
+                        Utilities.RandomFloat(-10f, 10f), 
+                        Utilities.RandomFloat(-10f, 10f)
+                        )
+                });
+
                 scene.AttachComponent(entity, new RectangleRendererComponent
                 {
-                    offset = (float)rand.NextDouble() * 1000,
-                    speed = (float)rand.NextDouble() * 1.5f + 0.5f,
-                    Size = new Vector2((float)rand.NextDouble() * .1f + 0.1f, (float)rand.NextDouble() * .1f + 0.1f)
+                    Size = new Vector2(
+                        Utilities.RandomFloat(.5f, 1f), 
+                        Utilities.RandomFloat(.5f, 1f)
+                        )
                 });
             }
 

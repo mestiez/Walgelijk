@@ -19,22 +19,24 @@ namespace Walgelijk
         private readonly Dictionary<int, Entity> entities = new Dictionary<int, Entity>();
         private readonly Dictionary<Type, ISystem> systems = new Dictionary<Type, ISystem>();
 
+        public event Action<Entity> OnCreateEntity;
+        public event Action<Entity, object> OnAttachComponent;
+        public event Action<ISystem> OnAddSystem;
+
         /// <summary>
         /// Add a system
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="system"></param>
         public void AddSystem<T>(T system) where T : ISystem
         {
             system.Scene = this;
+            OnAddSystem?.Invoke(system);
             systems.Add(system.GetType(), system);
+            system.Initialise();
         }
 
         /// <summary>
         /// Retrieve a system
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
         public T GetSystem<T>() where T : ISystem
         {
             return (T)systems[typeof(T)];
@@ -43,7 +45,6 @@ namespace Walgelijk
         /// <summary>
         /// Get all systems
         /// </summary>
-        /// <returns></returns>
         public IEnumerable<ISystem> GetSystems()
         {
             return systems.Values;
@@ -52,7 +53,6 @@ namespace Walgelijk
         /// <summary>
         /// Register a new entity to the scene
         /// </summary>
-        /// <returns></returns>
         public Entity CreateEntity()
         {
             Entity newEntity = new Entity
@@ -62,14 +62,15 @@ namespace Walgelijk
 
             entities.Add(newEntity.Identity, newEntity);
             components.Add(newEntity, new Dictionary<Type, object>());
+
+            OnCreateEntity?.Invoke(newEntity);
+
             return newEntity;
         }
 
         /// <summary>
         /// Get the entity struct from an entity ID. Generally not necessary
         /// </summary>
-        /// <param name="identity"></param>
-        /// <returns></returns>
         public Entity GetEntity(int identity)
         {
             return entities[identity];
@@ -78,7 +79,6 @@ namespace Walgelijk
         /// <summary>
         /// Get all entities
         /// </summary>
-        /// <returns></returns>
         public IEnumerable<Entity> GetAllEntities()
         {
             return entities.Values;
@@ -87,8 +87,6 @@ namespace Walgelijk
         /// <summary>
         /// Get all components attached to the given entity
         /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
         public IEnumerable<object> GetAllComponentsFrom(Entity entity)
         {
             return components[entity].Values;
@@ -97,9 +95,7 @@ namespace Walgelijk
         /// <summary>
         /// Get all components and entities of a certain type
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public IEnumerable<ComponentEntityTuple<T>> GetAllComponentsOfType<T>() where T : struct
+        public IEnumerable<ComponentEntityTuple<T>> GetAllComponentsOfType<T>() where T : class
         {
             foreach (var pair in components)
             {
@@ -114,9 +110,6 @@ namespace Walgelijk
         /// <summary>
         /// Retrieve the first component of the specified type on the given entity
         /// </summary>
-        /// <typeparam name="T">Component type</typeparam>
-        /// <param name="entity">Entity ID or entity struct</param>
-        /// <returns></returns>
         public T GetComponentFrom<T>(Entity entity) where T : struct
         {
             return (T)components[entity][typeof(T)];
@@ -125,10 +118,7 @@ namespace Walgelijk
         /// <summary>
         /// Retrieve the first component of the specified type on the given entity
         /// </summary>
-        /// <typeparam name="T">Component type</typeparam>
-        /// <param name="entity">Entity ID or entity struct</param>
-        /// <returns></returns>
-        public bool TryGetComponentFrom<T>(Entity entity, out T component) where T : struct
+        public bool TryGetComponentFrom<T>(Entity entity, out T component) where T : class
         {
             component = default;
             if (components[entity].TryGetValue(typeof(T), out object c))
@@ -142,9 +132,6 @@ namespace Walgelijk
         /// <summary>
         /// Get if an entity has a component
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="entity"></param>
-        /// <returns></returns>
         public bool HasComponent<T>(Entity entity) where T : struct
         {
             return components[entity].ContainsKey(typeof(T));
@@ -153,12 +140,10 @@ namespace Walgelijk
         /// <summary>
         /// Attach a component to an entity
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="entity"></param>
-        /// <param name="component"></param>
-        public void AttachComponent<T>(Entity entity, T component) where T : struct
+        public void AttachComponent<T>(Entity entity, T component) where T : class
         {
             components[entity].Add(typeof(T), component);
+            OnAttachComponent?.Invoke(entity, component);
         }
 
         /// <summary>
@@ -174,7 +159,7 @@ namespace Walgelijk
     }
 
     //Test shit
-    public struct RectangleRendererComponent
+    public class RectangleRendererComponent
     {
         /// <summary>
         /// Colour of the rectangle
@@ -186,8 +171,15 @@ namespace Walgelijk
         /// </summary>
         public Vector2 Size { get; set; }
 
-        public float offset;
-        public float speed;
+        /// <summary>
+        /// VertexBuffer that is generated. It's best not to edit this unless you really need to.
+        /// </summary>
+        public VertexBuffer VertexBuffer { get; set; }
+
+        /// <summary>
+        /// The rendertask that is generated. It's best not to edit this unless you really need to.
+        /// </summary>
+        public ShapeRenderTask RenderTask { get; internal set; }
     }
 
     //Test shit
@@ -197,29 +189,42 @@ namespace Walgelijk
 
         private Game game => Scene.Game;
 
+        public void Initialise()
+        {
+            var rectangleRenderers = Scene.GetAllComponentsOfType<RectangleRendererComponent>();
+            foreach (var pair in rectangleRenderers)
+                IntialiseComponent(pair.Entity, pair.Component);
+
+            Scene.OnAttachComponent += IntialiseComponent;
+        }
+
+        private void IntialiseComponent(Entity entity, object component)
+        {
+            if (!(component is RectangleRendererComponent rect)) return;
+            rect.VertexBuffer = new VertexBuffer(new[] {
+                new Vertex(0, 0),
+                new Vertex(rect.Size.X, 0),
+                new Vertex(rect.Size.X, rect.Size.Y),
+                new Vertex(0, rect.Size.Y),
+            })
+            {
+                PrimitiveType = Primitive.LineLoop
+            };
+
+            rect.RenderTask = new ShapeRenderTask(rect.VertexBuffer);
+        }
+
         public void Execute()
         {
             var rectangleRenderers = Scene.GetAllComponentsOfType<RectangleRendererComponent>();
 
-            float t = (float)DateTime.Now.TimeOfDay.TotalSeconds;
             foreach (var pair in rectangleRenderers)
             {
-                //float x = s * pair.Component.Size.X;
-                //float y = s * pair.Component.Size.Y;
-
                 var rect = pair.Component;
-                float offset = MathF.Sin(t * rect.speed + rect.offset);
 
-                var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
-                float x = transform.Position.X + offset;
-                float y = transform.Position.Y + offset;
-
-                game.RenderQueue.Enqueue(new ImmediateRenderTask(new[] {
-                    new Vertex(x - rect.Size.X/2 ,y - rect.Size.Y/2),
-                    new Vertex(x + rect.Size.X/2, y - rect.Size.Y/2),
-                    new Vertex(x + rect.Size.X/2, y + rect.Size.Y/2),
-                    new Vertex(x - rect.Size.X/2 ,y + rect.Size.Y/2),
-                }, Primitive.Quads));
+                //var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
+                if (rect.RenderTask.VertexBuffer != null)
+                    game.RenderQueue.Enqueue(rect.RenderTask);
             }
         }
     }
