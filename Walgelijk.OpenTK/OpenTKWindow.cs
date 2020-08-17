@@ -8,13 +8,16 @@ namespace Walgelijk.OpenTK
 {
     public class OpenTKWindow : Walgelijk.Window
     {
-        private readonly GameWindow window;
-        private readonly OpenTKRenderTarget renderTarget;
+        internal readonly GameWindow window;
+        internal readonly OpenTKRenderTarget renderTarget;
+        internal readonly OpenTKShaderManager shaderManager;
 
         public OpenTKWindow(string title, Vector2 position, Vector2 size)
         {
             window = new GameWindow((int)size.X, (int)size.Y, GraphicsMode.Default, title);
             renderTarget = new OpenTKRenderTarget();
+            renderTarget.Window = this;
+            shaderManager = new OpenTKShaderManager();
         }
 
         public override string Title { get => window.Title; set => window.Title = value; }
@@ -41,6 +44,8 @@ namespace Walgelijk.OpenTK
         public override InputState InputState => default;
 
         public override RenderTarget RenderTarget => renderTarget;
+
+        public override IShaderManager ShaderManager => shaderManager;
 
         public override void Close()
         {

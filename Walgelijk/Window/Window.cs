@@ -66,6 +66,11 @@ namespace Walgelijk
         public abstract RenderTarget RenderTarget { get; }
 
         /// <summary>
+        /// Provides shader specific functions
+        /// </summary>
+        public abstract IShaderManager ShaderManager { get; }
+
+        /// <summary>
         /// Fires when the window is resized. Provides new size
         /// </summary>
         public event EventHandler<Vector2> OnResize;

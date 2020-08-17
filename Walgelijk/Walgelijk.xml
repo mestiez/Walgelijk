@@ -1,0 +1,855 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Walgelijk</name>
+    </assembly>
+    <members>
+        <member name="T:Walgelijk.CameraComponent">
+            <summary>
+            Component that holds camera data
+            </summary>
+        </member>
+        <member name="P:Walgelijk.CameraComponent.OrthographicSize">
+            <summary>
+            The orthographic size of this camera
+            </summary>
+        </member>
+        <member name="T:Walgelijk.CameraSystem">
+            <summary>
+            System that manages the built in <see cref="T:Walgelijk.CameraComponent"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.CameraSystem.SetMainCamera(Walgelijk.Entity)">
+            <summary>
+            Set the main camera for this system
+            </summary>
+            <param name="cameraEntity"></param>
+        </member>
+        <member name="T:Walgelijk.TransformComponent">
+            <summary>
+            Basic component that holds transformation data
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TransformComponent.Position">
+            <summary>
+            Position of the transform in world space
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TransformComponent.Rotation">
+            <summary>
+            Rotation in degrees of the transform in world space
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TransformComponent.Scale">
+            <summary>
+            Scale multiplier of the transform
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TransformComponent.LocalToWorldMatrix">
+            <summary>
+            The generated model matrix
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TransformComponent.WorldToLocalMatrix">
+            <summary>
+            The inverse model matrix
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TransformComponent.IsMatrixCached">
+            <summary>
+            Returns if the model matrix is up to date
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TransformComponent.RecalculateModelMatrix">
+            <summary>
+            Recalculate the model matrix
+            </summary>
+        </member>
+        <member name="T:Walgelijk.TransformSystem">
+            <summary>
+            The system responsible for processing transforms
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ComponentEntityTuple`1">
+            <summary>
+            Struct that holds a component and its entity
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="T:Walgelijk.Entity">
+            <summary>
+            An entity. Does nothing, simply holds an identity. Implicitly an integer.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Entity.Identity">
+            <summary>
+            The identity of the entity
+            </summary>
+        </member>
+        <member name="T:Walgelijk.IdentityGenerator">
+            <summary>
+            Generates entity identities
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ISystem">
+            <summary>
+            Holds game logic
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ISystem.Scene">
+            <summary>
+            Containing scene
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ISystem.Initialise">
+            <summary>
+            Initialise the system
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ISystem.Execute">
+            <summary>
+            Run the logic
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Scene">
+            <summary>
+            Stores and manages components and systems
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Scene.Game">
+            <summary>
+            Game this scene belongs to
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.AddSystem``1(``0)">
+            <summary>
+            Add a system
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.GetSystem``1">
+            <summary>
+            Retrieve a system
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.GetSystems">
+            <summary>
+            Get all systems
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.CreateEntity">
+            <summary>
+            Register a new entity to the scene
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.GetEntity(System.Int32)">
+            <summary>
+            Get the entity struct from an entity ID. Generally not necessary
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.HasEntity(System.Int32)">
+            <summary>
+            Get if an entity lives in the scene
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.GetAllEntities">
+            <summary>
+            Get all entities
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.GetAllComponentsFrom(Walgelijk.Entity)">
+            <summary>
+            Get all components attached to the given entity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.GetAllComponentsOfType``1">
+            <summary>
+            Get all components and entities of a certain type
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.GetComponentFrom``1(Walgelijk.Entity)">
+            <summary>
+            Retrieve the first component of the specified type on the given entity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.TryGetComponentFrom``1(Walgelijk.Entity,``0@)">
+            <summary>
+            Retrieve the first component of the specified type on the given entity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.HasComponent``1(Walgelijk.Entity)">
+            <summary>
+            Get if an entity has a component
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.AttachComponent``1(Walgelijk.Entity,``0)">
+            <summary>
+            Attach a component to an entity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.ExecuteSystems">
+            <summary>
+            Executes all systems. This is typically handled by the window implementation
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RectangleRendererComponent.Color">
+            <summary>
+            Colour of the rectangle
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RectangleRendererComponent.Size">
+            <summary>
+            Size of the rectangle
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RectangleRendererComponent.Material">
+            <summary>
+            Material that is drawn with
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RectangleRendererComponent.VertexBuffer">
+            <summary>
+            VertexBuffer that is generated. It's best not to edit this unless you really need to.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RectangleRendererComponent.RenderTask">
+            <summary>
+            The rendertask that is generated. It's best not to edit this unless you really need to.
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Game">
+            <summary>
+            The link between the scene and the window
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.Main">
+            <summary>
+            The last instance that was created
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.Window">
+            <summary>
+            Currently active window
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.Scene">
+            <summary>
+            Currently active scene
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.RenderQueue">
+            <summary>
+            Returns the <see cref="T:Walgelijk.RenderQueue"/> that belongs to <see cref="P:Walgelijk.Game.Window"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window)">
+            <summary>
+            Create a game with a window
+            </summary>
+            <param name="window"></param>
+        </member>
+        <member name="M:Walgelijk.Game.Start">
+            <summary>
+            Start the game loop
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Color.Stride">
+            <summary>
+            Size of an instance of this struct in bytes
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Color.R">
+            <summary>
+            Red component
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Color.G">
+            <summary>
+            Green component
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Color.B">
+            <summary>
+            Blue component
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Color.A">
+            <summary>
+            Alpha component
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Color.#ctor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Create a colour using floating point values ranging from 0 to 1 in standard dynamic range
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Color.#ctor(System.Byte,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Create a colour using bytes where 0 is 0.0 and 255 is 1.0
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Color.#ctor(System.String)">
+            <summary>
+            Create a colour based on a hexadecimal representation, such as "#d42c5e"
+            </summary>
+        </member>
+        <member name="T:Walgelijk.IShaderManager">
+            <summary>
+            Shader specific link between the engine and the graphics API
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IShaderManager.SetUniform(Walgelijk.Shader,System.String,System.Object)">
+            <summary>
+            Set a shader program uniform
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IShaderManager.TryGetUniform``1(Walgelijk.Shader,System.String,``0@)">
+            <summary>
+            Try to get a shader program uniform.
+            </summary>
+            <param name="shader"></param>
+            <param name="uniformName"></param>
+            <param name="data"></param>
+            <returns>Boolean indicating whether the operation was successful</returns>
+        </member>
+        <member name="T:Walgelijk.Material">
+            <summary>
+            Object that holds unique information specific to a shader
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Material.Shader">
+            <summary>
+            The shader this material uses
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Material.SetUniform(System.String,System.Object)">
+            <summary>
+            Set uniform data
+            </summary>
+            <param name="name"></param>
+            <param name="value"></param>
+        </member>
+        <member name="P:Walgelijk.Material.DefaultMaterial">
+            <summary>
+            The default material with the default shader
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Primitive">
+            <summary>
+            Way to draw vertices
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ActionRenderTask">
+            <summary>
+            Render task that will invoke the action you give. Useful for unique smaller actions
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ActionRenderTask.Action">
+            <summary>
+            The action to invoke
+            </summary>
+        </member>
+        <member name="T:Walgelijk.CameraRenderTask">
+            <summary>
+            Render task that sets the appropriate matrices to match a camera
+            </summary>
+        </member>
+        <member name="P:Walgelijk.CameraRenderTask.View">
+            <summary>
+            View matrix
+            </summary>
+        </member>
+        <member name="P:Walgelijk.CameraRenderTask.Projection">
+            <summary>
+            Projection matrix
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ImmediateRenderTask">
+            <summary>
+            Render task that renders a collection of vertices immediately
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ImmediateRenderTask.Vertices">
+            <summary>
+            Vertices to draw
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ImmediateRenderTask.Material">
+            <summary>
+            Material to draw with
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ImmediateRenderTask.PrimitiveType">
+            <summary>
+            Primitive type to draw the vertices as
+            </summary>
+        </member>
+        <member name="T:Walgelijk.IRenderTask">
+            <summary>
+            A task that can be queued in the render queue
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IRenderTask.Execute(Walgelijk.RenderTarget)">
+            <summary>
+            Execute the render task on the given render target
+            </summary>
+            <param name="target"></param>
+        </member>
+        <member name="T:Walgelijk.ModelMatrixRenderTask">
+            <summary>
+            Render task that sets the model matrix
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ModelMatrixRenderTask.Matrix">
+            <summary>
+            The model matrix
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ShapeRenderTask">
+            <summary>
+            Render task that renders a vertex buffer with a material
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ShapeRenderTask.ModelMatrix">
+            <summary>
+            The matrix to transform the vertices with
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ShapeRenderTask.VertexBuffer">
+            <summary>
+            Vertex buffer to draw
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ShapeRenderTask.Material">
+            <summary>
+            Material to draw with
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Shader">
+            <summary>
+            Structure that holds the code for a full shader program
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Shader.#ctor(System.String,System.String)">
+            <summary>
+            Create a shader from vertex and fragment shader code
+            </summary>
+            <param name="vertexShader"></param>
+            <param name="fragmentShader"></param>
+        </member>
+        <member name="M:Walgelijk.Shader.#ctor">
+            <summary>
+            Create an empty shader
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Shader.VertexShader">
+            <summary>
+            The vertex shader of the program
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Shader.FragmentShader">
+            <summary>
+            The fragment shader of the program
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Shader.Load(System.String,System.String)">
+            <summary>
+            Load shader from files
+            </summary>
+            <param name="vertPath"></param>
+            <param name="fragPath"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Walgelijk.Shader.Default">
+            <summary>
+            Default shader. Renders vertex colours.
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ShaderConstants">
+            <summary>
+            Useful constants for shader related business 
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ShaderConstants.DefaultFragment">
+            <summary>
+            Default fragment shader code
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ShaderConstants.DefaultVertex">
+            <summary>
+            Default vertex shader code
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ShaderConstants.ProjectionMatrixUniform">
+            <summary>
+            Projection matrix uniform name
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ShaderConstants.ViewMatrixUniform">
+            <summary>
+            View matrix uniform name
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ShaderConstants.ModelMatrixUniform">
+            <summary>
+            Model matrix uniform name
+            </summary>
+        </member>
+        <member name="T:Walgelijk.TransformationStack">
+            <summary>
+            Basically just a stack of 4x4 matrices
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TransformationStack.Pop">
+            <summary>
+            Pop a matrix off the stack
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TransformationStack.Push(System.Numerics.Matrix4x4)">
+            <summary>
+            Push a matrix on the stack
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TransformationStack.GetMatrices">
+            <summary>
+            Get an immutable array of all matrices in the stack
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.TransformationStack.GetMatrices(System.Numerics.Matrix4x4[])">
+            <summary>
+            Copies all matrices in the stack into the given buffer
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.TransformationStack.GetFinalMatrix">
+            <summary>
+            Get the final matrix. The result is cached.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Walgelijk.Vertex">
+            <summary>
+            A vertex
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Vertex.Stride">
+            <summary>
+            Size of an instance of this struct in bytes
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Vertex.Position">
+            <summary>
+            Vertex position
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Vertex.TexCoords">
+            <summary>
+            Vertex UV coordinates
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Vertex.Color">
+            <summary>
+            Vertex colour
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Vertex.#ctor(System.Numerics.Vector3,System.Numerics.Vector2,Walgelijk.Color)">
+            <summary>
+            Create a vertex with a position, UV, and colour
+            </summary>
+            <param name="position"></param>
+            <param name="texCoords"></param>
+            <param name="color"></param>
+        </member>
+        <member name="M:Walgelijk.Vertex.#ctor(System.Numerics.Vector3)">
+            <summary>
+            Create a vertex with a position. White and zero UV by default;
+            </summary>
+            <param name="position"></param>
+        </member>
+        <member name="M:Walgelijk.Vertex.#ctor(System.Single,System.Single,System.Single)">
+            <summary>
+            Create a vertex with a position.  White and zero UV by default;
+            </summary>
+            <param name="position"></param>
+        </member>
+        <member name="T:Walgelijk.VertexBuffer">
+            <summary>
+            Holds all the data needed to draw vertices to the screen
+            </summary>
+        </member>
+        <member name="P:Walgelijk.VertexBuffer.PrimitiveType">
+            <summary>
+            The way vertices are drawn
+            </summary>
+        </member>
+        <member name="M:Walgelijk.VertexBuffer.#ctor(Walgelijk.Vertex[],System.UInt32[])">
+            <summary>
+            Create a VertexBuffer with the specified vertices and indices
+            </summary>
+            <param name="vertices"></param>
+            <param name="indices"></param>
+        </member>
+        <member name="M:Walgelijk.VertexBuffer.#ctor(Walgelijk.Vertex[])">
+            <summary>
+            Create a VertexBuffer with the specified vertices. The indices will be set automatically
+            </summary>
+            <param name="vertices"></param>
+        </member>
+        <member name="M:Walgelijk.VertexBuffer.#ctor">
+            <summary>
+            Create an empty vertex buffer
+            </summary>
+        </member>
+        <member name="P:Walgelijk.VertexBuffer.HasChanged">
+            <summary>
+            Whether the data needs to be uploaded to the GPU again
+            </summary>
+        </member>
+        <member name="P:Walgelijk.VertexBuffer.Vertices">
+            <summary>
+            Vertices to draw
+            </summary>
+        </member>
+        <member name="P:Walgelijk.VertexBuffer.Indices">
+            <summary>
+            Indices to draw vertices by
+            </summary>
+        </member>
+        <member name="P:Walgelijk.VertexBuffer.IndexCount">
+            <summary>
+            Amount of indices
+            </summary>
+        </member>
+        <member name="P:Walgelijk.VertexBuffer.VertexCount">
+            <summary>
+            Amount of vertices
+            </summary>
+        </member>
+        <member name="M:Walgelijk.VertexBuffer.ForceUpdate">
+            <summary>
+            Force the data to be reuploaded to the GPU
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Lerp(System.Single,System.Single,System.Single)">
+            <summary>
+            Linearly interpolate between two floats
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Lerp(System.Numerics.Vector2,System.Numerics.Vector2,System.Single)">
+            <summary>
+            Linearly interpolate between two floats
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.RandomFloat(System.Single,System.Single)">
+            <summary>
+            Returns a random float in a range
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.RandomInt(System.Int32,System.Int32)">
+            <summary>
+            Returns a random int in a range
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.RandomByte(System.Byte,System.Byte)">
+            <summary>
+            Returns a random int in a range
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.RandomColour(System.Single)">
+            <summary>
+            Returns a colour where the RGB components are random
+            </summary>
+        </member>
+        <member name="T:Walgelijk.RenderQueue">
+            <summary>
+            This object manages a render queue of <see cref="T:Walgelijk.IRenderTask"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.RenderQueue.RenderAndReset(Walgelijk.RenderTarget)">
+            <summary>
+            Render the queue by dequeuing and executing each entry
+            </summary>
+            <param name="target"></param>
+        </member>
+        <member name="M:Walgelijk.RenderQueue.Enqueue(Walgelijk.IRenderTask)">
+            <summary>
+            Add a task to the queue
+            </summary>
+            <param name="task"></param>
+        </member>
+        <member name="T:Walgelijk.RenderTarget">
+            <summary>
+            A target that can be rendered to
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RenderTarget.Size">
+            <summary>
+            Size of the target. This should be automatically set to the window size
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RenderTarget.ClearColour">
+            <summary>
+            Colour to clear with
+            </summary>
+        </member>
+        <member name="M:Walgelijk.RenderTarget.Clear">
+            <summary>
+            Clear target
+            </summary>
+        </member>
+        <member name="M:Walgelijk.RenderTarget.Draw(Walgelijk.VertexBuffer,Walgelijk.Material)">
+            <summary>
+            Draw a vertex buffer
+            </summary>
+            <param name="vertexBuffer">VertexBuffer to draw</param>
+            <param name="material">Material to draw it with</param>
+        </member>
+        <member name="M:Walgelijk.RenderTarget.Draw(Walgelijk.Vertex[],Walgelijk.Primitive,Walgelijk.Material)">
+            <summary>
+            Draw vertices immediately
+            </summary>
+            <param name="vertices"></param>
+            <param name="material"></param>
+        </member>
+        <member name="T:Walgelijk.Window">
+            <summary>
+            A game window
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.Title">
+            <summary>
+            Title of the window
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.Position">
+            <summary>
+            Position of the window on the display in pixels
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.Size">
+            <summary>
+            Size of the window in pixels
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.TargetFrameRate">
+            <summary>
+            Speed the game should render at
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.TargetUpdateRate">
+            <summary>
+            Speed the game should run updates at
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.IsOpen">
+            <summary>
+            Is the window open?
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.HasFocus">
+            <summary>
+            Does the window have user focus?
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.IsVisible">
+            <summary>
+            Is the window visible?
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.Resizable">
+            <summary>
+            Is the window resizable?
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.InputState">
+            <summary>
+            The current input state
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.RenderQueue">
+            <summary>
+            The window render queue. It stores the render tasks and is emptied and executed every render frame.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.Game">
+            <summary>
+            The <see cref="T:Walgelijk.Game"/> this window originates from
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.RenderTarget">
+            <summary>
+            RenderTarget for this window
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.ShaderManager">
+            <summary>
+            Provides shader specific functions
+            </summary>
+        </member>
+        <member name="E:Walgelijk.Window.OnResize">
+            <summary>
+            Fires when the window is resized. Provides new size
+            </summary>
+        </member>
+        <member name="E:Walgelijk.Window.OnMove">
+            <summary>
+            Fires when the window is moved. Provides new position
+            </summary>
+        </member>
+        <member name="E:Walgelijk.Window.OnFileDrop">
+            <summary>
+            Fires when a file is dropped on the window, Provides file paths
+            </summary>
+        </member>
+        <member name="E:Walgelijk.Window.OnClose">
+            <summary>
+            Fires when the window is going to close
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Window.StartLoop">
+            <summary>
+            Start the main game loop
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Window.Close">
+            <summary>
+            Close the window and stop the game loop
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Window.ScreenToWindowPoint(System.Numerics.Vector2)">
+            <summary>
+            Turn screen coordinates into window coordinates
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Window.WindowToScreenPoint(System.Numerics.Vector2)">
+            <summary>
+            Turn window coordinates into screen coordinates
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Window.InvokeResizeEvent(System.Numerics.Vector2)">
+            <summary>
+            Invoke the resize event
+            </summary>
+            <param name="newSize"></param>
+        </member>
+        <member name="M:Walgelijk.Window.InvokeMoveEvent(System.Numerics.Vector2)">
+            <summary>
+            Invoke the move event
+            </summary>
+            <param name="newPosition"></param>
+        </member>
+        <member name="M:Walgelijk.Window.InvokeFileDropEvent(System.String[])">
+            <summary>
+            Invoke the file drop event
+            </summary>
+            <param name="path"></param>
+        </member>
+        <member name="M:Walgelijk.Window.InvokeCloseEvent">
+            <summary>
+            Invoke the close event
+            </summary>
+        </member>
+    </members>
+</doc>

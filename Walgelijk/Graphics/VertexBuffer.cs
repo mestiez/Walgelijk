@@ -37,6 +37,13 @@
         }
 
         /// <summary>
+        /// Create an empty vertex buffer
+        /// </summary>
+        public VertexBuffer()
+        {
+        }
+
+        /// <summary>
         /// Whether the data needs to be uploaded to the GPU again
         /// </summary>
         public bool HasChanged { get; set; } = false;

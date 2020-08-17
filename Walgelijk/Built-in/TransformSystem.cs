@@ -7,10 +7,7 @@
     {
         public Scene Scene { get; set; }
 
-        public void Initialise()
-        {
-            
-        }
+        public void Initialise() { }
 
         public void Execute()
         {

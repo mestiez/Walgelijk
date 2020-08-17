@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Walgelijk
@@ -19,8 +20,19 @@ namespace Walgelijk
         private readonly Dictionary<int, Entity> entities = new Dictionary<int, Entity>();
         private readonly Dictionary<Type, ISystem> systems = new Dictionary<Type, ISystem>();
 
+        /// <summary>
+        /// Fired when an entity is created and registered
+        /// </summary>
         public event Action<Entity> OnCreateEntity;
+
+        /// <summary>
+        /// Fired when a component is attached to an entity
+        /// </summary>
         public event Action<Entity, object> OnAttachComponent;
+
+        /// <summary>
+        /// Fired when a system is added
+        /// </summary>
         public event Action<ISystem> OnAddSystem;
 
         /// <summary>
@@ -77,6 +89,14 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Get if an entity lives in the scene
+        /// </summary>
+        public bool HasEntity(int identity)
+        {
+            return entities.ContainsKey(identity);
+        }
+
+        /// <summary>
         /// Get all entities
         /// </summary>
         public IEnumerable<Entity> GetAllEntities()
@@ -110,7 +130,7 @@ namespace Walgelijk
         /// <summary>
         /// Retrieve the first component of the specified type on the given entity
         /// </summary>
-        public T GetComponentFrom<T>(Entity entity) where T : struct
+        public T GetComponentFrom<T>(Entity entity) where T : class
         {
             return (T)components[entity][typeof(T)];
         }
@@ -172,9 +192,14 @@ namespace Walgelijk
         public Vector2 Size { get; set; }
 
         /// <summary>
+        /// Material that is drawn with
+        /// </summary>
+        public Material Material { get => RenderTask.Material; set => RenderTask = new ShapeRenderTask(VertexBuffer, Matrix4x4.Identity, value); }
+
+        /// <summary>
         /// VertexBuffer that is generated. It's best not to edit this unless you really need to.
         /// </summary>
-        public VertexBuffer VertexBuffer { get; set; }
+        public VertexBuffer VertexBuffer { get; internal set; }
 
         /// <summary>
         /// The rendertask that is generated. It's best not to edit this unless you really need to.
@@ -208,10 +233,13 @@ namespace Walgelijk
                 new Vertex(0, rect.Size.Y),
             })
             {
-                PrimitiveType = Primitive.LineLoop
+                PrimitiveType = Primitive.Quads
             };
 
-            rect.RenderTask = new ShapeRenderTask(rect.VertexBuffer);
+            rect.RenderTask = new ShapeRenderTask(rect.VertexBuffer)
+            {
+                ModelMatrix = Matrix4x4.Identity
+            };
         }
 
         public void Execute()
@@ -222,9 +250,13 @@ namespace Walgelijk
             {
                 var rect = pair.Component;
 
-                //var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
                 if (rect.RenderTask.VertexBuffer != null)
-                    game.RenderQueue.Enqueue(rect.RenderTask);
+                {
+                    var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
+                    var task = rect.RenderTask;
+                    task.ModelMatrix = transform.LocalToWorldMatrix;
+                    game.RenderQueue.Enqueue(task);
+                }
             }
         }
     }

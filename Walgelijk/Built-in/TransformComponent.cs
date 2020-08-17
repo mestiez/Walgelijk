@@ -9,7 +9,7 @@ namespace Walgelijk
     {
         private Vector2 position;
         private float rotation;
-        private Vector2 scale;
+        private Vector2 scale = Vector2.One;
 
         /// <summary>
         /// Position of the transform in world space

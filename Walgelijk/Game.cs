@@ -9,6 +9,11 @@ namespace Walgelijk
     /// </summary>
     public class Game
     {
+        /// <summary>
+        /// The last instance that was created
+        /// </summary>
+        public static Game Main { get; private set; }
+
         private Scene scene;
 
         /// <summary>
@@ -33,10 +38,15 @@ namespace Walgelijk
         /// </summary>
         public RenderQueue RenderQueue => Window.RenderQueue;
 
+        /// <summary>
+        /// Create a game with a window
+        /// </summary>
+        /// <param name="window"></param>
         public Game(Window window)
         {
             Window = window;
             window.Game = this;
+            Main = this;
         }
 
         /// <summary>

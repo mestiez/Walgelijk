@@ -9,7 +9,22 @@ namespace Walgelijk
         /// </summary>
         public const int Stride = sizeof(float) * 4;
 
-        public float R, G, B, A;
+        /// <summary>
+        /// Red component
+        /// </summary>
+        public float R;
+        /// <summary>
+        /// Green component
+        /// </summary>
+        public float G;
+        /// <summary>
+        /// Blue component
+        /// </summary>
+        public float B;
+        /// <summary>
+        /// Alpha component
+        /// </summary>
+        public float A;
 
         /// <summary>
         /// Create a colour using floating point values ranging from 0 to 1 in standard dynamic range

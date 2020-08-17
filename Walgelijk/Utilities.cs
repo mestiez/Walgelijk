@@ -54,5 +54,13 @@ namespace Walgelijk
         {
             return (byte)rand.Next(0, 256);
         }
+
+        /// <summary>
+        /// Returns a colour where the RGB components are random
+        /// </summary>
+        public static Color RandomColour(float alpha = 1)
+        {
+            return new Color(RandomFloat(), RandomFloat(), RandomFloat(), alpha);
+        }
     }
 }

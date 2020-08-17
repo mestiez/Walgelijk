@@ -17,6 +17,10 @@ namespace Walgelijk
         /// </summary>
         public abstract Color ClearColour { get; set; }
 
+        public abstract Matrix4x4 ViewMatrix { get; set; }
+        public abstract Matrix4x4 ProjectionMatrix { get; set; }
+        public abstract Matrix4x4 ModelMatrix { get; set; }
+
         /// <summary>
         /// Clear target
         /// </summary>
