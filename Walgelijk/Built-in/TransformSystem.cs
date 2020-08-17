@@ -3,13 +3,11 @@
     /// <summary>
     /// The system responsible for processing transforms
     /// </summary>
-    public class TransformSystem : ISystem
+    public class TransformSystem : System
     {
-        public Scene Scene { get; set; }
+        public override void Initialise() { }
 
-        public void Initialise() { }
-
-        public void Execute()
+        public override void Execute()
         {
             foreach (var pair in Scene.GetAllComponentsOfType<TransformComponent>())
             {

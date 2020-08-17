@@ -70,6 +70,8 @@ namespace Walgelijk.OpenTK
 
             window.Load += OnWindowLoad;
 
+            window.VSync = VSyncMode.Off;
+
             window.Run();
         }
 
@@ -86,6 +88,8 @@ namespace Walgelijk.OpenTK
             RenderQueue.RenderAndReset(RenderTarget);
 
             window.SwapBuffers();
+
+            Console.WriteLine(Math.Round(obj.Time * 1000, 2) + "ms");
         }
 
         private void OnUpdateFrame(object sender, FrameEventArgs obj)
@@ -109,7 +113,7 @@ namespace Walgelijk.OpenTK
             InvokeResizeEvent(Size);
         }
 
-        private void OnWindowClose(object sender, System.ComponentModel.CancelEventArgs obj)
+        private void OnWindowClose(object sender, global::System.ComponentModel.CancelEventArgs obj)
         {
             InvokeCloseEvent();
         }

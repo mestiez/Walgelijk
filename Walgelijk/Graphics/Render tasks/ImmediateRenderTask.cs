@@ -1,4 +1,6 @@
-﻿namespace Walgelijk
+﻿using System.Numerics;
+
+namespace Walgelijk
 {
     /// <summary>
     /// Render task that renders a collection of vertices immediately
@@ -10,8 +12,13 @@
             Vertices = vertices;
             PrimitiveType = primitiveType;
             Material = material;
+            ModelMatrix = Matrix4x4.Identity;
         }
 
+        /// <summary>
+        /// The matrix to transform the vertices with
+        /// </summary>
+        public Matrix4x4 ModelMatrix { get; set; }
         /// <summary>
         /// Vertices to draw
         /// </summary>
@@ -27,6 +34,7 @@
 
         public void Execute(RenderTarget target)
         {
+            target.ModelMatrix = ModelMatrix;
             target.Draw(Vertices, PrimitiveType, Material);
         }
     }

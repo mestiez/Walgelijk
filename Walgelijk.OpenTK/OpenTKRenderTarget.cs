@@ -16,6 +16,9 @@ namespace Walgelijk.OpenTK
         private Matrix4x4 projectionMatrix = Matrix4x4.Identity;
         private Matrix4x4 modelMatrix = Matrix4x4.Identity;
 
+        private bool viewMatrixChanged = false;
+        private bool projectionMatrixChanged = false;
+
         private Material currentMaterial;
 
         private readonly VertexBufferCache vertexBufferCache = new VertexBufferCache();
@@ -42,8 +45,28 @@ namespace Walgelijk.OpenTK
             }
         }
 
-        public override Matrix4x4 ViewMatrix { get => viewMatrix; set => viewMatrix = value; }
-        public override Matrix4x4 ProjectionMatrix { get => projectionMatrix; set => projectionMatrix = value; }
+        public override Matrix4x4 ViewMatrix
+        {
+            get => viewMatrix;
+            set
+            {
+                if (viewMatrix== value) 
+                    viewMatrixChanged = true;
+                viewMatrix = value;
+            }
+        }
+
+        public override Matrix4x4 ProjectionMatrix
+        {
+            get => projectionMatrix;
+
+            set
+            {
+                if (projectionMatrix != value)
+                    projectionMatrixChanged = true;
+                projectionMatrix = value;
+            }
+        }
         public override Matrix4x4 ModelMatrix { get => modelMatrix; set => modelMatrix = value; }
 
         public override void Clear()
@@ -56,9 +79,7 @@ namespace Walgelijk.OpenTK
             SetMaterial(material);
             if (material != null)
             {
-                ShaderManager.SetUniform(material.Shader, ShaderConstants.ViewMatrixUniform, ViewMatrix);
-                ShaderManager.SetUniform(material.Shader, ShaderConstants.ProjectionMatrixUniform, ProjectionMatrix);
-                ShaderManager.SetUniform(material.Shader, ShaderConstants.ModelMatrixUniform, ModelMatrix);
+                SetTransformationMatrixUniforms(material);
             }
 
             VertexBufferCacheHandles handles = vertexBufferCache.Load(vertexBuffer);
@@ -67,6 +88,23 @@ namespace Walgelijk.OpenTK
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, handles.IBO);
 
             GL.DrawElements(TypeConverter.Convert(vertexBuffer.PrimitiveType), vertexBuffer.IndexCount, DrawElementsType.UnsignedInt, 0);
+        }
+
+        private void SetTransformationMatrixUniforms(Material material)
+        {
+            if (viewMatrixChanged)
+            {
+                viewMatrixChanged = false;
+                ShaderManager.SetUniform(material.Shader, ShaderConstants.ViewMatrixUniform, ViewMatrix);
+            }
+
+            if (projectionMatrixChanged)
+            {
+                projectionMatrixChanged = false;
+                ShaderManager.SetUniform(material.Shader, ShaderConstants.ProjectionMatrixUniform, ProjectionMatrix);
+            }
+
+            ShaderManager.SetUniform(material.Shader, ShaderConstants.ModelMatrixUniform, ModelMatrix);
         }
 
         public override void Draw(Vertex[] vertices, Primitive primitive, Material material = null)

@@ -31,9 +31,7 @@
         public VertexBuffer(Vertex[] vertices)
         {
             Vertices = vertices;
-            indices = new uint[vertices.Length];
-            for (uint i = 0; i < vertices.Length; i++)
-                indices[i] = i;
+            GenerateIndices();
         }
 
         /// <summary>
@@ -49,7 +47,7 @@
         public bool HasChanged { get; set; } = false;
 
         /// <summary>
-        /// Vertices to draw
+        /// Vertices to draw. <b>Do not forget to set the corresponding indices, or use <see cref="GenerateIndices"/></b>
         /// </summary>
         public Vertex[] Vertices
         {
@@ -91,6 +89,17 @@
         /// </summary>
         public void ForceUpdate()
         {
+            HasChanged = true;
+        }
+
+        /// <summary>
+        /// Generates indices that simply walk the vertex array from beginning to end
+        /// </summary>
+        public void GenerateIndices()
+        {
+            indices = new uint[vertices.Length];
+            for (uint i = 0; i < vertices.Length; i++)
+                indices[i] = i;
             HasChanged = true;
         }
     }

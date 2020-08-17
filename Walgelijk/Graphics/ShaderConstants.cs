@@ -39,7 +39,7 @@ void main()
 {
    uv = texcoord;
    vertexColor = color;
-   gl_Position = /*projection * view * model**/ model * vec4(position, 1.0);
+   gl_Position = projection * view * model * vec4(position, 1.0);
 }";
 
         /// <summary>

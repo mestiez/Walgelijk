@@ -6,10 +6,8 @@ namespace Walgelijk
     /// <summary>
     /// System that manages the built in <see cref="CameraComponent"/>
     /// </summary>
-    public class CameraSystem : ISystem
+    public class CameraSystem : System
     {
-        public Scene Scene { get; set; }
-
         private CameraRenderTask renderTask;
         private Entity mainCameraEntity;
         private CameraComponent mainCameraComponent;
@@ -17,7 +15,7 @@ namespace Walgelijk
 
         private bool mainCameraSet;
 
-        public void Initialise()
+        public override void Initialise()
         {
             renderTask = new CameraRenderTask();
         }
@@ -44,10 +42,11 @@ namespace Walgelijk
             mainCameraSet = true;
         }
 
-        public void Execute()
+        public override void Execute()
         {
             if (!mainCameraSet) return;
             SetRenderTask();
+            Scene.Game.Window.RenderQueue.Enqueue(renderTask);
         }
 
         private void SetRenderTask()

@@ -12,6 +12,8 @@ namespace Test
             Random rand = new Random();
 
             Game game = new Game(new OpenTKWindow("hallo daar", new Vector2(128, 128), new Vector2(512, 512)));
+            game.Window.TargetFrameRate = 0;
+            game.Window.TargetUpdateRate = 0;
             game.Window.RenderTarget.ClearColour = new Color("#d42c5e");
 
             var scene = new Scene();
@@ -51,7 +53,7 @@ namespace Test
             }
 
             scene.AddSystem(new TransformSystem());
-            scene.AddSystem(new RectangleRendererSystem());
+            scene.AddSystem(new BasicRendererSystem());
 
             game.Scene = scene;
             game.Start();

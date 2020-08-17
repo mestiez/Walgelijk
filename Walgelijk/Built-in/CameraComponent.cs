@@ -8,6 +8,6 @@
         /// <summary>
         /// The orthographic size of this camera
         /// </summary>
-        public float OrthographicSize { get; set; } = 5;
+        public float OrthographicSize { get; set; } = 2;
     }
 }

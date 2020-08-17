@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Numerics;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -16,9 +16,10 @@ namespace Walgelijk
         /// </summary>
         public Game Game { get; internal set; }
 
-        private readonly Dictionary<Entity, Dictionary<Type, object>> components = new Dictionary<Entity, Dictionary<Type, object>>();
         private readonly Dictionary<int, Entity> entities = new Dictionary<int, Entity>();
-        private readonly Dictionary<Type, ISystem> systems = new Dictionary<Type, ISystem>();
+
+        private readonly Dictionary<Entity, CollectionByType> components = new Dictionary<Entity, CollectionByType>();
+        private readonly Dictionary<Type, System> systems = new Dictionary<Type, System>();
 
         /// <summary>
         /// Fired when an entity is created and registered
@@ -33,12 +34,12 @@ namespace Walgelijk
         /// <summary>
         /// Fired when a system is added
         /// </summary>
-        public event Action<ISystem> OnAddSystem;
+        public event Action<System> OnAddSystem;
 
         /// <summary>
         /// Add a system
         /// </summary>
-        public void AddSystem<T>(T system) where T : ISystem
+        public void AddSystem<T>(T system) where T : System
         {
             system.Scene = this;
             OnAddSystem?.Invoke(system);
@@ -49,7 +50,7 @@ namespace Walgelijk
         /// <summary>
         /// Retrieve a system
         /// </summary>
-        public T GetSystem<T>() where T : ISystem
+        public T GetSystem<T>() where T : System
         {
             return (T)systems[typeof(T)];
         }
@@ -57,7 +58,7 @@ namespace Walgelijk
         /// <summary>
         /// Get all systems
         /// </summary>
-        public IEnumerable<ISystem> GetSystems()
+        public IEnumerable<System> GetSystems()
         {
             return systems.Values;
         }
@@ -73,7 +74,7 @@ namespace Walgelijk
             };
 
             entities.Add(newEntity.Identity, newEntity);
-            components.Add(newEntity, new Dictionary<Type, object>());
+            components.Add(newEntity, new CollectionByType());
 
             OnCreateEntity?.Invoke(newEntity);
 
@@ -109,7 +110,7 @@ namespace Walgelijk
         /// </summary>
         public IEnumerable<object> GetAllComponentsFrom(Entity entity)
         {
-            return components[entity].Values;
+            return components[entity].GetAll();
         }
 
         /// <summary>
@@ -122,8 +123,15 @@ namespace Walgelijk
                 var componentDictionary = pair.Value;
                 var entity = pair.Key;
 
-                if (componentDictionary.TryGetValue(typeof(T), out object component))
-                    yield return new ComponentEntityTuple<T>((T)component, entity);
+                ////TODO dit is niet goed, dit is langzaam, fix dit
+                //foreach (var pair2 in componentDictionary)
+                //{
+                //    if (pair2.Value is T component)
+                //        yield return new ComponentEntityTuple<T>(component, entity);
+                //}
+
+                if (componentDictionary.TryGet(out T component))
+                    yield return new ComponentEntityTuple<T>(component, entity);
             }
         }
 
@@ -132,7 +140,9 @@ namespace Walgelijk
         /// </summary>
         public T GetComponentFrom<T>(Entity entity) where T : class
         {
-            return (T)components[entity][typeof(T)];
+            if (components[entity].TryGet<T>(out var component))
+                return component;
+            return default;
         }
 
         /// <summary>
@@ -141,9 +151,9 @@ namespace Walgelijk
         public bool TryGetComponentFrom<T>(Entity entity, out T component) where T : class
         {
             component = default;
-            if (components[entity].TryGetValue(typeof(T), out object c))
+            if (components[entity].TryGet(out T c))
             {
-                component = (T)c;
+                component = c;
                 return true;
             }
             return false;
@@ -154,7 +164,7 @@ namespace Walgelijk
         /// </summary>
         public bool HasComponent<T>(Entity entity) where T : struct
         {
-            return components[entity].ContainsKey(typeof(T));
+            return components[entity].Has<T>();
         }
 
         /// <summary>
@@ -162,7 +172,7 @@ namespace Walgelijk
         /// </summary>
         public void AttachComponent<T>(Entity entity, T component) where T : class
         {
-            components[entity].Add(typeof(T), component);
+            components[entity].TryAdd<T>(component);
             OnAttachComponent?.Invoke(entity, component);
         }
 
@@ -176,88 +186,5 @@ namespace Walgelijk
         }
 
         //TODO voeg manier to om meerdere componenten te krijgen per keer
-    }
-
-    //Test shit
-    public class RectangleRendererComponent
-    {
-        /// <summary>
-        /// Colour of the rectangle
-        /// </summary>
-        public Color Color { get; set; }
-
-        /// <summary>
-        /// Size of the rectangle
-        /// </summary>
-        public Vector2 Size { get; set; }
-
-        /// <summary>
-        /// Material that is drawn with
-        /// </summary>
-        public Material Material { get => RenderTask.Material; set => RenderTask = new ShapeRenderTask(VertexBuffer, Matrix4x4.Identity, value); }
-
-        /// <summary>
-        /// VertexBuffer that is generated. It's best not to edit this unless you really need to.
-        /// </summary>
-        public VertexBuffer VertexBuffer { get; internal set; }
-
-        /// <summary>
-        /// The rendertask that is generated. It's best not to edit this unless you really need to.
-        /// </summary>
-        public ShapeRenderTask RenderTask { get; internal set; }
-    }
-
-    //Test shit
-    public class RectangleRendererSystem : ISystem
-    {
-        public Scene Scene { get; set; }
-
-        private Game game => Scene.Game;
-
-        public void Initialise()
-        {
-            var rectangleRenderers = Scene.GetAllComponentsOfType<RectangleRendererComponent>();
-            foreach (var pair in rectangleRenderers)
-                IntialiseComponent(pair.Entity, pair.Component);
-
-            Scene.OnAttachComponent += IntialiseComponent;
-        }
-
-        private void IntialiseComponent(Entity entity, object component)
-        {
-            if (!(component is RectangleRendererComponent rect)) return;
-            rect.VertexBuffer = new VertexBuffer(new[] {
-                new Vertex(0, 0),
-                new Vertex(rect.Size.X, 0),
-                new Vertex(rect.Size.X, rect.Size.Y),
-                new Vertex(0, rect.Size.Y),
-            })
-            {
-                PrimitiveType = Primitive.Quads
-            };
-
-            rect.RenderTask = new ShapeRenderTask(rect.VertexBuffer)
-            {
-                ModelMatrix = Matrix4x4.Identity
-            };
-        }
-
-        public void Execute()
-        {
-            var rectangleRenderers = Scene.GetAllComponentsOfType<RectangleRendererComponent>();
-
-            foreach (var pair in rectangleRenderers)
-            {
-                var rect = pair.Component;
-
-                if (rect.RenderTask.VertexBuffer != null)
-                {
-                    var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
-                    var task = rect.RenderTask;
-                    task.ModelMatrix = transform.LocalToWorldMatrix;
-                    game.RenderQueue.Enqueue(task);
-                }
-            }
-        }
     }
 }

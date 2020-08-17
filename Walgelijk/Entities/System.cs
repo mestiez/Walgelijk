@@ -3,21 +3,21 @@
     /// <summary>
     /// Holds game logic
     /// </summary>
-    public interface ISystem
+    public abstract class System
     {
         /// <summary>
         /// Containing scene
         /// </summary>
-        public Scene Scene { get; set; }
+        public Scene Scene { get; internal set; }
 
         /// <summary>
         /// Initialise the system
         /// </summary>
-        public void Initialise();
+        public abstract void Initialise();
 
         /// <summary>
         /// Run the logic
         /// </summary>
-        public void Execute();
+        public abstract void Execute();
     }
 }

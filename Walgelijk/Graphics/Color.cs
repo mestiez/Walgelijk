@@ -61,12 +61,12 @@ namespace Walgelijk
             if (hex.Length < 6)
                 throw new ArgumentException(hex + " is not a valid hexadecimal representation of a colour");
 
-            R = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber) / 255f;
-            G = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber) / 255f;
-            B = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber) / 255f;
+            R = byte.Parse(hex.Substring(0, 2), global::System.Globalization.NumberStyles.HexNumber) / 255f;
+            G = byte.Parse(hex.Substring(2, 2), global::System.Globalization.NumberStyles.HexNumber) / 255f;
+            B = byte.Parse(hex.Substring(4, 2), global::System.Globalization.NumberStyles.HexNumber) / 255f;
 
             if (hex.Length == 4 * 2)
-                A = byte.Parse(hex.Substring(6, 2), System.Globalization.NumberStyles.HexNumber) / 255f;
+                A = byte.Parse(hex.Substring(6, 2), global::System.Globalization.NumberStyles.HexNumber) / 255f;
             else 
                 A = 1;
         }

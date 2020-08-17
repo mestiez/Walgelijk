@@ -4,6 +4,11 @@
         <name>Walgelijk</name>
     </assembly>
     <members>
+        <member name="T:Walgelijk.BasicRendererSystem">
+            <summary>
+            System that renders basic shapes. Supports <see cref="T:Walgelijk.IBasicShapeComponent"/>
+            </summary>
+        </member>
         <member name="T:Walgelijk.CameraComponent">
             <summary>
             Component that holds camera data
@@ -24,6 +29,46 @@
             Set the main camera for this system
             </summary>
             <param name="cameraEntity"></param>
+        </member>
+        <member name="T:Walgelijk.IBasicShapeComponent">
+            <summary>
+            Interface that provides a <see cref="P:Walgelijk.IBasicShapeComponent.VertexBuffer"/> and <see cref="T:Walgelijk.ShapeRenderTask"/>
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IBasicShapeComponent.VertexBuffer">
+            <summary>
+            VertexBuffer that is generated. It's best not to edit this unless you really need to.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IBasicShapeComponent.RenderTask">
+            <summary>
+            The rendertask that is generated. It's best not to edit this unless you really need to.
+            </summary>
+        </member>
+        <member name="T:Walgelijk.RectangleRendererComponent">
+            <summary>
+            Basic rectangle renderer data
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RectangleRendererComponent.Color">
+            <summary>
+            Colour of the rectangle
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RectangleRendererComponent.Size">
+            <summary>
+            Size of the rectangle
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RectangleRendererComponent.Material">
+            <summary>
+            Material that is drawn with
+            </summary>
+        </member>
+        <member name="M:Walgelijk.RectangleRendererComponent.#ctor">
+            <summary>
+            Create a rectangle renderer component
+            </summary>
         </member>
         <member name="T:Walgelijk.TransformComponent">
             <summary>
@@ -70,6 +115,40 @@
             The system responsible for processing transforms
             </summary>
         </member>
+        <member name="T:Walgelijk.CollectionByType">
+            <summary>
+            Collection that does not allow duplicates and is able to quicky get objects by their type
+            </summary>
+        </member>
+        <member name="M:Walgelijk.CollectionByType.TryGet``1(``0@)">
+            <summary>
+            Try to get a value by type
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.CollectionByType.Has``1">
+            <summary>
+            Returns if the collection has an object of the given type
+            </summary>
+            <typeparam name="T"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.CollectionByType.TryAdd``1(System.Object)">
+            <summary>
+            Try to add a value to the collection
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.CollectionByType.GetAll">
+            <summary>
+            Get all objects regardless of type. Order is undefined.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Walgelijk.ComponentEntityTuple`1">
             <summary>
             Struct that holds a component and its entity
@@ -91,26 +170,6 @@
             Generates entity identities
             </summary>
         </member>
-        <member name="T:Walgelijk.ISystem">
-            <summary>
-            Holds game logic
-            </summary>
-        </member>
-        <member name="P:Walgelijk.ISystem.Scene">
-            <summary>
-            Containing scene
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ISystem.Initialise">
-            <summary>
-            Initialise the system
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ISystem.Execute">
-            <summary>
-            Run the logic
-            </summary>
-        </member>
         <member name="T:Walgelijk.Scene">
             <summary>
             Stores and manages components and systems
@@ -119,6 +178,21 @@
         <member name="P:Walgelijk.Scene.Game">
             <summary>
             Game this scene belongs to
+            </summary>
+        </member>
+        <member name="E:Walgelijk.Scene.OnCreateEntity">
+            <summary>
+            Fired when an entity is created and registered
+            </summary>
+        </member>
+        <member name="E:Walgelijk.Scene.OnAttachComponent">
+            <summary>
+            Fired when a component is attached to an entity
+            </summary>
+        </member>
+        <member name="E:Walgelijk.Scene.OnAddSystem">
+            <summary>
+            Fired when a system is added
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.AddSystem``1(``0)">
@@ -191,29 +265,24 @@
             Executes all systems. This is typically handled by the window implementation
             </summary>
         </member>
-        <member name="P:Walgelijk.RectangleRendererComponent.Color">
+        <member name="T:Walgelijk.System">
             <summary>
-            Colour of the rectangle
+            Holds game logic
             </summary>
         </member>
-        <member name="P:Walgelijk.RectangleRendererComponent.Size">
+        <member name="P:Walgelijk.System.Scene">
             <summary>
-            Size of the rectangle
+            Containing scene
             </summary>
         </member>
-        <member name="P:Walgelijk.RectangleRendererComponent.Material">
+        <member name="M:Walgelijk.System.Initialise">
             <summary>
-            Material that is drawn with
+            Initialise the system
             </summary>
         </member>
-        <member name="P:Walgelijk.RectangleRendererComponent.VertexBuffer">
+        <member name="M:Walgelijk.System.Execute">
             <summary>
-            VertexBuffer that is generated. It's best not to edit this unless you really need to.
-            </summary>
-        </member>
-        <member name="P:Walgelijk.RectangleRendererComponent.RenderTask">
-            <summary>
-            The rendertask that is generated. It's best not to edit this unless you really need to.
+            Run the logic
             </summary>
         </member>
         <member name="T:Walgelijk.Game">
@@ -368,6 +437,11 @@
             Render task that renders a collection of vertices immediately
             </summary>
         </member>
+        <member name="P:Walgelijk.ImmediateRenderTask.ModelMatrix">
+            <summary>
+            The matrix to transform the vertices with
+            </summary>
+        </member>
         <member name="P:Walgelijk.ImmediateRenderTask.Vertices">
             <summary>
             Vertices to draw
@@ -393,16 +467,6 @@
             Execute the render task on the given render target
             </summary>
             <param name="target"></param>
-        </member>
-        <member name="T:Walgelijk.ModelMatrixRenderTask">
-            <summary>
-            Render task that sets the model matrix
-            </summary>
-        </member>
-        <member name="P:Walgelijk.ModelMatrixRenderTask.Matrix">
-            <summary>
-            The model matrix
-            </summary>
         </member>
         <member name="T:Walgelijk.ShapeRenderTask">
             <summary>
@@ -607,7 +671,7 @@
         </member>
         <member name="P:Walgelijk.VertexBuffer.Vertices">
             <summary>
-            Vertices to draw
+            Vertices to draw. <b>Do not forget to set the corresponding indices, or use <see cref="M:Walgelijk.VertexBuffer.GenerateIndices"/></b>
             </summary>
         </member>
         <member name="P:Walgelijk.VertexBuffer.Indices">
@@ -628,6 +692,11 @@
         <member name="M:Walgelijk.VertexBuffer.ForceUpdate">
             <summary>
             Force the data to be reuploaded to the GPU
+            </summary>
+        </member>
+        <member name="M:Walgelijk.VertexBuffer.GenerateIndices">
+            <summary>
+            Generates indices that simply walk the vertex array from beginning to end
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.Lerp(System.Single,System.Single,System.Single)">
