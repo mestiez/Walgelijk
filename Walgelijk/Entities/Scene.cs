@@ -151,7 +151,9 @@ namespace Walgelijk
         public bool TryGetComponentFrom<T>(Entity entity, out T component) where T : class
         {
             component = default;
-            if (components[entity].TryGet(out T c))
+            if (!components.TryGetValue(entity, out var collection)) return false;
+
+            if (collection.TryGet(out T c))
             {
                 component = c;
                 return true;

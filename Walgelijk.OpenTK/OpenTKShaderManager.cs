@@ -10,11 +10,11 @@ namespace Walgelijk.OpenTK
 {
     public class OpenTKShaderManager : IShaderManager
     {
-        public ShaderCache ShaderCache { get; } = new ShaderCache();
+        public MaterialCache MaterialCache { get; } = new MaterialCache();
 
-        public void SetUniform(Shader shader, string uniformName, object data)
+        public void SetUniform(Material material, string uniformName, object data)
         {
-            var loaded = ShaderCache.Load(shader);
+            var loaded = MaterialCache.Load(material);
             int prog = loaded.ProgramHandle;
             int loc = loaded.GetUniformLocation(uniformName);
 
@@ -69,9 +69,9 @@ namespace Walgelijk.OpenTK
             }
         }
 
-        public bool TryGetUniform<T>(Shader shader, string uniformName, out T data)
+        public bool TryGetUniform<T>(Material material, string uniformName, out T data)
         {
-            var loaded = ShaderCache.Load(shader);
+            var loaded = MaterialCache.Load(material);
             int prog = loaded.ProgramHandle;
             int loc = loaded.GetUniformLocation(uniformName);
             // TODO try get uniform method

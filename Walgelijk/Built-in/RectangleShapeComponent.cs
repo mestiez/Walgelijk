@@ -5,7 +5,7 @@ namespace Walgelijk
     /// <summary>
     /// Basic rectangle renderer data
     /// </summary>
-    public class RectangleRendererComponent : IBasicShapeComponent
+    public class RectangleShapeComponent : IBasicShapeComponent
     {
         private Vector2 size = Vector2.One;
         private Color color = Color.White;
@@ -15,7 +15,7 @@ namespace Walgelijk
         /// </summary>
         public Color Color
         {
-            get => color; 
+            get => color;
             set
             {
                 color = value;
@@ -28,7 +28,7 @@ namespace Walgelijk
         /// </summary>
         public Vector2 Size
         {
-            get => size; 
+            get => size;
             set
             {
                 size = value;
@@ -56,7 +56,7 @@ namespace Walgelijk
         /// <summary>
         /// Create a rectangle renderer component
         /// </summary>
-        public RectangleRendererComponent()
+        public RectangleShapeComponent()
         {
             VertexBuffer = new VertexBuffer()
             {
@@ -74,11 +74,12 @@ namespace Walgelijk
 
         private void UpdateVertices()
         {
+            var half = Size / 2;
             VertexBuffer.Vertices = new[] {
-                new Vertex(0, 0) { Color = Color },
-                new Vertex(Size.X, 0){ Color = Color },
-                new Vertex(Size.X, Size.Y){ Color = Color },
-                new Vertex(0, Size.Y){ Color = Color },
+                new Vertex(-half.X, -half.Y) { Color = Color },
+                new Vertex( half.X, -half.Y){ Color = Color },
+                new Vertex( half.X,  half.Y){ Color = Color },
+                new Vertex(-half.X,  half.Y){ Color = Color },
             };
             VertexBuffer.GenerateIndices();
         }

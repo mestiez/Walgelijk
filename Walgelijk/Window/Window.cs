@@ -30,6 +30,10 @@ namespace Walgelijk
         /// </summary>
         public abstract int TargetUpdateRate { get; set; }
         /// <summary>
+        /// Should vertical synchronisation be enabled
+        /// </summary>
+        public abstract bool VSync { get; set; }
+        /// <summary>
         /// Is the window open?
         /// </summary>
         public abstract bool IsOpen { get; }

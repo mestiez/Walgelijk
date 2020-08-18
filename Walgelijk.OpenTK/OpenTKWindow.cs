@@ -2,15 +2,19 @@
 using OpenTK.Graphics;
 using OpenTK.Input;
 using System;
+using System.Numerics;
 using Vector2 = System.Numerics.Vector2;
 
 namespace Walgelijk.OpenTK
 {
+
     public class OpenTKWindow : Walgelijk.Window
     {
         internal readonly GameWindow window;
         internal readonly OpenTKRenderTarget renderTarget;
         internal readonly OpenTKShaderManager shaderManager;
+
+        private InputHandler inputHandler ;
 
         public OpenTKWindow(string title, Vector2 position, Vector2 size)
         {
@@ -18,6 +22,7 @@ namespace Walgelijk.OpenTK
             renderTarget = new OpenTKRenderTarget();
             renderTarget.Window = this;
             shaderManager = new OpenTKShaderManager();
+            inputHandler = new InputHandler(this);
         }
 
         public override string Title { get => window.Title; set => window.Title = value; }
@@ -34,6 +39,8 @@ namespace Walgelijk.OpenTK
         public override int TargetFrameRate { get => (int)window.TargetRenderFrequency; set => window.TargetRenderFrequency = value; }
         public override int TargetUpdateRate { get => (int)window.TargetUpdateFrequency; set => window.TargetUpdateFrequency = value; }
 
+        public override bool VSync { get => window.VSync == VSyncMode.On; set => window.VSync = (value ? VSyncMode.On : VSyncMode.Off); }
+
         public override bool IsOpen => window.Exists && !window.IsExiting;
 
         public override bool HasFocus => window.Focused;
@@ -41,7 +48,7 @@ namespace Walgelijk.OpenTK
         public override bool IsVisible { get => window.Visible; set => window.Visible = value; }
         public override bool Resizable { get => window.WindowBorder == WindowBorder.Resizable; set => window.WindowBorder = value ? WindowBorder.Resizable : WindowBorder.Fixed; }
 
-        public override InputState InputState => default;
+        public override InputState InputState => inputHandler?.InputState ?? default;
 
         public override RenderTarget RenderTarget => renderTarget;
 
@@ -60,6 +67,13 @@ namespace Walgelijk.OpenTK
 
         public override void StartLoop()
         {
+            HookIntoEvents();
+
+            window.Run();
+        }
+
+        private void HookIntoEvents()
+        {
             window.Closing += OnWindowClose;
             window.Resize += OnWindowResize;
             window.Move += OnWindowMove;
@@ -69,10 +83,6 @@ namespace Walgelijk.OpenTK
             window.RenderFrame += OnRenderFrame;
 
             window.Load += OnWindowLoad;
-
-            window.VSync = VSyncMode.Off;
-
-            window.Run();
         }
 
         private void OnWindowLoad(object sender, EventArgs args)
@@ -88,12 +98,11 @@ namespace Walgelijk.OpenTK
             RenderQueue.RenderAndReset(RenderTarget);
 
             window.SwapBuffers();
-
-            Console.WriteLine(Math.Round(obj.Time * 1000, 2) + "ms");
         }
 
         private void OnUpdateFrame(object sender, FrameEventArgs obj)
         {
+            inputHandler.Reset();
             Game.Scene?.ExecuteSystems();
         }
 

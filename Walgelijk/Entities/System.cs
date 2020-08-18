@@ -11,6 +11,11 @@
         public Scene Scene { get; internal set; }
 
         /// <summary>
+        /// Current input state
+        /// </summary>
+        public InputState Input => Scene.Game.Window.InputState;
+
+        /// <summary>
         /// Initialise the system
         /// </summary>
         public abstract void Initialise();

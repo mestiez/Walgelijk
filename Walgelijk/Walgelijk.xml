@@ -45,27 +45,27 @@
             The rendertask that is generated. It's best not to edit this unless you really need to.
             </summary>
         </member>
-        <member name="T:Walgelijk.RectangleRendererComponent">
+        <member name="T:Walgelijk.RectangleShapeComponent">
             <summary>
             Basic rectangle renderer data
             </summary>
         </member>
-        <member name="P:Walgelijk.RectangleRendererComponent.Color">
+        <member name="P:Walgelijk.RectangleShapeComponent.Color">
             <summary>
             Colour of the rectangle
             </summary>
         </member>
-        <member name="P:Walgelijk.RectangleRendererComponent.Size">
+        <member name="P:Walgelijk.RectangleShapeComponent.Size">
             <summary>
             Size of the rectangle
             </summary>
         </member>
-        <member name="P:Walgelijk.RectangleRendererComponent.Material">
+        <member name="P:Walgelijk.RectangleShapeComponent.Material">
             <summary>
             Material that is drawn with
             </summary>
         </member>
-        <member name="M:Walgelijk.RectangleRendererComponent.#ctor">
+        <member name="M:Walgelijk.RectangleShapeComponent.#ctor">
             <summary>
             Create a rectangle renderer component
             </summary>
@@ -154,6 +154,16 @@
             Struct that holds a component and its entity
             </summary>
             <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:Walgelijk.ComponentEntityTuple`1.Component">
+            <summary>
+            The component of type <see cref="!:T"/>
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ComponentEntityTuple`1.Entity">
+            <summary>
+            The entity that <see cref="P:Walgelijk.ComponentEntityTuple`1.Component"/> is attached to
+            </summary>
         </member>
         <member name="T:Walgelijk.Entity">
             <summary>
@@ -275,6 +285,11 @@
             Containing scene
             </summary>
         </member>
+        <member name="P:Walgelijk.System.Input">
+            <summary>
+            Current input state
+            </summary>
+        </member>
         <member name="M:Walgelijk.System.Initialise">
             <summary>
             Initialise the system
@@ -366,18 +381,15 @@
             Shader specific link between the engine and the graphics API
             </summary>
         </member>
-        <member name="M:Walgelijk.IShaderManager.SetUniform(Walgelijk.Shader,System.String,System.Object)">
+        <member name="M:Walgelijk.IShaderManager.SetUniform(Walgelijk.Material,System.String,System.Object)">
             <summary>
             Set a shader program uniform
             </summary>
         </member>
-        <member name="M:Walgelijk.IShaderManager.TryGetUniform``1(Walgelijk.Shader,System.String,``0@)">
+        <member name="M:Walgelijk.IShaderManager.TryGetUniform``1(Walgelijk.Material,System.String,``0@)">
             <summary>
             Try to get a shader program uniform.
             </summary>
-            <param name="shader"></param>
-            <param name="uniformName"></param>
-            <param name="data"></param>
             <returns>Boolean indicating whether the operation was successful</returns>
         </member>
         <member name="T:Walgelijk.Material">
@@ -499,11 +511,6 @@
             </summary>
             <param name="vertexShader"></param>
             <param name="fragmentShader"></param>
-        </member>
-        <member name="M:Walgelijk.Shader.#ctor">
-            <summary>
-            Create an empty shader
-            </summary>
         </member>
         <member name="P:Walgelijk.Shader.VertexShader">
             <summary>
@@ -729,6 +736,86 @@
             Returns a colour where the RGB components are random
             </summary>
         </member>
+        <member name="T:Walgelijk.InputState">
+            <summary>
+            Struct that simply holds input data
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InputState.MouseButtonsDown">
+            <summary>
+            All mouse buttons that have been pressed last frame
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InputState.MouseButtonsHeld">
+            <summary>
+            All mouse buttons that are currently held
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InputState.MouseButtonsUp">
+            <summary>
+            All moues buttons that have been released last frame
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InputState.KeysDown">
+            <summary>
+            All keys that have been pressed last frame
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InputState.KeysHeld">
+            <summary>
+            All keys that are currently held
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InputState.KeysUp">
+            <summary>
+            All keys that were released last frame
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InputState.WindowMousePosition">
+            <summary>
+            Mouse position in window coordinates
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InputState.WorldMousePosition">
+            <summary>
+            Mouse position in world coordinates
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InputState.WindowMouseDelta">
+            <summary>
+            Mouse movement delta over 1 frame in window coordinates
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InputState.WorldMouseDelta">
+            <summary>
+            Mouse movement delta over 1 frame in world coordinates
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InputState.MouseScrollDelta">
+            <summary>
+            Mouse wheel delta over 1 frame
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InputState.AnyKey">
+            <summary>
+            Returns if any key is down
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InputState.AnyMouseButton">
+            <summary>
+            Returns if any mouse button is down
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InputState.TextEntered">
+            <summary>
+            The text entered last frame
+            </summary>
+        </member>
+        <member name="M:Walgelijk.InputState.IsKeyHeld(System.Int32)">
+            <summary>
+            Returns if the key is held
+            </summary>
+        </member>
         <member name="T:Walgelijk.RenderQueue">
             <summary>
             This object manages a render queue of <see cref="T:Walgelijk.IRenderTask"/>
@@ -808,6 +895,11 @@
         <member name="P:Walgelijk.Window.TargetUpdateRate">
             <summary>
             Speed the game should run updates at
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.VSync">
+            <summary>
+            Should vertical synchronisation be enabled
             </summary>
         </member>
         <member name="P:Walgelijk.Window.IsOpen">

@@ -9,7 +9,7 @@ namespace Walgelijk
     /// Structure that holds the code for a full shader program
     /// </summary>
     [Serializable]
-    public class Shader
+    public struct Shader
     {
         /// <summary>
         /// Create a shader from vertex and fragment shader code
@@ -21,11 +21,6 @@ namespace Walgelijk
             VertexShader = vertexShader;
             FragmentShader = fragmentShader;
         }
-
-        /// <summary>
-        /// Create an empty shader
-        /// </summary>
-        public Shader() { }
 
         /// <summary>
         /// The vertex shader of the program

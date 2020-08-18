@@ -12,7 +12,13 @@
             Entity = entity;
         }
 
+        /// <summary>
+        /// The component of type <see cref="T"/>
+        /// </summary>
         public T Component { get; set; }
+        /// <summary>
+        /// The entity that <see cref="Component"/> is attached to
+        /// </summary>
         public Entity Entity { get; set; }
     }
 }

@@ -8,8 +8,8 @@ namespace Walgelijk
     /// </summary>
     public class CollectionByType
     {
-        private Dictionary<Type, object> table = new Dictionary<Type, object>();
-        private HashSet<object> objects = new HashSet<object>();
+        private readonly Dictionary<Type, object> table = new Dictionary<Type, object>();
+        private readonly HashSet<object> objects = new HashSet<object>();
 
         /// <summary>
         /// Try to get a value by type

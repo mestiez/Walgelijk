@@ -5,7 +5,7 @@
     /// </summary>
     public class BasicRendererSystem : System
     {
-        private Game game => Scene.Game;
+        private Game Game => Scene.Game;
 
         public override void Initialise()
         {
@@ -18,15 +18,20 @@
 
             foreach (var pair in basicShapes)
             {
-                var shape = pair.Component;
+                RenderShape(pair);
+            }
+        }
 
-                if (shape.RenderTask.VertexBuffer != null)
-                {
-                    var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
-                    var task = shape.RenderTask;
-                    task.ModelMatrix = transform.LocalToWorldMatrix;
-                    game.RenderQueue.Enqueue(task);
-                }
+        private void RenderShape(ComponentEntityTuple<IBasicShapeComponent> pair)
+        {
+            var shape = pair.Component;
+
+            if (shape.RenderTask.VertexBuffer != null)
+            {
+                var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
+                var task = shape.RenderTask;
+                task.ModelMatrix = transform.LocalToWorldMatrix;
+                Game.RenderQueue.Enqueue(task);
             }
         }
     }

@@ -4,16 +4,18 @@ using System.Collections.Generic;
 
 namespace Walgelijk.OpenTK
 {
-    public class LoadedShader
+    public class LoadedMaterial
     {
         public int ProgramHandle { get; private set; }
 
-        public Shader Shader { get; private set; }
+        public Material Material { get; private set; }
 
         private Dictionary<string, int> uniformLocations = new Dictionary<string, int>();
 
-        public LoadedShader(Shader shader)
+        public LoadedMaterial(Material material)
         {
+            var shader = material.Shader;
+
             CreateShaderProgram(
                 shader, 
                 out int vertexShaderIndex, 
@@ -44,7 +46,7 @@ namespace Walgelijk.OpenTK
             GL.DetachShader(programIndex, vertexShaderIndex);
             GL.DetachShader(programIndex, fragmentShaderIndex);
 
-            Shader = shader;
+            Material = material;
             ProgramHandle = programIndex;
         }
 

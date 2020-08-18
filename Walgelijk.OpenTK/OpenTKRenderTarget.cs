@@ -34,6 +34,7 @@ namespace Walgelijk.OpenTK
                 GL.Viewport(0, 0, (int)size.X, (int)size.Y);
             }
         }
+
         public override Color ClearColour
         {
             get => clearColour;
@@ -45,29 +46,9 @@ namespace Walgelijk.OpenTK
             }
         }
 
-        public override Matrix4x4 ViewMatrix
-        {
-            get => viewMatrix;
-            set
-            {
-                if (viewMatrix== value) 
-                    viewMatrixChanged = true;
-                viewMatrix = value;
-            }
-        }
-
-        public override Matrix4x4 ProjectionMatrix
-        {
-            get => projectionMatrix;
-
-            set
-            {
-                if (projectionMatrix != value)
-                    projectionMatrixChanged = true;
-                projectionMatrix = value;
-            }
-        }
-        public override Matrix4x4 ModelMatrix { get => modelMatrix; set => modelMatrix = value; }
+        public override Matrix4x4 ViewMatrix { get; set; }
+        public override Matrix4x4 ProjectionMatrix { get; set; }
+        public override Matrix4x4 ModelMatrix { get; set; }
 
         public override void Clear()
         {
@@ -92,19 +73,10 @@ namespace Walgelijk.OpenTK
 
         private void SetTransformationMatrixUniforms(Material material)
         {
-            if (viewMatrixChanged)
-            {
-                viewMatrixChanged = false;
-                ShaderManager.SetUniform(material.Shader, ShaderConstants.ViewMatrixUniform, ViewMatrix);
-            }
+            ShaderManager.SetUniform(material, ShaderConstants.ViewMatrixUniform, ViewMatrix);
+            ShaderManager.SetUniform(material, ShaderConstants.ProjectionMatrixUniform, ProjectionMatrix);
 
-            if (projectionMatrixChanged)
-            {
-                projectionMatrixChanged = false;
-                ShaderManager.SetUniform(material.Shader, ShaderConstants.ProjectionMatrixUniform, ProjectionMatrix);
-            }
-
-            ShaderManager.SetUniform(material.Shader, ShaderConstants.ModelMatrixUniform, ModelMatrix);
+            ShaderManager.SetUniform(material, ShaderConstants.ModelMatrixUniform, ModelMatrix);
         }
 
         public override void Draw(Vertex[] vertices, Primitive primitive, Material material = null)
@@ -127,7 +99,7 @@ namespace Walgelijk.OpenTK
         {
             if (currentMaterial == material) return;
             currentMaterial = material;
-            var loadedShader = ShaderManager.ShaderCache.Load(material.Shader);
+            var loadedShader = ShaderManager.MaterialCache.Load(material);
             int prog = loadedShader.ProgramHandle;
             GL.UseProgram(prog);
         }

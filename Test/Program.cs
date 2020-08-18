@@ -12,8 +12,9 @@ namespace Test
             Random rand = new Random();
 
             Game game = new Game(new OpenTKWindow("hallo daar", new Vector2(128, 128), new Vector2(512, 512)));
-            game.Window.TargetFrameRate = 0;
-            game.Window.TargetUpdateRate = 0;
+            game.Window.TargetFrameRate = 75;
+            game.Window.TargetUpdateRate = 75;
+            game.Window.VSync = false;
             game.Window.RenderTarget.ClearColour = new Color("#d42c5e");
 
             var scene = new Scene();
@@ -26,13 +27,13 @@ namespace Test
                 scene.AttachComponent(entity, new TransformComponent
                 {
                     Position = new Vector2(
-                        Utilities.RandomFloat(-.2f, .2f),
-                        Utilities.RandomFloat(-.2f, .2f)
+                        Utilities.RandomFloat(-.3f, .3f),
+                        Utilities.RandomFloat(-.3f, .3f)
                         ),
                     Rotation = Utilities.RandomFloat(0, 360)
                 });
 
-                scene.AttachComponent(entity, new RectangleRendererComponent
+                scene.AttachComponent(entity, new RectangleShapeComponent
                 {
                     Size = new Vector2(
                         Utilities.RandomFloat(.1f, .2f),

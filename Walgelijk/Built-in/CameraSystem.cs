@@ -26,20 +26,27 @@ namespace Walgelijk
         /// <param name="cameraEntity"></param>
         public void SetMainCamera(Entity cameraEntity)
         {
-            if (Scene == null)
-                throw new InvalidOperationException("System has not been added to a scene yet");
-
-            if (!Scene.HasEntity(cameraEntity))
-                throw new ArgumentException($"{cameraEntity} does not exist in the scene");            
-            
-            if (!Scene.TryGetComponentFrom<CameraComponent>(cameraEntity, out var camera))
-                throw new ArgumentException($"{cameraEntity} has no {nameof(CameraComponent)}");
+            CameraComponent camera = GetCameraFrom(cameraEntity);
 
             mainCameraEntity = cameraEntity;
             mainCameraComponent = camera;
             mainCameraTransform = Scene.GetComponentFrom<TransformComponent>(mainCameraEntity);
 
             mainCameraSet = true;
+        }
+
+        private CameraComponent GetCameraFrom(Entity cameraEntity)
+        {
+            if (Scene == null)
+                throw new InvalidOperationException("System has not been added to a scene yet");
+
+            if (!Scene.HasEntity(cameraEntity))
+                throw new ArgumentException($"{cameraEntity} does not exist in the scene");
+
+            if (!Scene.TryGetComponentFrom<CameraComponent>(cameraEntity, out var camera))
+                throw new ArgumentException($"{cameraEntity} has no {nameof(CameraComponent)}");
+
+            return camera;
         }
 
         public override void Execute()

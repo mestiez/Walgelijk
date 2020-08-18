@@ -28,7 +28,7 @@ namespace Walgelijk
 
             if (uniforms.TryAdd(name, value)) return;
             uniforms[name] = value;
-            Game.Main.Window.ShaderManager.SetUniform(Shader, name, value);
+            Game.Main.Window.ShaderManager.SetUniform(this, name, value);
         }
 
         /* waarom is dit nodig??
