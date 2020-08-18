@@ -811,9 +811,34 @@
             The text entered last frame
             </summary>
         </member>
-        <member name="M:Walgelijk.InputState.IsKeyHeld(System.Int32)">
+        <member name="M:Walgelijk.InputState.IsKeyHeld(Walgelijk.Key)">
             <summary>
             Returns if the key is held
+            </summary>
+        </member>
+        <member name="M:Walgelijk.InputState.IsKeyPressed(Walgelijk.Key)">
+            <summary>
+            Retusn if the key was pressed
+            </summary>
+        </member>
+        <member name="M:Walgelijk.InputState.IsKeyReleased(Walgelijk.Key)">
+            <summary>
+            Returns if the key was released
+            </summary>
+        </member>
+        <member name="M:Walgelijk.InputState.IsButtonHeld(Walgelijk.Button)">
+            <summary>
+            Returns if the key is held
+            </summary>
+        </member>
+        <member name="M:Walgelijk.InputState.IsButtonPressed(Walgelijk.Button)">
+            <summary>
+            Retusn if the key was pressed
+            </summary>
+        </member>
+        <member name="M:Walgelijk.InputState.IsButtonReleased(Walgelijk.Button)">
+            <summary>
+            Returns if the key was released
             </summary>
         </member>
         <member name="T:Walgelijk.RenderQueue">

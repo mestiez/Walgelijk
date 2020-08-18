@@ -18,7 +18,7 @@ namespace Walgelijk
         /// <param name="target"></param>
         public void RenderAndReset(RenderTarget target)
         {
-            while (queue.Any())
+            while (queue.Count != 0)
             {
                 var task = queue.Dequeue();
                 task.Execute(target);

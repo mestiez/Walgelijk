@@ -13,13 +13,13 @@ namespace Walgelijk.OpenTK
         {
             Window = window;
 
-            inputState.MouseButtonsDown = new HashSet<int>();
-            inputState.MouseButtonsHeld = new HashSet<int>();
-            inputState.MouseButtonsUp = new HashSet<int>();
+            inputState.MouseButtonsDown = new HashSet<Button>();
+            inputState.MouseButtonsHeld = new HashSet<Button>();
+            inputState.MouseButtonsUp = new HashSet<Button>();
 
-            inputState.KeysDown = new HashSet<int>();
-            inputState.KeysHeld = new HashSet<int>();
-            inputState.KeysUp = new HashSet<int>();
+            inputState.KeysDown = new HashSet<Key>();
+            inputState.KeysHeld = new HashSet<Key>();
+            inputState.KeysUp = new HashSet<Key>();
 
             GameWindow.KeyPress += TextEnter;
             GameWindow.KeyDown += KeyDown;
@@ -45,27 +45,27 @@ namespace Walgelijk.OpenTK
 
         private void MouseUp(object sender, MouseButtonEventArgs e)
         {
-            inputState.MouseButtonsUp.Add((int)e.Button);
-            inputState.MouseButtonsHeld.Remove((int)e.Button);
+            inputState.MouseButtonsUp.Add(TypeConverter.Convert(e.Button));
+            inputState.MouseButtonsHeld.Remove(TypeConverter.Convert(e.Button));
         }
 
         private void MouseDown(object sender, MouseButtonEventArgs e)
         {
-            inputState.MouseButtonsDown.Add((int)e.Button);
-            inputState.MouseButtonsHeld.Add((int)e.Button);
+            inputState.MouseButtonsDown.Add(TypeConverter.Convert(e.Button));
+            inputState.MouseButtonsHeld.Add(TypeConverter.Convert(e.Button));
             inputState.AnyMouseButton = true;
         }
 
         private void KeyUp(object sender, KeyboardKeyEventArgs e)
         {
-            inputState.KeysUp.Add((int)e.Key);
-            inputState.KeysHeld.Remove((int)e.Key);
+            inputState.KeysUp.Add(TypeConverter.Convert(e.Key));
+            inputState.KeysHeld.Remove(TypeConverter.Convert(e.Key));
         }
 
         private void KeyDown(object sender, KeyboardKeyEventArgs e)
         {
-            inputState.KeysDown.Add((int)e.Key);
-            inputState.KeysHeld.Add((int)e.Key);
+            inputState.KeysDown.Add(TypeConverter.Convert(e.Key));
+            inputState.KeysHeld.Add(TypeConverter.Convert(e.Key));
             inputState.AnyKey = true;
         }
 

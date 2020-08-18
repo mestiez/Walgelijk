@@ -21,5 +21,15 @@ namespace Walgelijk.OpenTK
                 _ => PrimitiveType.Triangles,
             };
         }
+
+        public static Key Convert(global::OpenTK.Input.Key key)
+        {
+            return (Key)(int)key;
+        }
+
+        public static Button Convert(global::OpenTK.Input.MouseButton button)
+        {
+            return (Button)(int)button;
+        }
     }
 }

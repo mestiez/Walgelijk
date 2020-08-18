@@ -11,27 +11,27 @@ namespace Walgelijk
         /// <summary>
         /// All mouse buttons that have been pressed last frame
         /// </summary>
-        public HashSet<int> MouseButtonsDown;
+        public HashSet<Button> MouseButtonsDown;
         /// <summary>
         /// All mouse buttons that are currently held
         /// </summary>
-        public HashSet<int> MouseButtonsHeld;
+        public HashSet<Button> MouseButtonsHeld;
         /// <summary>
         /// All moues buttons that have been released last frame
         /// </summary>
-        public HashSet<int> MouseButtonsUp;
+        public HashSet<Button> MouseButtonsUp;
         /// <summary>
         /// All keys that have been pressed last frame
         /// </summary>
-        public HashSet<int> KeysDown;
+        public HashSet<Key> KeysDown;
         /// <summary>
         /// All keys that are currently held
         /// </summary>
-        public HashSet<int> KeysHeld;
+        public HashSet<Key> KeysHeld;
         /// <summary>
         /// All keys that were released last frame
         /// </summary>
-        public HashSet<int> KeysUp;
+        public HashSet<Key> KeysUp;
 
         /// <summary>
         /// Mouse position in window coordinates
@@ -53,7 +53,7 @@ namespace Walgelijk
         /// Mouse wheel delta over 1 frame
         /// </summary>
         public float MouseScrollDelta;
-               
+
         /// <summary>
         /// Returns if any key is down
         /// </summary>
@@ -62,15 +62,37 @@ namespace Walgelijk
         /// Returns if any mouse button is down
         /// </summary>
         public bool AnyMouseButton;
-               
+
         /// <summary>
         /// The text entered last frame
         /// </summary>
         public string TextEntered;
 
+        #region helper methods
         /// <summary>
         /// Returns if the key is held
         /// </summary>
-        public bool IsKeyHeld(int key) => KeysHeld.Contains(key);
+        public bool IsKeyHeld(Key key) => KeysHeld.Contains(key);
+        /// <summary>
+        /// Retusn if the key was pressed
+        /// </summary>
+        public bool IsKeyPressed(Key key) => KeysDown.Contains(key);
+        /// <summary>
+        /// Returns if the key was released
+        /// </summary>
+        public bool IsKeyReleased(Key key) => KeysUp.Contains(key);
+        /// <summary>
+        /// Returns if the key is held
+        /// </summary>
+        public bool IsButtonHeld(Button button) => MouseButtonsHeld.Contains(button);
+        /// <summary>
+        /// Retusn if the key was pressed
+        /// </summary>
+        public bool IsButtonPressed(Button button) => MouseButtonsDown.Contains(button);
+        /// <summary>
+        /// Returns if the key was released
+        /// </summary>
+        public bool IsButtonReleased(Button button) => MouseButtonsUp.Contains(button);
+        #endregion
     }
 }
