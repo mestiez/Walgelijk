@@ -7,12 +7,11 @@
     {
         private Game Game => Scene.Game;
 
-        public override void Initialise()
-        {
+        public override void Initialise() { }
 
-        }
+        public override void Update() { }
 
-        public override void Execute()
+        public override void Render()
         {
             var basicShapes = Scene.GetAllComponentsOfType<IBasicShapeComponent>();
 

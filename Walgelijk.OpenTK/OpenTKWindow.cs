@@ -93,17 +93,17 @@ namespace Walgelijk.OpenTK
 
         private void OnRenderFrame(object sender, FrameEventArgs obj)
         {
+            Game.Scene?.RenderSystems();
+
             RenderTarget.Clear();
-
             RenderQueue.RenderAndReset(RenderTarget);
-
             window.SwapBuffers();
         }
 
         private void OnUpdateFrame(object sender, FrameEventArgs obj)
         {
             inputHandler.Reset();
-            Game.Scene?.ExecuteSystems();
+            Game.Scene?.UpdateSystems();
         }
 
         private void OnFireDrop(object sender, FileDropEventArgs obj)

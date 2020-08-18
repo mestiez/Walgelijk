@@ -12,12 +12,10 @@ namespace Test
 
     public class PlayerSystem : Walgelijk.System
     {
-        public override void Initialise()
-        {
+        public override void Initialise() { }
+        public override void Render() { }
 
-        }
-
-        public override void Execute()
+        public override void Update()
         {
             var w = Input.IsKeyHeld(Key.W);
             var a = Input.IsKeyHeld(Key.A);

@@ -181,10 +181,19 @@ namespace Walgelijk
         /// <summary>
         /// Executes all systems. This is typically handled by the window implementation
         /// </summary>
-        public void ExecuteSystems()
+        public void UpdateSystems()
         {
             foreach (var system in systems.Values)
-                system.Execute();
+                system.Update();
+        }
+
+        /// <summary>
+        /// Renders all systems that implement rendering code. This is typically handled by the window implementation
+        /// </summary>
+        public void RenderSystems()
+        {
+            foreach (var system in systems.Values)
+                system.Render();
         }
 
         //TODO voeg manier to om meerdere componenten te krijgen per keer

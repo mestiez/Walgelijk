@@ -23,6 +23,11 @@
         /// <summary>
         /// Run the logic
         /// </summary>
-        public abstract void Execute();
+        public abstract void Update();
+
+        /// <summary>
+        /// Run rendering code
+        /// </summary>
+        public abstract void Render();
     }
 }

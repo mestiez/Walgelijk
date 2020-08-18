@@ -7,7 +7,9 @@
     {
         public override void Initialise() { }
 
-        public override void Execute()
+        public override void Render() { }
+
+        public override void Update()
         {
             foreach (var pair in Scene.GetAllComponentsOfType<TransformComponent>())
             {

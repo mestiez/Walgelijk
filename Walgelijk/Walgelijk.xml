@@ -270,9 +270,14 @@
             Attach a component to an entity
             </summary>
         </member>
-        <member name="M:Walgelijk.Scene.ExecuteSystems">
+        <member name="M:Walgelijk.Scene.UpdateSystems">
             <summary>
             Executes all systems. This is typically handled by the window implementation
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.RenderSystems">
+            <summary>
+            Renders all systems that implement rendering code. This is typically handled by the window implementation
             </summary>
         </member>
         <member name="T:Walgelijk.System">
@@ -295,9 +300,14 @@
             Initialise the system
             </summary>
         </member>
-        <member name="M:Walgelijk.System.Execute">
+        <member name="M:Walgelijk.System.Update">
             <summary>
             Run the logic
+            </summary>
+        </member>
+        <member name="M:Walgelijk.System.Render">
+            <summary>
+            Run rendering code
             </summary>
         </member>
         <member name="T:Walgelijk.Game">
