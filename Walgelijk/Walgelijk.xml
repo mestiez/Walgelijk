@@ -295,6 +295,11 @@
             Current input state
             </summary>
         </member>
+        <member name="P:Walgelijk.System.Time">
+            <summary>
+            Current time information
+            </summary>
+        </member>
         <member name="M:Walgelijk.System.Initialise">
             <summary>
             Initialise the system
@@ -333,6 +338,11 @@
         <member name="P:Walgelijk.Game.RenderQueue">
             <summary>
             Returns the <see cref="T:Walgelijk.RenderQueue"/> that belongs to <see cref="P:Walgelijk.Game.Window"/>
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.Time">
+            <summary>
+            Returns the <see cref="T:Walgelijk.Time"/> information that belongs to <see cref="P:Walgelijk.Game.Window"/>
             </summary>
         </member>
         <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window)">
@@ -411,6 +421,12 @@
             <summary>
             The shader this material uses
             </summary>
+        </member>
+        <member name="M:Walgelijk.Material.#ctor(Walgelijk.Shader)">
+            <summary>
+            Create a material with a shader
+            </summary>
+            <param name="shader"></param>
         </member>
         <member name="M:Walgelijk.Material.SetUniform(System.String,System.Object)">
             <summary>
@@ -716,6 +732,21 @@
             Generates indices that simply walk the vertex array from beginning to end
             </summary>
         </member>
+        <member name="T:Walgelijk.Time">
+            <summary>
+            Structure that holds frame specific time data
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Time.DeltaTime">
+            <summary>
+            Returns the amount of seconds that have passed since the last update frame
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Time.SecondsSinceStart">
+            <summary>
+            Returns the amount of seconds that have passed since the game was launched
+            </summary>
+        </member>
         <member name="M:Walgelijk.Utilities.Lerp(System.Single,System.Single,System.Single)">
             <summary>
             Linearly interpolate between two floats
@@ -960,6 +991,11 @@
         <member name="P:Walgelijk.Window.InputState">
             <summary>
             The current input state
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.Time">
+            <summary>
+            Time information
             </summary>
         </member>
         <member name="P:Walgelijk.Window.RenderQueue">

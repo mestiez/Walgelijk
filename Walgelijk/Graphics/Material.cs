@@ -17,6 +17,15 @@ namespace Walgelijk
         private readonly Dictionary<string, object> uniforms = new Dictionary<string, object>();
 
         /// <summary>
+        /// Create a material with a shader
+        /// </summary>
+        /// <param name="shader"></param>
+        public Material(Shader shader)
+        {
+            Shader = shader;
+        }
+
+        /// <summary>
         /// Set uniform data
         /// </summary>
         /// <param name="name"></param>
@@ -44,6 +53,6 @@ namespace Walgelijk
         /// <summary>
         /// The default material with the default shader
         /// </summary>
-        public static Material DefaultMaterial { get; } = new Material();
+        public static Material DefaultMaterial { get; } = new Material(Shader.Default);
     }
 }

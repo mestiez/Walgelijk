@@ -6,6 +6,7 @@ layout(location = 2) in vec4 color;
 
 out vec2 uv;
 out vec4 vertexColor;
+out vec2 screenPos;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -15,5 +16,7 @@ void main()
 {
    uv = texcoord;
    vertexColor = color;
-   gl_Position = projection * view * model * vec4(position, 1.0);
+   vec4 clip = projection * view * model * vec4(position, 1.0);
+   screenPos = clip.xy;
+   gl_Position = clip;
 }

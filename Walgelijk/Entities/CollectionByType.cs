@@ -6,10 +6,10 @@ namespace Walgelijk
     /// <summary>
     /// Collection that does not allow duplicates and is able to quicky get objects by their type
     /// </summary>
-    public class CollectionByType
+    public class CollectionByType : IDisposable
     {
-        private readonly Dictionary<Type, object> table = new Dictionary<Type, object>();
-        private readonly HashSet<object> objects = new HashSet<object>();
+        private Dictionary<Type, object> table = new Dictionary<Type, object>();
+        private HashSet<object> objects = new HashSet<object>();
 
         /// <summary>
         /// Try to get a value by type
@@ -74,6 +74,14 @@ namespace Walgelijk
         public IEnumerable<object> GetAll()
         {
             return objects;
+        }
+
+        public void Dispose()
+        {
+            table.Clear();
+            objects.Clear();
+            table = null;
+            objects = null;
         }
     }
 }

@@ -76,10 +76,10 @@ namespace Walgelijk
         {
             var half = Size / 2;
             VertexBuffer.Vertices = new[] {
-                new Vertex(-half.X, -half.Y) { Color = Color },
-                new Vertex( half.X, -half.Y){ Color = Color },
-                new Vertex( half.X,  half.Y){ Color = Color },
-                new Vertex(-half.X,  half.Y){ Color = Color },
+                new Vertex(-half.X, -half.Y) { Color = Color, TexCoords = new Vector2(0,0) },
+                new Vertex( half.X, -half.Y) { Color = Color, TexCoords = new Vector2(1,0) },
+                new Vertex( half.X,  half.Y) { Color = Color, TexCoords = new Vector2(1,1) },
+                new Vertex(-half.X,  half.Y) { Color = Color, TexCoords = new Vector2(0,1) },
             };
             VertexBuffer.GenerateIndices();
         }

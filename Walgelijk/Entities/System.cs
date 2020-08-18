@@ -16,6 +16,11 @@
         public InputState Input => Scene.Game.Window.InputState;
 
         /// <summary>
+        /// Current time information
+        /// </summary>
+        public Time Time => Scene.Game.Window.Time;
+
+        /// <summary>
         /// Initialise the system
         /// </summary>
         public abstract void Initialise();

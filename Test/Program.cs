@@ -7,13 +7,18 @@ namespace Test
 {
     public class PlayerComponent
     {
-        public float MovementSpeed = 0.01f;
+        public float MovementSpeed = 0.6f;
     }
 
     public class PlayerSystem : Walgelijk.System
     {
         public override void Initialise() { }
-        public override void Render() { }
+
+        public override void Render()
+        {
+            Program.gamingMaterial.SetUniform("time", Time.SecondsSinceStart * 12);
+            Program.gamingMaterial2.SetUniform("time", Time.SecondsSinceStart * -12);
+        }
 
         public override void Update()
         {
@@ -37,27 +42,33 @@ namespace Test
                 var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
                 PlayerComponent player = pair.Component;
 
-                transform.Position += delta * player.MovementSpeed;
+                transform.Position += delta * player.MovementSpeed * Time.DeltaTime;
             }
         }
     }
 
     class Program
     {
+        public static Material gamingMaterial;
+        public static Material gamingMaterial2;
+
         static void Main(string[] args)
         {
             Random rand = new Random();
 
             Game game = new Game(new OpenTKWindow("hallo daar", new Vector2(128, 128), new Vector2(512, 512)));
-            game.Window.TargetFrameRate = 75;
-            game.Window.TargetUpdateRate = 75;
-            game.Window.VSync = true;
+            game.Window.TargetFrameRate = 90;
+            game.Window.TargetUpdateRate = 90;
+            game.Window.VSync = false;
             game.Window.RenderTarget.ClearColour = new Color("#d42c5e");
 
             var scene = new Scene();
 
+            gamingMaterial = new Material(Shader.Load("shaders\\shader.vert", "shaders\\shader.frag"));
+            gamingMaterial2 = new Material(Shader.Load("shaders\\shader.vert", "shaders\\shader.frag"));
+
             //create rectangles
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 10; i++)
             {
                 var entity = scene.CreateEntity();
 
@@ -76,6 +87,7 @@ namespace Test
                         Utilities.RandomFloat(.1f, .2f),
                         Utilities.RandomFloat(.1f, .2f)
                         ),
+                    Material = Utilities.RandomFloat() > 0.5f ? gamingMaterial : gamingMaterial2
                 });
 
                 if (i == 0)

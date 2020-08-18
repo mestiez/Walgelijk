@@ -15,6 +15,7 @@ namespace Walgelijk.OpenTK
         internal readonly OpenTKShaderManager shaderManager;
 
         private InputHandler inputHandler ;
+        private Time time = new Time();
 
         public OpenTKWindow(string title, Vector2 position, Vector2 size)
         {
@@ -27,6 +28,17 @@ namespace Walgelijk.OpenTK
 
         public override string Title { get => window.Title; set => window.Title = value; }
         public override Vector2 Position { get => new Vector2(window.Location.X, window.Location.Y); set => window.Location = new Point((int)value.X, (int)value.Y); }
+        public override int TargetFrameRate { get => (int)window.TargetRenderFrequency; set => window.TargetRenderFrequency = value; }
+        public override int TargetUpdateRate { get => (int)window.TargetUpdateFrequency; set => window.TargetUpdateFrequency = value; }
+        public override bool VSync { get => window.VSync == VSyncMode.On; set => window.VSync = (value ? VSyncMode.On : VSyncMode.Off); }
+        public override bool IsOpen => window.Exists && !window.IsExiting;
+        public override bool HasFocus => window.Focused;
+        public override Time Time => time;
+        public override bool IsVisible { get => window.Visible; set => window.Visible = value; }
+        public override bool Resizable { get => window.WindowBorder == WindowBorder.Resizable; set => window.WindowBorder = value ? WindowBorder.Resizable : WindowBorder.Fixed; }
+        public override InputState InputState => inputHandler?.InputState ?? default;
+        public override RenderTarget RenderTarget => renderTarget;
+        public override IShaderManager ShaderManager => shaderManager;
         public override Vector2 Size
         {
             get => new Vector2(window.Width, window.Height);
@@ -36,23 +48,7 @@ namespace Walgelijk.OpenTK
                 window.Height = (int)value.Y;
             }
         }
-        public override int TargetFrameRate { get => (int)window.TargetRenderFrequency; set => window.TargetRenderFrequency = value; }
-        public override int TargetUpdateRate { get => (int)window.TargetUpdateFrequency; set => window.TargetUpdateFrequency = value; }
 
-        public override bool VSync { get => window.VSync == VSyncMode.On; set => window.VSync = (value ? VSyncMode.On : VSyncMode.Off); }
-
-        public override bool IsOpen => window.Exists && !window.IsExiting;
-
-        public override bool HasFocus => window.Focused;
-
-        public override bool IsVisible { get => window.Visible; set => window.Visible = value; }
-        public override bool Resizable { get => window.WindowBorder == WindowBorder.Resizable; set => window.WindowBorder = value ? WindowBorder.Resizable : WindowBorder.Fixed; }
-
-        public override InputState InputState => inputHandler?.InputState ?? default;
-
-        public override RenderTarget RenderTarget => renderTarget;
-
-        public override IShaderManager ShaderManager => shaderManager;
 
         public override void Close()
         {
@@ -103,6 +99,8 @@ namespace Walgelijk.OpenTK
         private void OnUpdateFrame(object sender, FrameEventArgs obj)
         {
             inputHandler.Reset();
+            time.DeltaTime = (float)obj.Time;
+            time.SecondsSinceStart += time.DeltaTime;
             Game.Scene?.UpdateSystems();
         }
 

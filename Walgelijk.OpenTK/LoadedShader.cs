@@ -10,18 +10,54 @@ namespace Walgelijk.OpenTK
 
         public Material Material { get; private set; }
 
-        private Dictionary<string, int> uniformLocations = new Dictionary<string, int>();
+        private readonly Dictionary<string, int> uniformLocations = new Dictionary<string, int>();
 
         public LoadedMaterial(Material material)
         {
+            SetFromMaterial(material);
+        }
+
+        private void SetFromMaterial(Material material)
+        {
             var shader = material.Shader;
+            int vertexShaderIndex;
+            int fragmentShaderIndex;
+            int programIndex;
 
-            CreateShaderProgram(
-                shader, 
-                out int vertexShaderIndex, 
-                out int fragmentShaderIndex, 
-                out int programIndex);
+            try
+            {
+                CreateShaderProgram(
+                    shader,
+                    out vertexShaderIndex,
+                    out fragmentShaderIndex,
+                    out programIndex);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
+            LinkShaders(vertexShaderIndex, fragmentShaderIndex, programIndex);
+
+            GL.ValidateProgram(programIndex);
+
+            ReleaseShaders(vertexShaderIndex, fragmentShaderIndex, programIndex);
+
+            Material = material;
+            ProgramHandle = programIndex;
+        }
+
+        private static void ReleaseShaders(int vertexShaderIndex, int fragmentShaderIndex, int programIndex)
+        {
+            GL.DeleteShader(vertexShaderIndex);
+            GL.DeleteShader(fragmentShaderIndex);
+
+            GL.DetachShader(programIndex, vertexShaderIndex);
+            GL.DetachShader(programIndex, fragmentShaderIndex);
+        }
+
+        private static void LinkShaders(int vertexShaderIndex, int fragmentShaderIndex, int programIndex)
+        {
             GL.AttachShader(programIndex, vertexShaderIndex);
             GL.AttachShader(programIndex, fragmentShaderIndex);
 
@@ -37,17 +73,6 @@ namespace Walgelijk.OpenTK
                 GL.DeleteShader(fragmentShaderIndex);
                 throw new Exception("Shader program failed to link");
             }
-
-            GL.ValidateProgram(programIndex);
-
-            GL.DeleteShader(vertexShaderIndex);
-            GL.DeleteShader(fragmentShaderIndex);
-
-            GL.DetachShader(programIndex, vertexShaderIndex);
-            GL.DetachShader(programIndex, fragmentShaderIndex);
-
-            Material = material;
-            ProgramHandle = programIndex;
         }
 
         private static void CreateShaderProgram(Shader shader, out int vert, out int frag, out int prog)
@@ -55,8 +80,22 @@ namespace Walgelijk.OpenTK
             vert = GL.CreateShader(ShaderType.VertexShader);
             frag = GL.CreateShader(ShaderType.FragmentShader);
             prog = GL.CreateProgram();
-            if (!ShaderCompiler.TryCompileShader(vert, shader.VertexShader)) throw new Exception("Vertex shader failed to compile");
-            if (!ShaderCompiler.TryCompileShader(frag, shader.FragmentShader)) throw new Exception("Fragment shader failed to compile");
+
+            if (!ShaderCompiler.TryCompileShader(vert, shader.VertexShader))
+            {
+                GL.DeleteShader(vert);
+                GL.DeleteShader(frag);
+                GL.DeleteProgram(prog);
+                throw new Exception("Vertex shader failed to compile");
+            }
+
+            if (!ShaderCompiler.TryCompileShader(frag, shader.FragmentShader))
+            {
+                GL.DeleteShader(vert);
+                GL.DeleteShader(frag);
+                GL.DeleteProgram(prog);
+                throw new Exception("Fragment shader failed to compile");
+            }
         }
 
         public int GetUniformLocation(string name)

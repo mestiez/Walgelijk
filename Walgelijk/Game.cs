@@ -40,6 +40,11 @@ namespace Walgelijk
         public RenderQueue RenderQueue => Window.RenderQueue;
 
         /// <summary>
+        /// Returns the <see cref="Walgelijk.Time"/> information that belongs to <see cref="Window"/>
+        /// </summary>
+        public Time Time => Window.Time;
+
+        /// <summary>
         /// Create a game with a window
         /// </summary>
         /// <param name="window"></param>

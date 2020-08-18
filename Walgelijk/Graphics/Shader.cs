@@ -38,7 +38,7 @@ namespace Walgelijk
         /// <param name="vertPath"></param>
         /// <param name="fragPath"></param>
         /// <returns></returns>
-        public Shader Load(string vertPath, string fragPath)
+        public static Shader Load(string vertPath, string fragPath)
         {
             string vert = File.ReadAllText(vertPath);
             string frag = File.ReadAllText(fragPath);
