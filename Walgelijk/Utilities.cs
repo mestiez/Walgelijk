@@ -62,5 +62,23 @@ namespace Walgelijk
         {
             return new Color(RandomFloat(), RandomFloat(), RandomFloat(), alpha);
         }
+
+        /// <summary>
+        /// Clamp a value within a range
+        /// </summary>
+        /// <returns></returns>
+        public static float Clamp(float x, float min = 0, float max = 1)
+        {
+            return MathF.Max(min, MathF.Min(x, max));
+        }
+
+        /// <summary>
+        /// Clamp a value within a range
+        /// </summary>
+        /// <returns></returns>
+        public static int Clamp(int x, int min = 0, int max = 1)
+        {
+            return Math.Max(min, Math.Min(x, max));
+        }
     }
 }

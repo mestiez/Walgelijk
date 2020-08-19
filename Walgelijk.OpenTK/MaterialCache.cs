@@ -3,14 +3,12 @@ using System.Collections.Generic;
 
 namespace Walgelijk.OpenTK
 {
-    public class MaterialCache
+    public class MaterialCache : Cache<Material, LoadedMaterial>
     {
-        private Dictionary<Material, LoadedMaterial> loadedMaterials = new Dictionary<Material, LoadedMaterial>();
-
-        public LoadedMaterial Load(Material material)
+        protected override LoadedMaterial CreateNew(Material material)
         {
-            if (loadedMaterials.TryGetValue(material, out var loaded))
-                return loaded;
+            LoadedMaterial loaded;
+
             try
             {
                 loaded = new LoadedMaterial(material);
@@ -23,8 +21,12 @@ namespace Walgelijk.OpenTK
                 loaded = Load(Material.DefaultMaterial);
             }
 
-            loadedMaterials.Add(material, loaded);
             return loaded;
+        }
+
+        protected override void DisposeOf(LoadedMaterial loaded)
+        {
+            throw new NotImplementedException();
         }
     }
 }

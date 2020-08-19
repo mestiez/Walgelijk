@@ -4,22 +4,9 @@ using System.Collections.Generic;
 
 namespace Walgelijk.OpenTK
 {
-    public class VertexBufferCache
+    public class VertexBufferCache : Cache<VertexBuffer, VertexBufferCacheHandles>
     {
-        private Dictionary<VertexBuffer, VertexBufferCacheHandles> vertexBuffers = new Dictionary<VertexBuffer, VertexBufferCacheHandles>();
-
-        public VertexBufferCacheHandles Load(VertexBuffer buffer)
-        {
-            if (vertexBuffers.TryGetValue(buffer, out VertexBufferCacheHandles handles))
-            {
-                TryUpdateBuffer(buffer, handles);
-                return handles;
-            }
-
-            return CreateBuffer(buffer);
-        }
-
-        private VertexBufferCacheHandles CreateBuffer(VertexBuffer buffer)
+        protected override VertexBufferCacheHandles CreateNew(VertexBuffer buffer)
         {
             int vbo = CreateVertexBufferObject(buffer);
             int vao = CreateVertexArrayObject();
@@ -28,7 +15,6 @@ namespace Walgelijk.OpenTK
             VertexBufferCacheHandles handles = new VertexBufferCacheHandles(vbo, vao, ibo);
 
             buffer.HasChanged = false;
-            vertexBuffers.Add(buffer, handles);
             return handles;
         }
 
@@ -45,7 +31,7 @@ namespace Walgelijk.OpenTK
             int vao = GL.GenVertexArray();
             GL.BindVertexArray(vao);
 
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, Vertex.Stride, 0); //position
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, Vertex.Stride, sizeof(float) * 0); //position
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, Vertex.Stride, sizeof(float) * 3); //texcoords
             GL.VertexAttribPointer(2, 4, VertexAttribPointerType.Float, false, Vertex.Stride, sizeof(float) * 5); //color
             GL.EnableVertexAttribArray(0);
@@ -75,6 +61,11 @@ namespace Walgelijk.OpenTK
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(buffer.IndexCount * sizeof(uint)), buffer.Indices, BufferUsageHint.StaticDraw);
 
             buffer.HasChanged = false;
+        }
+
+        protected override void DisposeOf(VertexBufferCacheHandles loaded)
+        {
+            throw new NotImplementedException();
         }
     }
 }

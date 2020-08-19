@@ -16,13 +16,14 @@ namespace Walgelijk.OpenTK
         private Matrix4x4 projectionMatrix = Matrix4x4.Identity;
         private Matrix4x4 modelMatrix = Matrix4x4.Identity;
 
-        private bool viewMatrixChanged = false;
-        private bool projectionMatrixChanged = false;
-
         private Material currentMaterial;
 
         private readonly VertexBufferCache vertexBufferCache = new VertexBufferCache();
         private OpenTKShaderManager ShaderManager => Window.shaderManager;
+
+        public override Matrix4x4 ViewMatrix { get; set; }
+        public override Matrix4x4 ProjectionMatrix { get; set; }
+        public override Matrix4x4 ModelMatrix { get; set; }
 
         public override Vector2 Size
         {
@@ -46,10 +47,6 @@ namespace Walgelijk.OpenTK
             }
         }
 
-        public override Matrix4x4 ViewMatrix { get; set; }
-        public override Matrix4x4 ProjectionMatrix { get; set; }
-        public override Matrix4x4 ModelMatrix { get; set; }
-
         public override void Clear()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
@@ -70,15 +67,6 @@ namespace Walgelijk.OpenTK
 
             GL.DrawElements(TypeConverter.Convert(vertexBuffer.PrimitiveType), vertexBuffer.IndexCount, DrawElementsType.UnsignedInt, 0);
         }
-
-        private void SetTransformationMatrixUniforms(Material material)
-        {
-            ShaderManager.SetUniform(material, ShaderConstants.ViewMatrixUniform, ViewMatrix);
-            ShaderManager.SetUniform(material, ShaderConstants.ProjectionMatrixUniform, ProjectionMatrix);
-
-            ShaderManager.SetUniform(material, ShaderConstants.ModelMatrixUniform, ModelMatrix);
-        }
-
         public override void Draw(Vertex[] vertices, Primitive primitive, Material material = null)
         {
             SetMaterial(material);
@@ -95,12 +83,22 @@ namespace Walgelijk.OpenTK
             GL.End();
         }
 
+        private void SetTransformationMatrixUniforms(Material material)
+        {
+            ShaderManager.SetUniform(material, ShaderConstants.ViewMatrixUniform, ViewMatrix);
+            ShaderManager.SetUniform(material, ShaderConstants.ProjectionMatrixUniform, ProjectionMatrix);
+
+            ShaderManager.SetUniform(material, ShaderConstants.ModelMatrixUniform, ModelMatrix);
+        }
+
         private void SetMaterial(Material material)
         {
             if (currentMaterial == material) return;
             currentMaterial = material;
             var loadedShader = ShaderManager.MaterialCache.Load(material);
             int prog = loadedShader.ProgramHandle;
+
+            ShaderManager.TextureCache.ActivateTexturesFor(loadedShader);
             GL.UseProgram(prog);
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace Walgelijk
 {
@@ -35,9 +36,37 @@ namespace Walgelijk
             if (Game.Main == null)
                 throw new InvalidOperationException("There is no main instance of Game. Setting uniforms can only be done once a game is running");
 
-            if (uniforms.TryAdd(name, value)) return;
+            uniforms.TryAdd(name, value);
+
             uniforms[name] = value;
             Game.Main.Window.ShaderManager.SetUniform(this, name, value);
+        }
+
+        /// <summary>
+        /// Try to get the value of a uniform
+        /// </summary>
+        /// <returns>True if the uniform exists</returns>
+        public bool TryGetUniform(string name, out object value)
+        {
+            if (uniforms.TryGetValue(name, out value))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Returns whether a uniform with the given name has been registered in the material
+        /// </summary>
+        public bool HasUniform(string name)
+        {
+            return uniforms.ContainsKey(name);
+        }
+
+        /// <summary>
+        /// Get all uniforms and their values as an immutable dictionary
+        /// </summary>
+        public ImmutableDictionary<string, object> GetAllUniforms()
+        {
+            return uniforms.ToImmutableDictionary();
         }
 
         /* waarom is dit nodig??

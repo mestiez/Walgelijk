@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Common;
 
 namespace Walgelijk
 {
@@ -67,11 +68,36 @@ namespace Walgelijk
 
             if (hex.Length == 4 * 2)
                 A = byte.Parse(hex.Substring(6, 2), global::System.Globalization.NumberStyles.HexNumber) / 255f;
-            else 
+            else
                 A = 1;
         }
 
+        /// <summary>
+        /// Red
+        /// </summary>
+        public static Color Red => new Color(1f, 0, 0);
+        /// <summary>
+        /// White
+        /// </summary>
         public static Color White => new Color(1f, 1f, 1f);
+        /// <summary>
+        /// Blue
+        /// </summary>
+        public static Color Blue => new Color(0, 0, 1f);
+
+        /// <summary>
+        /// Returns a tuple where each element corresponds with a component of the colour
+        /// </summary>
+        /// <returns></returns>
+        public (byte r, byte g, byte b, byte a) ToBytes()
+        {
+            byte r = (byte)(Utilities.Clamp(R) * 255);
+            byte g = (byte)(Utilities.Clamp(G) * 255);
+            byte b = (byte)(Utilities.Clamp(B) * 255);
+            byte a = (byte)(Utilities.Clamp(A) * 255);
+
+            return (r, g, b, a);
+        }
 
         public override string ToString()
         {

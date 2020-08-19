@@ -31,5 +31,15 @@ namespace Walgelijk.OpenTK
         {
             return (Button)(int)button;
         }
+
+        public static int Convert(TextureUnit textureUnit)
+        {
+            return (int)textureUnit - (int)TextureUnit.Texture0;
+        }
+
+        public static TextureUnit Convert(int textureUnit)
+        {
+            return (TextureUnit)(textureUnit + (int)TextureUnit.Texture0);
+        }
     }
 }

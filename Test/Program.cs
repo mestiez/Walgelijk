@@ -16,8 +16,7 @@ namespace Test
 
         public override void Render()
         {
-            Program.gamingMaterial.SetUniform("time", Time.SecondsSinceStart * 12);
-            Program.gamingMaterial2.SetUniform("time", Time.SecondsSinceStart * -12);
+            Program.coolSprite.SetUniform("time", Time.SecondsSinceStart * 12);
         }
 
         public override void Update()
@@ -49,8 +48,7 @@ namespace Test
 
     class Program
     {
-        public static Material gamingMaterial;
-        public static Material gamingMaterial2;
+        public static Material coolSprite;
 
         static void Main(string[] args)
         {
@@ -64,8 +62,9 @@ namespace Test
 
             var scene = new Scene();
 
-            gamingMaterial = new Material(Shader.Load("shaders\\shader.vert", "shaders\\shader.frag"));
-            gamingMaterial2 = new Material(Shader.Load("shaders\\shader.vert", "shaders\\shader.frag"));
+            coolSprite = new Material(Shader.Load("shaders\\shader.vert", "shaders\\shader.frag"));
+            coolSprite.SetUniform("texture1", Texture.Load("textures\\two of them.png"));
+            coolSprite.SetUniform("texture2", Texture.Load("textures\\pride.png"));
 
             //create rectangles
             for (int i = 0; i < 10; i++)
@@ -75,8 +74,8 @@ namespace Test
                 scene.AttachComponent(entity, new TransformComponent
                 {
                     Position = new Vector2(
-                        Utilities.RandomFloat(-.3f, .3f),
-                        Utilities.RandomFloat(-.3f, .3f)
+                        Utilities.RandomFloat(-.6f, .6f),
+                        Utilities.RandomFloat(-.6f, .6f)
                         ),
                     Rotation = Utilities.RandomFloat(0, 360)
                 });
@@ -84,10 +83,10 @@ namespace Test
                 scene.AttachComponent(entity, new RectangleShapeComponent
                 {
                     Size = new Vector2(
-                        Utilities.RandomFloat(.1f, .2f),
-                        Utilities.RandomFloat(.1f, .2f)
+                        Utilities.RandomFloat(.5f, .7f),
+                        Utilities.RandomFloat(.5f, .7f)
                         ),
-                    Material = Utilities.RandomFloat() > 0.5f ? gamingMaterial : gamingMaterial2
+                    Material = coolSprite
                 });
 
                 if (i == 0)

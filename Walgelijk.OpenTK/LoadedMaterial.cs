@@ -12,6 +12,8 @@ namespace Walgelijk.OpenTK
 
         private readonly Dictionary<string, int> uniformLocations = new Dictionary<string, int>();
 
+        private int textureUnitCount = 0;
+
         public LoadedMaterial(Material material)
         {
             SetFromMaterial(material);
@@ -107,6 +109,13 @@ namespace Walgelijk.OpenTK
 
             uniformLocations.Add(name, loc);
             return loc;
+        }
+
+        public TextureUnit GetNextTextureUnit()
+        {
+            int index = textureUnitCount;
+            textureUnitCount++;
+            return TypeConverter.Convert(index);
         }
     }
 }

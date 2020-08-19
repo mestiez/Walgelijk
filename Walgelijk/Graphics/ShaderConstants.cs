@@ -15,9 +15,11 @@ in vec4 vertexColor;
 
 out vec4 color;
 
+uniform sampler2D mainTex;
+
 void main()
 {
-    color = vertexColor;
+    color = vertexColor * texture(mainTex, uv);
 }";
         /// <summary>
         /// Default vertex shader code
@@ -53,6 +55,10 @@ void main()
         /// <summary>
         /// Model matrix uniform name
         /// </summary>
-        public const string ModelMatrixUniform = "model";
+        public const string ModelMatrixUniform = "model";     
+        /// <summary>
+        /// Main texture uniform name
+        /// </summary>
+        public const string MainTextureUniform = "mainTex";
     }
 }

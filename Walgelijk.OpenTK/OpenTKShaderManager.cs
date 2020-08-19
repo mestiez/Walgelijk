@@ -12,8 +12,9 @@ namespace Walgelijk.OpenTK
     public class OpenTKShaderManager : IShaderManager
     {
         public MaterialCache MaterialCache { get; } = new MaterialCache();
+        public TextureCache TextureCache { get; } = new TextureCache();
 
-        private float[] matrixBuffer = new float[16];
+        private readonly float[] matrixBuffer = new float[16];
 
         public void SetUniform(Material material, string uniformName, object data)
         {
@@ -25,6 +26,10 @@ namespace Walgelijk.OpenTK
 
             switch (data)
             {
+                case Texture v:
+                    var loadedTexture = TextureCache.Load(new MaterialTexturePair(loaded, v));
+                    GL.ProgramUniform1(prog, loc, TypeConverter.Convert(loadedTexture.TextureUnit));
+                    break;                
                 case float v:
                     GL.ProgramUniform1(prog, loc, v);
                     break;

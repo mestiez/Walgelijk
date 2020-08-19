@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using System;
 using System.Numerics;
@@ -39,6 +40,7 @@ namespace Walgelijk.OpenTK
         public override InputState InputState => inputHandler?.InputState ?? default;
         public override RenderTarget RenderTarget => renderTarget;
         public override IShaderManager ShaderManager => shaderManager;
+
         public override Vector2 Size
         {
             get => new Vector2(window.Width, window.Height);
@@ -48,7 +50,6 @@ namespace Walgelijk.OpenTK
                 window.Height = (int)value.Y;
             }
         }
-
 
         public override void Close()
         {
@@ -85,6 +86,8 @@ namespace Walgelijk.OpenTK
         {
             window.MakeCurrent();
             RenderTarget.Size = Size;
+
+            GL.Enable(EnableCap.Texture2D);
         }
 
         private void OnRenderFrame(object sender, FrameEventArgs obj)

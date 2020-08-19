@@ -115,6 +115,38 @@
             The system responsible for processing transforms
             </summary>
         </member>
+        <member name="T:Walgelijk.Cache`2">
+            <summary>
+            A generic cache object that provides a way to load heavy objects based on a lighter key
+            </summary>
+            <typeparam name="UnloadedType">The key. This object is usually light and cheap to create</typeparam>
+            <typeparam name="LoadedType">The loaded object. This object is usually heavy and expensive to create</typeparam>
+        </member>
+        <member name="M:Walgelijk.Cache`2.Load(`0)">
+            <summary>
+            Load or create a <see cref="!:LoadedType"/> from an <see rcef="UnloadedType"/>
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Cache`2.CreateNew(`0)">
+            <summary>
+            Determines what must be done when an entirely new <see cref="!:LoadedType"/> is created
+            </summary>
+            <param name="raw"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Cache`2.DisposeOf(`1)">
+            <summary>
+            Dispose of any resources attached to the loaded type. This is invoked when an entry is unloaded.
+            </summary>
+            <param name="loaded"></param>
+        </member>
+        <member name="M:Walgelijk.Cache`2.Unload(`0)">
+            <summary>
+            Unload an entry and dispose of all attached resources
+            </summary>
+        </member>
         <member name="T:Walgelijk.CollectionByType">
             <summary>
             Collection that does not allow duplicates and is able to quicky get objects by their type
@@ -396,6 +428,27 @@
             Create a colour based on a hexadecimal representation, such as "#d42c5e"
             </summary>
         </member>
+        <member name="P:Walgelijk.Color.Red">
+            <summary>
+            Red
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Color.White">
+            <summary>
+            White
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Color.Blue">
+            <summary>
+            Blue
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Color.ToBytes">
+            <summary>
+            Returns a tuple where each element corresponds with a component of the colour
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Walgelijk.IShaderManager">
             <summary>
             Shader specific link between the engine and the graphics API
@@ -434,6 +487,22 @@
             </summary>
             <param name="name"></param>
             <param name="value"></param>
+        </member>
+        <member name="M:Walgelijk.Material.TryGetUniform(System.String,System.Object@)">
+            <summary>
+            Try to get the value of a uniform
+            </summary>
+            <returns>True if the uniform exists</returns>
+        </member>
+        <member name="M:Walgelijk.Material.HasUniform(System.String)">
+            <summary>
+            Returns whether a uniform with the given name has been registered in the material
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Material.GetAllUniforms">
+            <summary>
+            Get all uniforms and their values as an immutable dictionary
+            </summary>
         </member>
         <member name="P:Walgelijk.Material.DefaultMaterial">
             <summary>
@@ -589,6 +658,103 @@
         <member name="F:Walgelijk.ShaderConstants.ModelMatrixUniform">
             <summary>
             Model matrix uniform name
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ShaderConstants.MainTextureUniform">
+            <summary>
+            Main texture uniform name
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Texture">
+            <summary>
+            Represents a texture
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Texture.Width">
+            <summary>
+            Width of the texture in pixels
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Texture.Height">
+            <summary>
+            Height of the texture in pixels
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Texture.Size">
+            <summary>
+            Size of the image. This returns a <see cref="T:System.Numerics.Vector2"/> with <see cref="P:Walgelijk.Texture.Width"/> and <see cref="P:Walgelijk.Texture.Height"/>
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Texture.WrapMode">
+            <summary>
+            Wrap mode
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Texture.FilterMode">
+            <summary>
+            Filter mode. Determines how pixels are interpolated between
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Texture.#ctor(System.Int32,System.Int32,Walgelijk.Color[])">
+            <summary>
+            Create a texture from a series of pixels
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Texture.Load(System.String)">
+            <summary>
+            Load an image from a path
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Texture.GetPixels">
+            <summary>
+            Get an immutable array of all pixels
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Texture.GetPixel(System.Int32,System.Int32)">
+            <summary>
+            Get a pixel
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Texture.SetPixel(System.Int32,System.Int32,Walgelijk.Color)">
+            <summary>
+            Set a pixel to a colour
+            </summary>
+        </member>
+        <member name="T:Walgelijk.WrapMode">
+            <summary>
+            Wrap mode for textures
+            </summary>
+        </member>
+        <member name="F:Walgelijk.WrapMode.Clamp">
+            <summary>
+            Extends the edge pixels
+            </summary>
+        </member>
+        <member name="F:Walgelijk.WrapMode.Repeat">
+            <summary>
+            Repeats the UV
+            </summary>
+        </member>
+        <member name="F:Walgelijk.WrapMode.Mirror">
+            <summary>
+            Mirrors the UV
+            </summary>
+        </member>
+        <member name="T:Walgelijk.FilterMode">
+            <summary>
+            Filter mode for textures
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FilterMode.Nearest">
+            <summary>
+            Nearest pixel sampling. Results in pixelated images
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FilterMode.Linear">
+            <summary>
+            Linear pixel interpolation. Results in somewhat smooth images
             </summary>
         </member>
         <member name="T:Walgelijk.TransformationStack">
@@ -776,6 +942,18 @@
             <summary>
             Returns a colour where the RGB components are random
             </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Clamp(System.Single,System.Single,System.Single)">
+            <summary>
+            Clamp a value within a range
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Utilities.Clamp(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Clamp a value within a range
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:Walgelijk.InputState">
             <summary>
