@@ -20,7 +20,7 @@
     <None Update="textures\pride.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="textures\two of them.png">
+    <None Update="textures\sadness.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

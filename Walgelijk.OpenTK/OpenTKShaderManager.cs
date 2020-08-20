@@ -101,7 +101,6 @@ namespace Walgelijk.OpenTK
             var loaded = MaterialCache.Load(material);
             int prog = loaded.ProgramHandle;
             int loc = loaded.GetUniformLocation(uniformName);
-            // TODO try get uniform method
             throw new NotImplementedException();
         }
     }

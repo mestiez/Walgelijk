@@ -123,13 +123,6 @@ namespace Walgelijk
                 var componentDictionary = pair.Value;
                 var entity = pair.Key;
 
-                ////TODO dit is niet goed, dit is langzaam, fix dit
-                //foreach (var pair2 in componentDictionary)
-                //{
-                //    if (pair2.Value is T component)
-                //        yield return new ComponentEntityTuple<T>(component, entity);
-                //}
-
                 if (componentDictionary.TryGet(out T component))
                     yield return new ComponentEntityTuple<T>(component, entity);
             }

@@ -55,37 +55,34 @@ namespace Test
             Random rand = new Random();
 
             Game game = new Game(new OpenTKWindow("hallo daar", new Vector2(128, 128), new Vector2(512, 512)));
-            game.Window.TargetFrameRate = 90;
-            game.Window.TargetUpdateRate = 90;
+            game.Window.TargetFrameRate = 0;
+            game.Window.TargetUpdateRate = 0;
             game.Window.VSync = false;
             game.Window.RenderTarget.ClearColour = new Color("#d42c5e");
 
             var scene = new Scene();
 
             coolSprite = new Material(Shader.Load("shaders\\shader.vert", "shaders\\shader.frag"));
-            coolSprite.SetUniform("texture1", Texture.Load("textures\\two of them.png"));
+            coolSprite.SetUniform("texture1", Texture.Load("textures\\sadness.png"));
             coolSprite.SetUniform("texture2", Texture.Load("textures\\pride.png"));
 
             //create rectangles
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 100; i++)
             {
                 var entity = scene.CreateEntity();
 
                 scene.AttachComponent(entity, new TransformComponent
                 {
                     Position = new Vector2(
-                        Utilities.RandomFloat(-.6f, .6f),
-                        Utilities.RandomFloat(-.6f, .6f)
+                        Utilities.RandomFloat(-1f, 1f),
+                        Utilities.RandomFloat(-1f,1f)
                         ),
                     Rotation = Utilities.RandomFloat(0, 360)
                 });
 
                 scene.AttachComponent(entity, new RectangleShapeComponent
                 {
-                    Size = new Vector2(
-                        Utilities.RandomFloat(.5f, .7f),
-                        Utilities.RandomFloat(.5f, .7f)
-                        ),
+                    Size = Vector2.One * 0.05f,
                     Material = coolSprite
                 });
 
