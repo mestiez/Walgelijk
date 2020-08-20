@@ -9,9 +9,10 @@ namespace Walgelijk
     public class CameraSystem : System
     {
         private CameraRenderTask renderTask;
-        private Entity mainCameraEntity;
-        private CameraComponent mainCameraComponent;
-        private TransformComponent mainCameraTransform;
+
+        public Entity MainCameraEntity { get; private set; }
+        public CameraComponent MainCameraComponent { get; private set; }
+        public TransformComponent MainCameraTransform { get; private set; }
 
         private bool mainCameraSet;
 
@@ -28,9 +29,9 @@ namespace Walgelijk
         {
             CameraComponent camera = GetCameraFrom(cameraEntity);
 
-            mainCameraEntity = cameraEntity;
-            mainCameraComponent = camera;
-            mainCameraTransform = Scene.GetComponentFrom<TransformComponent>(mainCameraEntity);
+            MainCameraEntity = cameraEntity;
+            MainCameraComponent = camera;
+            MainCameraTransform = Scene.GetComponentFrom<TransformComponent>(MainCameraEntity);
 
             mainCameraSet = true;
         }
@@ -55,13 +56,33 @@ namespace Walgelijk
         {
             if (!mainCameraSet) return;
             SetRenderTask();
-            Scene.Game.Window.RenderQueue.Enqueue(renderTask);
+            RenderQueue.Enqueue(renderTask);
         }
 
         private void SetRenderTask()
         {
-            renderTask.View = mainCameraTransform.WorldToLocalMatrix;
-            renderTask.Projection = Matrix4x4.CreateOrthographic(mainCameraComponent.OrthographicSize, mainCameraComponent.OrthographicSize, 0, 1);
+            renderTask.View = MainCameraTransform.WorldToLocalMatrix;
+            SetProjectionBasedOnAspectRatio();
+        }
+
+        private void SetProjectionBasedOnAspectRatio()
+        {
+            var renderTarget = Scene.Game.Window.RenderTarget;
+            var size = renderTarget.Size / MainCameraComponent.PixelsPerUnit * MainCameraComponent.OrthographicSize;
+
+            //float aspectRatio = renderTarget.AspectRatio;
+            //float sizeAdjustment = Vector2.Distance(renderTarget.Size, Vector2.Zero) / 512;
+
+            //float unadjustedSize = mainCameraComponent.OrthographicSize * sizeAdjustment;
+            //float adjustedWidth = unadjustedSize / aspectRatio;
+            //float adjustedHeight = unadjustedSize * aspectRatio;
+
+            //if (adjustedHeight > adjustedWidth)
+            //    renderTask.Projection = Matrix4x4.CreateOrthographic(unadjustedSize, adjustedHeight, 0, 1);
+            //else
+            //    renderTask.Projection = Matrix4x4.CreateOrthographic(adjustedWidth, unadjustedSize, 0, 1);
+
+            renderTask.Projection = Matrix4x4.CreateOrthographic(size.X, size.Y, 0, 1);
         }
     }
 }

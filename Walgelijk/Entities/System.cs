@@ -21,6 +21,11 @@
         public Time Time => Scene.Game.Window.Time;
 
         /// <summary>
+        /// Active render queue
+        /// </summary>
+        public RenderQueue RenderQueue => Scene.Game.RenderQueue;
+
+        /// <summary>
         /// Initialise the system
         /// </summary>
         public abstract void Initialise();

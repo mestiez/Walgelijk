@@ -17,9 +17,23 @@ namespace Walgelijk
         /// </summary>
         public abstract Color ClearColour { get; set; }
 
+        /// <summary>
+        /// The view matrix
+        /// </summary>
         public abstract Matrix4x4 ViewMatrix { get; set; }
+        /// <summary>
+        /// The projection matrix
+        /// </summary>
         public abstract Matrix4x4 ProjectionMatrix { get; set; }
+        /// <summary>
+        /// The model matrix
+        /// </summary>
         public abstract Matrix4x4 ModelMatrix { get; set; }
+
+        /// <summary>
+        /// Calculate the aspect ratio from the current rendertarget size. Identical to Size.Y / Size.X
+        /// </summary>
+        public float AspectRatio => Size.Y / Size.X;
 
         /// <summary>
         /// Clear target
@@ -36,8 +50,6 @@ namespace Walgelijk
         /// <summary>
         /// Draw vertices immediately
         /// </summary>
-        /// <param name="vertices"></param>
-        /// <param name="material"></param>
         public abstract void Draw(Vertex[] vertices, Primitive primitive, Material material = null);
     }
 }

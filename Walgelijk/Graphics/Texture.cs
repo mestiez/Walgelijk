@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Numerics;
 using System.Text;
 
@@ -53,6 +54,8 @@ namespace Walgelijk
             var bitmap = Image.FromFile(path) as Bitmap;
 
             Color[] pixels = new Color[bitmap.Height * bitmap.Width];
+
+            //TODO bitmapdata technique
 
             int i = 0;
             for (int y = 0; y < bitmap.Height; y++)

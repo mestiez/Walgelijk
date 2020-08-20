@@ -7,7 +7,7 @@ namespace Test
 {
     public class PlayerComponent
     {
-        public float MovementSpeed = 0.6f;
+        public float MovementSpeed = 4f;
     }
 
     public class PlayerSystem : Walgelijk.System
@@ -21,6 +21,16 @@ namespace Test
 
         public override void Update()
         {
+            var zoomIn = Input.IsKeyHeld(Key.Plus);
+            var zoomOut = Input.IsKeyHeld(Key.Minus);
+
+            var cam = Scene.GetSystem<CameraSystem>().MainCameraComponent;
+            float factor = MathF.Pow(1.5f, Time.DeltaTime);
+            if (zoomIn)
+                cam.OrthographicSize /= factor;
+            else if (zoomOut)
+                cam.OrthographicSize *= factor;
+
             var w = Input.IsKeyHeld(Key.W);
             var a = Input.IsKeyHeld(Key.A);
             var s = Input.IsKeyHeld(Key.S);
@@ -74,15 +84,15 @@ namespace Test
                 scene.AttachComponent(entity, new TransformComponent
                 {
                     Position = new Vector2(
-                        Utilities.RandomFloat(-1f, 1f),
-                        Utilities.RandomFloat(-1f,1f)
+                        Utilities.RandomFloat(-12f, 12f),
+                        Utilities.RandomFloat(-7f, 7f)
                         ),
                     Rotation = Utilities.RandomFloat(0, 360)
                 });
 
                 scene.AttachComponent(entity, new RectangleShapeComponent
                 {
-                    Size = Vector2.One * 0.05f,
+                    Size = Vector2.One * .5f,
                     Material = coolSprite
                 });
 
