@@ -9,9 +9,20 @@ namespace Walgelijk
     public class CameraSystem : System
     {
         private CameraRenderTask renderTask;
-
+        
+        /// <summary>
+        /// Main camera entity
+        /// </summary>
         public Entity MainCameraEntity { get; private set; }
+
+        /// <summary>
+        /// Main camera component
+        /// </summary>
         public CameraComponent MainCameraComponent { get; private set; }
+
+        /// <summary>
+        /// Main camera transform component
+        /// </summary>
         public TransformComponent MainCameraTransform { get; private set; }
 
         private bool mainCameraSet;

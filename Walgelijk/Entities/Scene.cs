@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 
 namespace Walgelijk
@@ -56,11 +57,21 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Remove system from the list. Getting rid of any references to it is not handled, so the object might remain in memory.
+        /// </summary>
+        /// <returns>if the operation was successful</returns>
+        public bool RemoveSystem<T>()
+        {
+            return systems.Remove(typeof(T));
+        }
+
+        /// <summary>
         /// Get all systems
         /// </summary>
         public IEnumerable<System> GetSystems()
         {
-            return systems.Values;
+            foreach (var pair in systems)
+                yield return pair.Value;
         }
 
         /// <summary>
@@ -87,6 +98,22 @@ namespace Walgelijk
         public Entity GetEntity(int identity)
         {
             return entities[identity];
+        }
+
+        /// <summary>
+        /// Removes the entity from the list. Also removes all attached components. Any references to the entity will become useless as they will point to nothing. References to any attached components are not handled, so they may remain in memory.
+        /// </summary>
+        /// <param name="identity"></param>
+        /// <returns>if the operation was successful</returns>
+        public bool RemoveEntity(int identity)
+        {
+            bool entityRemovalSuccess = entities.Remove(identity);
+            if (!entityRemovalSuccess) 
+                return false;
+
+            components[identity].Dispose();
+            components.Remove(identity);
+            return true;
         }
 
         /// <summary>
@@ -169,6 +196,15 @@ namespace Walgelijk
         {
             components[entity].TryAdd<T>(component);
             OnAttachComponent?.Invoke(entity, component);
+        }
+
+        /// <summary>
+        /// Detach a component from an entity
+        /// </summary>
+        /// <returns>if the operation was successful</returns>
+        public bool DetachComponent<T>(Entity entity)
+        {
+            return components[entity].Remove<T>();
         }
 
         /// <summary>

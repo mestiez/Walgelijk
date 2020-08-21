@@ -44,11 +44,13 @@ namespace Walgelijk.OpenTK
             int i = 0;
             foreach (var pixel in pixels)
             {
-                var bytes = pixel.ToBytes();
-                data[i]   = bytes.r;
-                data[i+1] = bytes.g;
-                data[i+2] = bytes.b;
-                data[i+3] = bytes.a;
+                (byte r, byte g, byte b, byte a) = pixel.ToBytes();
+
+                data[i]   = r;
+                data[i+1] = g;
+                data[i+2] = b;
+                data[i+3] = a;
+
                 i += componentCount;
             }
 

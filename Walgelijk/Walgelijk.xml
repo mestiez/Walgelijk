@@ -29,6 +29,21 @@
             System that manages the built in <see cref="T:Walgelijk.CameraComponent"/>
             </summary>
         </member>
+        <member name="P:Walgelijk.CameraSystem.MainCameraEntity">
+            <summary>
+            Main camera entity
+            </summary>
+        </member>
+        <member name="P:Walgelijk.CameraSystem.MainCameraComponent">
+            <summary>
+            Main camera component
+            </summary>
+        </member>
+        <member name="P:Walgelijk.CameraSystem.MainCameraTransform">
+            <summary>
+            Main camera transform component
+            </summary>
+        </member>
         <member name="M:Walgelijk.CameraSystem.SetMainCamera(Walgelijk.Entity)">
             <summary>
             Set the main camera for this system
@@ -186,6 +201,17 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Walgelijk.CollectionByType.Remove``1">
+            <summary>
+            Remove an object by type
+            </summary>
+            <returns>if the operation was successful</returns>
+        </member>
+        <member name="M:Walgelijk.CollectionByType.Dispose">
+            <summary>
+            Clear everything
+            </summary>
+        </member>
         <member name="T:Walgelijk.ComponentEntityTuple`1">
             <summary>
             Struct that holds a component and its entity
@@ -252,6 +278,12 @@
             Retrieve a system
             </summary>
         </member>
+        <member name="M:Walgelijk.Scene.RemoveSystem``1">
+            <summary>
+            Remove system from the list. Getting rid of any references to it is not handled, so the object might remain in memory.
+            </summary>
+            <returns>if the operation was successful</returns>
+        </member>
         <member name="M:Walgelijk.Scene.GetSystems">
             <summary>
             Get all systems
@@ -266,6 +298,13 @@
             <summary>
             Get the entity struct from an entity ID. Generally not necessary
             </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.RemoveEntity(System.Int32)">
+            <summary>
+            Removes the entity from the list. Also removes all attached components. Any references to the entity will become useless as they will point to nothing. References to any attached components are not handled, so they may remain in memory.
+            </summary>
+            <param name="identity"></param>
+            <returns>if the operation was successful</returns>
         </member>
         <member name="M:Walgelijk.Scene.HasEntity(System.Int32)">
             <summary>
@@ -306,6 +345,12 @@
             <summary>
             Attach a component to an entity
             </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.DetachComponent``1(Walgelijk.Entity)">
+            <summary>
+            Detach a component from an entity
+            </summary>
+            <returns>if the operation was successful</returns>
         </member>
         <member name="M:Walgelijk.Scene.UpdateSystems">
             <summary>

@@ -76,6 +76,20 @@ namespace Walgelijk
             return objects;
         }
 
+        /// <summary>
+        /// Remove an object by type
+        /// </summary>
+        /// <returns>if the operation was successful</returns>
+        public bool Remove<T>()
+        {
+            if (!TryGet<T>(out var value)) return false;
+
+            return table.Remove(typeof(T)) & objects.Remove(value); //geen kortsluiting hier, dat is geen typfout
+        }
+
+        /// <summary>
+        /// Clear everything
+        /// </summary>
         public void Dispose()
         {
             table.Clear();

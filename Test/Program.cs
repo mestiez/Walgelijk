@@ -23,9 +23,9 @@ namespace Test
         {
             var zoomIn = Input.IsKeyHeld(Key.Plus);
             var zoomOut = Input.IsKeyHeld(Key.Minus);
-
-            var cam = Scene.GetSystem<CameraSystem>().MainCameraComponent;
-            float factor = MathF.Pow(1.5f, Time.DeltaTime);
+            var cameraSystem = Scene.GetSystem<CameraSystem>();
+            var cam = cameraSystem.MainCameraComponent;
+            float factor = MathF.Pow(2f, Time.DeltaTime);
             if (zoomIn)
                 cam.OrthographicSize /= factor;
             else if (zoomOut)
@@ -35,8 +35,6 @@ namespace Test
             var a = Input.IsKeyHeld(Key.A);
             var s = Input.IsKeyHeld(Key.S);
             var d = Input.IsKeyHeld(Key.D);
-
-            if (!(w || a || s || d)) return;
 
             var delta = Vector2.Zero;
 
@@ -51,7 +49,10 @@ namespace Test
                 var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
                 PlayerComponent player = pair.Component;
 
+                cameraSystem.MainCameraTransform.Position = Vector2.Lerp(cameraSystem.MainCameraTransform.Position, transform.Position, Time.DeltaTime * 5);
                 transform.Position += delta * player.MovementSpeed * Time.DeltaTime;
+                if (Input.IsKeyReleased(Key.O))
+                    Scene.RemoveEntity(pair.Entity);
             }
         }
     }
@@ -65,7 +66,7 @@ namespace Test
             Random rand = new Random();
 
             Game game = new Game(new OpenTKWindow("hallo daar", new Vector2(128, 128), new Vector2(512, 512)));
-            game.Window.TargetFrameRate = 0;
+            game.Window.TargetFrameRate = 75;
             game.Window.TargetUpdateRate = 0;
             game.Window.VSync = false;
             game.Window.RenderTarget.ClearColour = new Color("#d42c5e");
@@ -87,7 +88,7 @@ namespace Test
                         Utilities.RandomFloat(-12f, 12f),
                         Utilities.RandomFloat(-7f, 7f)
                         ),
-                    Rotation = Utilities.RandomFloat(0, 360)
+                    Rotation = i == 0 ? 0 : Utilities.RandomFloat(0, 360)
                 });
 
                 scene.AttachComponent(entity, new RectangleShapeComponent

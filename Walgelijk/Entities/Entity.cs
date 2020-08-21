@@ -38,6 +38,11 @@ namespace Walgelijk
             return entity.Identity;
         }
 
+        public static implicit operator Entity(int identity)
+        {
+            return new Entity { Identity = identity };
+        }
+
         public override string ToString()
         {
             return $"Entity {Identity}";

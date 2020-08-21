@@ -61,7 +61,7 @@ namespace Walgelijk
             for (int y = 0; y < bitmap.Height; y++)
                 for (int x = 0; x < bitmap.Width; x++)
                 {
-                    var pixel = bitmap.GetPixel(x, y);
+                    var pixel = bitmap.GetPixel(x, bitmap.Height - 1 - y);
                     pixels[i] = new Color(pixel.R, pixel.G, pixel.B, pixel.A);
                     i++;
                 }

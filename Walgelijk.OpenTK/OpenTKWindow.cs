@@ -101,10 +101,10 @@ namespace Walgelijk.OpenTK
 
         private void OnUpdateFrame(object sender, FrameEventArgs obj)
         {
-            inputHandler.Reset();
             time.DeltaTime = (float)obj.Time;
             time.SecondsSinceStart += time.DeltaTime;
             Game.Scene?.UpdateSystems();
+            inputHandler.Reset();
         }
 
         private void OnFireDrop(object sender, FileDropEventArgs obj)
