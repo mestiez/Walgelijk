@@ -12,10 +12,14 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+uniform float time;
+
 void main()
 {
    uv = texcoord;
    vertexColor = color;
    worldPos = (model * vec4(position, 1.0)).xy;
-   gl_Position = projection * view * model * vec4(position, 1.0);
+   vec4 pos = projection * view * model * vec4(position, 1.0);
+   pos.x += sin(time * .1 + worldPos.y) * 0.06 * projection[0][0];
+   gl_Position = pos;
 }

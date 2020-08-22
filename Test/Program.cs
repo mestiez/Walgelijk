@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using Walgelijk;
+using Walgelijk.NAudio;
 using Walgelijk.OpenTK;
 
 namespace Test
@@ -12,7 +13,16 @@ namespace Test
 
     public class PlayerSystem : Walgelijk.System
     {
-        public override void Initialise() { }
+        private Sound coolclip;
+        private Sound music;
+
+        public override void Initialise()
+        {
+            coolclip = Audio.LoadSound("audio\\cannot-build.wav");
+            music = Audio.LoadSound("audio\\mus_dogappear.mp3");
+            music.Looping = true;
+            Audio.Play(ref music);
+        }
 
         public override void Render()
         {
@@ -21,6 +31,18 @@ namespace Test
 
         public override void Update()
         {
+            if (Input.IsKeyPressed(Key.Space))
+                Audio.PlayOnce(coolclip);
+
+            if (Input.IsKeyPressed(Key.Down))
+                Audio.Stop(ref music);
+
+            if (Input.IsKeyPressed(Key.Up))
+                Audio.Play(ref music);
+
+            if (Input.IsKeyPressed(Key.Right))
+                Audio.Pause(ref music);
+
             var zoomIn = Input.IsKeyHeld(Key.Plus);
             var zoomOut = Input.IsKeyHeld(Key.Minus);
             var cameraSystem = Scene.GetSystem<CameraSystem>();
@@ -43,7 +65,6 @@ namespace Test
             if (s) delta.Y -= 1;
             if (d) delta.X += 1;
 
-
             foreach (var pair in Scene.GetAllComponentsOfType<PlayerComponent>())
             {
                 var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
@@ -65,13 +86,17 @@ namespace Test
         {
             Random rand = new Random();
 
-            Game game = new Game(new OpenTKWindow("hallo daar", new Vector2(128, 128), new Vector2(512, 512)));
+            Game game = new Game(
+                new OpenTKWindow("hallo daar", new Vector2(128, 128), new Vector2(512, 512)),
+                new NAudioRenderer()
+                );
             game.Window.TargetFrameRate = 60;
             game.Window.TargetUpdateRate = 0;
             game.Window.VSync = false;
             game.Window.RenderTarget.ClearColour = new Color("#d42c5e");
 
             var scene = new Scene();
+            game.Scene = scene;
 
             coolSprite = new Material(Shader.Load("shaders\\shader.vert", "shaders\\shader.frag"));
             coolSprite.SetUniform("texture1", Texture.Load("textures\\sadness.png"));
@@ -116,7 +141,6 @@ namespace Test
             scene.AddSystem(new BasicRendererSystem());
             scene.AddSystem(new PlayerSystem());
 
-            game.Scene = scene;
             game.Start();
         }
     }

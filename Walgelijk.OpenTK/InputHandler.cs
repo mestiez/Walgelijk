@@ -64,6 +64,8 @@ namespace Walgelijk.OpenTK
 
         private void KeyDown(object sender, KeyboardKeyEventArgs e)
         {
+            if (e.IsRepeat) return;
+
             inputState.KeysDown.Add(TypeConverter.Convert(e.Key));
             inputState.KeysHeld.Add(TypeConverter.Convert(e.Key));
             inputState.AnyKey = true;

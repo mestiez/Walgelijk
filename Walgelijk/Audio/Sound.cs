@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
+using System.Linq;
+using System.Security.Authentication.ExtendedProtection;
 using System.Text;
 
 namespace Walgelijk
@@ -7,7 +11,7 @@ namespace Walgelijk
     /// <summary>
     /// Object that contains sound data
     /// </summary>
-    public class Sound
+    public struct Sound
     {
         /// <summary>
         /// Number of channels
@@ -15,9 +19,9 @@ namespace Walgelijk
         public int Channels { get; }
 
         /// <summary>
-        /// Raw PCM data
+        /// Audio data
         /// </summary>
-        public byte[] Data { get; }
+        public float[] Data { get; }
 
         /// <summary>
         /// Sample rate
@@ -30,25 +34,20 @@ namespace Walgelijk
         public TimeSpan Duration { get; }
 
         /// <summary>
-        /// Create a sound from PCM data
+        /// Determines if the sound is looping
         /// </summary>
-        public Sound(byte[] pcm, int sampleRate, int channelCount)
-        {
-            Data = pcm;
-            Channels = channelCount;
-            SampleRate = sampleRate;
-        }
+        public bool Looping { get; set; }
 
         /// <summary>
-        /// Load raw PCM data from path
+        /// Create a sound from raw data
         /// </summary>
-        public static Sound Loud(string path)
+        public Sound(IEnumerable<float> data, int sampleRate, int channelCount)
         {
-            byte[] data = null;
-            int sampleRate = 0;
-            int channelCount = 0;
-
-            return new Sound(data, sampleRate, channelCount);
+            Data = data?.ToArray() ?? Array.Empty<float>();
+            Channels = channelCount;
+            SampleRate = sampleRate;
+            Looping = false;
+            Duration = TimeSpan.FromSeconds(Data.Length / Channels / (double)sampleRate);
         }
     }
 }

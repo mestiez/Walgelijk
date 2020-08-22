@@ -4,6 +4,74 @@
         <name>Walgelijk</name>
     </assembly>
     <members>
+        <member name="T:Walgelijk.AudioRenderer">
+            <summary>
+            The global audio renderer 
+            </summary>
+        </member>
+        <member name="P:Walgelijk.AudioRenderer.Volume">
+            <summary>
+            Master volume. Ranges from 0.0 to 1.0
+            </summary>
+        </member>
+        <member name="P:Walgelijk.AudioRenderer.Muted">
+            <summary>
+            Mute all audio
+            </summary>
+        </member>
+        <member name="P:Walgelijk.AudioRenderer.ListenerPosition">
+            <summary>
+            Position of the listener in world space
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioRenderer.Play(Walgelijk.Sound@)">
+            <summary>
+            Simply play a sound (or resumes, if paused)
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound)">
+            <summary>
+            Play a sound once and let it overlap itself
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioRenderer.Play(Walgelijk.Sound@,System.Numerics.Vector2)">
+            <summary>
+            Play sound at a position in the world (or resumes, if paused)
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Numerics.Vector2)">
+            <summary>
+            Play sound at a position in the world and let it overlap itself
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioRenderer.Stop(Walgelijk.Sound@)">
+            <summary>
+            Stop a specific sound
+            </summary>
+            <param name="sound"></param>
+        </member>
+        <member name="M:Walgelijk.AudioRenderer.Pause(Walgelijk.Sound@)">
+            <summary>
+            Pause a specific sound
+            </summary>
+            <param name="sound"></param>
+        </member>
+        <member name="M:Walgelijk.AudioRenderer.StopAll">
+            <summary>
+            Stop all sounds
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioRenderer.LoadSound(System.String)">
+            <summary>
+            Load a sound from file
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Walgelijk.EmptyAudioRenderer">
+            <summary>
+            Placeholder audio renderer that is used when none is set
+            </summary>
+        </member>
         <member name="T:Walgelijk.Sound">
             <summary>
             Object that contains sound data
@@ -16,7 +84,7 @@
         </member>
         <member name="P:Walgelijk.Sound.Data">
             <summary>
-            Raw PCM data
+            Audio data
             </summary>
         </member>
         <member name="P:Walgelijk.Sound.SampleRate">
@@ -29,14 +97,14 @@
             Duration of the sound
             </summary>
         </member>
-        <member name="M:Walgelijk.Sound.#ctor(System.Byte[],System.Int32,System.Int32)">
+        <member name="P:Walgelijk.Sound.Looping">
             <summary>
-            Create a sound from PCM data
+            Determines if the sound is looping
             </summary>
         </member>
-        <member name="M:Walgelijk.Sound.Loud(System.String)">
+        <member name="M:Walgelijk.Sound.#ctor(System.Collections.Generic.IEnumerable{System.Single},System.Int32,System.Int32)">
             <summary>
-            Load raw PCM data from path
+            Create a sound from raw data
             </summary>
         </member>
         <member name="T:Walgelijk.BasicRendererSystem">
@@ -97,7 +165,7 @@
         </member>
         <member name="P:Walgelijk.IBasicShapeComponent.RenderTask">
             <summary>
-            The rendertask that is generated. It's best not to edit this unless you really need to.
+            The render task that is generated. It's best not to edit this unless you really need to.
             </summary>
         </member>
         <member name="T:Walgelijk.RectangleShapeComponent">
@@ -200,6 +268,16 @@
         <member name="M:Walgelijk.Cache`2.Unload(`0)">
             <summary>
             Unload an entry and dispose of all attached resources
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Cache`2.Has(`0)">
+            <summary>
+            Returns if an entry is in the cache
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Cache`2.UnloadAll">
+            <summary>
+            Clear the cache
             </summary>
         </member>
         <member name="T:Walgelijk.CollectionByType">
@@ -422,6 +500,11 @@
             Active render queue
             </summary>
         </member>
+        <member name="P:Walgelijk.System.Audio">
+            <summary>
+            Active audio renderer
+            </summary>
+        </member>
         <member name="M:Walgelijk.System.Initialise">
             <summary>
             Initialise the system
@@ -462,16 +545,20 @@
             Returns the <see cref="T:Walgelijk.RenderQueue"/> that belongs to <see cref="P:Walgelijk.Game.Window"/>
             </summary>
         </member>
+        <member name="P:Walgelijk.Game.AudioRenderer">
+            <summary>
+            The main audio renderer
+            </summary>
+        </member>
         <member name="P:Walgelijk.Game.Time">
             <summary>
             Returns the <see cref="T:Walgelijk.Time"/> information that belongs to <see cref="P:Walgelijk.Game.Window"/>
             </summary>
         </member>
-        <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window)">
+        <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window,Walgelijk.AudioRenderer)">
             <summary>
-            Create a game with a window
+            Create a game with a window and an optional audio renderer. If the audio renderer is not set, the game won't be able to play any sounds
             </summary>
-            <param name="window"></param>
         </member>
         <member name="M:Walgelijk.Game.Start">
             <summary>

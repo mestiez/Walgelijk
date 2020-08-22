@@ -12,10 +12,6 @@ namespace Walgelijk.OpenTK
         private Vector2 size;
         private Color clearColour;
 
-        private Matrix4x4 viewMatrix = Matrix4x4.Identity;
-        private Matrix4x4 projectionMatrix = Matrix4x4.Identity;
-        private Matrix4x4 modelMatrix = Matrix4x4.Identity;
-
         private Material currentMaterial;
 
         private readonly VertexBufferCache vertexBufferCache = new VertexBufferCache();

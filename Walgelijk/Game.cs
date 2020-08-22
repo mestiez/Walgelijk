@@ -40,19 +40,24 @@ namespace Walgelijk
         public RenderQueue RenderQueue => Window.RenderQueue;
 
         /// <summary>
+        /// The main audio renderer
+        /// </summary>
+        public AudioRenderer AudioRenderer { get; }
+
+        /// <summary>
         /// Returns the <see cref="Walgelijk.Time"/> information that belongs to <see cref="Window"/>
         /// </summary>
         public Time Time => Window.Time;
 
         /// <summary>
-        /// Create a game with a window
+        /// Create a game with a window and an optional audio renderer. If the audio renderer is not set, the game won't be able to play any sounds
         /// </summary>
-        /// <param name="window"></param>
-        public Game(Window window)
+        public Game(Window window, AudioRenderer audioRenderer = null)
         {
             Window = window;
             window.Game = this;
             Main = this;
+            AudioRenderer = audioRenderer ?? new EmptyAudioRenderer();
         }
 
         /// <summary>

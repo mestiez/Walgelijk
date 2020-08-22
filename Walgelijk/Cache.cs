@@ -49,5 +49,20 @@ namespace Walgelijk
             DisposeOf(loadedObj);
             loaded.Remove(obj);
         }
+
+        /// <summary>
+        /// Returns if an entry is in the cache
+        /// </summary>
+        public bool Has(UnloadedType obj) => loaded.ContainsKey(obj);
+
+        /// <summary>
+        /// Clear the cache
+        /// </summary>
+        public void UnloadAll()
+        {
+            foreach (var entry in loaded)
+                DisposeOf(entry.Value);
+            loaded.Clear();
+        }
     }
 }

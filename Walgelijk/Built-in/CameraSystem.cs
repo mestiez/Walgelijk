@@ -80,19 +80,6 @@ namespace Walgelijk
         {
             var renderTarget = Scene.Game.Window.RenderTarget;
             var size = renderTarget.Size / MainCameraComponent.PixelsPerUnit * MainCameraComponent.OrthographicSize;
-
-            //float aspectRatio = renderTarget.AspectRatio;
-            //float sizeAdjustment = Vector2.Distance(renderTarget.Size, Vector2.Zero) / 512;
-
-            //float unadjustedSize = mainCameraComponent.OrthographicSize * sizeAdjustment;
-            //float adjustedWidth = unadjustedSize / aspectRatio;
-            //float adjustedHeight = unadjustedSize * aspectRatio;
-
-            //if (adjustedHeight > adjustedWidth)
-            //    renderTask.Projection = Matrix4x4.CreateOrthographic(unadjustedSize, adjustedHeight, 0, 1);
-            //else
-            //    renderTask.Projection = Matrix4x4.CreateOrthographic(adjustedWidth, unadjustedSize, 0, 1);
-
             renderTask.Projection = Matrix4x4.CreateOrthographic(size.X, size.Y, 0, 1);
         }
     }

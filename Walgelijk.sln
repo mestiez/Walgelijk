@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.Silk", "Walgelijk.Silk\Walgelijk.Silk.csproj", "{BDFF01F5-70AA-4029-9AAC-CEC6DA24BD79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Walgelijk.OpenTK", "Walgelijk.OpenTK\Walgelijk.OpenTK.csproj", "{36FB09D0-F063-48BD-BB57-EA0996FBE98E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.OpenTK", "Walgelijk.OpenTK\Walgelijk.OpenTK.csproj", "{36FB09D0-F063-48BD-BB57-EA0996FBE98E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Walgelijk.NAudio", "Walgelijk.NAudio\Walgelijk.NAudio.csproj", "{467254BB-212F-416F-BE02-875EFAAA8A9C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{36FB09D0-F063-48BD-BB57-EA0996FBE98E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36FB09D0-F063-48BD-BB57-EA0996FBE98E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36FB09D0-F063-48BD-BB57-EA0996FBE98E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{467254BB-212F-416F-BE02-875EFAAA8A9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{467254BB-212F-416F-BE02-875EFAAA8A9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{467254BB-212F-416F-BE02-875EFAAA8A9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{467254BB-212F-416F-BE02-875EFAAA8A9C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

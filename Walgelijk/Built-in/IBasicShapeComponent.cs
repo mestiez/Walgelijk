@@ -10,7 +10,7 @@
         /// </summary>
         public VertexBuffer VertexBuffer { get; }
         /// <summary>
-        /// The rendertask that is generated. It's best not to edit this unless you really need to.
+        /// The render task that is generated. It's best not to edit this unless you really need to.
         /// </summary>
         public ShapeRenderTask RenderTask { get; }
     }

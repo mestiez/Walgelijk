@@ -26,6 +26,11 @@
         public RenderQueue RenderQueue => Scene.Game.RenderQueue;
 
         /// <summary>
+        /// Active audio renderer
+        /// </summary>
+        public AudioRenderer Audio => Scene.Game.AudioRenderer;
+
+        /// <summary>
         /// Initialise the system
         /// </summary>
         public abstract void Initialise();
