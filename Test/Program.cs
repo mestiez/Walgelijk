@@ -66,7 +66,7 @@ namespace Test
             Random rand = new Random();
 
             Game game = new Game(new OpenTKWindow("hallo daar", new Vector2(128, 128), new Vector2(512, 512)));
-            game.Window.TargetFrameRate = 75;
+            game.Window.TargetFrameRate = 60;
             game.Window.TargetUpdateRate = 0;
             game.Window.VSync = false;
             game.Window.RenderTarget.ClearColour = new Color("#d42c5e");

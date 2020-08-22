@@ -3,6 +3,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using System;
+using System.Diagnostics;
 using System.Numerics;
 using Vector2 = System.Numerics.Vector2;
 
@@ -17,6 +18,7 @@ namespace Walgelijk.OpenTK
 
         private InputHandler inputHandler ;
         private Time time = new Time();
+        private Stopwatch stopwatch;
 
         public OpenTKWindow(string title, Vector2 position, Vector2 size)
         {
@@ -87,11 +89,17 @@ namespace Walgelijk.OpenTK
             window.MakeCurrent();
             RenderTarget.Size = Size;
 
+            stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             GL.Enable(EnableCap.Texture2D);
         }
 
         private void OnRenderFrame(object sender, FrameEventArgs obj)
         {
+            time.DeltaTime = (float)obj.Time;
+            time.SecondsSinceStart = (float)stopwatch.Elapsed.TotalSeconds;
+
             Game.Scene?.RenderSystems();
 
             RenderTarget.Clear();
@@ -102,7 +110,7 @@ namespace Walgelijk.OpenTK
         private void OnUpdateFrame(object sender, FrameEventArgs obj)
         {
             time.DeltaTime = (float)obj.Time;
-            time.SecondsSinceStart += time.DeltaTime;
+
             Game.Scene?.UpdateSystems();
             inputHandler.Reset();
         }

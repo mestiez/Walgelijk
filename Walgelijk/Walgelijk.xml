@@ -4,6 +4,41 @@
         <name>Walgelijk</name>
     </assembly>
     <members>
+        <member name="T:Walgelijk.Sound">
+            <summary>
+            Object that contains sound data
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Sound.Channels">
+            <summary>
+            Number of channels
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Sound.Data">
+            <summary>
+            Raw PCM data
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Sound.SampleRate">
+            <summary>
+            Sample rate
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Sound.Duration">
+            <summary>
+            Duration of the sound
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Sound.#ctor(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Create a sound from PCM data
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Sound.Loud(System.String)">
+            <summary>
+            Load raw PCM data from path
+            </summary>
+        </member>
         <member name="T:Walgelijk.BasicRendererSystem">
             <summary>
             System that renders basic shapes. Supports <see cref="T:Walgelijk.IBasicShapeComponent"/>
