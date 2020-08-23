@@ -22,7 +22,6 @@ namespace Walgelijk.NAudio
             mixer.ReadFully = true;
             output.Init(mixer);
             output.Play();
-
             mixer.MixerInputEnded += OnSoundEnd;
         }
 
@@ -34,8 +33,9 @@ namespace Walgelijk.NAudio
                 audioCache.Unload(sound);
         }
 
-        public override float Volume { get => output.Volume; set => output.Volume = value; }
+        public override float Volume { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public override bool Muted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         public override Vector2 ListenerPosition { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public override Sound LoadSound(string path)
