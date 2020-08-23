@@ -15,7 +15,7 @@
     <None Update="audio\cannot-build.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="audio\mus_dogappear.mp3">
+    <None Update="audio\kampvuurliedlied.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="shaders\shader.frag">

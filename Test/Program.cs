@@ -19,7 +19,7 @@ namespace Test
         public override void Initialise()
         {
             coolclip = Audio.LoadSound("audio\\cannot-build.wav");
-            music = Audio.LoadSound("audio\\mus_dogappear.mp3");
+            music = Audio.LoadSound("audio\\kampvuurliedlied.mp3");
             music.Looping = true;
             Audio.Play(ref music);
         }
@@ -43,6 +43,9 @@ namespace Test
             if (Input.IsKeyPressed(Key.Right))
                 Audio.Pause(ref music);
 
+            if (Input.IsKeyPressed(Key.M))
+                Audio.Muted = !Audio.Muted;
+
             var zoomIn = Input.IsKeyHeld(Key.Plus);
             var zoomOut = Input.IsKeyHeld(Key.Minus);
             var cameraSystem = Scene.GetSystem<CameraSystem>();
@@ -64,6 +67,9 @@ namespace Test
             if (a) delta.X = -1;
             if (s) delta.Y -= 1;
             if (d) delta.X += 1;
+
+            if (delta.Length() >= 1)
+                delta = Vector2.Normalize(delta);
 
             foreach (var pair in Scene.GetAllComponentsOfType<PlayerComponent>())
             {

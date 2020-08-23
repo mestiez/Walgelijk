@@ -12,12 +12,12 @@ namespace Walgelijk.NAudio
         public const int ChannelCount = 2;
 
         private readonly IWavePlayer output;
-        private readonly MixingSampleProvider mixer;
+        private readonly CustomMixingSampleProvider mixer;
         private readonly AudioCache audioCache = new AudioCache();
 
         public NAudioRenderer()
         {
-            mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(SampleRate, ChannelCount));
+            mixer = new CustomMixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(SampleRate, ChannelCount));
             output = new WaveOutEvent();
             mixer.ReadFully = true;
             output.Init(mixer);
@@ -33,8 +33,8 @@ namespace Walgelijk.NAudio
                 audioCache.Unload(sound);
         }
 
-        public override float Volume { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public override bool Muted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override float Volume { get => mixer.Volume; set => mixer.Volume = value; }
+        public override bool Muted { get => mixer.Muted; set => mixer.Muted = value; }
 
         public override Vector2 ListenerPosition { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
