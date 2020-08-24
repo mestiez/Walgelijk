@@ -356,6 +356,12 @@
             Generates entity identities
             </summary>
         </member>
+        <member name="M:Walgelijk.IdentityGenerator.Generate">
+            <summary>
+            Generate a new identity value
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Walgelijk.Scene">
             <summary>
             Stores and manages components and systems
@@ -374,6 +380,11 @@
         <member name="E:Walgelijk.Scene.OnAttachComponent">
             <summary>
             Fired when a component is attached to an entity
+            </summary>
+        </member>
+        <member name="E:Walgelijk.Scene.OnDetachComponent">
+            <summary>
+            Fired when a component is detacged from an entity
             </summary>
         </member>
         <member name="E:Walgelijk.Scene.OnAddSystem">

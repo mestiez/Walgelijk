@@ -7,6 +7,10 @@
     {
         private static int lastIdentity = -1;
 
+        /// <summary>
+        /// Generate a new identity value
+        /// </summary>
+        /// <returns></returns>
         public static int Generate()
         {
             lastIdentity++;

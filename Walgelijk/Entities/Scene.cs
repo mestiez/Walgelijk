@@ -18,9 +18,13 @@ namespace Walgelijk
         public Game Game { get; internal set; }
 
         private readonly Dictionary<int, Entity> entities = new Dictionary<int, Entity>();
-
         private readonly Dictionary<Entity, CollectionByType> components = new Dictionary<Entity, CollectionByType>();
+
+        private readonly Dictionary<Entity, CollectionByType> creationBuffer = new Dictionary<Entity, CollectionByType>();
+
         private readonly Dictionary<Type, System> systems = new Dictionary<Type, System>();
+
+        private bool stepIsInLoop;
 
         /// <summary>
         /// Fired when an entity is created and registered
@@ -31,6 +35,11 @@ namespace Walgelijk
         /// Fired when a component is attached to an entity
         /// </summary>
         public event Action<Entity, object> OnAttachComponent;
+
+        /// <summary>
+        /// Fired when a component is detacged from an entity
+        /// </summary>
+        public event Action<Entity> OnDetachComponent;
 
         /// <summary>
         /// Fired when a system is added
@@ -85,7 +94,11 @@ namespace Walgelijk
             };
 
             entities.Add(newEntity.Identity, newEntity);
-            components.Add(newEntity, new CollectionByType());
+
+            if (stepIsInLoop)
+                creationBuffer.Add(newEntity, new CollectionByType());
+            else
+                components.Add(newEntity, new CollectionByType());
 
             OnCreateEntity?.Invoke(newEntity);
 
@@ -108,7 +121,7 @@ namespace Walgelijk
         public bool RemoveEntity(int identity)
         {
             bool entityRemovalSuccess = entities.Remove(identity);
-            if (!entityRemovalSuccess) 
+            if (!entityRemovalSuccess)
                 return false;
 
             components[identity].Dispose();
@@ -145,6 +158,7 @@ namespace Walgelijk
         /// </summary>
         public IEnumerable<ComponentEntityTuple<T>> GetAllComponentsOfType<T>() where T : class
         {
+            stepIsInLoop = true;
             foreach (var pair in components)
             {
                 var componentDictionary = pair.Value;
@@ -153,6 +167,7 @@ namespace Walgelijk
                 if (componentDictionary.TryGet(out T component))
                     yield return new ComponentEntityTuple<T>(component, entity);
             }
+            stepIsInLoop = false;
         }
 
         /// <summary>
@@ -160,7 +175,7 @@ namespace Walgelijk
         /// </summary>
         public T GetComponentFrom<T>(Entity entity) where T : class
         {
-            if (components[entity].TryGet<T>(out var component))
+            if (components[entity].TryGet<T>(out var component) || (creationBuffer.TryGetValue(entity, out var collection) && collection.TryGet<T>(out component)))
                 return component;
             return default;
         }
@@ -171,7 +186,7 @@ namespace Walgelijk
         public bool TryGetComponentFrom<T>(Entity entity, out T component) where T : class
         {
             component = default;
-            if (!components.TryGetValue(entity, out var collection)) return false;
+            if (!components.TryGetValue(entity, out var collection) && !creationBuffer.TryGetValue(entity, out collection)) return false;
 
             if (collection.TryGet(out T c))
             {
@@ -186,7 +201,7 @@ namespace Walgelijk
         /// </summary>
         public bool HasComponent<T>(Entity entity) where T : struct
         {
-            return components[entity].Has<T>();
+            return components[entity].Has<T>() || (creationBuffer.TryGetValue(entity, out var value) && value.Has<T>());
         }
 
         /// <summary>
@@ -194,7 +209,11 @@ namespace Walgelijk
         /// </summary>
         public void AttachComponent<T>(Entity entity, T component) where T : class
         {
-            components[entity].TryAdd<T>(component);
+            if (creationBuffer.TryGetValue(entity, out var value))
+                value.TryAdd<T>(component);
+            else
+                components[entity].TryAdd<T>(component);
+
             OnAttachComponent?.Invoke(entity, component);
         }
 
@@ -204,7 +223,17 @@ namespace Walgelijk
         /// <returns>if the operation was successful</returns>
         public bool DetachComponent<T>(Entity entity)
         {
-            return components[entity].Remove<T>();
+            bool success;
+
+            if (creationBuffer.TryGetValue(entity, out var value))
+                success = value.Remove<T>();
+            else
+                success = components[entity].Remove<T>();
+
+            if (success)
+                OnDetachComponent?.Invoke(entity);
+
+            return success;
         }
 
         /// <summary>
@@ -212,6 +241,11 @@ namespace Walgelijk
         /// </summary>
         public void UpdateSystems()
         {
+            foreach (var component in creationBuffer)
+                components.Add(component.Key, component.Value);
+
+            creationBuffer.Clear();
+
             foreach (var system in systems.Values)
                 system.Update();
         }

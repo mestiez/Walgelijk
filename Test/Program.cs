@@ -21,7 +21,6 @@ namespace Test
             coolclip = Audio.LoadSound("audio\\cannot-build.wav");
             music = Audio.LoadSound("audio\\kampvuurliedlied.mp3");
             music.Looping = true;
-            Audio.Play(ref music);
         }
 
         public override void Render()
@@ -31,9 +30,6 @@ namespace Test
 
         public override void Update()
         {
-            if (Input.IsKeyPressed(Key.Space))
-                Audio.PlayOnce(coolclip);
-
             if (Input.IsKeyPressed(Key.Down))
                 Audio.Stop(ref music);
 
@@ -80,6 +76,23 @@ namespace Test
                 transform.Position += delta * player.MovementSpeed * Time.DeltaTime;
                 if (Input.IsKeyReleased(Key.O))
                     Scene.RemoveEntity(pair.Entity);
+
+                if (Input.IsKeyPressed(Key.Space))
+                {
+                    Audio.PlayOnce(coolclip);
+                    var entity = Scene.CreateEntity();
+
+                    Scene.AttachComponent(entity, new TransformComponent
+                    {
+                        Position = transform.Position
+                    });
+
+                    Scene.AttachComponent(entity, new RectangleShapeComponent
+                    {
+                        Size = Vector2.One * .5f,
+                        Material = Program.coolSprite
+                    });
+                }
             }
         }
     }
@@ -109,7 +122,7 @@ namespace Test
             coolSprite.SetUniform("texture2", Texture.Load("textures\\pride.png"));
 
             //create rectangles
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 5; i++)
             {
                 var entity = scene.CreateEntity();
 
