@@ -18,8 +18,8 @@ namespace Walgelijk.Text
         public int LineHeight { get; internal set; }
 
         public Texture[] Pages { get; internal set; }
-        public Glyph[] Glyphs { get; internal set; }
-        public Kerning[] Kernings { get; internal set; }
+        public Dictionary<char, Glyph> Glyphs { get; internal set; }
+        public Dictionary<KerningPair, Kerning> Kernings { get; internal set; }
 
         public Material Material { get; internal set; }
 
@@ -30,10 +30,23 @@ namespace Walgelijk.Text
 
         public Glyph GetGlyph(char c)
         {
-            foreach (var glyph in Glyphs)
-                if ((char)glyph.Identity == c)
-                    return glyph;
-            return Glyphs.Last();
+            if (Glyphs.Count == 0) return default;
+            if (Glyphs.TryGetValue(c, out var glyph))
+                return glyph;
+            return Glyphs.Last().Value;
         }
+
+        public Kerning GetKerning(char previous, char current)
+        {
+            if (Kernings.Count == 0) return default;
+            if (Kernings.TryGetValue(new KerningPair { CurrentChar = current, PreviousChar = previous }, out var kerning))
+                return kerning;
+            return Kernings.Last().Value;
+        }
+    }
+
+    public struct KerningPair
+    {
+        public char PreviousChar, CurrentChar;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -67,31 +68,32 @@ void main()
 
         private static void ParseKernings(string[] text, in Font font, FontInfo info)
         {
-            font.Kernings = new Kerning[info.KerningCount];
+            font.Kernings = new Dictionary<KerningPair, Kerning>();
+
             var kerningLines = GetLines("kerning ", text);
             for (int i = 0; i < info.KerningCount; i++)
             {
                 var line = kerningLines[i];
                 Kerning kerning;
 
-                kerning.FirstChar = GetIntFrom("first", line);
-                kerning.SecondChar = GetIntFrom("second", line);
+                kerning.FirstChar = (char)GetIntFrom("first", line);
+                kerning.SecondChar = (char)GetIntFrom("second", line);
                 kerning.Amount = GetIntFrom("amount", line);
 
-                font.Kernings[i] = kerning;
+                font.Kernings.Add(new KerningPair {CurrentChar = kerning.FirstChar, PreviousChar = kerning.SecondChar}, kerning);
             }
         }
 
         private static void ParseGlyphs(string[] text, in Font font, FontInfo info)
         {
-            font.Glyphs = new Glyph[info.GlyphCount];
+            font.Glyphs = new Dictionary<char, Glyph>();
             var charLines = GetLines("char ", text);
             for (int i = 0; i < info.GlyphCount; i++)
             {
                 var line = charLines[i];
                 Glyph glyph;
 
-                glyph.Identity = GetIntFrom("id", line);
+                glyph.Identity = (char)GetIntFrom("id", line);
                 glyph.X = GetIntFrom("x", line);
                 glyph.Y = GetIntFrom("y", line);
                 glyph.Width = GetIntFrom("width", line);
@@ -101,7 +103,7 @@ void main()
                 glyph.Advance = GetIntFrom("xadvance", line);
                 glyph.Page = GetIntFrom("page", line);
 
-                font.Glyphs[i] = glyph;
+                font.Glyphs.Add(glyph.Identity, glyph);
             }
         }
 

@@ -30,6 +30,8 @@ namespace Walgelijk.OpenTK
 
             GameWindow.MouseMove += MouseMove;
             GameWindow.MouseWheel += MouseWheel;
+
+            inputState.TextEntered = "";
         }
 
         private void MouseWheel(object sender, MouseWheelEventArgs e)

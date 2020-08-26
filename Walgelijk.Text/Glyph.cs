@@ -2,7 +2,7 @@
 {
     public struct Glyph
     {
-        public int Identity;
+        public char Identity;
 
         public int X;
         public int Y;

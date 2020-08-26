@@ -2,8 +2,8 @@
 {
     public struct Kerning
     {
-        public int FirstChar;
-        public int SecondChar;
+        public char FirstChar;
+        public char SecondChar;
         public int Amount;
     }
 }

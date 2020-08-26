@@ -10,6 +10,7 @@ namespace Walgelijk.Text
         private Color color = Color.White;
         private float tracking = .7f;
         private float lineHeightMultiplier = .7f;
+        private float kerningAmount = 1f;
 
         public TextComponent(string displayString, Font font)
         {
@@ -46,6 +47,11 @@ namespace Walgelijk.Text
         public float Tracking { get => tracking; set { tracking = value; CreateVertices(); } }
 
         /// <summary>
+        /// Kerning amount multiplier. Changing this forces a vertex array update.
+        /// </summary>
+        public float KerningAmount { get => kerningAmount; set { kerningAmount = value; CreateVertices(); } }
+
+        /// <summary>
         /// Distance between each line.  Changing this forces a vertex array update.
         /// </summary>
         public float LineHeightMultiplier { get => lineHeightMultiplier; set { lineHeightMultiplier = value; CreateVertices(); } }
@@ -75,9 +81,9 @@ namespace Walgelijk.Text
 
                 var glyph = Font.GetGlyph(c);
 
-                Kerning kerning = i == 0 ? default : font.Kernings.FirstOrDefault(k => k.FirstChar == lastChar && k.SecondChar == c);
+                Kerning kerning = i == 0 ? default : font.GetKerning(lastChar, c);
 
-                var pos = new Vector3(cursor + glyph.XOffset + kerning.Amount, glyph.YOffset + line * Font.LineHeight * LineHeightMultiplier, 0);
+                var pos = new Vector3(cursor + glyph.XOffset + kerning.Amount * KerningAmount, glyph.YOffset + line * Font.LineHeight * LineHeightMultiplier, 0);
 
                 float x = glyph.X / width;
                 float y = glyph.Y / height;
@@ -113,7 +119,7 @@ namespace Walgelijk.Text
                     );
 
                 vertexIndex += 4;
-                cursor += (glyph.Advance + glyph.XOffset + kerning.Amount) * tracking;
+                cursor += (glyph.Advance + (pos.X-cursor)) * tracking;
 
                 lastChar = c;
             }
