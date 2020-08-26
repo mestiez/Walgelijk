@@ -67,7 +67,6 @@ namespace Walgelijk.OpenTK
         public override void StartLoop()
         {
             HookIntoEvents();
-
             window.Run();
         }
 

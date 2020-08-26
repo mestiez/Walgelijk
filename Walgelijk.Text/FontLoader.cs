@@ -48,7 +48,7 @@ uniform sampler2D mainTex;
 void main()
 {
     vec4 tex = texture(mainTex, uv);
-    tex.a = smoothstep(0.495, 0.505, tex.a);
+    tex.a = smoothstep(0.48, 0.5, tex.a);
     color = vertexColor * tex;
 }";
             Material mat = new Material(new Shader(vert, frag));

@@ -69,7 +69,6 @@ namespace Walgelijk.OpenTK
                     GL.ProgramUniformMatrix4(prog, loc, 1, false, matrixBuffer);
                     break;
             }
-
         }
 
         private void SetMatrixBuffer(Matrix4x4 v)

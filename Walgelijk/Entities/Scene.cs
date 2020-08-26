@@ -171,6 +171,29 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Get all components and entities of a certain type and puts them in the given array. Returns the amount that was put in.
+        /// </summary>
+        public int GetAllComponentsOfTypeNonAlloc<T>(ComponentEntityTuple<T>[] buffer) where T : class
+        {
+            stepIsInLoop = true;
+            int i = 0;
+            foreach (var pair in components)
+            {
+                if (i >= buffer.Length) return buffer.Length;
+                var componentDictionary = pair.Value;
+                var entity = pair.Key;
+
+                if (componentDictionary.TryGet(out T component))
+                {
+                    buffer[i] = new ComponentEntityTuple<T>(component, entity);
+                    i++;
+                }
+            }
+            stepIsInLoop = false;
+            return i;
+        }
+
+        /// <summary>
         /// Retrieve the first component of the specified type on the given entity
         /// </summary>
         public T GetComponentFrom<T>(Entity entity) where T : class

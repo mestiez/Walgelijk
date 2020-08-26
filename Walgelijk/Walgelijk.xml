@@ -450,6 +450,11 @@
             Get all components and entities of a certain type
             </summary>
         </member>
+        <member name="M:Walgelijk.Scene.GetAllComponentsOfTypeNonAlloc``1(Walgelijk.ComponentEntityTuple{``0}[])">
+            <summary>
+            Get all components and entities of a certain type and puts them in the given array. Returns the amount that was put in.
+            </summary>
+        </member>
         <member name="M:Walgelijk.Scene.GetComponentFrom``1(Walgelijk.Entity)">
             <summary>
             Retrieve the first component of the specified type on the given entity

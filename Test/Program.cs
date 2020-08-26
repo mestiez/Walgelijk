@@ -31,8 +31,7 @@ namespace Test
 
         public override void Update()
         {
-           // Program.coolText.KerningAmount = Input.WindowMousePosition.X;
-
+            // Program.coolText.KerningAmount = Input.WindowMousePosition.X;
             if (Input.IsKeyPressed(Key.Down))
                 Audio.Stop(ref music);
 

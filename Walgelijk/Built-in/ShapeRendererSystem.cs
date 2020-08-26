@@ -5,8 +5,6 @@
     /// </summary>
     public class ShapeRendererSystem : System
     {
-        private Game Game => Scene.Game;
-
         public override void Initialise() { }
 
         public override void Update() { }
@@ -30,7 +28,7 @@
                 var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
                 var task = shape.RenderTask;
                 task.ModelMatrix = transform.LocalToWorldMatrix;
-                Game.RenderQueue.Enqueue(task);
+                RenderQueue.Enqueue(task);
             }
         }
     }
