@@ -1,9 +1,9 @@
 ﻿namespace Walgelijk
 {
     /// <summary>
-    /// System that renders basic shapes. Supports <see cref="IBasicShapeComponent"/>
+    /// System that renders components that implement <see cref="IShapeComponent"/>
     /// </summary>
-    public class BasicRendererSystem : System
+    public class ShapeRendererSystem : System
     {
         private Game Game => Scene.Game;
 
@@ -13,7 +13,7 @@
 
         public override void Render()
         {
-            var basicShapes = Scene.GetAllComponentsOfType<IBasicShapeComponent>();
+            var basicShapes = Scene.GetAllComponentsOfType<IShapeComponent>();
 
             foreach (var pair in basicShapes)
             {
@@ -21,7 +21,7 @@
             }
         }
 
-        private void RenderShape(ComponentEntityTuple<IBasicShapeComponent> pair)
+        private void RenderShape(ComponentEntityTuple<IShapeComponent> pair)
         {
             var shape = pair.Component;
 

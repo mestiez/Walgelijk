@@ -107,11 +107,6 @@
             Create a sound from raw data
             </summary>
         </member>
-        <member name="T:Walgelijk.BasicRendererSystem">
-            <summary>
-            System that renders basic shapes. Supports <see cref="T:Walgelijk.IBasicShapeComponent"/>
-            </summary>
-        </member>
         <member name="T:Walgelijk.CameraComponent">
             <summary>
             Component that holds camera data
@@ -153,17 +148,17 @@
             </summary>
             <param name="cameraEntity"></param>
         </member>
-        <member name="T:Walgelijk.IBasicShapeComponent">
+        <member name="T:Walgelijk.IShapeComponent">
             <summary>
-            Interface that provides a <see cref="P:Walgelijk.IBasicShapeComponent.VertexBuffer"/> and <see cref="T:Walgelijk.ShapeRenderTask"/>
+            Interface that provides a <see cref="P:Walgelijk.IShapeComponent.VertexBuffer"/> and <see cref="T:Walgelijk.ShapeRenderTask"/>
             </summary>
         </member>
-        <member name="P:Walgelijk.IBasicShapeComponent.VertexBuffer">
+        <member name="P:Walgelijk.IShapeComponent.VertexBuffer">
             <summary>
             VertexBuffer that is generated. It's best not to edit this unless you really need to.
             </summary>
         </member>
-        <member name="P:Walgelijk.IBasicShapeComponent.RenderTask">
+        <member name="P:Walgelijk.IShapeComponent.RenderTask">
             <summary>
             The render task that is generated. It's best not to edit this unless you really need to.
             </summary>
@@ -191,6 +186,11 @@
         <member name="M:Walgelijk.RectangleShapeComponent.#ctor">
             <summary>
             Create a rectangle renderer component
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ShapeRendererSystem">
+            <summary>
+            System that renders components that implement <see cref="T:Walgelijk.IShapeComponent"/>
             </summary>
         </member>
         <member name="T:Walgelijk.TransformComponent">
@@ -888,7 +888,7 @@
             Create a texture from a series of pixels
             </summary>
         </member>
-        <member name="M:Walgelijk.Texture.Load(System.String)">
+        <member name="M:Walgelijk.Texture.Load(System.String,System.Boolean)">
             <summary>
             Load an image from a path
             </summary>

@@ -48,10 +48,8 @@ namespace Walgelijk.OpenTK
             return vbo;
         }
 
-        private void TryUpdateBuffer(VertexBuffer buffer, VertexBufferCacheHandles handles)
+        public void UpdateBuffer(VertexBuffer buffer, VertexBufferCacheHandles handles)
         {
-            if (!buffer.HasChanged) return;
-
             //upload vertices
             GL.BindBuffer(BufferTarget.ArrayBuffer, handles.VBO);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(buffer.Vertices.Length * Vertex.Stride), buffer.Vertices, BufferUsageHint.StaticDraw);

@@ -5,7 +5,7 @@ namespace Walgelijk
     /// <summary>
     /// Basic rectangle renderer data
     /// </summary>
-    public class RectangleShapeComponent : IBasicShapeComponent
+    public class RectangleShapeComponent : IShapeComponent
     {
         private Vector2 size = Vector2.One;
         private Color color = Color.White;

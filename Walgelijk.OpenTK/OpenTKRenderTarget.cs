@@ -57,12 +57,15 @@ namespace Walgelijk.OpenTK
             }
 
             VertexBufferCacheHandles handles = vertexBufferCache.Load(vertexBuffer);
+            if (vertexBuffer.HasChanged)
+                vertexBufferCache.UpdateBuffer(vertexBuffer, handles);
 
             GL.BindVertexArray(handles.VAO);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, handles.IBO);
 
             GL.DrawElements(TypeConverter.Convert(vertexBuffer.PrimitiveType), vertexBuffer.IndexCount, DrawElementsType.UnsignedInt, 0);
         }
+
         public override void Draw(Vertex[] vertices, Primitive primitive, Material material = null)
         {
             SetMaterial(material);

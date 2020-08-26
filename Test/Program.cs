@@ -3,6 +3,7 @@ using System.Numerics;
 using Walgelijk;
 using Walgelijk.NAudio;
 using Walgelijk.OpenTK;
+using Walgelijk.Text;
 
 namespace Test
 {
@@ -100,6 +101,7 @@ namespace Test
     class Program
     {
         public static Material coolSprite;
+        public static TextComponent coolText;
 
         static void Main(string[] args)
         {
@@ -109,6 +111,7 @@ namespace Test
                 new OpenTKWindow("hallo daar", new Vector2(128, 128), new Vector2(512, 512)),
                 new NAudioRenderer()
                 );
+
             game.Window.TargetFrameRate = 60;
             game.Window.TargetUpdateRate = 0;
             game.Window.VSync = false;
@@ -116,13 +119,33 @@ namespace Test
 
             var scene = new Scene();
             game.Scene = scene;
+                coolText = new TextComponent("hallo wereld!\nnieuwe regel...\nwat gebeurt er als ik \t doe", Font.Load("fonts\\inter.fnt"));
+
+            {
+                var ent = scene.CreateEntity();
+                scene.AttachComponent(ent, new TransformComponent
+                {
+                    Scale = new Vector2(0.02f, -0.02f)
+                });
+                scene.AttachComponent(ent, coolText);
+            }
+
+            {
+                var ent = scene.CreateEntity();
+                scene.AttachComponent(ent, new TransformComponent
+                {
+                    Scale = new Vector2(0.015f, -0.015f),
+                    Position = new Vector2(-10, 0)
+                });
+                scene.AttachComponent(ent, new TextComponent("andere font tijden\nrich text zou cool zijn... zo van\n<b>super</b> cool", Font.Load("fonts\\cambria.fnt")));
+            }
 
             coolSprite = new Material(Shader.Load("shaders\\shader.vert", "shaders\\shader.frag"));
             coolSprite.SetUniform("texture1", Texture.Load("textures\\sadness.png"));
             coolSprite.SetUniform("texture2", Texture.Load("textures\\pride.png"));
 
             //create rectangles
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 2; i++)
             {
                 var entity = scene.CreateEntity();
 
@@ -157,7 +180,7 @@ namespace Test
             }
 
             scene.AddSystem(new TransformSystem());
-            scene.AddSystem(new BasicRendererSystem());
+            scene.AddSystem(new ShapeRendererSystem());
             scene.AddSystem(new PlayerSystem());
 
             game.Start();

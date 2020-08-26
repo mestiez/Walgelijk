@@ -49,7 +49,7 @@ namespace Walgelijk
         /// <summary>
         /// Load an image from a path
         /// </summary>
-        public static Texture Load(string path)
+        public static Texture Load(string path, bool flipY = true)
         {
             var bitmap = Image.FromFile(path) as Bitmap;
 
@@ -61,7 +61,7 @@ namespace Walgelijk
             for (int y = 0; y < bitmap.Height; y++)
                 for (int x = 0; x < bitmap.Width; x++)
                 {
-                    var pixel = bitmap.GetPixel(x, bitmap.Height - 1 - y);
+                    var pixel = bitmap.GetPixel(x, flipY ? (bitmap.Height - 1 - y) : y);
                     pixels[i] = new Color(pixel.R, pixel.G, pixel.B, pixel.A);
                     i++;
                 }
