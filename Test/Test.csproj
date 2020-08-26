@@ -19,6 +19,12 @@
     <None Update="audio\kampvuurliedlied.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="fonts\broadway.fnt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="fonts\broadway.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="fonts\cambria.fnt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

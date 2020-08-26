@@ -31,6 +31,9 @@ namespace Test
 
         public override void Update()
         {
+            //if (Input.TextEntered.Length != 0)
+            //    Program.coolText.String += Input.TextEntered;
+
             if (Input.IsKeyPressed(Key.Down))
                 Audio.Stop(ref music);
 
@@ -119,13 +122,14 @@ namespace Test
 
             var scene = new Scene();
             game.Scene = scene;
-                coolText = new TextComponent("hallo wereld!\nnieuwe regel...\nwat gebeurt er als ik \t doe", Font.Load("fonts\\inter.fnt"));
+            coolText = new TextComponent("hallo wereld!\nnieuwe regel...\nwat gebeurt er als ik \t doe", Font.Load("fonts\\broadway.fnt"));
+            coolText.Tracking = .9f;
 
             {
                 var ent = scene.CreateEntity();
                 scene.AttachComponent(ent, new TransformComponent
                 {
-                    Scale = new Vector2(0.02f, -0.02f)
+                    Scale = new Vector2(0.01f, -0.01f)
                 });
                 scene.AttachComponent(ent, coolText);
             }
