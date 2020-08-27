@@ -225,7 +225,7 @@
         </member>
         <member name="P:Walgelijk.TransformComponent.IsMatrixCached">
             <summary>
-            Returns if the model matrix is up to date
+            Returns if the model matrix is aligned to transformation
             </summary>
         </member>
         <member name="M:Walgelijk.TransformComponent.RecalculateModelMatrix">

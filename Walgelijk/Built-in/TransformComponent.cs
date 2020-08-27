@@ -61,18 +61,10 @@ namespace Walgelijk
         /// <summary>
         /// The inverse model matrix
         /// </summary>
-        public Matrix4x4 WorldToLocalMatrix
-        {
-            get
-            {
-                if (Matrix4x4.Invert(LocalToWorldMatrix, out var result))
-                    return result;
-                return Matrix4x4.Identity;
-            }
-        }
+        public Matrix4x4 WorldToLocalMatrix { get; private set; }
 
         /// <summary>
-        /// Returns if the model matrix is up to date
+        /// Returns if the model matrix is aligned to transformation
         /// </summary>
         public bool IsMatrixCached { get; private set; }
 
@@ -86,6 +78,12 @@ namespace Walgelijk
             matrix *= Matrix4x4.CreateTranslation(position.X, position.Y, 0);
 
             LocalToWorldMatrix = matrix;
+
+            if (Matrix4x4.Invert(LocalToWorldMatrix, out var result))
+                WorldToLocalMatrix = result;
+            else
+                WorldToLocalMatrix = LocalToWorldMatrix * -1;
+
             IsMatrixCached = true;
         }
     }

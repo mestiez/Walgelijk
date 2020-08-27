@@ -26,7 +26,7 @@ namespace Test
 
         public override void Render()
         {
-            Program.coolSprite.SetUniform("time", Time.SecondsSinceStart * 12);
+           // Program.coolSprite.SetUniform("time", Time.SecondsSinceStart * 12);
         }
 
         public override void Update()
@@ -147,15 +147,15 @@ namespace Test
             coolSprite.SetUniform("texture2", Texture.Load("textures\\pride.png"));
 
             //create rectangles
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 5; i++)
             {
                 var entity = scene.CreateEntity();
 
                 scene.AttachComponent(entity, new TransformComponent
                 {
                     Position = new Vector2(
-                        Utilities.RandomFloat(-12f, 12f),
-                        Utilities.RandomFloat(-7f, 7f)
+                        Utilities.RandomFloat(-25f, 25f),
+                        Utilities.RandomFloat(-25f, 25f)
                         ),
                     Rotation = i == 0 ? 0 : Utilities.RandomFloat(0, 360)
                 });

@@ -44,15 +44,20 @@ in vec4 vertexColor;
 out vec4 color;
 
 uniform sampler2D mainTex;
+uniform float thickness;
+uniform float softness;
 
 void main()
 {
     vec4 tex = texture(mainTex, uv);
-    tex.a = smoothstep(0.48, 0.5, tex.a);
+    float t = clamp(1-thickness, 0, 1);
+    tex.a = smoothstep(t-softness, t, tex.a);
     color = vertexColor * tex;
 }";
             Material mat = new Material(new Shader(vert, frag));
             mat.SetUniform("mainTex", font.Pages[0]);
+            mat.SetUniform("thickness", 0.5f);
+            mat.SetUniform("softness", 0.02f);
             return mat;
         }
 
