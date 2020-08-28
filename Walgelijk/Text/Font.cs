@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.IO.IsolatedStorage;
 using System.Linq;
 
-namespace Walgelijk.Text
+namespace Walgelijk
 {
+    /// <summary>
+    /// Object that holds font information and pages
+    /// </summary>
     public class Font
     {
         /// <summary>

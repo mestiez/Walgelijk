@@ -89,7 +89,6 @@ namespace Walgelijk.OpenTK
 
             stopwatch = new Stopwatch();
             stopwatch.Start();
-
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
@@ -98,15 +97,15 @@ namespace Walgelijk.OpenTK
         private void OnRenderFrame(object sender, FrameEventArgs obj)
         {
             time.RenderDeltaTime = (float)obj.Time;
-            time.SecondsSinceStart = (float)stopwatch.Elapsed.TotalSeconds;
+            time.SecondsSinceLoad = (float)stopwatch.Elapsed.TotalSeconds;
 
             Game.Scene?.RenderSystems();
+            Game.Profiling.Render();
 
             RenderTarget.Clear();
             RenderQueue.RenderAndReset(RenderTarget);
-            window.SwapBuffers();
 
-            Game.Profiling.Render();
+            window.SwapBuffers();
         }
 
         private void OnUpdateFrame(object sender, FrameEventArgs obj)

@@ -1,4 +1,4 @@
-﻿namespace Walgelijk.Text
+﻿namespace Walgelijk
 {
     internal struct FontInfo
     {

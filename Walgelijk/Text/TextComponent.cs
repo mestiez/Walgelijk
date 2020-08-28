@@ -1,8 +1,11 @@
 ﻿using System.Linq;
 using System.Numerics;
 
-namespace Walgelijk.Text
+namespace Walgelijk
 {
+    /// <summary>
+    /// IShapeComponent that holds the information necessary to draw text
+    /// </summary>
     public class TextComponent : IShapeComponent
     {
         private string displayString;
@@ -12,6 +15,9 @@ namespace Walgelijk.Text
         private float lineHeightMultiplier = .7f;
         private float kerningAmount = 1f;
 
+        /// <summary>
+        /// Create a text component
+        /// </summary>
         public TextComponent(string displayString, Font font = null)
         {
             this.displayString = displayString;

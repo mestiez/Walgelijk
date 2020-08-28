@@ -17,6 +17,7 @@ namespace Walgelijk.NAudio
 
         public NAudioRenderer()
         {
+            Resources.RegisterType(typeof(Sound), (string path) => NAudioLoader.LoadFromFile(path));
             mixer = new CustomMixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(SampleRate, ChannelCount));
             output = new WaveOutEvent();
             mixer.ReadFully = true;

@@ -27,10 +27,13 @@ namespace Walgelijk
         /// </summary>
         public Scene Scene
         {
-            get => scene; set
+            get => scene;
+
+            set
             {
                 scene = value;
-                scene.Game = this;
+                if (value != null)
+                    scene.Game = this;
             }
         }
 
@@ -44,6 +47,9 @@ namespace Walgelijk
         /// </summary>
         public AudioRenderer AudioRenderer { get; }
 
+        /// <summary>
+        /// The game profiler
+        /// </summary>
         public Profiler Profiling { get; }
 
         /// <summary>
@@ -61,6 +67,7 @@ namespace Walgelijk
             Main = this;
             AudioRenderer = audioRenderer ?? new EmptyAudioRenderer();
             Profiling = new Profiler(this);
+            Resources.Initialise();
         }
 
         /// <summary>

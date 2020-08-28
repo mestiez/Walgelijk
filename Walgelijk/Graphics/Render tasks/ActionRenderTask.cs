@@ -8,6 +8,10 @@ namespace Walgelijk
     /// </summary>
     public struct ActionRenderTask : IRenderTask
     {
+        /// <summary>
+        /// Crate action render task
+        /// </summary>
+        /// <param name="action"></param>
         public ActionRenderTask(Action<RenderTarget> action)
         {
             Action = action;

@@ -1,5 +1,8 @@
-﻿namespace Walgelijk
+﻿using System.Numerics;
+
+namespace Walgelijk
 {
+
     /// <summary>
     /// Provides performance information
     /// </summary>
@@ -15,7 +18,8 @@
         public float FramesPerSecond => fpsCounter.Frequency;
 
         private readonly Game game;
-        private readonly VertexBuffer profilerText;
+        private readonly Matrix4x4 quickProfilerModel = Matrix4x4.CreateScale(0.7f) * Matrix4x4.CreateTranslation(5, 5, 0);
+        private readonly TextComponent quickProfiler;
 
         private readonly TickRateCounter upsCounter = new TickRateCounter();
         private readonly TickRateCounter fpsCounter = new TickRateCounter();
@@ -27,8 +31,7 @@
         public Profiler(Game game)
         {
             this.game = game;
-
-            profilerText = new VertexBuffer();
+            quickProfiler = new TextComponent("?");
         }
 
         /// <summary>
@@ -45,17 +48,27 @@
         public void Render()
         {
             CalculateFPS();
+            RenderQuickProfiler();
+        }
 
+        private void RenderQuickProfiler()
+        {
+            quickProfiler.String = $"{FramesPerSecond} fps\n{UpdatesPerSecond} ups";
+
+            var task = quickProfiler.RenderTask;
+            task.ScreenSpace = true;
+            task.ModelMatrix = quickProfilerModel;
+            game.RenderQueue.Enqueue(task);
         }
 
         private void CalculateUPS()
         {
-            upsCounter.Tick(game.Time.SecondsSinceStart);
+            upsCounter.Tick(game.Time.SecondsSinceLoad);
         }
 
         private void CalculateFPS()
         {
-            fpsCounter.Tick(game.Time.SecondsSinceStart);
+            fpsCounter.Tick(game.Time.SecondsSinceLoad);
         }
     }
 

@@ -687,6 +687,12 @@
             Render task that will invoke the action you give. Useful for unique smaller actions
             </summary>
         </member>
+        <member name="M:Walgelijk.ActionRenderTask.#ctor(System.Action{Walgelijk.RenderTarget})">
+            <summary>
+            Crate action render task
+            </summary>
+            <param name="action"></param>
+        </member>
         <member name="P:Walgelijk.ActionRenderTask.Action">
             <summary>
             The action to invoke
@@ -1106,6 +1112,11 @@
             The main audio renderer
             </summary>
         </member>
+        <member name="P:Walgelijk.Game.Profiling">
+            <summary>
+            The game profiler
+            </summary>
+        </member>
         <member name="P:Walgelijk.Game.Time">
             <summary>
             Returns the <see cref="T:Walgelijk.Time"/> information that belongs to <see cref="P:Walgelijk.Game.Window"/>
@@ -1152,6 +1163,32 @@
             Force the profiler to calculate render information. Should be handled by the window.
             </summary>
         </member>
+        <member name="T:Walgelijk.Resources">
+            <summary>
+            Global path based resource storage
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Resources.Initialise">
+            <summary>
+            Initialise 
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Resources.Load``1(System.String)">
+            <summary>
+            Load the resource at the given path. Will throw an exception if there is no resource loader found for the type, or if the file at the path is not of the given type.
+            </summary>
+            <typeparam name="T">The type of the object to load</typeparam>
+            <param name="path">The path of the file</param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Resources.RegisterType(System.Type,System.Func{System.String,System.Object})">
+            <summary>
+            Register a resource type with its loader
+            </summary>
+            <param name="type">Type of the resource</param>
+            <param name="loadFunction">The function that returns the object given a path</param>
+            <returns>Whether the registration succeeded</returns>
+        </member>
         <member name="T:Walgelijk.Time">
             <summary>
             Structure that holds frame specific time data
@@ -1167,10 +1204,214 @@
             Returns the amount of seconds that have passed since the last rendered frame
             </summary>
         </member>
-        <member name="P:Walgelijk.Time.SecondsSinceStart">
+        <member name="P:Walgelijk.Time.SecondsSinceLoad">
             <summary>
             Returns the amount of seconds that have passed since the game was launched
             </summary>
+        </member>
+        <member name="T:Walgelijk.Font">
+            <summary>
+            Object that holds font information and pages
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Name">
+            <summary>
+            Display name of the font
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Size">
+            <summary>
+            Retrieve the point size this font was loaded with
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:Walgelijk.Font.Bold" -->
+        <!-- Badly formed XML comment ignored for member "P:Walgelijk.Font.Italic" -->
+        <member name="P:Walgelijk.Font.Width">
+            <summary>
+            Page width in pixels
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Height">
+            <summary>
+            Page height in pixels
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.LineHeight">
+            <summary>
+            Line height in pixels
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Pages">
+            <summary>
+            Array of texture pages this font uses
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Glyphs">
+            <summary>
+            Glyphs by character
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Kernings">
+            <summary>
+            Kernings by <see cref="T:Walgelijk.KerningPair"/>
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Material">
+            <summary>
+            Material this font uses. Be aware this may be shared across text. Use <see cref="M:Walgelijk.FontLoader.CreateFontMaterial(Walgelijk.Font)"/> to create a new material.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Font.Load(System.String)">
+            <summary>
+            Load a font from a metadata file (BMFont .fnt)
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Font.GetGlyph(System.Char,Walgelijk.Glyph)">
+            <summary>
+            Get the glyph for a character. 
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Font.GetKerning(System.Char,System.Char)">
+            <summary>
+            Get kerning for two characters
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Font.Default">
+            <summary>
+            The default font
+            </summary>
+        </member>
+        <member name="T:Walgelijk.KerningPair">
+            <summary>
+            The two characters a kerning amount applies to
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Glyph">
+            <summary>
+            Structure with font glyph information
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Glyph.Identity">
+            <summary>
+            Character this glyph belongs to
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Glyph.X">
+            <summary>
+            X position on the page in pixels
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Glyph.Y">
+            <summary>
+            Y position on the page in pixels
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Glyph.Width">
+            <summary>
+            Width of the page in pixels
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Glyph.Height">
+            <summary>
+            Height of the page in pixels
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Glyph.XOffset">
+            <summary>
+            Horizontal offset of this character in pixels
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Glyph.YOffset">
+            <summary>
+            Vertical offset of this character in pixels
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Glyph.Advance">
+            <summary>
+            How many pixels to advance the cursor after this glyph
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Glyph.Page">
+            <summary>
+            Page index of the glyph
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Kerning">
+            <summary>
+            Structure with kerning information
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Kerning.FirstChar">
+            <summary>
+            Preceding character
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Kerning.SecondChar">
+            <summary>
+            Current character
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Kerning.Amount">
+            <summary>
+            Offset amount
+            </summary>
+        </member>
+        <member name="T:Walgelijk.TextComponent">
+            <summary>
+            IShapeComponent that holds the information necessary to draw text
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TextComponent.#ctor(System.String,Walgelijk.Font)">
+            <summary>
+            Create a text component
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TextComponent.String">
+            <summary>
+            Displayed string. Changing this forces a vertex array update.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TextComponent.Font">
+            <summary>
+            Used font. Changing this forces a vertex array update.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TextComponent.Color">
+            <summary>
+            Text colour. Changing this forces a vertex array update.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TextComponent.TrackingMultiplier">
+            <summary>
+            Distance between letters. Changing this forces a vertex array update.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TextComponent.KerningMultiplier">
+            <summary>
+            Kerning amount multiplier. Changing this forces a vertex array update.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TextComponent.LineHeightMultiplier">
+            <summary>
+            Distance between each line.  Changing this forces a vertex array update.
+            </summary>
+        </member>
+        <member name="T:Walgelijk.TextMeshGenerator">
+            <summary>
+            Utility class that provides text mesh generation functions 
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TextMeshGenerator.GenerateVertices(System.String,Walgelijk.Font,Walgelijk.Vertex[],Walgelijk.Color,System.Single,System.Single,System.Single)">
+            <summary>
+            Generate 2D text mesh
+            </summary>
+            <param name="displayString">Text to render</param>
+            <param name="font">Font to render with</param>
+            <param name="vertices">Vertex array that will be populated. This need to be the length of displayString * 4</param>
+            <param name="color">Color to set the vertices with</param>
+            <param name="kerningAmount">Kerning multiplier</param>
+            <param name="lineHeightMultiplier">Line height multiplier</param>
+            <param name="trackingMultiplier">Tracking multiplier</param>
         </member>
         <member name="M:Walgelijk.Utilities.Lerp(System.Single,System.Single,System.Single)">
             <summary>
@@ -1386,6 +1627,11 @@
         <member name="M:Walgelijk.RenderTarget.Draw(Walgelijk.Vertex[],Walgelijk.Primitive,Walgelijk.Material)">
             <summary>
             Draw vertices immediately
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RenderTarget.CalculatedWindowMatrix">
+            <summary>
+            An orthographic projection matrix matrix where the top left is 0,0 and the bottom right is <see cref="P:Walgelijk.RenderTarget.Size"/>
             </summary>
         </member>
         <member name="T:Walgelijk.Window">

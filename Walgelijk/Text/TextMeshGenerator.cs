@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Walgelijk.Text
+namespace Walgelijk
 {
     /// <summary>
     /// Utility class that provides text mesh generation functions 

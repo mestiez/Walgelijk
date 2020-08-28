@@ -3,7 +3,6 @@ using System.Numerics;
 using Walgelijk;
 using Walgelijk.NAudio;
 using Walgelijk.OpenTK;
-using Walgelijk.Text;
 
 namespace Test
 {
@@ -19,20 +18,18 @@ namespace Test
 
         public override void Initialise()
         {
-            coolclip = Audio.LoadSound("audio\\cannot-build.wav");
-            music = Audio.LoadSound("audio\\kampvuurliedlied.mp3");
+            coolclip = Resources.Load<Sound>("audio\\cannot-build.wav");
+            music = Resources.Load<Sound>("audio\\kampvuurliedlied.mp3");
             music.Looping = true;
         }
 
         public override void Render()
         {
-           Program.coolSprite.SetUniform("time", Time.SecondsSinceStart * 12);
+            Program.coolSprite.SetUniform("time", Time.SecondsSinceLoad * 12);
         }
 
         public override void Update()
         {
-            Program.coolText.String = Scene.Game.Profiling.UpdatesPerSecond + " ups\n" + Scene.Game.Profiling.FramesPerSecond + " fps\n";
-
             if (Input.IsKeyPressed(Key.Down))
                 Audio.Stop(ref music);
 
@@ -44,6 +41,9 @@ namespace Test
 
             if (Input.IsKeyPressed(Key.M))
                 Audio.Muted = !Audio.Muted;
+
+            if (Input.IsKeyPressed(Key.K))
+                Game.Main.Scene = null;
 
             var zoomIn = Input.IsKeyHeld(Key.Plus);
             var zoomOut = Input.IsKeyHeld(Key.Minus);
@@ -115,7 +115,7 @@ namespace Test
                 );
 
             game.Window.TargetFrameRate = 60;
-            game.Window.TargetUpdateRate = 60;
+            game.Window.TargetUpdateRate = 0;
             game.Window.VSync = false;
             game.Window.RenderTarget.ClearColour = new Color("#d42c5e");
 
@@ -145,8 +145,8 @@ namespace Test
             }
 
             coolSprite = new Material(Shader.Load("shaders\\shader.vert", "shaders\\shader.frag"));
-            coolSprite.SetUniform("texture1", Texture.Load("textures\\sadness.png"));
-            coolSprite.SetUniform("texture2", Texture.Load("textures\\pride.png"));
+            coolSprite.SetUniform("texture1", Resources.Load<Texture>("textures\\sadness.png"));
+            coolSprite.SetUniform("texture2", Resources.Load<Texture>("textures\\pride.png"));
 
             //create rectangles
             for (int i = 0; i < 200; i++)

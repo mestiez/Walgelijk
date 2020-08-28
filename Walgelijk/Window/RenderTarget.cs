@@ -51,5 +51,11 @@ namespace Walgelijk
         /// Draw vertices immediately
         /// </summary>
         public abstract void Draw(Vertex[] vertices, Primitive primitive, Material material = null);
+
+        //TODO Cache dit
+        /// <summary>
+        /// An orthographic projection matrix matrix where the top left is 0,0 and the bottom right is <see cref="Size"/>
+        /// </summary>
+        public Matrix4x4 CalculatedWindowMatrix => Matrix4x4.CreateOrthographicOffCenter(0, Size.X, Size.Y, 0, 0, 100);
     }
 }

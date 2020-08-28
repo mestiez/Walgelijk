@@ -34,15 +34,29 @@ namespace Walgelijk
 
         public void Execute(RenderTarget target)
         {
-            var prev = target.ViewMatrix;
-
             if (ScreenSpace)
-                target.ViewMatrix = Matrix4x4.Identity;
+                DrawScreenSpace(target);
+            else
+                Draw(target);
+        }
 
+        private readonly void DrawScreenSpace(RenderTarget target)
+        {
+            var view = target.ViewMatrix;
+            var proj = target.ProjectionMatrix;
+            target.ProjectionMatrix = target.CalculatedWindowMatrix;
+            target.ViewMatrix = Matrix4x4.Identity;
+
+            Draw(target);
+
+            target.ViewMatrix = view;
+            target.ProjectionMatrix = proj;
+        }
+
+        private readonly void Draw(RenderTarget target)
+        {
             target.ModelMatrix = ModelMatrix;
             target.Draw(VertexBuffer, Material);
-
-            target.ViewMatrix = prev;
         }
     }
 }
