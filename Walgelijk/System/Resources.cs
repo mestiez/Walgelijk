@@ -43,7 +43,7 @@ namespace Walgelijk
                 return result;
             }
 
-            throw new Exception($"The object at \"${path}\" is not of type ${typeof(T).Name}");
+            throw new Exception($"The object at \"{path}\" is not of type {typeof(T).Name}");
         }
 
         /// <summary>
@@ -70,9 +70,12 @@ namespace Walgelijk
         private static object CreateNew(string path, Type type)
         {
             if (loadFunctions.TryGetValue(type, out var loadFromFile))
+            {
+                Logger.Log($"{type.Name} resource loaded at \"{path}\"");
                 return loadFromFile(path);
+            }
             else
-                throw new Exception($"Could not load \"${path}\": there is no resource loader for type ${type.Name}");
+                throw new Exception($"Could not load \"{path}\": there is no resource loader for type {type.Name}");
         }
     }
 }

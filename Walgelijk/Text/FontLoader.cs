@@ -57,8 +57,8 @@ void main()
             Material mat = new Material(new Shader(vert, frag));
             //TODO meer pages
             mat.SetUniform("mainTex", font.Pages[0]);
-            mat.SetUniform("thickness", 0.5f);
-            mat.SetUniform("softness", 0.02f);
+            mat.SetUniform("thickness", 0.48f);
+            mat.SetUniform("softness", 0.1f);
             return mat;
         }
 

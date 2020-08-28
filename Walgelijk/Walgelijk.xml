@@ -1132,6 +1132,56 @@
             Start the game loop
             </summary>
         </member>
+        <member name="T:Walgelijk.ConsoleLogger">
+            <summary>
+            The default logger. Logs to the console.
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ILogger">
+            <summary>
+            Interface for basic logging
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ILogger.Log(System.Object)">
+            <summary>
+            Log information
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ILogger.Warn(System.Object)">
+            <summary>
+            Log a warning
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ILogger.Error(System.Object)">
+            <summary>
+            Log an error
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Logger">
+            <summary>
+            Access the logging implementation
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Logger.Implementation">
+            <summary>
+            The logging implementation used. Set to <see cref="T:Walgelijk.ConsoleLogger"/> by default
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Logger.Log(System.Object)">
+            <summary>
+            Log information
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Logger.Warn(System.Object)">
+            <summary>
+            Log a warning
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Logger.Error(System.Object)">
+            <summary>
+            Log an error
+            </summary>
+        </member>
         <member name="T:Walgelijk.Profiler">
             <summary>
             Provides performance information
@@ -1145,6 +1195,11 @@
         <member name="P:Walgelijk.Profiler.FramesPerSecond">
             <summary>
             Amount of frames rendered in the last second
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Profiler.DrawQuickProfiler">
+            <summary>
+            Enables or disables a small debug performance information display
             </summary>
         </member>
         <member name="M:Walgelijk.Profiler.#ctor(Walgelijk.Game)">
@@ -1179,6 +1234,13 @@
             </summary>
             <typeparam name="T">The type of the object to load</typeparam>
             <param name="path">The path of the file</param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Resources.CanLoad(System.Type)">
+            <summary>
+            Returns if the resource manager can load objects of the given type
+            </summary>
+            <param name="type"></param>
             <returns></returns>
         </member>
         <member name="M:Walgelijk.Resources.RegisterType(System.Type,System.Func{System.String,System.Object})">

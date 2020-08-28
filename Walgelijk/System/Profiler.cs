@@ -16,6 +16,13 @@ namespace Walgelijk
         /// Amount of frames rendered in the last second
         /// </summary>
         public float FramesPerSecond => fpsCounter.Frequency;
+        /// <summary>
+        /// Enables or disables a small debug performance information display
+        /// </summary>
+        public bool DrawQuickProfiler { get; set; }
+#if DEBUG 
+            = true;
+#endif
 
         private readonly Game game;
         private readonly Matrix4x4 quickProfilerModel = Matrix4x4.CreateScale(0.7f) * Matrix4x4.CreateTranslation(5, 5, 0);
@@ -48,7 +55,8 @@ namespace Walgelijk
         public void Render()
         {
             CalculateFPS();
-            RenderQuickProfiler();
+            if (DrawQuickProfiler)
+                RenderQuickProfiler();
         }
 
         private void RenderQuickProfiler()

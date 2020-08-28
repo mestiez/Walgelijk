@@ -16,7 +16,7 @@ namespace Walgelijk.OpenTK
 
             if (compilationFailed)
             {
-                Console.WriteLine($"Shader {index} error:\n\t{info}");
+                Logger.Error($"Shader {index} error:\n{info}");
                 GL.DeleteShader(index);
                 return false;
             }

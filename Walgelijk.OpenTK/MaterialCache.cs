@@ -15,8 +15,7 @@ namespace Walgelijk.OpenTK
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                Console.WriteLine("Loaded default material instead");
+                Logger.Warn(e.Message + "\nLoaded default material instead\n");
                 // TODO *DIT GAAT EEN ONEINDIGE LOOP WORDEN ALS DE DEFAULT MATERIAL KAPOT IS!*
                 loaded = Load(Material.DefaultMaterial);
             }
