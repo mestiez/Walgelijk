@@ -27,14 +27,14 @@ namespace Walgelijk.Text
             ParseGlyphs(text, font, info);
             ParseKernings(text, font, info);
 
-            font.Material = GetSDFFontMaterial(font);
+            font.Material = CreateFontMaterial(font);
 
             return font;
         }
 
-        public static Material GetSDFFontMaterial(Font font)
+        public static Material CreateFontMaterial(Font font)
         {
-            string vert = ShaderConstants.DefaultVertex;
+            string vert = ShaderConstants.WorldSpaceVertex;
             string frag =
 @"#version 460
 
@@ -55,6 +55,7 @@ void main()
     color = vertexColor * tex;
 }";
             Material mat = new Material(new Shader(vert, frag));
+            //TODO meer pages
             mat.SetUniform("mainTex", font.Pages[0]);
             mat.SetUniform("thickness", 0.5f);
             mat.SetUniform("softness", 0.02f);

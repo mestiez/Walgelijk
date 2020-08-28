@@ -44,6 +44,8 @@ namespace Walgelijk
         /// </summary>
         public AudioRenderer AudioRenderer { get; }
 
+        public Profiler Profiling { get; }
+
         /// <summary>
         /// Returns the <see cref="Walgelijk.Time"/> information that belongs to <see cref="Window"/>
         /// </summary>
@@ -58,6 +60,7 @@ namespace Walgelijk
             window.Game = this;
             Main = this;
             AudioRenderer = audioRenderer ?? new EmptyAudioRenderer();
+            Profiling = new Profiler(this);
         }
 
         /// <summary>

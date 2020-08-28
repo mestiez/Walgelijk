@@ -53,6 +53,8 @@ namespace Walgelijk
 
         public ShapeRenderTask RenderTask { get; internal set; }
 
+        public bool ScreenSpace { get; set; }
+
         /// <summary>
         /// Create a rectangle renderer component
         /// </summary>

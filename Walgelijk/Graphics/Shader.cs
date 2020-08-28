@@ -54,7 +54,7 @@ namespace Walgelijk
             {
                 return new Shader
                 {
-                    VertexShader = ShaderConstants.DefaultVertex,
+                    VertexShader = ShaderConstants.WorldSpaceVertex,
                     FragmentShader = ShaderConstants.DefaultFragment
                 };
             }

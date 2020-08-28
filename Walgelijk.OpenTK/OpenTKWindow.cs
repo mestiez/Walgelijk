@@ -9,8 +9,7 @@ using Vector2 = System.Numerics.Vector2;
 
 namespace Walgelijk.OpenTK
 {
-
-    public class OpenTKWindow : Walgelijk.Window
+    public class OpenTKWindow : Window
     {
         internal readonly GameWindow window;
         internal readonly OpenTKRenderTarget renderTarget;
@@ -98,7 +97,7 @@ namespace Walgelijk.OpenTK
 
         private void OnRenderFrame(object sender, FrameEventArgs obj)
         {
-            time.DeltaTime = (float)obj.Time;
+            time.RenderDeltaTime = (float)obj.Time;
             time.SecondsSinceStart = (float)stopwatch.Elapsed.TotalSeconds;
 
             Game.Scene?.RenderSystems();
@@ -106,14 +105,18 @@ namespace Walgelijk.OpenTK
             RenderTarget.Clear();
             RenderQueue.RenderAndReset(RenderTarget);
             window.SwapBuffers();
+
+            Game.Profiling.Render();
         }
 
         private void OnUpdateFrame(object sender, FrameEventArgs obj)
         {
-            time.DeltaTime = (float)obj.Time;
+            time.UpdateDeltaTime = (float)obj.Time;
 
             Game.Scene?.UpdateSystems();
             inputHandler.Reset();
+
+            Game.Profiling.Update();
         }
 
         private void OnFireDrop(object sender, FileDropEventArgs obj)

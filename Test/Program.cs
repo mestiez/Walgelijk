@@ -26,12 +26,13 @@ namespace Test
 
         public override void Render()
         {
-           // Program.coolSprite.SetUniform("time", Time.SecondsSinceStart * 12);
+           Program.coolSprite.SetUniform("time", Time.SecondsSinceStart * 12);
         }
 
         public override void Update()
         {
-            // Program.coolText.KerningAmount = Input.WindowMousePosition.X;
+            Program.coolText.String = Scene.Game.Profiling.UpdatesPerSecond + " ups\n" + Scene.Game.Profiling.FramesPerSecond + " fps\n";
+
             if (Input.IsKeyPressed(Key.Down))
                 Audio.Stop(ref music);
 
@@ -48,7 +49,7 @@ namespace Test
             var zoomOut = Input.IsKeyHeld(Key.Minus);
             var cameraSystem = Scene.GetSystem<CameraSystem>();
             var cam = cameraSystem.MainCameraComponent;
-            float factor = MathF.Pow(2f, Time.DeltaTime);
+            float factor = MathF.Pow(2f, Time.UpdateDeltaTime);
             if (zoomIn)
                 cam.OrthographicSize /= factor;
             else if (zoomOut)
@@ -74,8 +75,8 @@ namespace Test
                 var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
                 PlayerComponent player = pair.Component;
 
-                cameraSystem.MainCameraTransform.Position = Vector2.Lerp(cameraSystem.MainCameraTransform.Position, transform.Position, Time.DeltaTime * 5);
-                transform.Position += delta * player.MovementSpeed * Time.DeltaTime;
+                cameraSystem.MainCameraTransform.Position = Vector2.Lerp(cameraSystem.MainCameraTransform.Position, transform.Position, Time.UpdateDeltaTime * 5);
+                transform.Position += delta * player.MovementSpeed * Time.UpdateDeltaTime;
                 if (Input.IsKeyReleased(Key.O))
                     Scene.RemoveEntity(pair.Entity);
 
@@ -114,14 +115,14 @@ namespace Test
                 );
 
             game.Window.TargetFrameRate = 60;
-            game.Window.TargetUpdateRate = 0;
+            game.Window.TargetUpdateRate = 60;
             game.Window.VSync = false;
             game.Window.RenderTarget.ClearColour = new Color("#d42c5e");
 
             var scene = new Scene();
             game.Scene = scene;
-            coolText = new TextComponent("hallo wereld!\nnieuwe regel...\nwat gebeurt er als ik \t doe", Font.Load("fonts\\broadway.fnt"));
-            coolText.Tracking = .9f;
+            coolText = new TextComponent("hallo wereld!\nnieuwe regel...\nwat gebeurt er als ik \t doe", Font.Load("fonts\\inter.fnt"));
+            coolText.TrackingMultiplier = .9f;
 
             {
                 var ent = scene.CreateEntity();
@@ -132,6 +133,7 @@ namespace Test
                 scene.AttachComponent(ent, coolText);
             }
 
+            if (false)
             {
                 var ent = scene.CreateEntity();
                 scene.AttachComponent(ent, new TransformComponent
@@ -139,7 +141,7 @@ namespace Test
                     Scale = new Vector2(0.015f, -0.015f),
                     Position = new Vector2(-10, 0)
                 });
-                scene.AttachComponent(ent, new TextComponent("andere font tijden\nrich text zou cool zijn... zo van\n<b>super</b> cool", Font.Load("fonts\\cambria.fnt")));
+                scene.AttachComponent(ent, new TextComponent("andere font tijden\nrich text zou cool zijn... zo van\n<b>super</b> cool", Font.Load("fonts\\broadway.fnt")/*, Font.Load("fonts\\kosugi maru.fnt")*/));
             }
 
             coolSprite = new Material(Shader.Load("shaders\\shader.vert", "shaders\\shader.frag"));
@@ -147,13 +149,13 @@ namespace Test
             coolSprite.SetUniform("texture2", Texture.Load("textures\\pride.png"));
 
             //create rectangles
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 200; i++)
             {
                 var entity = scene.CreateEntity();
 
                 scene.AttachComponent(entity, new TransformComponent
                 {
-                    Position = new Vector2(
+                    Position = i == 0 ? Vector2.Zero : new Vector2(
                         Utilities.RandomFloat(-25f, 25f),
                         Utilities.RandomFloat(-25f, 25f)
                         ),

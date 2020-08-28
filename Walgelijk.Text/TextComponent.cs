@@ -12,14 +12,14 @@ namespace Walgelijk.Text
         private float lineHeightMultiplier = .7f;
         private float kerningAmount = 1f;
 
-        public TextComponent(string displayString, Font font)
+        public TextComponent(string displayString, Font font = null)
         {
             this.displayString = displayString;
-            this.font = font;
+            this.font = font ?? Font.Default;
 
             VertexBuffer = new VertexBuffer();
             VertexBuffer.PrimitiveType = Primitive.Quads;
-            RenderTask = new ShapeRenderTask(VertexBuffer, Matrix4x4.Identity, font.Material);
+            RenderTask = new ShapeRenderTask(VertexBuffer, Matrix4x4.Identity, this.font.Material);
 
             CreateVertices();
         }
@@ -27,7 +27,7 @@ namespace Walgelijk.Text
         /// <summary>
         /// Displayed string. Changing this forces a vertex array update.
         /// </summary>
-        public string String { get => displayString; set { displayString = value; CreateVertices(); } }
+        public string String { get => displayString; set { if (value == displayString) return;  displayString = value; CreateVertices(); } }
         /// <summary>
         /// Used font. Changing this forces a vertex array update.
         /// </summary>
@@ -38,18 +38,18 @@ namespace Walgelijk.Text
         public Color Color { get => color; set { color = value; CreateVertices(); } }
 
         public VertexBuffer VertexBuffer { get; private set; }
-
         public ShapeRenderTask RenderTask { get; private set; }
+        public bool ScreenSpace { get; set; }
 
         /// <summary>
         /// Distance between letters. Changing this forces a vertex array update.
         /// </summary>
-        public float Tracking { get => tracking; set { tracking = value; CreateVertices(); } }
+        public float TrackingMultiplier { get => tracking; set { tracking = value; CreateVertices(); } }
 
         /// <summary>
         /// Kerning amount multiplier. Changing this forces a vertex array update.
         /// </summary>
-        public float KerningAmount { get => kerningAmount; set { kerningAmount = value; CreateVertices(); } }
+        public float KerningMultiplier { get => kerningAmount; set { kerningAmount = value; CreateVertices(); } }
 
         /// <summary>
         /// Distance between each line.  Changing this forces a vertex array update.
@@ -60,69 +60,7 @@ namespace Walgelijk.Text
         {
             VertexBuffer.Vertices = new Vertex[displayString.Length * 4];
 
-            float cursor = 0;
-            float width = font.Width;
-            float height = font.Height;
-
-            uint vertexIndex = 0;
-            char lastChar = default;
-            int line = 0;
-            for (int i = 0; i < displayString.Length; i++)
-            {
-                var c = displayString[i];
-
-                switch (c)
-                {
-                    case '\n':
-                        line++;
-                        cursor = 0;
-                        continue;
-                }
-
-                var glyph = Font.GetGlyph(c);
-
-                Kerning kerning = i == 0 ? default : font.GetKerning(lastChar, c);
-
-                var pos = new Vector3(cursor + glyph.XOffset + kerning.Amount * KerningAmount, glyph.YOffset + line * Font.LineHeight * LineHeightMultiplier, 0);
-
-                float x = glyph.X / width;
-                float y = glyph.Y / height;
-                float w = glyph.Width / width;
-                float h = glyph.Height / height;
-
-                // bottom left
-                VertexBuffer.Vertices[vertexIndex] = new Vertex(
-                    pos + new Vector3(0, 0, 0),
-                    new Vector2(x, y),
-                    Color
-                    );
-
-                // bottom right
-                VertexBuffer.Vertices[vertexIndex + 1] = new Vertex(
-                    pos + new Vector3(glyph.Width, 0, 0),
-                    new Vector2(x + w, y),
-                    Color
-                    );
-
-                // top right
-                VertexBuffer.Vertices[vertexIndex + 2] = new Vertex(
-                    pos + new Vector3(glyph.Width, glyph.Height, 0),
-                    new Vector2(x + w, y + h),
-                    Color
-                    );
-
-                // top left
-                VertexBuffer.Vertices[vertexIndex + 3] = new Vertex(
-                    pos + new Vector3(0, glyph.Height, 0),
-                    new Vector2(x, y + h),
-                    Color
-                    );
-
-                vertexIndex += 4;
-                cursor += (glyph.Advance + (pos.X-cursor)) * tracking;
-
-                lastChar = c;
-            }
+            TextMeshGenerator.GenerateVertices(String, Font, VertexBuffer.Vertices, Color, TrackingMultiplier, KerningMultiplier, LineHeightMultiplier);
 
             VertexBuffer.GenerateIndices();
             VertexBuffer.HasChanged = true;

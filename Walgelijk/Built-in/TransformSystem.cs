@@ -7,10 +7,6 @@ namespace Walgelijk
     /// </summary>
     public class TransformSystem : System
     {
-        public override void Initialise() { }
-
-        public override void Render() { }
-
         public override void Update()
         {
             foreach (var pair in Scene.GetAllComponentsOfType<TransformComponent>())

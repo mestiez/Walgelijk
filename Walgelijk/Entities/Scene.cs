@@ -278,8 +278,16 @@ namespace Walgelijk
         /// </summary>
         public void RenderSystems()
         {
-            foreach (var system in systems.Values)
-                system.Render();
+            var s = systems.Values;
+
+            foreach (var system in s)
+                system.PreRender();            
+            
+            foreach (var system in s)
+                system.Render();     
+            
+            foreach (var system in s)
+                system.PostRender();
         }
 
         //TODO voeg manier to om meerdere componenten te krijgen per keer

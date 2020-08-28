@@ -86,7 +86,6 @@ namespace Walgelijk.OpenTK
         {
             ShaderManager.SetUniform(material, ShaderConstants.ViewMatrixUniform, ViewMatrix);
             ShaderManager.SetUniform(material, ShaderConstants.ProjectionMatrixUniform, ProjectionMatrix);
-
             ShaderManager.SetUniform(material, ShaderConstants.ModelMatrixUniform, ModelMatrix);
         }
 

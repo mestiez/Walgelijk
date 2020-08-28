@@ -5,10 +5,6 @@
     /// </summary>
     public class ShapeRendererSystem : System
     {
-        public override void Initialise() { }
-
-        public override void Update() { }
-
         public override void Render()
         {
             var basicShapes = Scene.GetAllComponentsOfType<IShapeComponent>();
@@ -27,6 +23,7 @@
             {
                 var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
                 var task = shape.RenderTask;
+                task.ScreenSpace = shape.ScreenSpace;
                 task.ModelMatrix = transform.LocalToWorldMatrix;
                 RenderQueue.Enqueue(task);
             }

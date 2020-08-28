@@ -13,5 +13,9 @@
         /// The render task that is generated. It's best not to edit this unless you really need to.
         /// </summary>
         public ShapeRenderTask RenderTask { get; }
+        /// <summary>
+        /// Determines if the shape should be rendered in screenspace
+        /// </summary>
+        public bool ScreenSpace { get; set; }
     }
 }

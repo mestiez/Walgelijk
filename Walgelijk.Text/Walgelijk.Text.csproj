@@ -9,4 +9,13 @@
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="fonts\kosugi maru.fnt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="fonts\kosugi maru.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

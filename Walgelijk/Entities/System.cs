@@ -33,16 +33,26 @@
         /// <summary>
         /// Initialise the system
         /// </summary>
-        public abstract void Initialise();
+        public virtual void Initialise() { }
 
         /// <summary>
         /// Run the logic
         /// </summary>
-        public abstract void Update();
+        public virtual void Update() { }
+
+        /// <summary>
+        /// Run pre rendering code
+        /// </summary>
+        public virtual void PreRender() { }
 
         /// <summary>
         /// Run rendering code
         /// </summary>
-        public abstract void Render();
+        public virtual void Render() { }
+
+        /// <summary>
+        /// Run post rendering code
+        /// </summary>
+        public virtual void PostRender() { }
     }
 }

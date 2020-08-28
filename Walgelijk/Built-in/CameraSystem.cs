@@ -61,9 +61,7 @@ namespace Walgelijk
             return camera;
         }
 
-        public override void Update() { }
-
-        public override void Render()
+        public override void PreRender()
         {
             if (!mainCameraSet) return;
             SetRenderTask();

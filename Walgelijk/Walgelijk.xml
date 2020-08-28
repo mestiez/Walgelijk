@@ -163,6 +163,11 @@
             The render task that is generated. It's best not to edit this unless you really need to.
             </summary>
         </member>
+        <member name="P:Walgelijk.IShapeComponent.ScreenSpace">
+            <summary>
+            Determines if the shape should be rendered in screenspace
+            </summary>
+        </member>
         <member name="T:Walgelijk.RectangleShapeComponent">
             <summary>
             Basic rectangle renderer data
@@ -531,54 +536,19 @@
             Run the logic
             </summary>
         </member>
+        <member name="M:Walgelijk.System.PreRender">
+            <summary>
+            Run pre rendering code
+            </summary>
+        </member>
         <member name="M:Walgelijk.System.Render">
             <summary>
             Run rendering code
             </summary>
         </member>
-        <member name="T:Walgelijk.Game">
+        <member name="M:Walgelijk.System.PostRender">
             <summary>
-            The link between the scene and the window
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Game.Main">
-            <summary>
-            The last instance that was created
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Game.Window">
-            <summary>
-            Currently active window
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Game.Scene">
-            <summary>
-            Currently active scene
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Game.RenderQueue">
-            <summary>
-            Returns the <see cref="T:Walgelijk.RenderQueue"/> that belongs to <see cref="P:Walgelijk.Game.Window"/>
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Game.AudioRenderer">
-            <summary>
-            The main audio renderer
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Game.Time">
-            <summary>
-            Returns the <see cref="T:Walgelijk.Time"/> information that belongs to <see cref="P:Walgelijk.Game.Window"/>
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window,Walgelijk.AudioRenderer)">
-            <summary>
-            Create a game with a window and an optional audio renderer. If the audio renderer is not set, the game won't be able to play any sounds
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Game.Start">
-            <summary>
-            Start the game loop
+            Run post rendering code
             </summary>
         </member>
         <member name="F:Walgelijk.Color.Stride">
@@ -674,6 +644,11 @@
             </summary>
             <param name="shader"></param>
         </member>
+        <member name="M:Walgelijk.Material.#ctor">
+            <summary>
+            New instance of the default shader
+            </summary>
+        </member>
         <member name="M:Walgelijk.Material.SetUniform(System.String,System.Object)">
             <summary>
             Set uniform data
@@ -699,7 +674,7 @@
         </member>
         <member name="P:Walgelijk.Material.DefaultMaterial">
             <summary>
-            The default material with the default shader
+            The default material with the default shader. This material is shared.
             </summary>
         </member>
         <member name="T:Walgelijk.Primitive">
@@ -788,6 +763,11 @@
             Material to draw with
             </summary>
         </member>
+        <member name="P:Walgelijk.ShapeRenderTask.ScreenSpace">
+            <summary>
+            Should the task set the view matrix to <see cref="P:System.Numerics.Matrix4x4.Identity"/> 
+            </summary>
+        </member>
         <member name="T:Walgelijk.Shader">
             <summary>
             Structure that holds the code for a full shader program
@@ -833,7 +813,12 @@
             Default fragment shader code
             </summary>
         </member>
-        <member name="F:Walgelijk.ShaderConstants.DefaultVertex">
+        <member name="F:Walgelijk.ShaderConstants.WorldSpaceVertex">
+            <summary>
+            Default vertex shader code
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ShaderConstants.ScreenSpaceVertex">
             <summary>
             Default vertex shader code
             </summary>
@@ -1091,14 +1076,95 @@
             Generates indices that simply walk the vertex array from beginning to end
             </summary>
         </member>
+        <member name="T:Walgelijk.Game">
+            <summary>
+            The link between the scene and the window
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.Main">
+            <summary>
+            The last instance that was created
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.Window">
+            <summary>
+            Currently active window
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.Scene">
+            <summary>
+            Currently active scene
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.RenderQueue">
+            <summary>
+            Returns the <see cref="T:Walgelijk.RenderQueue"/> that belongs to <see cref="P:Walgelijk.Game.Window"/>
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.AudioRenderer">
+            <summary>
+            The main audio renderer
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.Time">
+            <summary>
+            Returns the <see cref="T:Walgelijk.Time"/> information that belongs to <see cref="P:Walgelijk.Game.Window"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window,Walgelijk.AudioRenderer)">
+            <summary>
+            Create a game with a window and an optional audio renderer. If the audio renderer is not set, the game won't be able to play any sounds
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Game.Start">
+            <summary>
+            Start the game loop
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Profiler">
+            <summary>
+            Provides performance information
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Profiler.UpdatesPerSecond">
+            <summary>
+            Amount of updates in the last second
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Profiler.FramesPerSecond">
+            <summary>
+            Amount of frames rendered in the last second
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Profiler.#ctor(Walgelijk.Game)">
+            <summary>
+            Create a profiler for the given game
+            </summary>
+            <param name="game"></param>
+        </member>
+        <member name="M:Walgelijk.Profiler.Update">
+            <summary>
+            Force the profiler to update. Should be handled by the window.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Profiler.Render">
+            <summary>
+            Force the profiler to calculate render information. Should be handled by the window.
+            </summary>
+        </member>
         <member name="T:Walgelijk.Time">
             <summary>
             Structure that holds frame specific time data
             </summary>
         </member>
-        <member name="P:Walgelijk.Time.DeltaTime">
+        <member name="P:Walgelijk.Time.UpdateDeltaTime">
             <summary>
             Returns the amount of seconds that have passed since the last update frame
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Time.RenderDeltaTime">
+            <summary>
+            Returns the amount of seconds that have passed since the last rendered frame
             </summary>
         </member>
         <member name="P:Walgelijk.Time.SecondsSinceStart">

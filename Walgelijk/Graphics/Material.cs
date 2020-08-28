@@ -27,6 +27,14 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// New instance of the default shader
+        /// </summary>
+        public Material()
+        {
+            Shader = Shader.Default;
+        }
+
+        /// <summary>
         /// Set uniform data
         /// </summary>
         /// <param name="name"></param>
@@ -80,8 +88,8 @@ namespace Walgelijk
         */
 
         /// <summary>
-        /// The default material with the default shader
+        /// The default material with the default shader. This material is shared.
         /// </summary>
-        public static Material DefaultMaterial { get; } = new Material(Shader.Default);
+        public static Material DefaultMaterial { get; } = new Material();
     }
 }
