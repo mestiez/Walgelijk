@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Walgelijk
 {
@@ -25,7 +26,7 @@ namespace Walgelijk
 #endif
 
         private readonly Game game;
-        private readonly Matrix4x4 quickProfilerModel = Matrix4x4.CreateScale(0.7f) * Matrix4x4.CreateTranslation(5, 5, 0);
+        private readonly Matrix4x4 quickProfilerModel = Matrix4x4.CreateScale(0.5f) * Matrix4x4.CreateTranslation(5, 5, 0);
         private readonly TextComponent quickProfiler;
 
         private readonly TickRateCounter upsCounter = new TickRateCounter();
@@ -61,14 +62,15 @@ namespace Walgelijk
 
         private void RenderQuickProfiler()
         {
-            quickProfiler.String = $"{FramesPerSecond} fps\n{UpdatesPerSecond} ups";
+          //  quickProfiler.String = $"{FramesPerSecond} fps\n{UpdatesPerSecond} ups";
+            quickProfiler.String = $"frame time {MathF.Round(1/ UpdatesPerSecond, 3)}ms\nrender time {MathF.Round(1 / FramesPerSecond, 3)}ms";
 
             var task = quickProfiler.RenderTask;
             task.ScreenSpace = true;
             task.ModelMatrix = quickProfilerModel;
             game.RenderQueue.Enqueue(task);
         }
-
+        //Goodnight mario!!!!!!!!!!!! i will sleep so violently, you have no idea. itll be the most violent sleep.
         private void CalculateUPS()
         {
             upsCounter.Tick(game.Time.SecondsSinceLoad);

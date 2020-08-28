@@ -121,7 +121,7 @@ namespace Test
 
             var scene = new Scene();
             game.Scene = scene;
-            coolText = new TextComponent("hallo wereld!\nnieuwe regel...\nwat gebeurt er als ik \t doe", Font.Load("fonts\\inter.fnt"));
+            coolText = new TextComponent("hallo wereld!\nnieuwe regel...\nwat gebeurt er als ik \t doe", Resources.Load<Font>("fonts\\inter.fnt"));
             coolText.TrackingMultiplier = .9f;
 
             {
