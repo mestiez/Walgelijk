@@ -1,4 +1,3 @@
-# Walgelijk
 ![logo](https://i.imgur.com/YMGhfSS.png)
 
 Een kleine, simpele 2D game engine
