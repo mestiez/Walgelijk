@@ -1,4 +1,6 @@
-﻿namespace Walgelijk
+﻿using System;
+
+namespace Walgelijk
 {
     /// <summary>
     /// Component that holds camera data

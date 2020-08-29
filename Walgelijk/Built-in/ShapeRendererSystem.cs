@@ -15,13 +15,21 @@
             }
         }
 
-        private void RenderShape(ComponentEntityTuple<IShapeComponent> pair)
+        private void RenderShape(EntityWith<IShapeComponent> pair)
         {
             var shape = pair.Component;
 
             if (shape.RenderTask.VertexBuffer != null)
             {
+#if DEBUG
+                if (!Scene.TryGetComponentFrom<TransformComponent>(pair.Entity, out var transform))
+                {
+                    Logger.Error($"Attempt to render {nameof(IShapeComponent)} without {nameof(TransformComponent)}");
+                    return;
+                }
+# else
                 var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
+#endif
                 var task = shape.RenderTask;
                 task.ScreenSpace = shape.ScreenSpace;
                 task.ModelMatrix = transform.LocalToWorldMatrix;

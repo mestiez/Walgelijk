@@ -26,7 +26,7 @@ namespace Walgelijk
 #endif
 
         private readonly Game game;
-        private readonly Matrix4x4 quickProfilerModel = Matrix4x4.CreateScale(0.5f) * Matrix4x4.CreateTranslation(5, 5, 0);
+        private readonly Matrix4x4 quickProfilerModel = Matrix4x4.CreateScale(0.5f, -0.5f, 1) * Matrix4x4.CreateTranslation(5, 5, 0);
         private readonly TextComponent quickProfiler;
 
         private readonly TickRateCounter upsCounter = new TickRateCounter();
@@ -40,6 +40,7 @@ namespace Walgelijk
         {
             this.game = game;
             quickProfiler = new TextComponent("?");
+            quickProfiler.LineHeightMultiplier = .9f;
         }
 
         /// <summary>
@@ -62,8 +63,10 @@ namespace Walgelijk
 
         private void RenderQuickProfiler()
         {
-          //  quickProfiler.String = $"{FramesPerSecond} fps\n{UpdatesPerSecond} ups";
-            quickProfiler.String = $"frame time {MathF.Round(1/ UpdatesPerSecond, 3)}ms\nrender time {MathF.Round(1 / FramesPerSecond, 3)}ms";
+            quickProfiler.String = @$"frame time {MathF.Round(1000 / UpdatesPerSecond, 3)}ms
+render time {MathF.Round(1000 / FramesPerSecond, 3)}ms
+{game.RenderQueue.QueueLength} render tasks
+";
 
             var task = quickProfiler.RenderTask;
             task.ScreenSpace = true;

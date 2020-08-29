@@ -107,15 +107,13 @@ namespace Test
 
         static void Main(string[] args)
         {
-            Random rand = new Random();
-
             Game game = new Game(
-                new OpenTKWindow("hallo daar", new Vector2(128, 128), new Vector2(512, 512)),
+                new OpenTKWindow("hallo daar", new Vector2(128, 128), new Vector2(800, 600)),
                 new NAudioRenderer()
                 );
 
-            game.Window.TargetFrameRate = 60;
-            game.Window.TargetUpdateRate = 0;
+            game.Window.TargetFrameRate = 120;
+            game.Window.TargetUpdateRate = 120;
             game.Window.VSync = false;
             game.Window.RenderTarget.ClearColour = new Color("#d42c5e");
 
@@ -128,17 +126,16 @@ namespace Test
                 var ent = scene.CreateEntity();
                 scene.AttachComponent(ent, new TransformComponent
                 {
-                    Scale = new Vector2(0.01f, -0.01f)
+                    Scale = new Vector2(0.01f, 0.01f)
                 });
                 scene.AttachComponent(ent, coolText);
             }
 
-            if (false)
             {
                 var ent = scene.CreateEntity();
                 scene.AttachComponent(ent, new TransformComponent
                 {
-                    Scale = new Vector2(0.015f, -0.015f),
+                    Scale = new Vector2(0.015f, 0.015f),
                     Position = new Vector2(-10, 0)
                 });
                 scene.AttachComponent(ent, new TextComponent("andere font tijden\nrich text zou cool zijn... zo van\n<b>super</b> cool", Font.Load("fonts\\broadway.fnt")/*, Font.Load("fonts\\kosugi maru.fnt")*/));

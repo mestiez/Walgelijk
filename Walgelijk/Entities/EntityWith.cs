@@ -4,9 +4,9 @@
     /// Struct that holds a component and its entity
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public struct ComponentEntityTuple<T> where T : class
+    public struct EntityWith<T> where T : class
     {
-        public ComponentEntityTuple(T component, Entity entity)
+        public EntityWith(T component, Entity entity)
         {
             Component = component;
             Entity = entity;

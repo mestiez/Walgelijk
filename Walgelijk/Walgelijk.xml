@@ -148,6 +148,21 @@
             </summary>
             <param name="cameraEntity"></param>
         </member>
+        <member name="T:Walgelijk.DebugCameraSystem">
+            <summary>
+            Provides basic WASD + - camera controls
+            </summary>
+        </member>
+        <member name="P:Walgelijk.DebugCameraSystem.Speed">
+            <summary>
+            Movement speed
+            </summary>
+        </member>
+        <member name="P:Walgelijk.DebugCameraSystem.ZoomFactor">
+            <summary>
+            Zoom speed
+            </summary>
+        </member>
         <member name="T:Walgelijk.IShapeComponent">
             <summary>
             Interface that provides a <see cref="P:Walgelijk.IShapeComponent.VertexBuffer"/> and <see cref="T:Walgelijk.ShapeRenderTask"/>
@@ -330,22 +345,6 @@
             Clear everything
             </summary>
         </member>
-        <member name="T:Walgelijk.ComponentEntityTuple`1">
-            <summary>
-            Struct that holds a component and its entity
-            </summary>
-            <typeparam name="T"></typeparam>
-        </member>
-        <member name="P:Walgelijk.ComponentEntityTuple`1.Component">
-            <summary>
-            The component of type <see cref="!:T"/>
-            </summary>
-        </member>
-        <member name="P:Walgelijk.ComponentEntityTuple`1.Entity">
-            <summary>
-            The entity that <see cref="P:Walgelijk.ComponentEntityTuple`1.Component"/> is attached to
-            </summary>
-        </member>
         <member name="T:Walgelijk.Entity">
             <summary>
             An entity. Does nothing, simply holds an identity. Implicitly an integer.
@@ -354,6 +353,22 @@
         <member name="P:Walgelijk.Entity.Identity">
             <summary>
             The identity of the entity
+            </summary>
+        </member>
+        <member name="T:Walgelijk.EntityWith`1">
+            <summary>
+            Struct that holds a component and its entity
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:Walgelijk.EntityWith`1.Component">
+            <summary>
+            The component of type <see cref="!:T"/>
+            </summary>
+        </member>
+        <member name="P:Walgelijk.EntityWith`1.Entity">
+            <summary>
+            The entity that <see cref="P:Walgelijk.EntityWith`1.Component"/> is attached to
             </summary>
         </member>
         <member name="T:Walgelijk.IdentityGenerator">
@@ -455,7 +470,7 @@
             Get all components and entities of a certain type
             </summary>
         </member>
-        <member name="M:Walgelijk.Scene.GetAllComponentsOfTypeNonAlloc``1(Walgelijk.ComponentEntityTuple{``0}[])">
+        <member name="M:Walgelijk.Scene.GetAllComponentsOfTypeNonAlloc``1(Walgelijk.EntityWith{``0}[])">
             <summary>
             Get all components and entities of a certain type and puts them in the given array. Returns the amount that was put in.
             </summary>
@@ -551,6 +566,11 @@
             Run post rendering code
             </summary>
         </member>
+        <member name="T:Walgelijk.Color">
+            <summary>
+            Colour with 4 floating point components ranging from 0-1
+            </summary>
+        </member>
         <member name="F:Walgelijk.Color.Stride">
             <summary>
             Size of an instance of this struct in bytes
@@ -604,6 +624,11 @@
         <member name="P:Walgelijk.Color.Blue">
             <summary>
             Blue
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Color.Orange">
+            <summary>
+            Orange
             </summary>
         </member>
         <member name="M:Walgelijk.Color.ToBytes">
@@ -672,7 +697,7 @@
             Get all uniforms and their values as an immutable dictionary
             </summary>
         </member>
-        <member name="P:Walgelijk.Material.DefaultMaterial">
+        <member name="P:Walgelijk.Material.DefaultTextured">
             <summary>
             The default material with the default shader. This material is shared.
             </summary>
@@ -772,6 +797,28 @@
         <member name="P:Walgelijk.ShapeRenderTask.ScreenSpace">
             <summary>
             Should the task set the view matrix to <see cref="P:System.Numerics.Matrix4x4.Identity"/> 
+            </summary>
+        </member>
+        <member name="T:Walgelijk.RenderQueue">
+            <summary>
+            This object manages a render queue of <see cref="T:Walgelijk.IRenderTask"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.RenderQueue.RenderAndReset(Walgelijk.RenderTarget)">
+            <summary>
+            Render the queue by dequeuing and executing each entry
+            </summary>
+            <param name="target"></param>
+        </member>
+        <member name="M:Walgelijk.RenderQueue.Enqueue(Walgelijk.IRenderTask)">
+            <summary>
+            Add a task to the queue
+            </summary>
+            <param name="task"></param>
+        </member>
+        <member name="P:Walgelijk.RenderQueue.QueueLength">
+            <summary>
+            Length of the queue
             </summary>
         </member>
         <member name="T:Walgelijk.Shader">
@@ -1495,9 +1542,9 @@
             Returns a random int in a range
             </summary>
         </member>
-        <member name="M:Walgelijk.Utilities.RandomByte(System.Byte,System.Byte)">
+        <member name="M:Walgelijk.Utilities.RandomByte">
             <summary>
-            Returns a random int in a range
+            Returns a random byte
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.RandomColour(System.Single)">
@@ -1516,6 +1563,11 @@
             Clamp a value within a range
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Utilities.PickRandom``1(System.Collections.Generic.IList{``0})">
+            <summary>
+            Return a random entry in a <see cref="T:System.Collections.Generic.ICollection`1"/>
+            </summary>
         </member>
         <member name="T:Walgelijk.InputState">
             <summary>
@@ -1621,23 +1673,6 @@
             <summary>
             Returns if the key was released
             </summary>
-        </member>
-        <member name="T:Walgelijk.RenderQueue">
-            <summary>
-            This object manages a render queue of <see cref="T:Walgelijk.IRenderTask"/>
-            </summary>
-        </member>
-        <member name="M:Walgelijk.RenderQueue.RenderAndReset(Walgelijk.RenderTarget)">
-            <summary>
-            Render the queue by dequeuing and executing each entry
-            </summary>
-            <param name="target"></param>
-        </member>
-        <member name="M:Walgelijk.RenderQueue.Enqueue(Walgelijk.IRenderTask)">
-            <summary>
-            Add a task to the queue
-            </summary>
-            <param name="task"></param>
         </member>
         <member name="T:Walgelijk.RenderTarget">
             <summary>
@@ -1820,6 +1855,18 @@
         <member name="M:Walgelijk.Window.WindowToScreenPoint(System.Numerics.Vector2)">
             <summary>
             Turn window coordinates into screen coordinates
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Window.WorldToWindowPoint(System.Numerics.Vector2)">
+            <summary>
+            Turn window coordinates into world coordinates
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Window.WindowToWorldPoint(System.Numerics.Vector2)">
+            <summary>
+            Turn world coordinates into window coordinates
             </summary>
             <returns></returns>
         </member>

@@ -77,19 +77,24 @@ namespace Walgelijk
             return uniforms.ToImmutableDictionary();
         }
 
-        /* waarom is dit nodig??
-        public void SetFloat(string name, float value) => SetUniform(name, value);
-        public void SetInt(string name, int value) => SetUniform(name, value);
-        public void SetBool(string name, bool value) => SetUniform(name, value);
-        public void SetColor(string name, Color value) => SetUniform(name, value);
-        public void SetVector(string name, Vector4 value) => SetUniform(name, value);
-        public void SetMatrix(string name, Matrix4x4 value) => SetUniform(name, value);
-        public void SetArray(string name, float[] value) => SetUniform(name, value);
-        */
-
         /// <summary>
         /// The default material with the default shader. This material is shared.
         /// </summary>
-        public static Material DefaultMaterial { get; } = new Material();
+        public static Material DefaultTextured => DefaultMaterialInitialiser.GetMaterial();
+    }
+
+    internal struct DefaultMaterialInitialiser
+    {
+        private static Material material;
+
+        public static Material GetMaterial()
+        {
+            if (material == null)
+            {
+                material = new Material();
+                material.SetUniform(ShaderConstants.MainTextureUniform, new Texture(1, 1, new[] { Color.White }));
+            }
+            return material;
+        }
     }
 }

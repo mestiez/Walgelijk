@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 
 namespace Walgelijk
@@ -30,6 +31,16 @@ namespace Walgelijk
         public override void Initialise()
         {
             renderTask = new CameraRenderTask();
+
+            if (MainCameraTransform == null)
+                FallbackToFirstCamera();
+        }
+
+        private void FallbackToFirstCamera()
+        {
+            var cam = Scene.GetAllComponentsOfType<CameraComponent>();
+            if (cam.Count() == 0) return;
+            SetMainCamera(cam.First().Entity);
         }
 
         /// <summary>

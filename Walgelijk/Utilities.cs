@@ -42,15 +42,15 @@ namespace Walgelijk
         /// <summary>
         /// Returns a random int in a range
         /// </summary>
-        public static int RandomInt(int min = 0, int max = 1)
+        public static int RandomInt(int min = 0, int max = 100)
         {
             return rand.Next(min, max);
         }
 
         /// <summary>
-        /// Returns a random int in a range
+        /// Returns a random byte
         /// </summary>
-        public static int RandomByte(byte min = 0, byte max = 1)
+        public static int RandomByte()
         {
             return (byte)rand.Next(0, 256);
         }
@@ -79,6 +79,14 @@ namespace Walgelijk
         public static int Clamp(int x, int min = 0, int max = 1)
         {
             return Math.Max(min, Math.Min(x, max));
+        }
+
+        /// <summary>
+        /// Return a random entry in a <see cref="ICollection{T}"/>
+        /// </summary>
+        public static T PickRandom<T>(IList<T> collection)
+        {
+            return collection[RandomInt(0, collection.Count)];
         }
     }
 }

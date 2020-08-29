@@ -33,5 +33,10 @@ namespace Walgelijk
         {
             queue.Enqueue(task);
         }
+
+        /// <summary>
+        /// Length of the queue
+        /// </summary>
+        public int QueueLength => queue.Count;
     }
 }

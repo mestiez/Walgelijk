@@ -3,6 +3,9 @@ using System.Data.Common;
 
 namespace Walgelijk
 {
+    /// <summary>
+    /// Colour with 4 floating point components ranging from 0-1
+    /// </summary>
     public struct Color
     {
         /// <summary>
@@ -83,7 +86,11 @@ namespace Walgelijk
         /// <summary>
         /// Blue
         /// </summary>
-        public static Color Blue => new Color(0, 0, 1f);
+        public static Color Blue => new Color(0, 0, 1f);        
+        /// <summary>
+        /// Orange
+        /// </summary>
+        public static Color Orange => new Color("#FF4F00");
 
         /// <summary>
         /// Returns a tuple where each element corresponds with a component of the colour

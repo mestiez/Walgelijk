@@ -15,7 +15,7 @@ namespace Walgelijk.OpenTK
         internal readonly OpenTKRenderTarget renderTarget;
         internal readonly OpenTKShaderManager shaderManager;
 
-        private InputHandler inputHandler ;
+        private InputHandler inputHandler;
         private Time time = new Time();
         private Stopwatch stopwatch;
 
@@ -61,6 +61,35 @@ namespace Walgelijk.OpenTK
         {
             var pos = window.PointToClient(new Point((int)point.X, (int)point.Y));
             return new Vector2(pos.X, pos.Y);
+        }
+
+        public override Vector2 WindowToScreenPoint(Vector2 point)
+        {
+            var pos = window.PointToScreen(new Point((int)point.X, (int)point.Y));
+            return new Vector2(pos.X, pos.Y);
+        }
+
+        public override Vector2 WorldToWindowPoint(Vector2 point)
+        {
+            var result = Vector2.Transform(new Vector2(point.X, point.Y), renderTarget.ProjectionMatrix * renderTarget.ViewMatrix);
+            result.X *= renderTarget.Size.X;
+            result.Y *= renderTarget.Size.Y;
+            return result;
+        }
+
+        public override Vector2 WindowToWorldPoint(Vector2 point)
+        {
+            point /= renderTarget.Size;
+            point.X -= 0.5f;
+            point.Y += 0.5f;
+
+            if (!Matrix4x4.Invert(renderTarget.ViewMatrix, out var view)) return point;
+            if (!Matrix4x4.Invert(renderTarget.ProjectionMatrix, out var proj)) return point;
+            return Vector2.Transform(
+                new Vector2(point.X, 1 - point.Y),
+                proj * view);
+
+            //TODO projection matrix doet super raar. als je helemaal inzoemt dan is de calculatie correct
         }
 
         public override void StartLoop()
@@ -113,9 +142,9 @@ namespace Walgelijk.OpenTK
             time.UpdateDeltaTime = (float)obj.Time;
 
             Game.Scene?.UpdateSystems();
-            inputHandler.Reset();
-
             Game.Profiling.Update();
+
+            inputHandler.Reset();
         }
 
         private void OnFireDrop(object sender, FileDropEventArgs obj)
@@ -139,10 +168,5 @@ namespace Walgelijk.OpenTK
             InvokeCloseEvent();
         }
 
-        public override Vector2 WindowToScreenPoint(Vector2 point)
-        {
-            var pos = window.PointToScreen(new Point((int)point.X, (int)point.Y));
-            return new Vector2(pos.X, pos.Y);
-        }
     }
 }

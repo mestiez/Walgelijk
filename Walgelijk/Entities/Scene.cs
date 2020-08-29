@@ -156,7 +156,7 @@ namespace Walgelijk
         /// <summary>
         /// Get all components and entities of a certain type
         /// </summary>
-        public IEnumerable<ComponentEntityTuple<T>> GetAllComponentsOfType<T>() where T : class
+        public IEnumerable<EntityWith<T>> GetAllComponentsOfType<T>() where T : class
         {
             stepIsInLoop = true;
             foreach (var pair in components)
@@ -165,7 +165,7 @@ namespace Walgelijk
                 var entity = pair.Key;
 
                 if (componentDictionary.TryGet(out T component))
-                    yield return new ComponentEntityTuple<T>(component, entity);
+                    yield return new EntityWith<T>(component, entity);
             }
             stepIsInLoop = false;
         }
@@ -173,7 +173,7 @@ namespace Walgelijk
         /// <summary>
         /// Get all components and entities of a certain type and puts them in the given array. Returns the amount that was put in.
         /// </summary>
-        public int GetAllComponentsOfTypeNonAlloc<T>(ComponentEntityTuple<T>[] buffer) where T : class
+        public int GetAllComponentsOfTypeNonAlloc<T>(EntityWith<T>[] buffer) where T : class
         {
             stepIsInLoop = true;
             int i = 0;
@@ -185,7 +185,7 @@ namespace Walgelijk
 
                 if (componentDictionary.TryGet(out T component))
                 {
-                    buffer[i] = new ComponentEntityTuple<T>(component, entity);
+                    buffer[i] = new EntityWith<T>(component, entity);
                     i++;
                 }
             }

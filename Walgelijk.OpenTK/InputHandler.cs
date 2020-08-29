@@ -90,6 +90,8 @@ namespace Walgelijk.OpenTK
             inputState.AnyKey = false;
             inputState.MouseScrollDelta = 0;
             inputState.WindowMouseDelta = Vector2.Zero;
+
+            inputState.WorldMousePosition = Window.WindowToWorldPoint(inputState.WindowMousePosition);
         }
 
         public OpenTKWindow Window { get; }

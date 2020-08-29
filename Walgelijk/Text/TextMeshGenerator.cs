@@ -39,10 +39,9 @@ namespace Walgelijk
                 }
 
                 var glyph = font.GetGlyph(c);
-
                 Kerning kerning = i == 0 ? default : font.GetKerning(lastChar, c);
 
-                var pos = new Vector3(cursor + glyph.XOffset + kerning.Amount * kerningAmount, glyph.YOffset + line * font.LineHeight * lineHeightMultiplier, 0);
+                var pos = new Vector3(cursor + glyph.XOffset + kerning.Amount * kerningAmount, -glyph.YOffset - (line * font.LineHeight * lineHeightMultiplier), 0);
 
                 float x = glyph.X / width;
                 float y = glyph.Y / height;
@@ -52,27 +51,27 @@ namespace Walgelijk
                 // bottom left
                 vertices[vertexIndex] = new Vertex(
                     pos + new Vector3(0, 0, 0),
-                    new Vector2(x, y),
+                    new Vector2(x, y ),
                     color
                     );
 
                 // bottom right
                 vertices[vertexIndex + 1] = new Vertex(
                     pos + new Vector3(glyph.Width, 0, 0),
-                    new Vector2(x + w, y),
+                    new Vector2(x + w, y ),
                     color
                     );
 
                 // top right
                 vertices[vertexIndex + 2] = new Vertex(
-                    pos + new Vector3(glyph.Width, glyph.Height, 0),
+                    pos + new Vector3(glyph.Width, -glyph.Height, 0),
                     new Vector2(x + w, y + h),
                     color
                     );
 
                 // top left
                 vertices[vertexIndex + 3] = new Vertex(
-                    pos + new Vector3(0, glyph.Height, 0),
+                    pos + new Vector3(0, -glyph.Height, 0),
                     new Vector2(x, y + h),
                     color
                     );

@@ -14,12 +14,13 @@ game.Window.VSync = false;
 game.Window.RenderTarget.ClearColour = new Color("#000000");
 
 var scene = new Scene();
-scene.AddSystem(new TransformSystem());
-scene.AddSystem(new CameraSystem());
 
 var camera = scene.CreateEntity();
 camera.AttachComponent(camera, new CameraComponent());
 camera.AttachComponent(camera, new TransformComponent());
+
+scene.AddSystem(new TransformSystem());
+scene.AddSystem(new CameraSystem());
 
 game.Scene = scene;
 game.Start();
