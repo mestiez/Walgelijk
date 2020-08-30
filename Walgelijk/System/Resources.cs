@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Walgelijk
 {
@@ -12,6 +13,11 @@ namespace Walgelijk
 
         private static readonly Dictionary<Type, Func<string, object>> loadFunctions = new Dictionary<Type, Func<string, object>>();
         private static readonly Dictionary<string, object> resources = new Dictionary<string, object>();
+
+        /// <summary>
+        /// Base path of all resource requests
+        /// </summary>
+        public static string BasePath { get; set; } = ".\\";
 
         /// <summary>
         /// Initialise 
@@ -33,6 +39,8 @@ namespace Walgelijk
         /// <returns></returns>
         public static T Load<T>(string path)
         {
+            path = Path.Combine(BasePath, path);
+
             if (resources.TryGetValue(path, out var obj) && obj is T typed)
                 return typed;
 

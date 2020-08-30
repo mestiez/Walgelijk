@@ -185,7 +185,7 @@ namespace Orbix
             scene.AttachComponent(camera, new TransformComponent());
             scene.AttachComponent(camera, new CameraComponent());
 
-            CreateDebugGrid(scene, 1, 1, 10);
+            CreateDebugGrid(scene, 4, 4, 10);
 
             scene.AddSystem(new GalaxyChunkSystem());
             scene.AddSystem(new TransformSystem());

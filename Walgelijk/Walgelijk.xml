@@ -1270,6 +1270,11 @@
             Global path based resource storage
             </summary>
         </member>
+        <member name="P:Walgelijk.Resources.BasePath">
+            <summary>
+            Base path of all resource requests
+            </summary>
+        </member>
         <member name="M:Walgelijk.Resources.Initialise">
             <summary>
             Initialise 
