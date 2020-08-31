@@ -10,7 +10,7 @@ namespace Walgelijk
     /// </summary>
     public sealed class RenderQueue
     {
-        private readonly Queue<IRenderTask> queue = new Queue<IRenderTask>();
+        private readonly List<Command> commands = new List<Command>();
 
         /// <summary>
         /// Render the queue by dequeuing and executing each entry
@@ -18,25 +18,51 @@ namespace Walgelijk
         /// <param name="target"></param>
         public void RenderAndReset(RenderTarget target)
         {
-            while (queue.Count != 0)
+            for (int i = 0; i < commands.Count; i++)
             {
-                var task = queue.Dequeue();
-                task.Execute(target);
+                commands[i].RenderTask.Execute(target);
             }
+            commands.Clear();
         }
 
         /// <summary>
-        /// Add a task to the queue
+        /// Add a task to the queue. The optional order determines when it's going to be executed. Higher values mean later execution.
         /// </summary>
-        /// <param name="task"></param>
-        public void Enqueue(IRenderTask task)
+        public void Add(IRenderTask task, short order = 0)
         {
-            queue.Enqueue(task);
+            var command = new Command { RenderTask = task, Order = order };
+            command.Order = order;
+
+            if (commands.Count == 0 || commands.Last().Order <= order)
+            {
+                commands.Add(command);
+                return;
+            }
+
+            ReverseSortAdd(command);
+        }
+
+        private void ReverseSortAdd(Command command)
+        {
+            for (int i = commands.Count - 1; i >= 0; i--)
+            {
+                if (commands[i].Order <= command.Order)
+                {
+                    commands.Insert(i + 1, command);
+                    return;
+                }
+            }
         }
 
         /// <summary>
         /// Length of the queue
         /// </summary>
-        public int QueueLength => queue.Count;
+        public int Length => commands.Count;
+
+        private struct Command
+        {
+            public IRenderTask RenderTask;
+            public short Order;
+        }
     }
 }

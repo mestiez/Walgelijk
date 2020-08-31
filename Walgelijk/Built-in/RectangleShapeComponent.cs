@@ -55,6 +55,8 @@ namespace Walgelijk
 
         public bool ScreenSpace { get; set; }
 
+        public short RenderOrder { get; set; }
+
         /// <summary>
         /// Create a rectangle renderer component
         /// </summary>

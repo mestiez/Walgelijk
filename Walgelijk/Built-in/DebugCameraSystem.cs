@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Walgelijk
 {
@@ -14,7 +15,7 @@ namespace Walgelijk
         /// <summary>
         /// Zoom speed
         /// </summary>
-        public float ZoomFactor { get; set; } = 1.1f;
+        public float ZoomFactor { get; set; } = 4f;
 
         public override void Update()
         {
@@ -41,12 +42,13 @@ namespace Walgelijk
                 delta += new Vector2(1, 0);
 
             if (delta != Vector2.Zero)
-                transform.Position += Vector2.Normalize(delta) * zoom * Speed;
+                transform.Position += Vector2.Normalize(delta) * zoom * Speed * Time.UpdateDeltaTime;
 
+            float zoomFac = MathF.Pow(ZoomFactor, Time.UpdateDeltaTime);
             if (Input.IsKeyHeld(Key.Plus))
-                system.MainCameraComponent.OrthographicSize /= ZoomFactor;
+                system.MainCameraComponent.OrthographicSize /= zoomFac;
             if (Input.IsKeyHeld(Key.Minus))
-                system.MainCameraComponent.OrthographicSize *= ZoomFactor;
+                system.MainCameraComponent.OrthographicSize *= zoomFac;
         }
     }
 }

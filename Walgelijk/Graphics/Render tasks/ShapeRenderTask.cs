@@ -2,6 +2,7 @@
 
 namespace Walgelijk
 {
+
     /// <summary>
     /// Render task that renders a vertex buffer with a material
     /// </summary>

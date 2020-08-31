@@ -6,6 +6,50 @@ using Walgelijk.OpenTK;
 
 namespace Test
 {
+    //Deze hele file is om shit te testen, negeer het
+
+    public static class OtherCoolThing
+    {
+        public static Scene CreateGameScene()
+        {
+            Scene scene = new Scene();
+
+            var camera = scene.CreateEntity();
+            scene.AttachComponent(camera, new TransformComponent());
+            scene.AttachComponent(camera, new CameraComponent());
+
+            CreateDebugGrid(scene, 10, 10, 10);
+
+            scene.AddSystem(new TransformSystem());
+            scene.AddSystem(new DebugCameraSystem());
+            scene.AddSystem(new ShapeRendererSystem());
+            scene.AddSystem(new CameraSystem());
+
+            return scene;
+        }
+
+        private static void CreateDebugGrid(Scene scene, int width = 8, int height = 8, int step = 10)
+        {
+            int xExtent = width / 2;
+            int yExtent = height / 2;
+
+            for (int y = -yExtent; y < yExtent + 1; y++)
+            {
+                for (int x = -xExtent; x < xExtent + 1; x++)
+                {
+                    var point = scene.CreateEntity();
+                    var pos = new Vector2(x, y) * step;
+                    scene.AttachComponent(point, new TransformComponent { Scale = new Vector2(0.04f, 0.04f), Position = pos });
+                    scene.AttachComponent(point, new TextComponent($"{pos.X}, {pos.Y}"));
+
+                    var dot = scene.CreateEntity();
+                    scene.AttachComponent(dot, new TransformComponent { Scale = new Vector2(0.1f, 0.1f), Position = pos });
+                    scene.AttachComponent(dot, new RectangleShapeComponent());
+                }
+            }
+        }
+    }
+
     public class PlayerComponent
     {
         public float MovementSpeed = 4f;
@@ -43,7 +87,7 @@ namespace Test
                 Audio.Muted = !Audio.Muted;
 
             if (Input.IsKeyPressed(Key.K))
-                Game.Main.Scene = null;
+                Game.Main.Scene = OtherCoolThing.CreateGameScene();
 
             var zoomIn = Input.IsKeyHeld(Key.Plus);
             var zoomOut = Input.IsKeyHeld(Key.Minus);
@@ -162,7 +206,8 @@ namespace Test
                 scene.AttachComponent(entity, new RectangleShapeComponent
                 {
                     Size = Vector2.One * .5f,
-                    Material = coolSprite
+                    Material = coolSprite,
+                    RenderOrder = (i == 0) ? (short)1 : (short)0
                 });
 
                 if (i == 0)

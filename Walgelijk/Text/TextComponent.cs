@@ -62,6 +62,8 @@ namespace Walgelijk
         /// </summary>
         public float LineHeightMultiplier { get => lineHeightMultiplier; set { lineHeightMultiplier = value; CreateVertices(); } }
 
+        public short RenderOrder { get; set; }
+
         private void CreateVertices()
         {
             VertexBuffer.Vertices = new Vertex[displayString.Length * 4];

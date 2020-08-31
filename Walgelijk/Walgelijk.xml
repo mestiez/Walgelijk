@@ -183,6 +183,11 @@
             Determines if the shape should be rendered in screenspace
             </summary>
         </member>
+        <member name="P:Walgelijk.IShapeComponent.RenderOrder">
+            <summary>
+            Order of the rendering task. Lower values mean lower depth.
+            </summary>
+        </member>
         <member name="T:Walgelijk.RectangleShapeComponent">
             <summary>
             Basic rectangle renderer data
@@ -738,6 +743,16 @@
             Projection matrix
             </summary>
         </member>
+        <member name="T:Walgelijk.GroupRenderTask">
+            <summary>
+            An ordered group of render tasks that should always be executed together
+            </summary>
+        </member>
+        <member name="F:Walgelijk.GroupRenderTask.Tasks">
+            <summary>
+            The group of render tasks
+            </summary>
+        </member>
         <member name="T:Walgelijk.ImmediateRenderTask">
             <summary>
             Render task that renders a collection of vertices immediately
@@ -810,13 +825,12 @@
             </summary>
             <param name="target"></param>
         </member>
-        <member name="M:Walgelijk.RenderQueue.Enqueue(Walgelijk.IRenderTask)">
+        <member name="M:Walgelijk.RenderQueue.Add(Walgelijk.IRenderTask,System.Int16)">
             <summary>
-            Add a task to the queue
+            Add a task to the queue. The optional order determines when it's going to be executed. Higher values mean later execution.
             </summary>
-            <param name="task"></param>
         </member>
-        <member name="P:Walgelijk.RenderQueue.QueueLength">
+        <member name="P:Walgelijk.RenderQueue.Length">
             <summary>
             Length of the queue
             </summary>

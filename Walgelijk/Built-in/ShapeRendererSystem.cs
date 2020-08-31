@@ -33,7 +33,7 @@
                 var task = shape.RenderTask;
                 task.ScreenSpace = shape.ScreenSpace;
                 task.ModelMatrix = transform.LocalToWorldMatrix;
-                RenderQueue.Enqueue(task);
+                RenderQueue.Add(task, shape.RenderOrder);
             }
         }
     }

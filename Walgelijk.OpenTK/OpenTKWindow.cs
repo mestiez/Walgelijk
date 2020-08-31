@@ -118,9 +118,8 @@ namespace Walgelijk.OpenTK
 
             stopwatch = new Stopwatch();
             stopwatch.Start();
-            GL.Enable(EnableCap.Texture2D);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+            renderTarget.Initialise();
         }
 
         private void OnRenderFrame(object sender, FrameEventArgs obj)

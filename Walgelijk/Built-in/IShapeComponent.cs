@@ -17,5 +17,9 @@
         /// Determines if the shape should be rendered in screenspace
         /// </summary>
         public bool ScreenSpace { get; set; }
+        /// <summary>
+        /// Order of the rendering task. Lower values mean lower depth.
+        /// </summary>
+        public short RenderOrder { get; set; }
     }
 }

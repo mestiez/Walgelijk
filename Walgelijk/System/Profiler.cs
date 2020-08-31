@@ -65,15 +65,15 @@ namespace Walgelijk
         {
             quickProfiler.String = @$"frame time {MathF.Round(1000 / UpdatesPerSecond, 3)}ms
 render time {MathF.Round(1000 / FramesPerSecond, 3)}ms
-{game.RenderQueue.QueueLength} render tasks
+{game.RenderQueue.Length} render tasks
 ";
 
             var task = quickProfiler.RenderTask;
             task.ScreenSpace = true;
             task.ModelMatrix = quickProfilerModel;
-            game.RenderQueue.Enqueue(task);
+            game.RenderQueue.Add(task);
         }
-        //Goodnight mario!!!!!!!!!!!! i will sleep so violently, you have no idea. itll be the most violent sleep.
+
         private void CalculateUPS()
         {
             upsCounter.Tick(game.Time.SecondsSinceLoad);
