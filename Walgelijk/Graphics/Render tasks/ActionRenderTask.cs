@@ -20,7 +20,7 @@ namespace Walgelijk
         /// <summary>
         /// The action to invoke
         /// </summary>
-        public Action<RenderTarget> Action { get; set; }
+        public Action<RenderTarget> Action;
 
         public void Execute(RenderTarget renderTarget)
         {

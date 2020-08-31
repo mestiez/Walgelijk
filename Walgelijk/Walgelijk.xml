@@ -718,7 +718,7 @@
             </summary>
             <param name="action"></param>
         </member>
-        <member name="P:Walgelijk.ActionRenderTask.Action">
+        <member name="F:Walgelijk.ActionRenderTask.Action">
             <summary>
             The action to invoke
             </summary>
@@ -728,12 +728,12 @@
             Render task that sets the appropriate matrices to match a camera
             </summary>
         </member>
-        <member name="P:Walgelijk.CameraRenderTask.View">
+        <member name="F:Walgelijk.CameraRenderTask.View">
             <summary>
             View matrix
             </summary>
         </member>
-        <member name="P:Walgelijk.CameraRenderTask.Projection">
+        <member name="F:Walgelijk.CameraRenderTask.Projection">
             <summary>
             Projection matrix
             </summary>
@@ -743,22 +743,22 @@
             Render task that renders a collection of vertices immediately
             </summary>
         </member>
-        <member name="P:Walgelijk.ImmediateRenderTask.ModelMatrix">
+        <member name="F:Walgelijk.ImmediateRenderTask.ModelMatrix">
             <summary>
             The matrix to transform the vertices with
             </summary>
         </member>
-        <member name="P:Walgelijk.ImmediateRenderTask.Vertices">
+        <member name="F:Walgelijk.ImmediateRenderTask.Vertices">
             <summary>
             Vertices to draw
             </summary>
         </member>
-        <member name="P:Walgelijk.ImmediateRenderTask.Material">
+        <member name="F:Walgelijk.ImmediateRenderTask.Material">
             <summary>
             Material to draw with
             </summary>
         </member>
-        <member name="P:Walgelijk.ImmediateRenderTask.PrimitiveType">
+        <member name="F:Walgelijk.ImmediateRenderTask.PrimitiveType">
             <summary>
             Primitive type to draw the vertices as
             </summary>
@@ -779,22 +779,22 @@
             Render task that renders a vertex buffer with a material
             </summary>
         </member>
-        <member name="P:Walgelijk.ShapeRenderTask.ModelMatrix">
+        <member name="F:Walgelijk.ShapeRenderTask.ModelMatrix">
             <summary>
             The matrix to transform the vertices with
             </summary>
         </member>
-        <member name="P:Walgelijk.ShapeRenderTask.VertexBuffer">
+        <member name="F:Walgelijk.ShapeRenderTask.VertexBuffer">
             <summary>
             Vertex buffer to draw
             </summary>
         </member>
-        <member name="P:Walgelijk.ShapeRenderTask.Material">
+        <member name="F:Walgelijk.ShapeRenderTask.Material">
             <summary>
             Material to draw with
             </summary>
         </member>
-        <member name="P:Walgelijk.ShapeRenderTask.ScreenSpace">
+        <member name="F:Walgelijk.ShapeRenderTask.ScreenSpace">
             <summary>
             Should the task set the view matrix to <see cref="P:System.Numerics.Matrix4x4.Identity"/> 
             </summary>

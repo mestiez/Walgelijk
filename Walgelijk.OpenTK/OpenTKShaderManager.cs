@@ -28,7 +28,7 @@ namespace Walgelijk.OpenTK
             {
                 case Texture v:
                     var loadedTexture = TextureCache.Load(new MaterialTexturePair(loaded, v));
-                    GL.ProgramUniform1(prog, loc, TypeConverter.Convert(loadedTexture.TextureUnit));
+                    //GL.ProgramUniform1(prog, loc, TypeConverter.Convert(loadedTexture.TextureUnit));
                     break;                
                 case float v:
                     GL.ProgramUniform1(prog, loc, v);

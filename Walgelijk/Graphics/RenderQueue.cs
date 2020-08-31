@@ -10,7 +10,7 @@ namespace Walgelijk
     /// </summary>
     public sealed class RenderQueue
     {
-        private Queue<IRenderTask> queue = new Queue<IRenderTask>();
+        private readonly Queue<IRenderTask> queue = new Queue<IRenderTask>();
 
         /// <summary>
         /// Render the queue by dequeuing and executing each entry

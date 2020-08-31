@@ -50,6 +50,7 @@ namespace Walgelijk.OpenTK
 
         public override void Draw(VertexBuffer vertexBuffer, Material material)
         {
+
             SetMaterial(material);
             if (material != null)
             {

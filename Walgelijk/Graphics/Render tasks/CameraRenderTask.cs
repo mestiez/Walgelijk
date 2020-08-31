@@ -9,12 +9,12 @@ namespace Walgelijk
     {   /// <summary>
         /// View matrix
         /// </summary>
-        public Matrix4x4 View { get; set; }
+        public Matrix4x4 View;
 
         /// <summary>
         /// Projection matrix
         /// </summary>
-        public Matrix4x4 Projection { get; set; }
+        public Matrix4x4 Projection;
 
         public void Execute(RenderTarget target)
         {

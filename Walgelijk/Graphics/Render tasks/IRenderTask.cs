@@ -12,6 +12,6 @@ namespace Walgelijk
         /// Execute the render task on the given render target
         /// </summary>
         /// <param name="target"></param>
-        void Execute(RenderTarget target);
+        public void Execute(RenderTarget target);
     }
 }

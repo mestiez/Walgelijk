@@ -18,19 +18,19 @@ namespace Walgelijk
         /// <summary>
         /// The matrix to transform the vertices with
         /// </summary>
-        public Matrix4x4 ModelMatrix { get; set; }
+        public Matrix4x4 ModelMatrix;
         /// <summary>
         /// Vertices to draw
         /// </summary>
-        public Vertex[] Vertices { get; set; }
+        public Vertex[] Vertices;
         /// <summary>
         /// Material to draw with
         /// </summary>
-        public Material Material { get; set; }
+        public Material Material;
         /// <summary>
         /// Primitive type to draw the vertices as
         /// </summary>
-        public Primitive PrimitiveType { get; set; }
+        public Primitive PrimitiveType;
 
         public void Execute(RenderTarget target)
         {

@@ -18,19 +18,19 @@ namespace Walgelijk
         /// <summary>
         /// The matrix to transform the vertices with
         /// </summary>
-        public Matrix4x4 ModelMatrix { get; set; }
+        public Matrix4x4 ModelMatrix;
         /// <summary>
         /// Vertex buffer to draw
         /// </summary>
-        public VertexBuffer VertexBuffer { get; set; }
+        public VertexBuffer VertexBuffer;
         /// <summary>
         /// Material to draw with
         /// </summary>
-        public Material Material { get; set; }
+        public Material Material;
         /// <summary>
         /// Should the task set the view matrix to <see cref="Matrix4x4.Identity"/> 
         /// </summary>
-        public bool ScreenSpace { get; set; }
+        public bool ScreenSpace;
 
         public void Execute(RenderTarget target)
         {

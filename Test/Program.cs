@@ -112,8 +112,8 @@ namespace Test
                 new NAudioRenderer()
                 );
 
-            game.Window.TargetFrameRate = 120;
-            game.Window.TargetUpdateRate = 120;
+            game.Window.TargetFrameRate = 0;
+            game.Window.TargetUpdateRate = 0;
             game.Window.VSync = false;
             game.Window.RenderTarget.ClearColour = new Color("#d42c5e");
 
