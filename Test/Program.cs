@@ -153,7 +153,7 @@ namespace Test
         static void Main(string[] args)
         {
             game = new Game(
-                new OpenTKWindow("hallo daar", new Vector2(128, 128), new Vector2(800, 600)),
+                new OpenTKWindow("hallo daar", new Vector2(-1, -1), new Vector2(800, 600)),
                 new NAudioRenderer()
                 );
 
