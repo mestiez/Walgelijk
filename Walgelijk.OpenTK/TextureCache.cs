@@ -67,7 +67,6 @@ namespace Walgelijk.OpenTK
             textureIndex = GL.GenTexture();
             GL.ActiveTexture(textureUnit);
             GL.BindTexture(TextureTarget.Texture2D, textureIndex);
-            //TODO texture parameters
 
             var wrap = (int)TypeConverter.Convert(raw.WrapMode);
             var filter = (int)TypeConverter.Convert(raw.FilterMode);

@@ -18,7 +18,7 @@ namespace Test
             scene.AttachComponent(camera, new TransformComponent());
             scene.AttachComponent(camera, new CameraComponent());
 
-            CreateDebugGrid(scene, 10, 10, 10);
+            CreateDebugGrid(scene, 10, 10, 5);
 
             scene.AddSystem(new TransformSystem());
             scene.AddSystem(new DebugCameraSystem());
