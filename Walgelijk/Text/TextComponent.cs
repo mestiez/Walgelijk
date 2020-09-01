@@ -62,7 +62,7 @@ namespace Walgelijk
         /// </summary>
         public float LineHeightMultiplier { get => lineHeightMultiplier; set { lineHeightMultiplier = value; CreateVertices(); } }
 
-        public short RenderOrder { get; set; }
+        public int RenderOrder { get; set; }
 
         private void CreateVertices()
         {

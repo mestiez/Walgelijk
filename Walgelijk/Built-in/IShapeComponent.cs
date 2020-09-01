@@ -20,6 +20,6 @@
         /// <summary>
         /// Order of the rendering task. Lower values mean lower depth.
         /// </summary>
-        public short RenderOrder { get; set; }
+        public int RenderOrder { get; set; }
     }
 }

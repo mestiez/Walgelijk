@@ -41,5 +41,53 @@ namespace Walgelijk.OpenTK
         {
             return (TextureUnit)(textureUnit + (int)TextureUnit.Texture0);
         }
+
+        public static WrapMode Convert(TextureWrapMode mode)
+        {
+            switch (mode)
+            {
+                case TextureWrapMode.Repeat:
+                    return WrapMode.Repeat;
+
+                case TextureWrapMode.Clamp:
+                case TextureWrapMode.ClampToBorder:
+                case TextureWrapMode.ClampToEdge:
+                    return WrapMode.Clamp;
+
+                case TextureWrapMode.MirroredRepeat:
+                    return WrapMode.Mirror;
+
+                default:
+                    return default;
+            }
+        }
+
+        public static TextureWrapMode Convert(WrapMode mode)
+        {
+            switch (mode)
+            {
+                case WrapMode.Clamp:
+                    return TextureWrapMode.Clamp;
+                case WrapMode.Repeat:
+                    return TextureWrapMode.Repeat;
+                case WrapMode.Mirror:
+                    return TextureWrapMode.MirroredRepeat;
+                default:
+                    return default;
+            }
+        }
+
+        public static TextureMagFilter Convert(FilterMode filter)
+        {
+            switch (filter)
+            {
+                case FilterMode.Nearest:
+                    return TextureMagFilter.Nearest;
+                case FilterMode.Linear:
+                    return TextureMagFilter.Linear;
+                default:
+                    return default;
+            }
+        }
     }
 }

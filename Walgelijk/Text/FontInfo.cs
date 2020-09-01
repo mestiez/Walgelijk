@@ -6,6 +6,7 @@
         public int Size;
         public bool Bold;
         public bool Italic;
+        public bool Smooth;
 
         public int PageCount;
         public int Width;

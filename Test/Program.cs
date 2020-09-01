@@ -182,10 +182,10 @@ namespace Test
                     Scale = new Vector2(0.015f, 0.015f),
                     Position = new Vector2(-10, 0)
                 });
-                scene.AttachComponent(ent, new TextComponent("andere font tijden\nrich text zou cool zijn... zo van\n<b>super</b> cool", Font.Load("fonts\\broadway.fnt")/*, Font.Load("fonts\\kosugi maru.fnt")*/));
+                scene.AttachComponent(ent, new TextComponent("andere font tijden\nrich text zou cool zijn... zo van\n<b>super</b> cool", Resources.Load<Font>("fonts\\broadway.fnt")/*, Font.Load("fonts\\kosugi maru.fnt")*/));
             }
 
-            coolSprite = new Material(Shader.Load("shaders\\shader.vert", "shaders\\shader.frag"));
+            coolSprite = new Material(new Shader(Resources.Load<string>("shaders\\shader.vert"), Resources.Load<string>("shaders\\shader.frag")));
             coolSprite.SetUniform("texture1", Resources.Load<Texture>("textures\\sadness.png"));
             coolSprite.SetUniform("texture2", Resources.Load<Texture>("textures\\pride.png"));
 
@@ -207,7 +207,7 @@ namespace Test
                 {
                     Size = Vector2.One * .5f,
                     Material = coolSprite,
-                    RenderOrder = (i == 0) ? (short)1 : (short)0
+                    RenderOrder = (i == 0) ? 1 : 0
                 });
 
                 if (i == 0)

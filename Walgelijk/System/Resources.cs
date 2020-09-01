@@ -17,7 +17,7 @@ namespace Walgelijk
         /// <summary>
         /// Base path of all resource requests
         /// </summary>
-        public static string BasePath { get; set; } = ".\\";
+        public static string BasePath { get; set; } = ".\\resources\\";
 
         /// <summary>
         /// Initialise 
@@ -29,6 +29,7 @@ namespace Walgelijk
 
             RegisterType(typeof(Texture), (string path) => Texture.Load(path));
             RegisterType(typeof(Font), Font.Load);
+            RegisterType(typeof(string), File.ReadAllText);
         }
 
         /// <summary>

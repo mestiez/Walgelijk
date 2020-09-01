@@ -15,10 +15,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="fonts\kosugi maru.fnt">
+    <None Update="resources\fonts\roboto mono.fnt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="fonts\kosugi maru.png">
+    <None Update="resources\fonts\roboto mono.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\shaders\legacy-font.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\shaders\textured-fragment.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\shaders\worldspace-vertex.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\shaders\sdf-font.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -7,8 +7,12 @@ namespace Walgelijk
 {
     internal struct FontLoader
     {
+        private static string currentlyLoadingPath = "";
+
         public static Font LoadFromMetadata(string metadataPath)
         {
+            currentlyLoadingPath = metadataPath;
+
             string[] text = File.ReadAllLines(metadataPath);
 
             Font font = new Font();
@@ -22,53 +26,28 @@ namespace Walgelijk
             font.Width = info.Width;
             font.Height = info.Height;
             font.LineHeight = info.LineHeight;
+            font.Smooth = info.Smooth;
 
             ParsePages(metadataPath, font, info);
             ParseGlyphs(text, font, info);
             ParseKernings(text, font, info);
 
-            font.Material = CreateFontMaterial(font);
+            font.Material = TextMaterial.CreateFor(font);
 
             return font;
         }
 
-        public static Material CreateFontMaterial(Font font)
-        {
-            string vert = ShaderConstants.WorldSpaceVertex;
-            string frag =
-@"#version 460
-
-in vec2 uv;
-in vec4 vertexColor;
-
-out vec4 color;
-
-uniform sampler2D mainTex;
-uniform float thickness;
-uniform float softness;
-
-void main()
-{
-    vec4 tex = texture(mainTex, uv);
-    float t = clamp(1-thickness, 0, 1);
-    tex.a = smoothstep(t-softness, t, tex.a);
-    color = vertexColor * tex;
-}";
-            Material mat = new Material(new Shader(vert, frag));
-            //TODO meer pages
-            mat.SetUniform("mainTex", font.Pages[0]);
-            mat.SetUniform("thickness", 0.48f);
-            mat.SetUniform("softness", 0.1f);
-            return mat;
-        }
-
         private static void ParsePages(string metadataPath, in Font font, FontInfo info)
         {
+            FilterMode filterMode = info.Smooth ? FilterMode.Linear : FilterMode.Nearest;
+
             font.Pages = new Texture[info.PageCount];
             for (int i = 0; i < info.PageCount; i++)
             {
                 string path = Path.Combine(Path.GetDirectoryName(metadataPath), info.PagePaths[i]);
-                font.Pages[i] = Texture.Load(path, false);
+                var tex = Texture.Load(path, false);
+                tex.FilterMode = filterMode;
+                font.Pages[i] = tex;
             }
         }
 
@@ -124,7 +103,10 @@ void main()
 
             int index = line.IndexOf(target);
             if (index == -1)
-                throw new ArgumentException($"Cannot find variable by name \"{name}\"");
+            {
+                Logger.Warn($"Cannot find font metadata variable \"{name}\" for \"{currentlyLoadingPath}\"");
+                return null;
+            }
             index += target.Length;
 
             char delimiter = ' ';
@@ -142,7 +124,15 @@ void main()
             return line[index..endIndex];
         }
 
-        private static int GetIntFrom(string name, string line) => int.Parse(GetStringFrom(name, line));
+        private static int GetIntFrom(string name, string line)
+        {
+            if (int.TryParse(GetStringFrom(name, line), out var result)) 
+                return result;
+
+            Logger.Warn($"Cannot parse font metadata variable \"{name}\" to integer for \"{currentlyLoadingPath}\"");
+            return default;
+        }
+
         private static bool GetBoolFrom(string name, string line) => GetIntFrom(name, line) == 1;
 
         private static FontInfo GetInfo(string[] text)
@@ -156,6 +146,7 @@ void main()
             data.Size = GetIntFrom("size", info);
             data.Bold = GetBoolFrom("bold", info);
             data.Italic = GetBoolFrom("italic", info);
+            data.Smooth = GetBoolFrom("smooth", info);
 
             data.Width = GetIntFrom("scaleW", common);
             data.Height = GetIntFrom("scaleH", common);
@@ -191,6 +182,55 @@ void main()
             {
                 return text.FirstOrDefault(s => s.StartsWith(name));
             }
+        }
+    }
+
+    /// <summary>
+    /// Utility struct that provides static text material creation functions
+    /// </summary>
+    public struct TextMaterial
+    {
+        /// <summary>
+        /// Create a material for a given font
+        /// </summary>
+        /// <param name="font"></param>
+        /// <returns></returns>
+        public static Material CreateFor(Font font)
+        {
+            if (font.Smooth)
+                return CreateSDFMaterial(font.Pages);
+            else
+                return CreateClipMaterial(font.Pages);
+        }
+
+        /// <summary>
+        /// Create a material for a set of sharp textures
+        /// </summary>
+        public static Material CreateClipMaterial(Texture[] pages)
+        {
+            string vert = ShaderDefaults.WorldSpaceVertex;
+            string frag = Resources.Load<string>("shaders\\legacy-font.frag");
+            Material mat = new Material(new Shader(vert, frag));
+
+            //TODO meer pages
+            mat.SetUniform("mainTex", pages[0]);
+            return mat;
+        }
+
+        /// <summary>
+        /// Create a material for a set of SDF textures
+        /// </summary>
+        public static Material CreateSDFMaterial(Texture[] pages)
+        {
+            string vert = ShaderDefaults.WorldSpaceVertex;
+            string frag = Resources.Load<string>("shaders\\sdf-font.frag");
+            Material mat = new Material(new Shader(vert, frag));
+
+            //TODO meer pages
+            mat.SetUniform("mainTex", pages[0]);
+            mat.SetUniform("thickness", 0.48f);
+            mat.SetUniform("softness", 0.07f);
+            return mat;
         }
     }
 }

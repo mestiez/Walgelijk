@@ -69,10 +69,13 @@ namespace Walgelijk.OpenTK
             GL.BindTexture(TextureTarget.Texture2D, textureIndex);
             //TODO texture parameters
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            var wrap = (int)TypeConverter.Convert(raw.WrapMode);
+            var filter = (int)TypeConverter.Convert(raw.FilterMode);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, wrap);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, wrap);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, filter);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, filter);
 
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, raw.Width, raw.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);

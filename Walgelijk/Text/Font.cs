@@ -18,10 +18,14 @@ namespace Walgelijk
         /// Retrieve the point size this font was loaded with
         /// </summary>
         public int Size { get; internal set; }
-        /// </summary>
+        /// <summary>
         /// Retrieve if the font was loaded with the bold style
         /// </summary>
-        public bool Bold { get; internal set; }
+        public bool Bold { get; internal set; }        
+        /// <summary>
+        /// Retrieve if the font was loaded with the smooth flag. The flag determined the <see cref="FilterMode"/> the pages were loaded with.
+        /// </summary>
+        public bool Smooth { get; internal set; }
         /// <summary>
         /// Retrieve if the font was loaded with the italic style
         public bool Italic { get; internal set; }
@@ -89,7 +93,7 @@ namespace Walgelijk
         /// <summary>
         /// The default font
         /// </summary>
-        public static Font Default = Load("fonts\\kosugi maru.fnt");
+        public static Font Default = Resources.Load<Font>("fonts\\roboto mono.fnt");
     }
 
     /// <summary>

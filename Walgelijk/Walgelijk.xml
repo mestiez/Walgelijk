@@ -825,7 +825,7 @@
             </summary>
             <param name="target"></param>
         </member>
-        <member name="M:Walgelijk.RenderQueue.Add(Walgelijk.IRenderTask,System.Int16)">
+        <member name="M:Walgelijk.RenderQueue.Add(Walgelijk.IRenderTask,System.Int32)">
             <summary>
             Add a task to the queue. The optional order determines when it's going to be executed. Higher values mean later execution.
             </summary>
@@ -870,42 +870,37 @@
             Default shader. Renders vertex colours.
             </summary>
         </member>
-        <member name="T:Walgelijk.ShaderConstants">
+        <member name="T:Walgelijk.ShaderDefaults">
             <summary>
-            Useful constants for shader related business 
+            Useful values for shader related business 
             </summary>
         </member>
-        <member name="F:Walgelijk.ShaderConstants.DefaultFragment">
+        <member name="F:Walgelijk.ShaderDefaults.DefaultFragment">
             <summary>
             Default fragment shader code
             </summary>
         </member>
-        <member name="F:Walgelijk.ShaderConstants.WorldSpaceVertex">
+        <member name="F:Walgelijk.ShaderDefaults.WorldSpaceVertex">
             <summary>
             Default vertex shader code
             </summary>
         </member>
-        <member name="F:Walgelijk.ShaderConstants.ScreenSpaceVertex">
-            <summary>
-            Default vertex shader code
-            </summary>
-        </member>
-        <member name="F:Walgelijk.ShaderConstants.ProjectionMatrixUniform">
+        <member name="F:Walgelijk.ShaderDefaults.ProjectionMatrixUniform">
             <summary>
             Projection matrix uniform name
             </summary>
         </member>
-        <member name="F:Walgelijk.ShaderConstants.ViewMatrixUniform">
+        <member name="F:Walgelijk.ShaderDefaults.ViewMatrixUniform">
             <summary>
             View matrix uniform name
             </summary>
         </member>
-        <member name="F:Walgelijk.ShaderConstants.ModelMatrixUniform">
+        <member name="F:Walgelijk.ShaderDefaults.ModelMatrixUniform">
             <summary>
             Model matrix uniform name
             </summary>
         </member>
-        <member name="F:Walgelijk.ShaderConstants.MainTextureUniform">
+        <member name="F:Walgelijk.ShaderDefaults.MainTextureUniform">
             <summary>
             Main texture uniform name
             </summary>
@@ -1352,7 +1347,16 @@
             Retrieve the point size this font was loaded with
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:Walgelijk.Font.Bold" -->
+        <member name="P:Walgelijk.Font.Bold">
+            <summary>
+            Retrieve if the font was loaded with the bold style
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Smooth">
+            <summary>
+            Retrieve if the font was loaded with the smooth flag. The flag determined the <see cref="T:Walgelijk.FilterMode"/> the pages were loaded with.
+            </summary>
+        </member>
         <!-- Badly formed XML comment ignored for member "P:Walgelijk.Font.Italic" -->
         <member name="P:Walgelijk.Font.Width">
             <summary>
@@ -1386,7 +1390,7 @@
         </member>
         <member name="P:Walgelijk.Font.Material">
             <summary>
-            Material this font uses. Be aware this may be shared across text. Use <see cref="M:Walgelijk.FontLoader.CreateFontMaterial(Walgelijk.Font)"/> to create a new material.
+            Material this font uses. Be aware this may be shared across text. Use <see cref="!:FontLoader.CreateFontMaterial(Font)"/> to create a new material.
             </summary>
         </member>
         <member name="M:Walgelijk.Font.Load(System.String)">
@@ -1412,6 +1416,28 @@
         <member name="T:Walgelijk.KerningPair">
             <summary>
             The two characters a kerning amount applies to
+            </summary>
+        </member>
+        <member name="T:Walgelijk.TextMaterial">
+            <summary>
+            Utility struct that provides static text material creation functions
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TextMaterial.CreateFor(Walgelijk.Font)">
+            <summary>
+            Create a material for a given font
+            </summary>
+            <param name="font"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.TextMaterial.CreateClipMaterial(Walgelijk.Texture[])">
+            <summary>
+            Create a material for a set of sharp textures
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TextMaterial.CreateSDFMaterial(Walgelijk.Texture[])">
+            <summary>
+            Create a material for a set of SDF textures
             </summary>
         </member>
         <member name="T:Walgelijk.Glyph">

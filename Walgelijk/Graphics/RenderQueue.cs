@@ -28,7 +28,7 @@ namespace Walgelijk
         /// <summary>
         /// Add a task to the queue. The optional order determines when it's going to be executed. Higher values mean later execution.
         /// </summary>
-        public void Add(IRenderTask task, short order = 0)
+        public void Add(IRenderTask task, int order = 0)
         {
             var command = new Command { RenderTask = task, Order = order };
             command.Order = order;
@@ -62,7 +62,7 @@ namespace Walgelijk
         private struct Command
         {
             public IRenderTask RenderTask;
-            public short Order;
+            public int Order;
         }
     }
 }

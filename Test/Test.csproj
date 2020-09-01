@@ -12,40 +12,40 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="audio\cannot-build.wav">
+    <None Update="resources\audio\cannot-build.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="audio\kampvuurliedlied.mp3">
+    <None Update="resources\audio\kampvuurliedlied.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="fonts\broadway.fnt">
+    <None Update="resources\fonts\broadway.fnt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="fonts\broadway.png">
+    <None Update="resources\fonts\broadway.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="fonts\cambria.fnt">
+    <None Update="resources\fonts\cambria.fnt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="fonts\cambria.png">
+    <None Update="resources\fonts\cambria.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="fonts\inter.fnt">
+    <None Update="resources\fonts\inter.fnt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="fonts\inter.png">
+    <None Update="resources\fonts\inter.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="shaders\shader.frag">
+    <None Update="resources\shaders\shader.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="shaders\shader.vert">
+    <None Update="resources\shaders\shader.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="textures\pride.png">
+    <None Update="resources\textures\pride.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="textures\sadness.png">
+    <None Update="resources\textures\sadness.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

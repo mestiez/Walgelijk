@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading;
 using Walgelijk;
 
@@ -62,7 +63,7 @@ namespace Walgelijk
         /// </summary>
         public Game(Window window, AudioRenderer audioRenderer = null)
         {
-            Logger.Log("Initialising...");
+            Logger.Log("Walgelijk v" + " nog niet uitgekomen"); // TODO versie gedoe
 
             Window = window;
             window.Game = this;
@@ -70,8 +71,6 @@ namespace Walgelijk
             Resources.Initialise();
             AudioRenderer = audioRenderer ?? new EmptyAudioRenderer();
             Profiling = new Profiler(this);
-
-            Logger.Log("...initialised");
         }
 
         /// <summary>

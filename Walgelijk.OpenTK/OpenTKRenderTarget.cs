@@ -92,9 +92,9 @@ namespace Walgelijk.OpenTK
 
         private void SetTransformationMatrixUniforms(Material material)
         {
-            ShaderManager.SetUniform(material, ShaderConstants.ViewMatrixUniform, ViewMatrix);
-            ShaderManager.SetUniform(material, ShaderConstants.ProjectionMatrixUniform, ProjectionMatrix);
-            ShaderManager.SetUniform(material, ShaderConstants.ModelMatrixUniform, ModelMatrix);
+            ShaderManager.SetUniform(material, ShaderDefaults.ViewMatrixUniform, ViewMatrix);
+            ShaderManager.SetUniform(material, ShaderDefaults.ProjectionMatrixUniform, ProjectionMatrix);
+            ShaderManager.SetUniform(material, ShaderDefaults.ModelMatrixUniform, ModelMatrix);
         }
 
         private void SetMaterial(Material material)
