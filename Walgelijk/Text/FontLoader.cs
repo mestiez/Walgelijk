@@ -20,6 +20,18 @@ namespace Walgelijk
 
             var info = GetInfo(text);
 
+            AssignInfoToFont(font, info);
+
+            ParsePages(metadataPath, font, info);
+            ParseGlyphs(text, font, info);
+            ParseKernings(text, font, info);
+
+            font.Material = TextMaterial.CreateFor(font);
+            return font;
+        }
+
+        private static void AssignInfoToFont(Font font, FontInfo info)
+        {
             font.Name = info.Name;
             font.Size = info.Size;
             font.Bold = info.Bold;
@@ -28,13 +40,6 @@ namespace Walgelijk
             font.Height = info.Height;
             font.LineHeight = info.LineHeight;
             font.Smooth = info.Smooth;
-
-            ParsePages(metadataPath, font, info);
-            ParseGlyphs(text, font, info);
-            ParseKernings(text, font, info);
-
-            font.Material = TextMaterial.CreateFor(font);
-            return font;
         }
 
         private static void ParsePages(string metadataPath, in Font font, FontInfo info)
@@ -104,7 +109,7 @@ namespace Walgelijk
             int index = line.IndexOf(target);
             if (index == -1)
             {
-                Logger.Warn($"Cannot find font metadata variable \"{name}\" for \"{currentlyLoadingPath}\"");
+                Logger.Warn($"Cannot find font metadata variable \"{name}\" for \"{currentlyLoadingPath}\"", nameof(FontLoader));
                 return null;
             }
             index += target.Length;
@@ -129,7 +134,7 @@ namespace Walgelijk
             if (int.TryParse(GetStringFrom(name, line), out var result)) 
                 return result;
 
-            Logger.Warn($"Cannot parse font metadata variable \"{name}\" to integer for \"{currentlyLoadingPath}\"");
+            Logger.Warn($"Cannot parse font metadata variable \"{name}\" to integer for \"{currentlyLoadingPath}\"", nameof(FontLoader));
             return default;
         }
 
@@ -140,7 +145,7 @@ namespace Walgelijk
             FontInfo data;
             string info = GetLine("info");
             string common = GetLine("common");
-            if (info == null) throw new ArgumentException($"Invalid font metadata file: cannot find \"info\" block");
+
 
             data.Name = GetStringFrom("face", info);
             data.Size = GetIntFrom("size", info);
@@ -180,7 +185,13 @@ namespace Walgelijk
 
             string GetLine(string name)
             {
-                return text.FirstOrDefault(s => s.StartsWith(name));
+                var block = text.FirstOrDefault(s => s.StartsWith(name));
+                if (block == null)
+                {
+                    Logger.Error($"Invalid font metadata file: cannot find \"{name}\" block for \"{currentlyLoadingPath}\"", nameof(FontLoader));
+                    return " ";
+                }
+                else return block;
             }
         }
     }
@@ -197,6 +208,9 @@ namespace Walgelijk
         /// <returns></returns>
         public static Material CreateFor(Font font)
         {
+            if (font.Pages.Length == 0 || font.Pages.Any(p => p == null))
+                return Material.DefaultTextured;
+
             if (font.Smooth)
                 return CreateSDFMaterial(font.Pages);
             else

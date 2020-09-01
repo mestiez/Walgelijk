@@ -8,6 +8,8 @@ namespace Walgelijk
     /// </summary>
     public static class TextMeshGenerator
     {
+        //TODO dit kan beter een instance class zijn met opties en een super simpele Generate() methode
+
         /// <summary>
         /// Generate 2D text mesh. Returns the local bounding box.
         /// </summary>
@@ -46,43 +48,12 @@ namespace Walgelijk
 
                 var pos = new Vector3(cursor + glyph.XOffset + kerning.Amount * kerningAmount, -glyph.YOffset - (line * font.LineHeight * lineHeightMultiplier), 0);
 
-                float x = glyph.X / width;
-                float y = glyph.Y / height;
-                float w = glyph.Width / width;
-                float h = glyph.Height / height;
+                GlyphUVInfo uvInfo = new GlyphUVInfo(glyph.X / width, glyph.Y / height, glyph.Width / width, glyph.Height / height);
 
-
-                // bottom left
-                vertices[vertexIndex] = new Vertex(
-                    pos + new Vector3(0, 0, 0),
-                    new Vector2(x, y),
-                    color
-                    );
-                RecalculateBoundingBox(vertices[vertexIndex], ref bounding);
-
-                // bottom right
-                vertices[vertexIndex + 1] = new Vertex(
-                    pos + new Vector3(glyph.Width, 0, 0),
-                    new Vector2(x + w, y),
-                    color
-                    );
-                RecalculateBoundingBox(vertices[vertexIndex + 1], ref bounding);
-
-                // top right
-                vertices[vertexIndex + 2] = new Vertex(
-                    pos + new Vector3(glyph.Width, -glyph.Height, 0),
-                    new Vector2(x + w, y + h),
-                    color
-                    );
-                RecalculateBoundingBox(vertices[vertexIndex + 2], ref bounding);
-
-                // top left
-                vertices[vertexIndex + 3] = new Vertex(
-                    pos + new Vector3(0, -glyph.Height, 0),
-                    new Vector2(x, y + h),
-                    color
-                    );
-                RecalculateBoundingBox(vertices[vertexIndex + 3], ref bounding);
+                vertices[vertexIndex + 0] = AppendVertex(pos, glyph, uvInfo, color, 0, 0, ref bounding);
+                vertices[vertexIndex + 1] = AppendVertex(pos, glyph, uvInfo, color, 1, 0, ref bounding);
+                vertices[vertexIndex + 2] = AppendVertex(pos, glyph, uvInfo, color, 1, 1, ref bounding);
+                vertices[vertexIndex + 3] = AppendVertex(pos, glyph, uvInfo, color, 0, 1, ref bounding);
 
                 vertexIndex += 4;
                 cursor += (glyph.Advance + (pos.X - cursor)) * trackingMultiplier;
@@ -93,6 +64,18 @@ namespace Walgelijk
             return bounding;
         }
 
+        private static Vertex AppendVertex(Vector3 pos, Glyph glyph, GlyphUVInfo uvInfo, Color color, float xFactor, float yFactor, ref Vector4 bounding)
+        {
+            var vertex = new Vertex(
+                pos + new Vector3(glyph.Width * xFactor, -glyph.Height * yFactor, 0),
+                new Vector2(uvInfo.X + uvInfo.Width * xFactor, uvInfo.Y + uvInfo.Height * yFactor),
+                color
+                );
+            RecalculateBoundingBox(vertex, ref bounding);
+
+            return vertex;
+        }
+
         private static void RecalculateBoundingBox(Vertex vert, ref Vector4 bounding)
         {
             bounding.X = MathF.Min(bounding.X, vert.Position.X);
@@ -100,6 +83,36 @@ namespace Walgelijk
 
             bounding.Z = MathF.Max(bounding.Z, vert.Position.X);
             bounding.W = MathF.Max(bounding.W, vert.Position.Y);
+        }
+    }
+
+    internal struct GlyphUVInfo
+    {
+        public float X;
+        public float Y;
+        public float Width;
+        public float Height;
+
+        public GlyphUVInfo(float x, float y, float w, float h)
+        {
+            this.X = x;
+            this.Y = y;
+            this.Width = w;
+            this.Height = h;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is GlyphUVInfo other &&
+                   X == other.X &&
+                   Y == other.Y &&
+                   Width == other.Width &&
+                   Height == other.Height;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y, Width, Height);
         }
     }
 }

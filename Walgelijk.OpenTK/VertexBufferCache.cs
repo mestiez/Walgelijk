@@ -15,6 +15,8 @@ namespace Walgelijk.OpenTK
             VertexBufferCacheHandles handles = new VertexBufferCacheHandles(vbo, vao, ibo);
 
             buffer.HasChanged = false;
+
+            Logger.Log($"VBO created ({vbo})", nameof(VertexBufferCache));
             return handles;
         }
 
@@ -34,9 +36,11 @@ namespace Walgelijk.OpenTK
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, Vertex.Stride, sizeof(float) * 0); //position
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, Vertex.Stride, sizeof(float) * 3); //texcoords
             GL.VertexAttribPointer(2, 4, VertexAttribPointerType.Float, false, Vertex.Stride, sizeof(float) * 5); //color
+
             GL.EnableVertexAttribArray(0);
             GL.EnableVertexAttribArray(1);
             GL.EnableVertexAttribArray(2);
+
             return vao;
         }
 

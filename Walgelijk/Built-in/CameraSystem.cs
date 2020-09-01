@@ -81,13 +81,9 @@ namespace Walgelijk
 
         private void SetRenderTask()
         {
-            renderTask.View = MainCameraTransform.WorldToLocalMatrix;
-            SetProjectionBasedOnAspectRatio();
-        }
-
-        private void SetProjectionBasedOnAspectRatio()
-        {
             var renderTarget = Scene.Game.Window.RenderTarget;
+
+            renderTask.View = MainCameraTransform.WorldToLocalMatrix;
             var size = renderTarget.Size / MainCameraComponent.PixelsPerUnit * MainCameraComponent.OrthographicSize;
             renderTask.Projection = Matrix4x4.CreateOrthographic(size.X, size.Y, 0, 1);
         }

@@ -24,7 +24,7 @@
 #if DEBUG
                 if (!Scene.TryGetComponentFrom<TransformComponent>(pair.Entity, out var transform))
                 {
-                    Logger.Error($"Attempt to render {nameof(IShapeComponent)} without {nameof(TransformComponent)}");
+                    Logger.Error($"Attempt to render {nameof(IShapeComponent)} without {nameof(TransformComponent)}", nameof(ShapeRendererSystem));
                     return;
                 }
 # else
