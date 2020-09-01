@@ -18,6 +18,9 @@
     <None Update="resources\audio\kampvuurliedlied.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="resources\audio\opening.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="resources\fonts\broadway.fnt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

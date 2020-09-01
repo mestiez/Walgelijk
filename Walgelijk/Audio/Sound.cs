@@ -11,7 +11,7 @@ namespace Walgelijk
     /// <summary>
     /// Object that contains sound data
     /// </summary>
-    public struct Sound
+    public class Sound
     {
         /// <summary>
         /// Number of channels

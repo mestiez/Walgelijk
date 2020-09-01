@@ -16,7 +16,7 @@ namespace Walgelijk
         /// <param name="durationPerLogo"></param>
         /// <param name="switchTo"></param>
         /// <returns></returns>
-        public static Scene CreateScene(Texture[] logos, float durationPerLogo, Action onEnd)
+        public static Scene CreateScene(Logo[] logos, Action onEnd)
         {
             Scene scene = new Scene();
 
@@ -30,7 +30,6 @@ namespace Walgelijk
             scene.AttachComponent(splash, new SplashScreenComponent
             {
                 Logos = logos,
-                DurationPerLogo = durationPerLogo,
                 OnEnd = onEnd
             });
 
@@ -59,12 +58,7 @@ namespace Walgelijk
             /// <summary>
             /// Array of logos
             /// </summary>
-            public Texture[] Logos = { };
-
-            /// <summary>
-            /// Seconds each logo should be visible for
-            /// </summary>
-            public float DurationPerLogo = 1f;
+            public Logo[] Logos = { };
 
             /// <summary>
             /// Current elapsed time since the last logo change
@@ -86,7 +80,36 @@ namespace Walgelijk
             /// </summary>
             public Action OnEnd;
         }
-        
+
+        /// <summary>
+        /// Structure with information on how to display a logo
+        /// </summary>
+        public struct Logo
+        {
+            /// <summary>
+            /// Texture to display
+            /// </summary>
+            public Texture Texture;
+            /// <summary>
+            /// How long the logo should appear for
+            /// </summary>
+            public float Duration;
+            /// <summary>
+            /// Sound to play
+            /// </summary>
+            public Sound Sound;
+
+            /// <summary>
+            /// Create a logo with a texture and an optional sound
+            /// </summary>
+            public Logo(Texture texture, float duration = 1f, Sound sound = null)
+            {
+                Texture = texture;
+                Duration = duration;
+                Sound = sound;
+            }
+        }
+
         /// <summary>
         /// System that handles <see cref="SplashScreenComponent"/>
         /// </summary>
@@ -116,12 +139,12 @@ namespace Walgelijk
                 var transform = Scene.GetComponentFrom<TransformComponent>(entity);
 
                 if (component.Lifetime == 0)
-                    setTexture(component.Logos[0]);
+                    setLogo(component.Logos[0]);
 
                 component.CurrentTime += Time.UpdateDeltaTime;
                 component.Lifetime += Time.UpdateDeltaTime;
 
-                if (component.CurrentTime > component.DurationPerLogo)
+                if (component.CurrentTime > component.Logos[component.CurrentLogoIndex].Duration)
                 {
                     component.CurrentTime = 0;
                     component.CurrentLogoIndex++;
@@ -134,11 +157,19 @@ namespace Walgelijk
                         return;
                     }
 
-                    setTexture(component.Logos[component.CurrentLogoIndex]);
+                    setLogo(component.Logos[component.CurrentLogoIndex]);
                 }
 
-                void setTexture(Texture texture)
+                void setLogo(Logo logo)
                 {
+                    var texture = logo.Texture;
+                    var sound = logo.Sound;
+
+                    Audio.StopAll();
+
+                    if (sound != null)
+                        Audio.PlayOnce(sound);
+
                     transform.Scale = new Vector2(texture.Width, texture.Height);
                     transform.RecalculateModelMatrix();
                     rect.Material.SetUniform(ShaderDefaults.MainTextureUniform, texture);

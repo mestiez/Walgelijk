@@ -223,7 +223,7 @@
             Utility struct that provides splash screen scene creation functionality
             </summary>
         </member>
-        <member name="M:Walgelijk.SplashScreenScene.CreateScene(Walgelijk.Texture[],System.Single,System.Action)">
+        <member name="M:Walgelijk.SplashScreenScene.CreateScene(Walgelijk.SplashScreenScene.Logo[],System.Action)">
             <summary>
             Create a splash screen scene
             </summary>
@@ -240,11 +240,6 @@
         <member name="F:Walgelijk.SplashScreenScene.SplashScreenComponent.Logos">
             <summary>
             Array of logos
-            </summary>
-        </member>
-        <member name="F:Walgelijk.SplashScreenScene.SplashScreenComponent.DurationPerLogo">
-            <summary>
-            Seconds each logo should be visible for
             </summary>
         </member>
         <member name="F:Walgelijk.SplashScreenScene.SplashScreenComponent.CurrentTime">
@@ -265,6 +260,31 @@
         <member name="F:Walgelijk.SplashScreenScene.SplashScreenComponent.OnEnd">
             <summary>
             What to do once all logos have been displayed
+            </summary>
+        </member>
+        <member name="T:Walgelijk.SplashScreenScene.Logo">
+            <summary>
+            Structure with information on how to display a logo
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreenScene.Logo.Texture">
+            <summary>
+            Texture to display
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreenScene.Logo.Duration">
+            <summary>
+            How long the logo should appear for
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreenScene.Logo.Sound">
+            <summary>
+            Sound to play
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SplashScreenScene.Logo.#ctor(Walgelijk.Texture,System.Single,Walgelijk.Sound)">
+            <summary>
+            Create a logo with a texture and an optional sound
             </summary>
         </member>
         <member name="T:Walgelijk.SplashScreenScene.SplashScreenSystem">
