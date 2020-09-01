@@ -3,7 +3,7 @@
     /// <summary>
     /// An ordered group of render tasks that should always be executed together
     /// </summary>
-    public struct GroupRenderTask : IRenderTask
+    public class GroupRenderTask : IRenderTask
     {
         /// <summary>
         /// The group of render tasks

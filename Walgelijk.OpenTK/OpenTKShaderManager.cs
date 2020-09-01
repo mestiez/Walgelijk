@@ -28,7 +28,7 @@ namespace Walgelijk.OpenTK
             {
                 case Texture v:
                     var loadedTexture = TextureCache.Load(new MaterialTexturePair(loaded, v));
-                    //GL.ProgramUniform1(prog, loc, TypeConverter.Convert(loadedTexture.TextureUnit));
+                    GL.ProgramUniform1(prog, loc, TypeConverter.Convert(loadedTexture.TextureUnit));
                     break;                
                 case float v:
                     GL.ProgramUniform1(prog, loc, v);
@@ -74,18 +74,18 @@ namespace Walgelijk.OpenTK
         private void SetMatrixBuffer(Matrix4x4 v)
         {
             //Ja dankjewel System.Numerics voor deze shitshow. hartelijk bedankt
-            matrixBuffer[0] = v.M11;
-            matrixBuffer[1] = v.M12;
-            matrixBuffer[2] = v.M13;
-            matrixBuffer[3] = v.M14;
-
-            matrixBuffer[4] = v.M21;
-            matrixBuffer[5] = v.M22;
-            matrixBuffer[6] = v.M23;
-            matrixBuffer[7] = v.M24;
-
-            matrixBuffer[8] =  v.M31;
-            matrixBuffer[9] =  v.M32;
+            matrixBuffer[0]  = v.M11;
+            matrixBuffer[1]  = v.M12;
+            matrixBuffer[2]  = v.M13;
+            matrixBuffer[3]  = v.M14;
+                             
+            matrixBuffer[4]  = v.M21;
+            matrixBuffer[5]  = v.M22;
+            matrixBuffer[6]  = v.M23;
+            matrixBuffer[7]  = v.M24;
+                             
+            matrixBuffer[8]  = v.M31;
+            matrixBuffer[9]  = v.M32;
             matrixBuffer[10] = v.M33;
             matrixBuffer[11] = v.M34;
 
@@ -95,7 +95,7 @@ namespace Walgelijk.OpenTK
             matrixBuffer[15] = v.M44;
         }
 
-        public bool TryGetUniform<T>(Material material, string uniformName, out T data)
+        public bool TryDownloadUniform<T>(Material material, string uniformName, out T data)
         {
             var loaded = MaterialCache.Load(material);
             int prog = loaded.ProgramHandle;

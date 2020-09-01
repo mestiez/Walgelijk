@@ -652,7 +652,7 @@
             Set a shader program uniform
             </summary>
         </member>
-        <member name="M:Walgelijk.IShaderManager.TryGetUniform``1(Walgelijk.Material,System.String,``0@)">
+        <member name="M:Walgelijk.IShaderManager.TryDownloadUniform``1(Walgelijk.Material,System.String,``0@)">
             <summary>
             Try to get a shader program uniform.
             </summary>
@@ -792,6 +792,11 @@
         <member name="T:Walgelijk.ShapeRenderTask">
             <summary>
             Render task that renders a vertex buffer with a material
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ShapeRenderTask.#ctor(Walgelijk.VertexBuffer,System.Numerics.Matrix4x4,Walgelijk.Material)">
+            <summary>
+            Create a shape render task
             </summary>
         </member>
         <member name="F:Walgelijk.ShapeRenderTask.ModelMatrix">
@@ -1198,17 +1203,17 @@
             Interface for basic logging
             </summary>
         </member>
-        <member name="M:Walgelijk.ILogger.Log(System.Object)">
+        <member name="M:Walgelijk.ILogger.Log(System.Object,System.Object)">
             <summary>
             Log information
             </summary>
         </member>
-        <member name="M:Walgelijk.ILogger.Warn(System.Object)">
+        <member name="M:Walgelijk.ILogger.Warn(System.Object,System.Object)">
             <summary>
             Log a warning
             </summary>
         </member>
-        <member name="M:Walgelijk.ILogger.Error(System.Object)">
+        <member name="M:Walgelijk.ILogger.Error(System.Object,System.Object)">
             <summary>
             Log an error
             </summary>
@@ -1223,17 +1228,17 @@
             The logging implementation used. Set to <see cref="T:Walgelijk.ConsoleLogger"/> by default
             </summary>
         </member>
-        <member name="M:Walgelijk.Logger.Log(System.Object)">
+        <member name="M:Walgelijk.Logger.Log(System.Object,System.Object)">
             <summary>
             Log information
             </summary>
         </member>
-        <member name="M:Walgelijk.Logger.Warn(System.Object)">
+        <member name="M:Walgelijk.Logger.Warn(System.Object,System.Object)">
             <summary>
             Log a warning
             </summary>
         </member>
-        <member name="M:Walgelijk.Logger.Error(System.Object)">
+        <member name="M:Walgelijk.Logger.Error(System.Object,System.Object)">
             <summary>
             Log an error
             </summary>
@@ -1535,6 +1540,11 @@
             Text colour. Changing this forces a vertex array update.
             </summary>
         </member>
+        <member name="P:Walgelijk.TextComponent.LocalBoundingBox">
+            <summary>
+            The bounding box of the text in local coordinates
+            </summary>
+        </member>
         <member name="P:Walgelijk.TextComponent.TrackingMultiplier">
             <summary>
             Distance between letters. Changing this forces a vertex array update.
@@ -1557,7 +1567,7 @@
         </member>
         <member name="M:Walgelijk.TextMeshGenerator.GenerateVertices(System.String,Walgelijk.Font,Walgelijk.Vertex[],Walgelijk.Color,System.Single,System.Single,System.Single)">
             <summary>
-            Generate 2D text mesh
+            Generate 2D text mesh. Returns the local bounding box.
             </summary>
             <param name="displayString">Text to render</param>
             <param name="font">Font to render with</param>

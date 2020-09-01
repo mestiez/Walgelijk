@@ -21,7 +21,7 @@ namespace Walgelijk.OpenTK
 
         public OpenTKWindow(string title, Vector2 position, Vector2 size)
         {
-            window = new GameWindow((int)size.X, (int)size.Y, GraphicsMode.Default, title, GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.Default);
+            window = new GameWindow((int)size.X, (int)size.Y, GraphicsMode.Default, title, GameWindowFlags.Default, DisplayDevice.Default, 0, 0, GraphicsContextFlags.Default);
             renderTarget = new OpenTKRenderTarget();
             renderTarget.Window = this;
             shaderManager = new OpenTKShaderManager();

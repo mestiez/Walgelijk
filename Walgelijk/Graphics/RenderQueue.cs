@@ -33,7 +33,7 @@ namespace Walgelijk
             var command = new Command { RenderTask = task, Order = order };
             command.Order = order;
 
-            if (commands.Count == 0 || commands.Last().Order <= order)
+            if (commands.Count == 0 || commands[commands.Count-1].Order <= order)
             {
                 commands.Add(command);
                 return;

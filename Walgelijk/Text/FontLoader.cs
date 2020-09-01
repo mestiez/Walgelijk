@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -33,7 +34,6 @@ namespace Walgelijk
             ParseKernings(text, font, info);
 
             font.Material = TextMaterial.CreateFor(font);
-
             return font;
         }
 

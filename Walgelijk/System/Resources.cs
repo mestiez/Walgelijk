@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace Walgelijk
@@ -10,6 +11,7 @@ namespace Walgelijk
     public static class Resources
     {
         private static bool initialised;
+        private static Stopwatch stopwatch = new Stopwatch();
 
         private static readonly Dictionary<Type, Func<string, object>> loadFunctions = new Dictionary<Type, Func<string, object>>();
         private static readonly Dictionary<string, object> resources = new Dictionary<string, object>();
@@ -30,6 +32,8 @@ namespace Walgelijk
             RegisterType(typeof(Texture), (string path) => Texture.Load(path));
             RegisterType(typeof(Font), Font.Load);
             RegisterType(typeof(string), File.ReadAllText);
+            RegisterType(typeof(string[]), File.ReadAllLines);
+            RegisterType(typeof(byte[]), File.ReadAllBytes);
         }
 
         /// <summary>
@@ -80,8 +84,11 @@ namespace Walgelijk
         {
             if (loadFunctions.TryGetValue(type, out var loadFromFile))
             {
-                Logger.Log($"{type.Name} resource loaded at \"{path}\"");
-                return loadFromFile(path);
+                stopwatch.Restart();
+                var result = loadFromFile(path);
+                stopwatch.Stop();
+                Logger.Log($"{type.Name} resource loaded at \"{path}\" ({Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2)}ms)", nameof(Resources));
+                return result;
             }
             else
                 throw new Exception($"Could not load \"{path}\": there is no resource loader for type {type.Name}");

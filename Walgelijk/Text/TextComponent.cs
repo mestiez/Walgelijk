@@ -46,6 +46,12 @@ namespace Walgelijk
         public VertexBuffer VertexBuffer { get; private set; }
         public ShapeRenderTask RenderTask { get; private set; }
         public bool ScreenSpace { get; set; }
+        public int RenderOrder { get; set; }
+
+        /// <summary>
+        /// The bounding box of the text in local coordinates
+        /// </summary>
+        public Vector4 LocalBoundingBox { get; private set; }
 
         /// <summary>
         /// Distance between letters. Changing this forces a vertex array update.
@@ -62,13 +68,11 @@ namespace Walgelijk
         /// </summary>
         public float LineHeightMultiplier { get => lineHeightMultiplier; set { lineHeightMultiplier = value; CreateVertices(); } }
 
-        public int RenderOrder { get; set; }
-
         private void CreateVertices()
         {
             VertexBuffer.Vertices = new Vertex[displayString.Length * 4];
 
-            TextMeshGenerator.GenerateVertices(String, Font, VertexBuffer.Vertices, Color, TrackingMultiplier, KerningMultiplier, LineHeightMultiplier);
+            LocalBoundingBox = TextMeshGenerator.GenerateVertices(String, Font, VertexBuffer.Vertices, Color, TrackingMultiplier, KerningMultiplier, LineHeightMultiplier);
 
             VertexBuffer.GenerateIndices();
             VertexBuffer.HasChanged = true;

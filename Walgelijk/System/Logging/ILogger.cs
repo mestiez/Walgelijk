@@ -8,14 +8,14 @@
         /// <summary>
         /// Log information
         /// </summary>
-        public void Log(object message);
+        public void Log(object message, object source = null);
         /// <summary>
         /// Log a warning
         /// </summary>
-        public void Warn(object message);
+        public void Warn(object message, object source = null);
         /// <summary>
         /// Log an error
         /// </summary>
-        public void Error(object message);
+        public void Error(object message, object source = null);
     }
 }

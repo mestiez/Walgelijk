@@ -5,7 +5,7 @@ namespace Walgelijk
     /// <summary>
     /// Render task that sets the appropriate matrices to match a camera
     /// </summary>
-    public struct CameraRenderTask : IRenderTask
+    public class CameraRenderTask : IRenderTask
     {   /// <summary>
         /// View matrix
         /// </summary>

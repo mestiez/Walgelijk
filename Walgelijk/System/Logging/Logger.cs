@@ -13,14 +13,14 @@
         /// <summary>
         /// Log information
         /// </summary>
-        public static void Log(object message) => Implementation.Log(message);
+        public static void Log(object message, object source = null) => Implementation.Log(message, source);
         /// <summary>
         /// Log a warning
         /// </summary>
-        public static void Warn(object message) => Implementation.Warn(message);
+        public static void Warn(object message, object source = null) => Implementation.Warn(message, source);
         /// <summary>
         /// Log an error
         /// </summary>
-        public static void Error(object message) => Implementation.Error(message);
+        public static void Error(object message, object source = null) => Implementation.Error(message, source);
     }
 }

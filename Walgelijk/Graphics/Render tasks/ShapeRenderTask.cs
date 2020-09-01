@@ -2,12 +2,14 @@
 
 namespace Walgelijk
 {
-
     /// <summary>
     /// Render task that renders a vertex buffer with a material
     /// </summary>
-    public struct ShapeRenderTask : IRenderTask
+    public class ShapeRenderTask : IRenderTask
     {
+        /// <summary>
+        /// Create a shape render task
+        /// </summary>
         public ShapeRenderTask(VertexBuffer vertexBuffer, Matrix4x4 modelMatrix = default, Material material = null)
         {
             VertexBuffer = vertexBuffer;
@@ -41,7 +43,7 @@ namespace Walgelijk
                 Draw(target);
         }
 
-        private readonly void DrawScreenSpace(RenderTarget target)
+        private void DrawScreenSpace(RenderTarget target)
         {
             var view = target.ViewMatrix;
             var proj = target.ProjectionMatrix;
@@ -54,7 +56,7 @@ namespace Walgelijk
             target.ProjectionMatrix = proj;
         }
 
-        private readonly void Draw(RenderTarget target)
+        private void Draw(RenderTarget target)
         {
             target.ModelMatrix = ModelMatrix;
             target.Draw(VertexBuffer, Material);

@@ -34,7 +34,11 @@ namespace Walgelijk
             {
                 scene = value;
                 if (value != null)
+                {
                     scene.Game = this;
+                    Logger.Log("Scene changed", nameof(Game));
+                }
+                else Logger.Log("Scene set to null", nameof(Game));
             }
         }
 
@@ -63,7 +67,7 @@ namespace Walgelijk
         /// </summary>
         public Game(Window window, AudioRenderer audioRenderer = null)
         {
-            Logger.Log("Walgelijk v" + " nog niet uitgekomen"); // TODO versie gedoe
+            Logger.Log("Walgelijk v" + " nog niet uitgekomen" + "\n"); // TODO versie gedoe
 
             Window = window;
             window.Game = this;

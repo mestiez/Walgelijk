@@ -18,6 +18,6 @@ namespace Walgelijk
         /// Try to get a shader program uniform.
         /// </summary>
         /// <returns>Boolean indicating whether the operation was successful</returns>
-        bool TryGetUniform<T>(Material material, string uniformName, out T data);
+        bool TryDownloadUniform<T>(Material material, string uniformName, out T data);
     }
 }

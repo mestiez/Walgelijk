@@ -30,10 +30,9 @@
 # else
                 var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
 #endif
-                var task = shape.RenderTask;
-                task.ScreenSpace = shape.ScreenSpace;
-                task.ModelMatrix = transform.LocalToWorldMatrix;
-                RenderQueue.Add(task, shape.RenderOrder);
+                shape.RenderTask.ScreenSpace = shape.ScreenSpace;
+                shape.RenderTask.ModelMatrix = transform.LocalToWorldMatrix;
+                RenderQueue.Add(shape.RenderTask, shape.RenderOrder);
             }
         }
     }

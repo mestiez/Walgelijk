@@ -5,13 +5,13 @@ namespace Walgelijk
     /// <summary>
     /// Render task that renders a collection of vertices immediately
     /// </summary>
-    public struct ImmediateRenderTask : IRenderTask
+    public class ImmediateRenderTask : IRenderTask
     {
         public ImmediateRenderTask(Vertex[] vertices, Primitive primitiveType, Material material = null)
         {
             Vertices = vertices;
             PrimitiveType = primitiveType;
-            Material = material;
+            Material = material ?? Material.DefaultTextured;
             ModelMatrix = Matrix4x4.Identity;
         }
 
