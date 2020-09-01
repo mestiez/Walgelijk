@@ -117,39 +117,10 @@ namespace Walgelijk
             x = index % Width;
             y = (int)MathF.Floor(index / Width);
         }
-    }
 
-    /// <summary>
-    /// Wrap mode for textures
-    /// </summary>
-    public enum WrapMode
-    {
         /// <summary>
-        /// Extends the edge pixels
+        /// 1x1 texture with a single white pixel
         /// </summary>
-        Clamp,
-        /// <summary>
-        /// Repeats the UV
-        /// </summary>
-        Repeat,
-        /// <summary>
-        /// Mirrors the UV
-        /// </summary>
-        Mirror
-    }
-
-    /// <summary>
-    /// Filter mode for textures
-    /// </summary>
-    public enum FilterMode
-    {
-        /// <summary>
-        /// Nearest pixel sampling. Results in pixelated images
-        /// </summary>
-        Nearest,
-        /// <summary>
-        /// Linear pixel interpolation. Results in somewhat smooth images
-        /// </summary>
-        Linear
+        public static Texture White { get; } = new Texture(1, 1, new[] { Color.White });
     }
 }

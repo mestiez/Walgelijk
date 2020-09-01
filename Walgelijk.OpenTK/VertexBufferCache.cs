@@ -16,7 +16,6 @@ namespace Walgelijk.OpenTK
 
             buffer.HasChanged = false;
 
-            Logger.Log($"VBO created ({vbo})", nameof(VertexBufferCache));
             return handles;
         }
 

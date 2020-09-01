@@ -92,7 +92,7 @@ namespace Walgelijk
             if (material == null)
             {
                 material = new Material();
-                material.SetUniform(ShaderDefaults.MainTextureUniform, new Texture(1, 1, new[] { Color.White }));
+                material.SetUniform(ShaderDefaults.MainTextureUniform, Texture.White);
             }
             return material;
         }

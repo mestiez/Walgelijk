@@ -218,6 +218,60 @@
             System that renders components that implement <see cref="T:Walgelijk.IShapeComponent"/>
             </summary>
         </member>
+        <member name="T:Walgelijk.SplashScreenScene">
+            <summary>
+            Utility struct that provides splash screen scene creation functionality
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SplashScreenScene.CreateScene(Walgelijk.Texture[],System.Single,System.Action)">
+            <summary>
+            Create a splash screen scene
+            </summary>
+            <param name="logos">array of logos</param>
+            <param name="durationPerLogo"></param>
+            <param name="switchTo"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Walgelijk.SplashScreenScene.SplashScreenComponent">
+            <summary>
+            Component with splash screen information
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreenScene.SplashScreenComponent.Logos">
+            <summary>
+            Array of logos
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreenScene.SplashScreenComponent.DurationPerLogo">
+            <summary>
+            Seconds each logo should be visible for
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreenScene.SplashScreenComponent.CurrentTime">
+            <summary>
+            Current elapsed time since the last logo change
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreenScene.SplashScreenComponent.Lifetime">
+            <summary>
+            Current elapsed time since the creation
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreenScene.SplashScreenComponent.CurrentLogoIndex">
+            <summary>
+            Current logo index
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreenScene.SplashScreenComponent.OnEnd">
+            <summary>
+            What to do once all logos have been displayed
+            </summary>
+        </member>
+        <member name="T:Walgelijk.SplashScreenScene.SplashScreenSystem">
+            <summary>
+            System that handles <see cref="T:Walgelijk.SplashScreenScene.SplashScreenComponent"/>
+            </summary>
+        </member>
         <member name="T:Walgelijk.TransformComponent">
             <summary>
             Basic component that holds transformation data
@@ -642,6 +696,21 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:Walgelijk.FilterMode">
+            <summary>
+            Filter mode for textures
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FilterMode.Nearest">
+            <summary>
+            Nearest pixel sampling. Results in pixelated images
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FilterMode.Linear">
+            <summary>
+            Linear pixel interpolation. Results in somewhat smooth images
+            </summary>
+        </member>
         <member name="T:Walgelijk.IShaderManager">
             <summary>
             Shader specific link between the engine and the graphics API
@@ -872,7 +941,7 @@
         </member>
         <member name="P:Walgelijk.Shader.Default">
             <summary>
-            Default shader. Renders vertex colours.
+            Default shader. Renders vertex colours and textures.
             </summary>
         </member>
         <member name="T:Walgelijk.ShaderDefaults">
@@ -880,7 +949,7 @@
             Useful values for shader related business 
             </summary>
         </member>
-        <member name="F:Walgelijk.ShaderDefaults.DefaultFragment">
+        <member name="F:Walgelijk.ShaderDefaults.TexturedFragment">
             <summary>
             Default fragment shader code
             </summary>
@@ -967,39 +1036,9 @@
             Set a pixel to a colour
             </summary>
         </member>
-        <member name="T:Walgelijk.WrapMode">
+        <member name="P:Walgelijk.Texture.White">
             <summary>
-            Wrap mode for textures
-            </summary>
-        </member>
-        <member name="F:Walgelijk.WrapMode.Clamp">
-            <summary>
-            Extends the edge pixels
-            </summary>
-        </member>
-        <member name="F:Walgelijk.WrapMode.Repeat">
-            <summary>
-            Repeats the UV
-            </summary>
-        </member>
-        <member name="F:Walgelijk.WrapMode.Mirror">
-            <summary>
-            Mirrors the UV
-            </summary>
-        </member>
-        <member name="T:Walgelijk.FilterMode">
-            <summary>
-            Filter mode for textures
-            </summary>
-        </member>
-        <member name="F:Walgelijk.FilterMode.Nearest">
-            <summary>
-            Nearest pixel sampling. Results in pixelated images
-            </summary>
-        </member>
-        <member name="F:Walgelijk.FilterMode.Linear">
-            <summary>
-            Linear pixel interpolation. Results in somewhat smooth images
+            1x1 texture with a single white pixel
             </summary>
         </member>
         <member name="T:Walgelijk.TransformationStack">
@@ -1141,6 +1180,26 @@
         <member name="M:Walgelijk.VertexBuffer.GenerateIndices">
             <summary>
             Generates indices that simply walk the vertex array from beginning to end
+            </summary>
+        </member>
+        <member name="T:Walgelijk.WrapMode">
+            <summary>
+            Wrap mode for textures
+            </summary>
+        </member>
+        <member name="F:Walgelijk.WrapMode.Clamp">
+            <summary>
+            Extends the edge pixels
+            </summary>
+        </member>
+        <member name="F:Walgelijk.WrapMode.Repeat">
+            <summary>
+            Repeats the UV
+            </summary>
+        </member>
+        <member name="F:Walgelijk.WrapMode.Mirror">
+            <summary>
+            Mirrors the UV
             </summary>
         </member>
         <member name="T:Walgelijk.Game">

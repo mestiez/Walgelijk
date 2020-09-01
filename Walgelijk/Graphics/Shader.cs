@@ -46,7 +46,7 @@ namespace Walgelijk
         }
 
         /// <summary>
-        /// Default shader. Renders vertex colours.
+        /// Default shader. Renders vertex colours and textures.
         /// </summary>
         public static Shader Default
         {
@@ -55,7 +55,7 @@ namespace Walgelijk
                 return new Shader
                 {
                     VertexShader = ShaderDefaults.WorldSpaceVertex,
-                    FragmentShader = ShaderDefaults.DefaultFragment
+                    FragmentShader = ShaderDefaults.TexturedFragment
                 };
             }
         }

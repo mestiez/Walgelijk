@@ -8,7 +8,7 @@
         /// <summary>
         /// Default fragment shader code
         /// </summary>
-        public static readonly string DefaultFragment = Resources.Load<string>("shaders\\textured-fragment.frag");  
+        public static readonly string TexturedFragment = Resources.Load<string>("shaders\\textured-fragment.frag");  
         /// <summary>
         /// Default vertex shader code
         /// </summary>

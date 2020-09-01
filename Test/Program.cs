@@ -148,10 +148,11 @@ namespace Test
     {
         public static Material coolSprite;
         public static TextComponent coolText;
+        private static Game game;
 
         static void Main(string[] args)
         {
-            Game game = new Game(
+            game = new Game(
                 new OpenTKWindow("hallo daar", new Vector2(128, 128), new Vector2(800, 600)),
                 new NAudioRenderer()
                 );
@@ -161,8 +162,18 @@ namespace Test
             game.Window.VSync = false;
             game.Window.RenderTarget.ClearColour = new Color("#d42c5e");
 
+            game.Scene = SplashScreenScene.CreateScene(new[] {
+                Resources.Load<Texture>("textures\\studio minus.png"),
+                Resources.Load<Texture>("textures\\walgelijk.png"),
+                Resources.Load<Texture>("textures\\spellejte.png"),
+            }, 1, LoadScene);
+
+            game.Start();
+        }
+
+        private static void LoadScene()
+        {
             var scene = new Scene();
-            game.Scene = scene;
             coolText = new TextComponent("hallo wereld!\nnieuwe regel...\nwat gebeurt er als ik \t doe", Resources.Load<Font>("fonts\\inter.fnt"));
             coolText.TrackingMultiplier = .9f;
 
@@ -229,7 +240,7 @@ namespace Test
             scene.AddSystem(new ShapeRendererSystem());
             scene.AddSystem(new PlayerSystem());
 
-            game.Start();
+            game.Scene = scene;
         }
     }
 }

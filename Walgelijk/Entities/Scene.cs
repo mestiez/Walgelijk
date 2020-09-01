@@ -170,6 +170,7 @@ namespace Walgelijk
             stepIsInLoop = false;
         }
 
+        //TODO dit is waarschijnlijk nooit nodig. De lijsten die worden gemaakt zijn super klein en de allocation/gc neemt dicht bij 0ms in beslag
         /// <summary>
         /// Get all components and entities of a certain type and puts them in the given array. Returns the amount that was put in.
         /// </summary>
