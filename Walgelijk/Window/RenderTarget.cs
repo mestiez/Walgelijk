@@ -31,6 +31,11 @@ namespace Walgelijk
         public abstract Matrix4x4 ModelMatrix { get; set; }
 
         /// <summary>
+        /// Drawing bounds settings 
+        /// </summary>
+        public abstract DrawBounds DrawBounds { get; set; }
+
+        /// <summary>
         /// Calculate the aspect ratio from the current rendertarget size. Identical to Size.Y / Size.X
         /// </summary>
         public float AspectRatio => Size.Y / Size.X;

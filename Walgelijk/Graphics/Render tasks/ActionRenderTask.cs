@@ -3,6 +3,7 @@ using System.Numerics;
 
 namespace Walgelijk
 {
+
     /// <summary>
     /// Render task that will invoke the action you give. Useful for unique smaller actions
     /// </summary>

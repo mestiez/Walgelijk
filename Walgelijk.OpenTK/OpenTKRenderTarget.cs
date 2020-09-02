@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Numerics;
 using Vector2 = System.Numerics.Vector2;
+using System;
 
 namespace Walgelijk.OpenTK
 {
@@ -10,7 +11,9 @@ namespace Walgelijk.OpenTK
         internal OpenTKWindow Window { get; set; }
 
         private Vector2 size;
+        private DrawBounds drawBounds;
         private Color clearColour;
+        private bool drawBoundEnabledCache;
 
         private Material currentMaterial;
 
@@ -20,6 +23,15 @@ namespace Walgelijk.OpenTK
         public override Matrix4x4 ViewMatrix { get; set; }
         public override Matrix4x4 ProjectionMatrix { get; set; }
         public override Matrix4x4 ModelMatrix { get; set; }
+
+        public override DrawBounds DrawBounds
+        {
+            get => drawBounds; set
+            {
+                drawBounds = value;
+                SetDrawbounds(value);
+            }
+        }
 
         public override Vector2 Size
         {
@@ -106,6 +118,29 @@ namespace Walgelijk.OpenTK
 
             ShaderManager.TextureCache.ActivateTexturesFor(loadedShader);
             GL.UseProgram(prog);
+        }
+
+        private void SetDrawbounds(DrawBounds bounds)
+        {
+            if (!bounds.Enabled)
+            {
+                if (drawBoundEnabledCache)
+                    GL.Disable(EnableCap.ScissorTest);
+
+                drawBoundEnabledCache = false;
+                return;
+            }
+
+            int x = (int)MathF.Round(bounds.Position.X);
+            int y = (int)MathF.Round(size.Y - bounds.Position.Y - bounds.Size.Y);
+            int w = (int)MathF.Round(bounds.Size.X);
+            int h = (int)MathF.Round(bounds.Size.Y);
+
+            GL.Scissor(x, y, w, h);
+            if (!drawBoundEnabledCache)
+                GL.Enable(EnableCap.ScissorTest);
+
+            drawBoundEnabledCache = true;
         }
     }
 }

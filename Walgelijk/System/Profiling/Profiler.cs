@@ -1,6 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.Numerics;
+﻿using System.Globalization;
 
 namespace Walgelijk
 {
@@ -27,8 +25,7 @@ namespace Walgelijk
 #endif
 
         private readonly Game game;
-        private readonly Matrix4x4 quickProfilerModel = Matrix4x4.CreateScale(1f, -1f, 1) * Matrix4x4.CreateTranslation(5, 5, 0);
-        private readonly TextComponent quickProfiler;
+        private readonly QuickProfiler quickProfiler;
 
         private readonly TickRateCounter upsCounter = new TickRateCounter();
         private readonly TickRateCounter fpsCounter = new TickRateCounter();
@@ -40,8 +37,7 @@ namespace Walgelijk
         public Profiler(Game game)
         {
             this.game = game;
-            quickProfiler = new TextComponent("?");
-            quickProfiler.TrackingMultiplier = .92f;
+            quickProfiler = new QuickProfiler(this);
         }
 
         /// <summary>
@@ -60,20 +56,7 @@ namespace Walgelijk
             CalculateFPS();
 
             if (DrawQuickProfiler)
-                RenderQuickProfiler();
-        }
-
-        private void RenderQuickProfiler()
-        {
-            quickProfiler.String = @$"frame time {MathF.Round(1000 / UpdatesPerSecond, 3)}ms
-render time {MathF.Round(1000 / FramesPerSecond, 3)}ms
-{game.RenderQueue.Length} render tasks
-";
-
-            var task = quickProfiler.RenderTask;
-            task.ScreenSpace = true;
-            task.ModelMatrix = quickProfilerModel;
-            game.RenderQueue.Add(task, int.MaxValue);
+                quickProfiler.Render(game.RenderQueue);
         }
 
         private void CalculateUPS()

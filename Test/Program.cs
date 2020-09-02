@@ -18,7 +18,7 @@ namespace Test
             scene.AttachComponent(camera, new TransformComponent());
             scene.AttachComponent(camera, new CameraComponent());
 
-            CreateDebugGrid(scene, 10, 10, 5);
+            CreateDebugGrid(scene, 4, 4, 2);
 
             scene.AddSystem(new TransformSystem());
             scene.AddSystem(new DebugCameraSystem());
@@ -175,6 +175,7 @@ namespace Test
         {
             game.Window.RenderTarget.ClearColour = Color.Blue;
             var scene = new Scene();
+            game.Scene = scene;
             coolText = new TextComponent("hallo wereld!\nnieuwe regel...\nwat gebeurt er als ik \t doe", Resources.Load<Font>("fonts\\inter.fnt"));
             coolText.TrackingMultiplier = .9f;
 
@@ -241,7 +242,6 @@ namespace Test
             scene.AddSystem(new ShapeRendererSystem());
             scene.AddSystem(new PlayerSystem());
 
-            game.Scene = scene;
         }
     }
 }
