@@ -40,11 +40,11 @@ namespace Test
                     var point = scene.CreateEntity();
                     var pos = new Vector2(x, y) * step;
                     scene.AttachComponent(point, new TransformComponent { Scale = new Vector2(0.04f, 0.04f), Position = pos });
+                    scene.AttachComponent(point, new RectangleShapeComponent());
                     scene.AttachComponent(point, new TextComponent($"{pos.X}, {pos.Y}"));
 
-                    var dot = scene.CreateEntity();
-                    scene.AttachComponent(dot, new TransformComponent { Scale = new Vector2(0.1f, 0.1f), Position = pos });
-                    scene.AttachComponent(dot, new RectangleShapeComponent());
+                    //var dot = scene.CreateEntity();
+                    //scene.AttachComponent(dot, new TransformComponent { Scale = new Vector2(0.1f, 0.1f), Position = pos });
                 }
             }
         }
@@ -162,10 +162,10 @@ namespace Test
             game.Window.VSync = false;
             game.Window.RenderTarget.ClearColour = new Color("#d42c5e");
 
-            game.Scene = SplashScreenScene.CreateScene(new[] {
-                new SplashScreenScene.Logo(Resources.Load<Texture>("textures\\walgelijk.png"), sound: Resources.Load<Sound>("audio\\walgelijk.wav")),
-                new SplashScreenScene.Logo(Resources.Load<Texture>("textures\\studio minus.png"), 2.1f, sound: Resources.Load<Sound>("audio\\opening.wav")),
-                new SplashScreenScene.Logo(Resources.Load<Texture>("textures\\spellejte.png")),
+            game.Scene = SplashScreen.CreateScene(new[] {
+                new SplashScreen.Logo(Resources.Load<Texture>("textures\\walgelijk.png"), sound: Resources.Load<Sound>("audio\\walgelijk.wav")),
+                new SplashScreen.Logo(Resources.Load<Texture>("textures\\studio minus.png"), 2.1f, sound: Resources.Load<Sound>("audio\\opening.wav")),
+                new SplashScreen.Logo(Resources.Load<Texture>("textures\\spellejte.png")),
             }, LoadScene);
 
             game.Start();
@@ -173,6 +173,7 @@ namespace Test
 
         private static void LoadScene()
         {
+            game.Window.RenderTarget.ClearColour = Color.Blue;
             var scene = new Scene();
             coolText = new TextComponent("hallo wereld!\nnieuwe regel...\nwat gebeurt er als ik \t doe", Resources.Load<Font>("fonts\\inter.fnt"));
             coolText.TrackingMultiplier = .9f;

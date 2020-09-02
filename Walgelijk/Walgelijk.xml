@@ -146,7 +146,6 @@
             <summary>
             Set the main camera for this system
             </summary>
-            <param name="cameraEntity"></param>
         </member>
         <member name="T:Walgelijk.DebugCameraSystem">
             <summary>
@@ -218,78 +217,77 @@
             System that renders components that implement <see cref="T:Walgelijk.IShapeComponent"/>
             </summary>
         </member>
-        <member name="T:Walgelijk.SplashScreenScene">
+        <member name="T:Walgelijk.SplashScreen">
             <summary>
-            Utility struct that provides splash screen scene creation functionality
+            Utility struct that provides splash screen creation functionality
             </summary>
         </member>
-        <member name="M:Walgelijk.SplashScreenScene.CreateScene(Walgelijk.SplashScreenScene.Logo[],System.Action)">
+        <member name="M:Walgelijk.SplashScreen.CreateScene(Walgelijk.SplashScreen.Logo[],System.Action)">
             <summary>
             Create a splash screen scene
             </summary>
-            <param name="logos">array of logos</param>
-            <param name="durationPerLogo"></param>
-            <param name="switchTo"></param>
+            <param name="logos">Array of logos</param>
+            <param name="onEnd">What to do when the logo sequence ends. This is usually a scene change</param>
             <returns></returns>
         </member>
-        <member name="T:Walgelijk.SplashScreenScene.SplashScreenComponent">
+        <member name="T:Walgelijk.SplashScreen.SplashScreenComponent">
             <summary>
             Component with splash screen information
             </summary>
         </member>
-        <member name="F:Walgelijk.SplashScreenScene.SplashScreenComponent.Logos">
+        <member name="F:Walgelijk.SplashScreen.SplashScreenComponent.Logos">
             <summary>
             Array of logos
             </summary>
         </member>
-        <member name="F:Walgelijk.SplashScreenScene.SplashScreenComponent.CurrentTime">
+        <member name="F:Walgelijk.SplashScreen.SplashScreenComponent.CurrentTime">
             <summary>
             Current elapsed time since the last logo change
             </summary>
         </member>
-        <member name="F:Walgelijk.SplashScreenScene.SplashScreenComponent.Lifetime">
+        <member name="F:Walgelijk.SplashScreen.SplashScreenComponent.Lifetime">
             <summary>
             Current elapsed time since the creation
             </summary>
         </member>
-        <member name="F:Walgelijk.SplashScreenScene.SplashScreenComponent.CurrentLogoIndex">
+        <member name="F:Walgelijk.SplashScreen.SplashScreenComponent.CurrentLogoIndex">
             <summary>
             Current logo index
             </summary>
         </member>
-        <member name="F:Walgelijk.SplashScreenScene.SplashScreenComponent.OnEnd">
+        <member name="F:Walgelijk.SplashScreen.SplashScreenComponent.OnEnd">
             <summary>
             What to do once all logos have been displayed
             </summary>
         </member>
-        <member name="T:Walgelijk.SplashScreenScene.Logo">
+        <member name="T:Walgelijk.SplashScreen.Logo">
             <summary>
             Structure with information on how to display a logo
             </summary>
         </member>
-        <member name="F:Walgelijk.SplashScreenScene.Logo.Texture">
+        <member name="F:Walgelijk.SplashScreen.Logo.Texture">
             <summary>
             Texture to display
             </summary>
         </member>
-        <member name="F:Walgelijk.SplashScreenScene.Logo.Duration">
+        <member name="F:Walgelijk.SplashScreen.Logo.Duration">
             <summary>
             How long the logo should appear for
             </summary>
         </member>
-        <member name="F:Walgelijk.SplashScreenScene.Logo.Sound">
+        <member name="F:Walgelijk.SplashScreen.Logo.Sound">
             <summary>
             Sound to play
             </summary>
         </member>
-        <member name="M:Walgelijk.SplashScreenScene.Logo.#ctor(Walgelijk.Texture,System.Single,Walgelijk.Sound)">
+        <member name="M:Walgelijk.SplashScreen.Logo.#ctor(Walgelijk.Texture,System.Single,Walgelijk.Sound)">
             <summary>
             Create a logo with a texture and an optional sound
             </summary>
         </member>
-        <member name="T:Walgelijk.SplashScreenScene.SplashScreenSystem">
+        <member name="T:Walgelijk.SplashScreen.SplashScreenSystem">
             <summary>
-            System that handles <see cref="T:Walgelijk.SplashScreenScene.SplashScreenComponent"/>
+            System that handles <see cref="T:Walgelijk.SplashScreen.SplashScreenComponent"/>
             </summary>
         </member>
         <member name="T:Walgelijk.TransformComponent">
@@ -381,43 +379,38 @@
         </member>
         <member name="T:Walgelijk.CollectionByType">
             <summary>
-            Collection that does not allow duplicates and is able to quicky get objects by their type
+            Collection that is able to quicky get objects by their type
             </summary>
         </member>
         <member name="M:Walgelijk.CollectionByType.TryGet``1(``0@)">
             <summary>
             Try to get a value by type
             </summary>
-            <typeparam name="T"></typeparam>
-            <param name="value"></param>
-            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.CollectionByType.TryGetAll``1(System.Collections.Generic.IEnumerable{``0}@)">
+            <summary>
+            Try to get values by type
+            </summary>
         </member>
         <member name="M:Walgelijk.CollectionByType.Has``1">
             <summary>
             Returns if the collection has an object of the given type
             </summary>
-            <typeparam name="T"></typeparam>
-            <returns></returns>
         </member>
         <member name="M:Walgelijk.CollectionByType.TryAdd``1(System.Object)">
             <summary>
             Try to add a value to the collection
             </summary>
-            <typeparam name="T"></typeparam>
-            <param name="value"></param>
-            <returns></returns>
         </member>
         <member name="M:Walgelijk.CollectionByType.GetAll">
             <summary>
             Get all objects regardless of type. Order is undefined.
             </summary>
-            <returns></returns>
         </member>
         <member name="M:Walgelijk.CollectionByType.Remove``1">
             <summary>
-            Remove an object by type
+            Remove all objects by type
             </summary>
-            <returns>if the operation was successful</returns>
         </member>
         <member name="M:Walgelijk.CollectionByType.Dispose">
             <summary>
@@ -547,11 +540,6 @@
         <member name="M:Walgelijk.Scene.GetAllComponentsOfType``1">
             <summary>
             Get all components and entities of a certain type
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Scene.GetAllComponentsOfTypeNonAlloc``1(Walgelijk.EntityWith{``0}[])">
-            <summary>
-            Get all components and entities of a certain type and puts them in the given array. Returns the amount that was put in.
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.GetComponentFrom``1(Walgelijk.Entity)">
@@ -714,7 +702,6 @@
             <summary>
             Returns a tuple where each element corresponds with a component of the colour
             </summary>
-            <returns></returns>
         </member>
         <member name="T:Walgelijk.FilterMode">
             <summary>

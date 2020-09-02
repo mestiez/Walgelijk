@@ -39,14 +39,13 @@ namespace Walgelijk
         private void FallbackToFirstCamera()
         {
             var cam = Scene.GetAllComponentsOfType<CameraComponent>();
-            if (cam.Count() == 0) return;
+            if (!cam.Any()) return;
             SetMainCamera(cam.First().Entity);
         }
 
         /// <summary>
         /// Set the main camera for this system
         /// </summary>
-        /// <param name="cameraEntity"></param>
         public void SetMainCamera(Entity cameraEntity)
         {
             CameraComponent camera = GetCameraFrom(cameraEntity);

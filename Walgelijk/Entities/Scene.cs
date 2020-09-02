@@ -164,34 +164,13 @@ namespace Walgelijk
                 var componentDictionary = pair.Value;
                 var entity = pair.Key;
 
-                if (componentDictionary.TryGet(out T component))
-                    yield return new EntityWith<T>(component, entity);
-            }
-            stepIsInLoop = false;
-        }
-
-        //TODO dit is waarschijnlijk nooit nodig. De lijsten die worden gemaakt zijn super klein en de allocation/gc neemt dicht bij 0ms in beslag
-        /// <summary>
-        /// Get all components and entities of a certain type and puts them in the given array. Returns the amount that was put in.
-        /// </summary>
-        public int GetAllComponentsOfTypeNonAlloc<T>(EntityWith<T>[] buffer) where T : class
-        {
-            stepIsInLoop = true;
-            int i = 0;
-            foreach (var pair in components)
-            {
-                if (i >= buffer.Length) return buffer.Length;
-                var componentDictionary = pair.Value;
-                var entity = pair.Key;
-
-                if (componentDictionary.TryGet(out T component))
+                if (componentDictionary.TryGetAll(out IEnumerable<T> set))
                 {
-                    buffer[i] = new EntityWith<T>(component, entity);
-                    i++;
+                    foreach (var component in set)
+                        yield return new EntityWith<T>(component, entity);
                 }
             }
             stepIsInLoop = false;
-            return i;
         }
 
         /// <summary>
@@ -282,11 +261,11 @@ namespace Walgelijk
             var s = systems.Values;
 
             foreach (var system in s)
-                system.PreRender();            
-            
+                system.PreRender();
+
             foreach (var system in s)
-                system.Render();     
-            
+                system.Render();
+
             foreach (var system in s)
                 system.PostRender();
         }

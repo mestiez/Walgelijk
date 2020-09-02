@@ -5,16 +5,15 @@ using System.Numerics;
 namespace Walgelijk
 {
     /// <summary>
-    /// Utility struct that provides splash screen scene creation functionality
+    /// Utility struct that provides splash screen creation functionality
     /// </summary>
-    public struct SplashScreenScene
+    public struct SplashScreen
     {
         /// <summary>
         /// Create a splash screen scene
         /// </summary>
-        /// <param name="logos">array of logos</param>
-        /// <param name="durationPerLogo"></param>
-        /// <param name="switchTo"></param>
+        /// <param name="logos">Array of logos</param>
+        /// <param name="onEnd">What to do when the logo sequence ends. This is usually a scene change</param>
         /// <returns></returns>
         public static Scene CreateScene(Logo[] logos, Action onEnd)
         {

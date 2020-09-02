@@ -78,7 +78,7 @@ namespace Walgelijk
         /// <summary>
         /// Red
         /// </summary>
-        public static Color Red => new Color(1f, 0, 0);
+        public static Color Red => new Color("#AE1C28");
         /// <summary>
         /// White
         /// </summary>
@@ -86,7 +86,7 @@ namespace Walgelijk
         /// <summary>
         /// Blue
         /// </summary>
-        public static Color Blue => new Color(0, 0, 1f);        
+        public static Color Blue => new Color("#21468B");        
         /// <summary>
         /// Orange
         /// </summary>
@@ -95,7 +95,6 @@ namespace Walgelijk
         /// <summary>
         /// Returns a tuple where each element corresponds with a component of the colour
         /// </summary>
-        /// <returns></returns>
         public (byte r, byte g, byte b, byte a) ToBytes()
         {
             byte r = (byte)(Utilities.Clamp(R) * 255);
