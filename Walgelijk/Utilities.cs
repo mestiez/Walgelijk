@@ -82,6 +82,22 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Modulus
+        /// </summary>
+        public static float Mod(float a, float b)
+        {
+            return a - MathF.Floor(a / b) * b;
+        }
+
+        /// <summary>
+        /// Smallest difference between two angles in degrees
+        /// </summary>
+        public static float DeltaAngle(float source, float target)
+        {
+            return Mod(target - source + 180, 360) - 180;
+        }
+
+        /// <summary>
         /// Return a random entry in a <see cref="ICollection{T}"/>
         /// </summary>
         public static T PickRandom<T>(IList<T> collection)

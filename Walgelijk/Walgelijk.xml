@@ -207,6 +207,11 @@
             Material that is drawn with
             </summary>
         </member>
+        <member name="P:Walgelijk.RectangleShapeComponent.Pivot">
+            <summary>
+            Pivot point of the rectangle ranging from (0.0, 0.0) to (1.0, 1.0). Default is (0.5, 0.5).
+            </summary>
+        </member>
         <member name="M:Walgelijk.RectangleShapeComponent.#ctor">
             <summary>
             Create a rectangle renderer component
@@ -344,14 +349,14 @@
         </member>
         <member name="M:Walgelijk.Cache`2.Load(`0)">
             <summary>
-            Load or create a <see cref="!:LoadedType"/> from an <see rcef="UnloadedType"/>
+            Load or create a <typeparamref name="LoadedType"/> from an <typeparamref name="UnloadedType"/>
             </summary>
             <param name="obj"></param>
             <returns></returns>
         </member>
         <member name="M:Walgelijk.Cache`2.CreateNew(`0)">
             <summary>
-            Determines what must be done when an entirely new <see cref="!:LoadedType"/> is created
+            Determines what must be done when an entirely new <typeparamref name="LoadedType"/> is created
             </summary>
             <param name="raw"></param>
             <returns></returns>
@@ -1225,6 +1230,46 @@
             Mirrors the UV
             </summary>
         </member>
+        <member name="T:Walgelijk.Rect">
+            <summary>
+            Simple rectangle structure
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Rect.MinX">
+            <summary>
+            Minimum X point
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Rect.MinY">
+            <summary>
+            Minimum Y point
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Rect.MaxX">
+            <summary>
+            Maximum X point
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Rect.MaxY">
+            <summary>
+            Maximum Y point
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Rect.Width">
+            <summary>
+            Width of rectangle
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Rect.Height">
+            <summary>
+            Height of rectangle
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.#ctor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Create a rectangle
+            </summary>
+        </member>
         <member name="T:Walgelijk.Game">
             <summary>
             The link between the scene and the window
@@ -1700,6 +1745,16 @@
             Clamp a value within a range
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Utilities.Mod(System.Single,System.Single)">
+            <summary>
+            Modulus
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.DeltaAngle(System.Single,System.Single)">
+            <summary>
+            Smallest difference between two angles in degrees
+            </summary>
         </member>
         <member name="M:Walgelijk.Utilities.PickRandom``1(System.Collections.Generic.IList{``0})">
             <summary>

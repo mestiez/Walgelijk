@@ -13,7 +13,7 @@ namespace Walgelijk
         private readonly Dictionary<UnloadedType, LoadedType> loaded = new Dictionary<UnloadedType, LoadedType>();
 
         /// <summary>
-        /// Load or create a <see cref="LoadedType"/> from an <see rcef="UnloadedType"/>
+        /// Load or create a <typeparamref name="LoadedType"/> from an <typeparamref name="UnloadedType"/>
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
@@ -28,7 +28,7 @@ namespace Walgelijk
         }
 
         /// <summary>
-        /// Determines what must be done when an entirely new <see cref="LoadedType"/> is created
+        /// Determines what must be done when an entirely new <typeparamref name="LoadedType"/> is created
         /// </summary>
         /// <param name="raw"></param>
         /// <returns></returns>

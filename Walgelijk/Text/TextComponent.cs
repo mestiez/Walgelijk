@@ -51,7 +51,7 @@ namespace Walgelijk
         /// <summary>
         /// The bounding box of the text in local coordinates
         /// </summary>
-        public Vector4 LocalBoundingBox { get; private set; }
+        public Rect LocalBoundingBox { get; private set; }
 
         /// <summary>
         /// Distance between letters. Changing this forces a vertex array update.

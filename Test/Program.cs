@@ -121,6 +121,7 @@ namespace Test
 
                 cameraSystem.MainCameraTransform.Position = Vector2.Lerp(cameraSystem.MainCameraTransform.Position, transform.Position, Time.UpdateDeltaTime * 5);
                 transform.Position += delta * player.MovementSpeed * Time.UpdateDeltaTime;
+                transform.Rotation += Utilities.DeltaAngle(transform.Rotation, MathF.Atan2(delta.Y, delta.X) * Utilities.RadToDeg) * Time.UpdateDeltaTime * 10;
                 if (Input.IsKeyReleased(Key.O))
                     Scene.RemoveEntity(pair.Entity);
 
@@ -167,6 +168,8 @@ namespace Test
                 new SplashScreen.Logo(Resources.Load<Texture>("textures\\studio minus.png"), 2.1f, sound: Resources.Load<Sound>("audio\\opening.wav")),
                 new SplashScreen.Logo(Resources.Load<Texture>("textures\\spellejte.png")),
             }, LoadScene);
+
+          //  LoadScene();
 
             game.Start();
         }
@@ -220,7 +223,7 @@ namespace Test
                 {
                     Size = Vector2.One * .5f,
                     Material = coolSprite,
-                    RenderOrder = (i == 0) ? 1 : 0
+                    RenderOrder = (i == 0) ? 1 : 0,
                 });
 
                 if (i == 0)
