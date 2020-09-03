@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>O:\Projects\Walgelijk\Walgelijk\Walgelijk.xml</DocumentationFile>
+    <DocumentationFile>Walgelijk.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

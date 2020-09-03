@@ -1444,7 +1444,11 @@
             Retrieve if the font was loaded with the smooth flag. The flag determined the <see cref="T:Walgelijk.FilterMode"/> the pages were loaded with.
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:Walgelijk.Font.Italic" -->
+        <member name="P:Walgelijk.Font.Italic">
+            <summary>
+            Retrieve if the font was loaded with the italic style
+            </summary>
+        </member>
         <member name="P:Walgelijk.Font.Width">
             <summary>
             Page width in pixels
