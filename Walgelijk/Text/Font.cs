@@ -28,6 +28,7 @@ namespace Walgelijk
         public bool Smooth { get; internal set; }
         /// <summary>
         /// Retrieve if the font was loaded with the italic style
+        /// </summary>
         public bool Italic { get; internal set; }
         /// <summary>
         /// Page width in pixels
