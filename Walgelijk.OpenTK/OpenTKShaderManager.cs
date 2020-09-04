@@ -26,7 +26,7 @@ namespace Walgelijk.OpenTK
 
             switch (data)
             {
-                case Texture v:
+                case IReadableTexture v:
                     var loadedTexture = TextureCache.Load(new MaterialTexturePair(loaded, v));
                     GL.ProgramUniform1(prog, loc, TypeConverter.Convert(loadedTexture.TextureUnit));
                     break;                

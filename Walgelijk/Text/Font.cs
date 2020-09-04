@@ -21,7 +21,7 @@ namespace Walgelijk
         /// <summary>
         /// Retrieve if the font was loaded with the bold style
         /// </summary>
-        public bool Bold { get; internal set; }        
+        public bool Bold { get; internal set; }
         /// <summary>
         /// Retrieve if the font was loaded with the smooth flag. The flag determined the <see cref="FilterMode"/> the pages were loaded with.
         /// </summary>
@@ -45,7 +45,7 @@ namespace Walgelijk
         /// <summary>
         /// Array of texture pages this font uses
         /// </summary>
-        public Texture[] Pages { get; internal set; }
+        public IReadableTexture[] Pages { get; internal set; }
         /// <summary>
         /// Glyphs by character
         /// </summary>
@@ -58,8 +58,11 @@ namespace Walgelijk
         /// <summary>
         /// Material this font uses. Be aware this may be shared across text. Use <see cref="FontLoader.CreateFontMaterial(Font)"/> to create a new material.
         /// </summary>
-        public Material Material { get; 
-            set; }
+        public Material Material
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Load a font from a metadata file (BMFont .fnt)
@@ -102,6 +105,13 @@ namespace Walgelijk
     /// </summary>
     public struct KerningPair
     {
-        public char PreviousChar, CurrentChar;
+        /// <summary>
+        /// Previous character in the sequence
+        /// </summary>
+        public char PreviousChar;
+        /// <summary>
+        /// Current character in the sequence
+        /// </summary>
+        public char CurrentChar;
     }
 }

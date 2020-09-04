@@ -6,9 +6,9 @@ namespace Walgelijk.OpenTK
     public struct MaterialTexturePair
     {
         public LoadedMaterial Material;
-        public Texture Texture;
+        public IReadableTexture Texture;
 
-        public MaterialTexturePair(LoadedMaterial material, Texture texture)
+        public MaterialTexturePair(LoadedMaterial material, IReadableTexture texture)
         {
             Material = material;
             Texture = texture;
@@ -24,7 +24,7 @@ namespace Walgelijk.OpenTK
 
             foreach (var pair in allUniforms)
             {
-                if (pair.Value is Texture texture)
+                if (pair.Value is IReadableTexture texture)
                 {
                     var loaded = Load(new MaterialTexturePair(material, texture));
                     loaded.Bind();

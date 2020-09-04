@@ -164,9 +164,9 @@ namespace Test
             game.Window.RenderTarget.ClearColour = new Color("#d42c5e");
 
             game.Scene = SplashScreen.CreateScene(new[] {
-                new SplashScreen.Logo(Resources.Load<Texture>("textures\\walgelijk.png"), sound: Resources.Load<Sound>("audio\\walgelijk.wav")),
+                new SplashScreen.Logo(Resources.Load<IReadableTexture>("textures\\walgelijk.png"), sound: Resources.Load<Sound>("audio\\walgelijk.wav")),
                 new SplashScreen.Logo(Resources.Load<Texture>("textures\\studio minus.png"), 2.1f, sound: Resources.Load<Sound>("audio\\opening.wav")),
-                new SplashScreen.Logo(Resources.Load<Texture>("textures\\spellejte.png")),
+                new SplashScreen.Logo(Resources.Load<IReadableTexture>("textures\\spellejte.png")),
             }, LoadScene);
 
           //  LoadScene();

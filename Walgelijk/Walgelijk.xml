@@ -285,7 +285,7 @@
             Sound to play
             </summary>
         </member>
-        <member name="M:Walgelijk.SplashScreen.Logo.#ctor(Walgelijk.Texture,System.Single,Walgelijk.Sound)">
+        <member name="M:Walgelijk.SplashScreen.Logo.#ctor(Walgelijk.IReadableTexture,System.Single,Walgelijk.Sound)">
             <summary>
             Create a logo with a texture and an optional sound
             </summary>
@@ -723,6 +723,48 @@
             Linear pixel interpolation. Results in somewhat smooth images
             </summary>
         </member>
+        <member name="T:Walgelijk.IReadableTexture">
+            <summary>
+            A texture that can be written to
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IReadableTexture.GetPixel(System.Int32,System.Int32)">
+            <summary>
+            Get a pixel
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.IReadableTexture.GetPixels">
+            <summary>
+            Get an immutable array of all pixels
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Walgelijk.IReadableTexture.Width">
+            <summary>
+            Width of the texture in pixels
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IReadableTexture.Height">
+            <summary>
+            Height of the texture in pixels
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IReadableTexture.Size">
+            <summary>
+            Size of the image. This returns a <see cref="T:System.Numerics.Vector2"/> with <see cref="P:Walgelijk.IReadableTexture.Width"/> and <see cref="P:Walgelijk.IReadableTexture.Height"/>
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IReadableTexture.WrapMode">
+            <summary>
+            Wrap mode
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IReadableTexture.FilterMode">
+            <summary>
+            Filter mode. Determines how pixels are interpolated between
+            </summary>
+        </member>
         <member name="T:Walgelijk.IShaderManager">
             <summary>
             Shader specific link between the engine and the graphics API
@@ -738,6 +780,16 @@
             Try to get a shader program uniform.
             </summary>
             <returns>Boolean indicating whether the operation was successful</returns>
+        </member>
+        <member name="T:Walgelijk.IWritableTexture">
+            <summary>
+            A texture that can be written to
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IWritableTexture.SetPixel(System.Int32,System.Int32,Walgelijk.Color)">
+            <summary>
+            Set a pixel to a colour
+            </summary>
         </member>
         <member name="T:Walgelijk.Material">
             <summary>
@@ -1554,6 +1606,16 @@
             The two characters a kerning amount applies to
             </summary>
         </member>
+        <member name="F:Walgelijk.KerningPair.PreviousChar">
+            <summary>
+            Previous character in the sequence
+            </summary>
+        </member>
+        <member name="F:Walgelijk.KerningPair.CurrentChar">
+            <summary>
+            Current character in the sequence
+            </summary>
+        </member>
         <member name="T:Walgelijk.TextMaterial">
             <summary>
             Utility struct that provides static text material creation functions
@@ -1566,12 +1628,12 @@
             <param name="font"></param>
             <returns></returns>
         </member>
-        <member name="M:Walgelijk.TextMaterial.CreateClipMaterial(Walgelijk.Texture[])">
+        <member name="M:Walgelijk.TextMaterial.CreateClipMaterial(Walgelijk.IReadableTexture[])">
             <summary>
             Create a material for a set of sharp textures
             </summary>
         </member>
-        <member name="M:Walgelijk.TextMaterial.CreateSDFMaterial(Walgelijk.Texture[])">
+        <member name="M:Walgelijk.TextMaterial.CreateSDFMaterial(Walgelijk.IReadableTexture[])">
             <summary>
             Create a material for a set of SDF textures
             </summary>

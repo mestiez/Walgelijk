@@ -88,7 +88,7 @@ namespace Walgelijk
             /// <summary>
             /// Texture to display
             /// </summary>
-            public Texture Texture;
+            public IReadableTexture Texture;
             /// <summary>
             /// How long the logo should appear for
             /// </summary>
@@ -101,7 +101,7 @@ namespace Walgelijk
             /// <summary>
             /// Create a logo with a texture and an optional sound
             /// </summary>
-            public Logo(Texture texture, float duration = 1f, Sound sound = null)
+            public Logo(IReadableTexture texture, float duration = 1f, Sound sound = null)
             {
                 Texture = texture;
                 Duration = duration;

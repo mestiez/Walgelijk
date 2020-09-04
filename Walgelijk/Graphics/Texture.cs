@@ -11,7 +11,7 @@ namespace Walgelijk
     /// <summary>
     /// Represents a texture
     /// </summary>
-    public class Texture
+    public class Texture : IReadableTexture, IWritableTexture
     {
         /// <summary>
         /// Width of the texture in pixels

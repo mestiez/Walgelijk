@@ -46,7 +46,7 @@ namespace Walgelijk
         {
             FilterMode filterMode = info.Smooth ? FilterMode.Linear : FilterMode.Nearest;
 
-            font.Pages = new Texture[info.PageCount];
+            font.Pages = new IReadableTexture[info.PageCount];
             for (int i = 0; i < info.PageCount; i++)
             {
                 string path = Path.Combine(Path.GetDirectoryName(metadataPath), info.PagePaths[i]);
@@ -220,7 +220,7 @@ namespace Walgelijk
         /// <summary>
         /// Create a material for a set of sharp textures
         /// </summary>
-        public static Material CreateClipMaterial(Texture[] pages)
+        public static Material CreateClipMaterial(IReadableTexture[] pages)
         {
             string vert = ShaderDefaults.WorldSpaceVertex;
             string frag = Resources.Load<string>("shaders\\legacy-font.frag");
@@ -234,7 +234,7 @@ namespace Walgelijk
         /// <summary>
         /// Create a material for a set of SDF textures
         /// </summary>
-        public static Material CreateSDFMaterial(Texture[] pages)
+        public static Material CreateSDFMaterial(IReadableTexture[] pages)
         {
             string vert = ShaderDefaults.WorldSpaceVertex;
             string frag = Resources.Load<string>("shaders\\sdf-font.frag");
