@@ -3,6 +3,14 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>mestiez</Authors>
+    <Company>Studio Minus</Company>
+    <RepositoryUrl>https://github.com/mestiez/Walgelijk</RepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>O:\Projects\Walgelijk\Walgelijk.NAudio\Walgelijk.NAudio.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

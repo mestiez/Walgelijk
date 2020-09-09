@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Walgelijk.NAudio</name>
+    </assembly>
+    <members>
+        <member name="T:Walgelijk.NAudio.CustomMixingSampleProvider">
+            <summary>
+            A sample provider mixer, allowing inputs to be added and removed
+            </summary>
+        </member>
+        <member name="P:Walgelijk.NAudio.CustomMixingSampleProvider.Volume">
+            <summary>
+            range 0 - 1
+            </summary>
+        </member>
+        <member name="M:Walgelijk.NAudio.CustomMixingSampleProvider.#ctor(NAudio.Wave.WaveFormat)">
+            <summary>
+            Creates a new MixingSampleProvider, with no inputs, but a specified WaveFormat
+            </summary>
+            <param name="waveFormat">The WaveFormat of this mixer. All inputs must be in this format</param>
+        </member>
+        <member name="M:Walgelijk.NAudio.CustomMixingSampleProvider.#ctor(System.Collections.Generic.IEnumerable{NAudio.Wave.ISampleProvider})">
+            <summary>
+            Creates a new MixingSampleProvider, based on the given inputs
+            </summary>
+            <param name="sources">Mixer inputs - must all have the same waveformat, and must
+            all be of the same WaveFormat. There must be at least one input</param>
+        </member>
+        <member name="P:Walgelijk.NAudio.CustomMixingSampleProvider.MixerInputs">
+            <summary>
+            Returns the mixer inputs (read-only - use AddMixerInput to add an input
+            </summary>
+        </member>
+        <member name="P:Walgelijk.NAudio.CustomMixingSampleProvider.ReadFully">
+            <summary>
+            When set to true, the Read method always returns the number
+            of samples requested, even if there are no inputs, or if the
+            current inputs reach their end. Setting this to true effectively
+            makes this a never-ending sample provider, so take care if you plan
+            to write it out to a file.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.NAudio.CustomMixingSampleProvider.AddMixerInput(NAudio.Wave.IWaveProvider)">
+            <summary>
+            Adds a WaveProvider as a Mixer input.
+            Must be PCM or IEEE float already
+            </summary>
+            <param name="mixerInput">IWaveProvider mixer input</param>
+        </member>
+        <member name="M:Walgelijk.NAudio.CustomMixingSampleProvider.AddMixerInput(NAudio.Wave.ISampleProvider)">
+            <summary>
+            Adds a new mixer input
+            </summary>
+            <param name="mixerInput">Mixer input</param>
+        </member>
+        <member name="E:Walgelijk.NAudio.CustomMixingSampleProvider.MixerInputEnded">
+            <summary>
+            Raised when a mixer input has been removed because it has ended
+            </summary>
+        </member>
+        <member name="M:Walgelijk.NAudio.CustomMixingSampleProvider.RemoveMixerInput(NAudio.Wave.ISampleProvider)">
+            <summary>
+            Removes a mixer input
+            </summary>
+            <param name="mixerInput">Mixer input to remove</param>
+        </member>
+        <member name="M:Walgelijk.NAudio.CustomMixingSampleProvider.RemoveAllMixerInputs">
+            <summary>
+            Removes all mixer inputs
+            </summary>
+        </member>
+        <member name="P:Walgelijk.NAudio.CustomMixingSampleProvider.WaveFormat">
+            <summary>
+            The output WaveFormat of this sample provider
+            </summary>
+        </member>
+        <member name="M:Walgelijk.NAudio.CustomMixingSampleProvider.Read(System.Single[],System.Int32,System.Int32)">
+            <summary>
+            Reads samples from this sample provider
+            </summary>
+            <param name="buffer">Sample buffer</param>
+            <param name="offset">Offset into sample buffer</param>
+            <param name="count">Number of samples required</param>
+            <returns>Number of samples read</returns>
+        </member>
+        <member name="T:Walgelijk.NAudio.NAudioLoader">
+            <summary>
+            Loads audio into memory from external sources
+            </summary>
+        </member>
+        <member name="M:Walgelijk.NAudio.NAudioLoader.LoadFromFile(System.String)">
+            <summary>
+            Load sound from disk
+            </summary>
+        </member>
+        <member name="T:Walgelijk.NAudio.SampleProviderConverters">
+            <summary>
+            Utility class for converting to SampleProvider
+            </summary>
+        </member>
+        <member name="M:Walgelijk.NAudio.SampleProviderConverters.ConvertWaveProviderIntoSampleProvider(NAudio.Wave.IWaveProvider)">
+            <summary>
+            Helper function to go from IWaveProvider to a SampleProvider
+            Must already be PCM or IEEE float
+            </summary>
+            <param name="waveProvider">The WaveProvider to convert</param>
+            <returns>A sample provider</returns>
+        </member>
+    </members>
+</doc>

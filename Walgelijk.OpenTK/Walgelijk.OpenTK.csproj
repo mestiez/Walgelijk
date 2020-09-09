@@ -3,6 +3,14 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>mestiez</Authors>
+    <Company>Studio Minus</Company>
+    <RepositoryType>https://github.com/mestiez/Walgelijk</RepositoryType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>O:\Projects\Walgelijk\Walgelijk.OpenTK\Walgelijk.OpenTK.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Walgelijk.OpenTK</name>
+    </assembly>
+    <members>
+        <member name="F:Walgelijk.OpenTK.VertexBufferCacheHandles.VBO">
+            <summary>
+            Vertex buffer object index
+            </summary>
+        </member>
+        <member name="F:Walgelijk.OpenTK.VertexBufferCacheHandles.VAO">
+            <summary>
+            Vertex array object index
+            </summary>
+        </member>
+        <member name="F:Walgelijk.OpenTK.VertexBufferCacheHandles.IBO">
+            <summary>
+            Index buffer object index
+            </summary>
+        </member>
+    </members>
+</doc>
