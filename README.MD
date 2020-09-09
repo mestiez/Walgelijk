@@ -16,8 +16,8 @@ game.Window.RenderTarget.ClearColour = new Color("#000000");
 var scene = new Scene();
 
 var camera = scene.CreateEntity();
-camera.AttachComponent(camera, new CameraComponent());
-camera.AttachComponent(camera, new TransformComponent());
+scene.AttachComponent(camera, new CameraComponent());
+scene.AttachComponent(camera, new TransformComponent());
 
 scene.AddSystem(new TransformSystem());
 scene.AddSystem(new CameraSystem());
