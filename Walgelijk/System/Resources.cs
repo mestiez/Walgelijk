@@ -51,11 +51,14 @@ namespace Walgelijk
         /// </summary>
         /// <typeparam name="T">The type of the object to load</typeparam>
         /// <param name="path">The path of the file</param>
-        public static T Load<T>(string path)
+        /// <param name="ignoreBasePaths">Whether or not to ignore any set base paths. Default is false</param>
+        public static T Load<T>(string path, bool ignoreBasePaths = false)
         {
-            path = CombineTypeSpecificPath<T>(path);
-
-            path = CombineBasePath(path);
+            if (!ignoreBasePaths)
+            {
+                path = CombineTypeSpecificPath<T>(path);
+                path = CombineBasePath(path);
+            }
 
             if (resources.TryGetValue(path, out var obj) && obj is T typed)
                 return typed;

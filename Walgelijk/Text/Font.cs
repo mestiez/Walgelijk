@@ -97,7 +97,7 @@ namespace Walgelijk
         /// <summary>
         /// The default font
         /// </summary>
-        public static Font Default = Resources.Load<Font>("fonts\\roboto mono.fnt");
+        public static Font Default = Resources.Load<Font>("resources\\fonts\\roboto mono.fnt", true);
     }
 
     /// <summary>
