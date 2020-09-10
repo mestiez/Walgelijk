@@ -459,6 +459,56 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:Walgelijk.Prefab">
+            <summary>
+            Structure that holds an entity and its components. Meant for serialisation.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Prefab.EntityID">
+            <summary>
+            The entity
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Prefab.Components">
+            <summary>
+            Attached components
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Prefab.#ctor(Walgelijk.Entity,System.Object[])">
+            <summary>
+            Construct a prefab
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Prefab.#ctor(Walgelijk.Entity,Walgelijk.Scene)">
+            <summary>
+            Construct a prefab from an existing entity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Prefab.CopyTo(Walgelijk.Scene)">
+            <summary>
+            Unpack the prefab in the scene. This <b>will ignore the stored <see cref="F:Walgelijk.Prefab.EntityID"/></b> and assign a new ID instead
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Prefab.UnpackTo(Walgelijk.Scene)">
+            <summary>
+            Unpack the prefab in the scene. This will keep the stored ID and will fail when the ID collides.
+            </summary>
+        </member>
+        <member name="T:Walgelijk.PrefabLoader">
+            <summary>
+            Entity (de)serialisation utility struct
+            </summary>
+        </member>
+        <member name="M:Walgelijk.PrefabLoader.Load(System.String)">
+            <summary>
+            Deserialise a JSON representation of <see cref="T:Walgelijk.Prefab"/> from a file
+            </summary>
+        </member>
+        <member name="M:Walgelijk.PrefabLoader.Save(Walgelijk.Prefab,System.String)">
+            <summary>
+            Serialise a <see cref="T:Walgelijk.Prefab"/> to a file
+            </summary>
+        </member>
         <member name="T:Walgelijk.Scene">
             <summary>
             Stores and manages components and systems
@@ -467,6 +517,16 @@
         <member name="P:Walgelijk.Scene.Game">
             <summary>
             Game this scene belongs to
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.#ctor(Walgelijk.Game)">
+            <summary>
+            Create scene for a <see cref="P:Walgelijk.Scene.Game"/> without setting it as the active scene
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.#ctor">
+            <summary>
+            Create scene without an attached game. This can cause issues when a <see cref="T:Walgelijk.System"/> expects a game
             </summary>
         </member>
         <member name="E:Walgelijk.Scene.OnCreateEntity">
@@ -513,6 +573,11 @@
         <member name="M:Walgelijk.Scene.CreateEntity">
             <summary>
             Register a new entity to the scene
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.RegisterExistingEntity(Walgelijk.Entity)">
+            <summary>
+            Register an existing Entity ID to the scene. This should not be used if you are to create a new entity. Use <see cref="M:Walgelijk.Scene.CreateEntity"/> instead. <see cref="E:Walgelijk.Scene.OnCreateEntity"/> will not be invoked.
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.GetEntity(System.Int32)">
@@ -1463,6 +1528,11 @@
             Global path based resource storage
             </summary>
         </member>
+        <member name="E:Walgelijk.Resources.OnStartLoad">
+            <summary>
+            Event invoked when 
+            </summary>
+        </member>
         <member name="P:Walgelijk.Resources.BasePath">
             <summary>
             Base path of all resource requests
@@ -1479,14 +1549,21 @@
             </summary>
             <typeparam name="T">The type of the object to load</typeparam>
             <param name="path">The path of the file</param>
-            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Resources.SetBasePathForType(System.Type,System.String)">
+            <summary>
+            Sets the base path for a specific type. This will be combined with the <see cref="P:Walgelijk.Resources.BasePath"/> and the input path to create the full path
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Resources.SetBasePathForType``1(System.String)">
+            <summary>
+            Sets the base path for a specific type. This will be combined with the <see cref="P:Walgelijk.Resources.BasePath"/> and the input path to create the full path. This method is the generic version of <see cref="M:Walgelijk.Resources.SetBasePathForType(System.Type,System.String)"/>
+            </summary>
         </member>
         <member name="M:Walgelijk.Resources.CanLoad(System.Type)">
             <summary>
             Returns if the resource manager can load objects of the given type
             </summary>
-            <param name="type"></param>
-            <returns></returns>
         </member>
         <member name="M:Walgelijk.Resources.RegisterType(System.Type,System.Func{System.String,System.Object})">
             <summary>

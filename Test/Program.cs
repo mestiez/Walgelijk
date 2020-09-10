@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Walgelijk;
 using Walgelijk.NAudio;
@@ -62,8 +64,8 @@ namespace Test
 
         public override void Initialise()
         {
-            coolclip = Resources.Load<Sound>("audio\\cannot-build.wav");
-            music = Resources.Load<Sound>("audio\\kampvuurliedlied.mp3");
+            coolclip = Resources.Load<Sound>("cannot-build.wav");
+            music = Resources.Load<Sound>("kampvuurliedlied.mp3");
             music.Looping = true;
         }
 
@@ -153,6 +155,28 @@ namespace Test
 
         static void Main(string[] args)
         {
+            //float odds = 0;
+            //const int iterations = 1000;
+            //for (int i = 0; i < iterations; i++)
+            //{
+            //    HashSet<int> existing = new HashSet<int>();
+            //    while (true)
+            //    {
+            //        int id = IdentityGenerator.Generate();
+            //        if (existing.Contains(id))
+            //        {
+            //            odds += (1f / existing.Count) / iterations;
+            //            break;
+            //        }
+            //        else
+            //            existing.Add(id);
+            //    }
+            //}
+
+            //Logger.Log(odds * 100 + "% probability of ID collision");
+
+
+
             game = new Game(
                 new OpenTKWindow("hallo daar", new Vector2(-1, -1), new Vector2(800, 600)),
                 new NAudioRenderer()
@@ -163,13 +187,20 @@ namespace Test
             game.Window.VSync = false;
             game.Window.RenderTarget.ClearColour = new Color("#d42c5e");
 
+            Resources.SetBasePathForType<Sound>("audio");
+            Resources.SetBasePathForType<Prefab>("prefabs");
+            Resources.SetBasePathForType<Texture>("textures");
+            Resources.SetBasePathForType<IReadableTexture>("textures");
+            Resources.SetBasePathForType<IWritableTexture>("textures");
+            Resources.SetBasePathForType<Font>("fonts");
+
             game.Scene = SplashScreen.CreateScene(new[] {
-                new SplashScreen.Logo(Resources.Load<IReadableTexture>("textures\\walgelijk.png"), sound: Resources.Load<Sound>("audio\\walgelijk.wav")),
-                new SplashScreen.Logo(Resources.Load<Texture>("textures\\studio minus.png"), 2.1f, sound: Resources.Load<Sound>("audio\\opening.wav")),
-                new SplashScreen.Logo(Resources.Load<IReadableTexture>("textures\\spellejte.png")),
+                new SplashScreen.Logo(Resources.Load<IReadableTexture>("walgelijk.png"), 0.5f, Resources.Load<Sound>("walgelijk.wav")),
+                new SplashScreen.Logo(Resources.Load<Texture>("studio minus.png"), 0.5f, Resources.Load<Sound>("opening.wav")),
+                new SplashScreen.Logo(Resources.Load<IReadableTexture>("spellejte.png")),
             }, LoadScene);
 
-          //  LoadScene();
+            //  LoadScene();
 
             game.Start();
         }
@@ -179,7 +210,7 @@ namespace Test
             game.Window.RenderTarget.ClearColour = Color.Blue;
             var scene = new Scene();
             game.Scene = scene;
-            coolText = new TextComponent("hallo wereld!\nnieuwe regel...\nwat gebeurt er als ik \t doe", Resources.Load<Font>("fonts\\inter.fnt"));
+            coolText = new TextComponent("hallo wereld!\nnieuwe regel...\nwat gebeurt er als ik \t doe", Resources.Load<Font>("inter.fnt"));
             coolText.TrackingMultiplier = .9f;
 
             {
@@ -198,12 +229,12 @@ namespace Test
                     Scale = new Vector2(0.015f, 0.015f),
                     Position = new Vector2(-10, 0)
                 });
-                scene.AttachComponent(ent, new TextComponent("andere font tijden\nrich text zou cool zijn... zo van\n<b>super</b> cool", Resources.Load<Font>("fonts\\broadway.fnt")/*, Font.Load("fonts\\kosugi maru.fnt")*/));
+                scene.AttachComponent(ent, new TextComponent("andere font tijden\nrich text zou cool zijn... zo van\n<b>super</b> cool", Resources.Load<Font>("broadway.fnt")/*, Font.Load("fonts\\kosugi maru.fnt")*/));
             }
 
-            coolSprite = new Material(new Shader(Resources.Load<string>("shaders\\shader.vert"), Resources.Load<string>("shaders\\shader.frag")));
-            coolSprite.SetUniform("texture1", Resources.Load<Texture>("textures\\sadness.png"));
-            coolSprite.SetUniform("texture2", Resources.Load<Texture>("textures\\pride.png"));
+            coolSprite = new Material(new Shader(Resources.Load<string>("shaders/shader.vert"), Resources.Load<string>("shaders/shader.frag")));
+            coolSprite.SetUniform("texture1", Resources.Load<Texture>("sadness.png"));
+            coolSprite.SetUniform("texture2", Resources.Load<Texture>("pride.png"));
 
             //create rectangles
             for (int i = 0; i < 200; i++)
@@ -232,19 +263,21 @@ namespace Test
 
             //create camera
             {
-                var entity = scene.CreateEntity();
-                scene.AttachComponent(entity, new CameraComponent());
-                scene.AttachComponent(entity, new TransformComponent());
+                //var entity = scene.CreateEntity();
+                //scene.AttachComponent(entity, new CameraComponent());
+                //scene.AttachComponent(entity, new TransformComponent());
+
+                Resources.Load<Prefab>("camera.json").UnpackTo(scene);
 
                 var cameraSystem = new CameraSystem();
                 scene.AddSystem(cameraSystem);
-                cameraSystem.SetMainCamera(entity);
+                //cameraSystem.SetMainCamera(entity);
+
             }
 
             scene.AddSystem(new TransformSystem());
             scene.AddSystem(new ShapeRendererSystem());
             scene.AddSystem(new PlayerSystem());
-
         }
     }
 }

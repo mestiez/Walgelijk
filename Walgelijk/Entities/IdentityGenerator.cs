@@ -5,16 +5,13 @@
     /// </summary>
     public struct IdentityGenerator
     {
-        private static int lastIdentity = -1;
-
         /// <summary>
         /// Generate a new identity value
         /// </summary>
         /// <returns></returns>
         public static int Generate()
         {
-            lastIdentity++;
-            return lastIdentity;
+            return Utilities.RandomInt(0, int.MaxValue);
         }
     }
 }

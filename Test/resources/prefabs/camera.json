@@ -1,0 +1,26 @@
+{
+  "EntityID": {
+    "Identity": 1200424511
+  },
+  "Components": {
+    "$values": [
+      {
+        "$type": "Walgelijk.CameraComponent, Walgelijk",
+        "OrthographicSize": 1.0,
+        "PixelsPerUnit": 100.0
+      },
+      {
+        "$type": "Walgelijk.TransformComponent, Walgelijk",
+        "Position": {
+          "X": 0.0,
+          "Y": 0.0
+        },
+        "Rotation": 0.0,
+        "Scale": {
+          "X": 1.0,
+          "Y": 1.0
+        },
+      }
+    ]
+  }
+}

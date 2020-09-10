@@ -35,6 +35,14 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Create scene without an attached game. This can cause issues when a <see cref="System"/> expects a game
+        /// </summary>
+        public Scene()
+        {
+
+        }
+
+        /// <summary>
         /// Fired when an entity is created and registered
         /// </summary>
         public event Action<Entity> OnCreateEntity;
@@ -102,15 +110,30 @@ namespace Walgelijk
             };
 
             entities.Add(newEntity.Identity, newEntity);
+            InitialiseComponentCollection(newEntity);
+            OnCreateEntity?.Invoke(newEntity);
 
+            return newEntity;
+        }
+
+        /// <summary>
+        /// Register an existing Entity ID to the scene. This should not be used if you are to create a new entity. Use <see cref="CreateEntity"/> instead. <see cref="OnCreateEntity"/> will not be invoked.
+        /// </summary>
+        public void RegisterExistingEntity(Entity entity)
+        {
+            if (HasEntity(entity))
+                throw new InvalidOperationException($"Prefab ID ({entity}) already exists in the scene");
+
+            entities.Add(entity.Identity, entity);
+            InitialiseComponentCollection(entity);
+        }
+
+        private void InitialiseComponentCollection(Entity newEntity)
+        {
             if (stepIsInLoop)
                 creationBuffer.Add(newEntity, new CollectionByType());
             else
                 components.Add(newEntity, new CollectionByType());
-
-            OnCreateEntity?.Invoke(newEntity);
-
-            return newEntity;
         }
 
         /// <summary>
