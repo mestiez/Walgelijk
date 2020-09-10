@@ -27,6 +27,14 @@ namespace Walgelijk
         private bool stepIsInLoop;
 
         /// <summary>
+        /// Create scene for a <see cref="Game"/> without setting it as the active scene
+        /// </summary>
+        public Scene(Game game)
+        {
+            Game = game;
+        }
+
+        /// <summary>
         /// Fired when an entity is created and registered
         /// </summary>
         public event Action<Entity> OnCreateEntity;

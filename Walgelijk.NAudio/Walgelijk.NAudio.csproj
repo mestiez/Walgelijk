@@ -7,6 +7,8 @@
     <Authors>mestiez</Authors>
     <Company>Studio Minus</Company>
     <RepositoryUrl>https://github.com/mestiez/Walgelijk</RepositoryUrl>
+    <Version>0.0.1</Version>
+    <Description>NAudio renderer implementatie</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
