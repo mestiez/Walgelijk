@@ -44,5 +44,10 @@ namespace Walgelijk
         /// Filter mode. Determines how pixels are interpolated between
         /// </summary>
         public FilterMode FilterMode { get; set; }
+
+        /// <summary>
+        /// Whether the texture has generated mipmaps upon load
+        /// </summary>
+        public bool GenerateMipmaps { get; }
     }
 }

@@ -33,23 +33,29 @@ namespace Walgelijk
         /// Filter mode. Determines how pixels are interpolated between
         /// </summary>
         public FilterMode FilterMode { get; set; } = FilterMode.Nearest;
+        /// <summary>
+        /// Whether the texture has generated mipmaps upon load
+        /// </summary>
+        public bool GenerateMipmaps => generateMipmaps;
 
         private readonly Color[] pixels;
+        private bool generateMipmaps;
 
         /// <summary>
         /// Create a texture from a series of pixels
         /// </summary>
-        public Texture(int width, int height, Color[] pixels)
+        public Texture(int width, int height, Color[] pixels, bool generateMipmaps = true)
         {
             Width = width;
             Height = height;
             this.pixels = pixels;
+            this.generateMipmaps = generateMipmaps;
         }
 
         /// <summary>
         /// Load an image from a path
         /// </summary>
-        public static Texture Load(string path, bool flipY = true)
+        public static Texture Load(string path, bool flipY = true, bool generateMipmaps = true)
         {
             var bitmap = Image.FromFile(path) as Bitmap;
 
@@ -66,7 +72,7 @@ namespace Walgelijk
                     i++;
                 }
 
-            return new Texture(bitmap.Width, bitmap.Height, pixels);
+            return new Texture(bitmap.Width, bitmap.Height, pixels, generateMipmaps);
         }
 
         /// <summary>
@@ -122,5 +128,6 @@ namespace Walgelijk
         /// 1x1 texture with a single white pixel
         /// </summary>
         public static Texture White { get; } = new Texture(1, 1, new[] { Color.White });
+
     }
 }

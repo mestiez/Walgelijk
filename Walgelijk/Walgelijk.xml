@@ -830,6 +830,11 @@
             Filter mode. Determines how pixels are interpolated between
             </summary>
         </member>
+        <member name="P:Walgelijk.IReadableTexture.GenerateMipmaps">
+            <summary>
+            Whether the texture has generated mipmaps upon load
+            </summary>
+        </member>
         <member name="T:Walgelijk.IShaderManager">
             <summary>
             Shader specific link between the engine and the graphics API
@@ -1154,12 +1159,17 @@
             Filter mode. Determines how pixels are interpolated between
             </summary>
         </member>
-        <member name="M:Walgelijk.Texture.#ctor(System.Int32,System.Int32,Walgelijk.Color[])">
+        <member name="P:Walgelijk.Texture.GenerateMipmaps">
+            <summary>
+            Whether the texture has generated mipmaps upon load
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Texture.#ctor(System.Int32,System.Int32,Walgelijk.Color[],System.Boolean)">
             <summary>
             Create a texture from a series of pixels
             </summary>
         </member>
-        <member name="M:Walgelijk.Texture.Load(System.String,System.Boolean)">
+        <member name="M:Walgelijk.Texture.Load(System.String,System.Boolean,System.Boolean)">
             <summary>
             Load an image from a path
             </summary>

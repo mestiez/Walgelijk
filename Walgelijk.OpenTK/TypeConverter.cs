@@ -77,14 +77,14 @@ namespace Walgelijk.OpenTK
             }
         }
 
-        public static TextureMagFilter Convert(FilterMode filter)
+        public static int Convert(FilterMode filter)
         {
             switch (filter)
             {
                 case FilterMode.Nearest:
-                    return TextureMagFilter.Nearest;
+                    return (int)TextureMinFilter.Nearest;
                 case FilterMode.Linear:
-                    return TextureMagFilter.Linear;
+                    return (int)TextureMinFilter.Linear;
                 default:
                     return default;
             }
