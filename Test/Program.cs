@@ -196,8 +196,8 @@ namespace Test
 
             game.Scene = SplashScreen.CreateScene(new[] {
                 new SplashScreen.Logo(Resources.Load<IReadableTexture>("walgelijk.png"), 0.5f, Resources.Load<Sound>("walgelijk.wav")),
-                new SplashScreen.Logo(Resources.Load<Texture>("studio minus.png"), 0.5f, Resources.Load<Sound>("opening.wav")),
-                new SplashScreen.Logo(Resources.Load<IReadableTexture>("spellejte.png")),
+               // new SplashScreen.Logo(Resources.Load<Texture>("studio minus.png"), 2.1f, Resources.Load<Sound>("opening.wav")),
+               // new SplashScreen.Logo(Resources.Load<IReadableTexture>("spellejte.png")),
             }, LoadScene);
 
             //  LoadScene();
@@ -252,7 +252,7 @@ namespace Test
 
                 scene.AttachComponent(entity, new RectangleShapeComponent
                 {
-                    Size = Vector2.One * .5f,
+                    Size = Vector2.One * .05f,
                     Material = coolSprite,
                     RenderOrder = (i == 0) ? 1 : 0,
                 });

@@ -54,10 +54,14 @@ namespace Walgelijk
         /// Try to get the value of a uniform
         /// </summary>
         /// <returns>True if the uniform exists</returns>
-        public bool TryGetUniform(string name, out object value)
+        public bool TryGetUniform<T>(string name, out T value)
         {
-            if (uniforms.TryGetValue(name, out value))
+            if (uniforms.TryGetValue(name, out object b) && b is T typed)
+            {
+                value = typed;
                 return true;
+            }
+            value = default;
             return false;
         }
 

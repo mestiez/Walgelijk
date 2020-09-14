@@ -7,7 +7,7 @@
     <RepositoryUrl>https://github.com/mestiez/Walgelijk</RepositoryUrl>
     <Company>Studio Minus</Company>
     <Authors>mestiez</Authors>
-    <Version>0.0.1</Version>
+    <Version>0.0.3</Version>
     <Description>Studio Minus game engine</Description>
   </PropertyGroup>
 
@@ -25,22 +25,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="resources\fonts\roboto mono.fnt" Pack="true">
+    <None Update="resources\fonts\roboto mono.fnt" Pack="false">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="resources\fonts\roboto mono.png" Pack="true">
+    <None Update="resources\fonts\roboto mono.png" Pack="false">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="resources\shaders\legacy-font.frag" Pack="true">
+    <None Update="resources\shaders\legacy-font.frag" Pack="false">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="resources\shaders\textured-fragment.frag" Pack="true">
+    <None Update="resources\shaders\textured-fragment.frag" Pack="false">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="resources\shaders\worldspace-vertex.vert" Pack="true">
+    <None Update="resources\shaders\worldspace-vertex.vert" Pack="false">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="resources\shaders\sdf-font.frag" Pack="true">
+    <None Update="resources\shaders\sdf-font.frag" Pack="false">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

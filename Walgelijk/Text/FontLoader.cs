@@ -242,8 +242,8 @@ namespace Walgelijk
 
             //TODO meer pages
             mat.SetUniform("mainTex", pages[0]);
-            mat.SetUniform("thickness", 0.48f);
-            mat.SetUniform("softness", 0.07f);
+            mat.SetUniform("thickness", 0.5f);
+            mat.SetUniform("softness", 0);
             return mat;
         }
     }
