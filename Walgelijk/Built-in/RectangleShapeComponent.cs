@@ -5,6 +5,7 @@ namespace Walgelijk
     /// <summary>
     /// Basic rectangle renderer data
     /// </summary>
+    [RequiresComponents(typeof(TransformComponent))]
     public class RectangleShapeComponent : IShapeComponent
     {
         private Vector2 size = Vector2.One;

@@ -5,6 +5,7 @@ namespace Walgelijk
     /// <summary>
     /// Component that holds camera data
     /// </summary>
+    [RequiresComponents(typeof(TransformComponent))]
     public class CameraComponent
     {
         /// <summary>

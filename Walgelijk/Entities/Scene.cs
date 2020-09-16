@@ -243,12 +243,27 @@ namespace Walgelijk
         /// </summary>
         public void AttachComponent<T>(Entity entity, T component) where T : class
         {
+#if DEBUG
+            AssertComponentRequirements(entity, component);
+#endif
             if (creationBuffer.TryGetValue(entity, out var value))
                 value.TryAdd<T>(component);
             else
                 components[entity].TryAdd<T>(component);
 
             OnAttachComponent?.Invoke(entity, component);
+        }
+
+        private void AssertComponentRequirements<T>(Entity entity, T component) where T : class
+        {
+            RequiresComponents[] requirements = ReflectionCache.GetAttributes<RequiresComponents, T>();
+            if (requirements.Length == 0) return;
+            var existing = GetAllComponentsFrom(entity);
+
+            foreach (var requirement in requirements)
+                foreach (var type in requirement.Types)
+                    if (!(existing.Any(e => type.IsAssignableFrom(e.GetType()))))
+                        throw new InvalidOperationException($"{component.GetType()} requires a {type}");
         }
 
         /// <summary>

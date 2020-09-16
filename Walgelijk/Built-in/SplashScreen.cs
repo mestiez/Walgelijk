@@ -25,7 +25,6 @@ namespace Walgelijk
                 Material = new Material(Shader.Default)
             };
 
-            scene.AttachComponent(splash, shape);
             scene.AttachComponent(splash, new SplashScreenComponent
             {
                 Logos = logos,
@@ -33,6 +32,7 @@ namespace Walgelijk
             });
 
             scene.AttachComponent(splash, new TransformComponent());
+            scene.AttachComponent(splash, shape);
 
             var camera = scene.CreateEntity();
             scene.AttachComponent(camera, new TransformComponent());
