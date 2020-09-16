@@ -13,22 +13,22 @@
         /// <summary>
         /// Current input state
         /// </summary>
-        public InputState Input => Scene.Game.Window.InputState;
+        protected InputState Input => Scene.Game.Window.InputState;
 
         /// <summary>
         /// Current time information
         /// </summary>
-        public Time Time => Scene.Game.Window.Time;
+        protected Time Time => Scene.Game.Window.Time;
 
         /// <summary>
         /// Active render queue
         /// </summary>
-        public RenderQueue RenderQueue => Scene.Game.RenderQueue;
+        protected RenderQueue RenderQueue => Scene.Game.RenderQueue;
 
         /// <summary>
         /// Active audio renderer
         /// </summary>
-        public AudioRenderer Audio => Scene.Game.AudioRenderer;
+        protected AudioRenderer Audio => Scene.Game.AudioRenderer;
 
         /// <summary>
         /// Initialise the system

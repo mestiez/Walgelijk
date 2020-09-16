@@ -82,10 +82,9 @@ namespace Walgelijk.OpenTK
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
-
         protected override void DisposeOf(LoadedTexture loaded)
         {
-            throw new NotImplementedException();
+            GL.DeleteTexture(loaded.Index);
         }
     }
 }
