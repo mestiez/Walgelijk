@@ -212,6 +212,7 @@ namespace Test
             game.Scene = scene;
             coolText = new TextComponent("hallo wereld!\nnieuwe regel...\nwat gebeurt er als ik \t doe", Resources.Load<Font>("inter.fnt"));
             coolText.TrackingMultiplier = .9f;
+            coolText.RenderOrder = -1000;
 
             {
                 var ent = scene.CreateEntity();

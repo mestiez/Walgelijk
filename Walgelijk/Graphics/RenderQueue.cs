@@ -52,6 +52,9 @@ namespace Walgelijk
                     return;
                 }
             }
+
+            //er is geen command die een lagere order heeft dus deze moet aan het begin
+            commands.Insert(0, command);
         }
 
         /// <summary>
