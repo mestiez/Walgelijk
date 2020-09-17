@@ -7,8 +7,9 @@
     <RepositoryUrl>https://github.com/mestiez/Walgelijk</RepositoryUrl>
     <Company>Studio Minus</Company>
     <Authors>mestiez</Authors>
-    <Version>0.0.4</Version>
+    <Version>0.0.5</Version>
     <Description>Studio Minus game engine</Description>
+    <PackageIcon>cirkel avatar.png</PackageIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -42,6 +43,10 @@
     </None>
     <None Update="resources\shaders\sdf-font.frag" Pack="false">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\Studio Minus\Assets\Walgelijk\cirkel avatar.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
     </None>
   </ItemGroup>
 
