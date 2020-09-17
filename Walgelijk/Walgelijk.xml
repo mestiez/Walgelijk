@@ -162,31 +162,6 @@
             Zoom speed
             </summary>
         </member>
-        <member name="T:Walgelijk.IShapeComponent">
-            <summary>
-            Interface that provides a <see cref="P:Walgelijk.IShapeComponent.VertexBuffer"/> and <see cref="T:Walgelijk.ShapeRenderTask"/>
-            </summary>
-        </member>
-        <member name="P:Walgelijk.IShapeComponent.VertexBuffer">
-            <summary>
-            VertexBuffer that is generated. It's best not to edit this unless you really need to.
-            </summary>
-        </member>
-        <member name="P:Walgelijk.IShapeComponent.RenderTask">
-            <summary>
-            The render task that is generated. It's best not to edit this unless you really need to.
-            </summary>
-        </member>
-        <member name="P:Walgelijk.IShapeComponent.ScreenSpace">
-            <summary>
-            Determines if the shape should be rendered in screenspace
-            </summary>
-        </member>
-        <member name="P:Walgelijk.IShapeComponent.RenderOrder">
-            <summary>
-            Order of the rendering task. Lower values mean lower depth.
-            </summary>
-        </member>
         <member name="T:Walgelijk.RectangleShapeComponent">
             <summary>
             Basic rectangle renderer data
@@ -217,9 +192,34 @@
             Create a rectangle renderer component
             </summary>
         </member>
+        <member name="T:Walgelijk.ShapeComponent">
+            <summary>
+            Interface that provides a <see cref="P:Walgelijk.ShapeComponent.VertexBuffer"/> and <see cref="T:Walgelijk.ShapeRenderTask"/>
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ShapeComponent.VertexBuffer">
+            <summary>
+            VertexBuffer that is generated. It's best not to edit this unless you really need to.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ShapeComponent.RenderTask">
+            <summary>
+            The render task that is generated. It's best not to edit this unless you really need to.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ShapeComponent.ScreenSpace">
+            <summary>
+            Determines if the shape should be rendered in screenspace
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ShapeComponent.RenderOrder">
+            <summary>
+            Order of the rendering task. Lower values mean lower depth.
+            </summary>
+        </member>
         <member name="T:Walgelijk.ShapeRendererSystem">
             <summary>
-            System that renders components that implement <see cref="T:Walgelijk.IShapeComponent"/>
+            System that renders components that implement <see cref="T:Walgelijk.ShapeComponent"/>
             </summary>
         </member>
         <member name="T:Walgelijk.SplashScreen">

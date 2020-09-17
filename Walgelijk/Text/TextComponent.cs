@@ -6,7 +6,7 @@ namespace Walgelijk
     /// <summary>
     /// IShapeComponent that holds the information necessary to draw text
     /// </summary>
-    public class TextComponent : IShapeComponent
+    public class TextComponent : ShapeComponent
     {
         private string displayString;
         private Font font;
@@ -42,11 +42,6 @@ namespace Walgelijk
         /// Text colour. Changing this forces a vertex array update.
         /// </summary>
         public Color Color { get => color; set { color = value; CreateVertices(); } }
-
-        public VertexBuffer VertexBuffer { get; private set; }
-        public ShapeRenderTask RenderTask { get; private set; }
-        public bool ScreenSpace { get; set; }
-        public int RenderOrder { get; set; }
 
         /// <summary>
         /// The bounding box of the text in local coordinates

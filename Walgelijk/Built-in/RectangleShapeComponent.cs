@@ -5,8 +5,7 @@ namespace Walgelijk
     /// <summary>
     /// Basic rectangle renderer data
     /// </summary>
-    [RequiresComponents(typeof(TransformComponent))]
-    public class RectangleShapeComponent : IShapeComponent
+    public class RectangleShapeComponent : ShapeComponent
     {
         private Vector2 size = Vector2.One;
         private Color color = Color.White;
@@ -50,14 +49,6 @@ namespace Walgelijk
                 RenderTask = rt;
             }
         }
-
-        public VertexBuffer VertexBuffer { get; internal set; }
-
-        public ShapeRenderTask RenderTask { get; internal set; }
-
-        public bool ScreenSpace { get; set; }
-
-        public int RenderOrder { get; set; }
 
         /// <summary>
         /// Pivot point of the rectangle ranging from (0.0, 0.0) to (1.0, 1.0). Default is (0.5, 0.5).
