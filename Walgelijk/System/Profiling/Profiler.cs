@@ -19,10 +19,7 @@ namespace Walgelijk
         /// <summary>
         /// Enables or disables a small debug performance information display
         /// </summary>
-        public bool DrawQuickProfiler { get; set; }
-#if DEBUG 
-            = true;
-#endif
+        public bool DrawQuickProfiler { get; set; } = true;
 
         private readonly Game game;
         private readonly QuickProfiler quickProfiler;

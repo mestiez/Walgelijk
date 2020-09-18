@@ -21,15 +21,7 @@
 
             if (shape.RenderTask.VertexBuffer != null)
             {
-#if DEBUG
-                if (!Scene.TryGetComponentFrom<TransformComponent>(pair.Entity, out var transform))
-                {
-                    Logger.Error($"Attempt to render {nameof(ShapeComponent)} without {nameof(TransformComponent)}", nameof(ShapeRendererSystem));
-                    return;
-                }
-# else
                 var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
-#endif
                 shape.RenderTask.ScreenSpace = shape.ScreenSpace;
                 shape.RenderTask.ModelMatrix = transform.LocalToWorldMatrix;
                 RenderQueue.Add(shape.RenderTask, shape.RenderOrder);

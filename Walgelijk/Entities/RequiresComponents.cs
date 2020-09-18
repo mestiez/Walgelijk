@@ -1,7 +1,7 @@
 ﻿namespace Walgelijk
 {
     /// <summary>
-    /// Attribute that lets the <see cref="Scene"/> know that something needs something else. These are only checked for in Release mode.
+    /// Attribute that lets the <see cref="Scene"/> know that something needs something else.
     /// </summary>
     public sealed class RequiresComponents : ComponentRelationAttribute
     {

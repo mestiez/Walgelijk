@@ -243,9 +243,7 @@ namespace Walgelijk
         /// </summary>
         public void AttachComponent<T>(Entity entity, T component) where T : class
         {
-#if DEBUG
             AssertComponentRequirements(entity, component);
-#endif
             if (creationBuffer.TryGetValue(entity, out var value))
                 value.TryAdd<T>(component);
             else
