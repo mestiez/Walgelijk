@@ -540,6 +540,11 @@
             Game this scene belongs to
             </summary>
         </member>
+        <member name="P:Walgelijk.Scene.DevelopmentMode">
+            <summary>
+            When set to true, safety checks will be done at runtime. This will degrade performance and should be turned off in release. <b>True by default</b>
+            </summary>
+        </member>
         <member name="M:Walgelijk.Scene.#ctor(Walgelijk.Game)">
             <summary>
             Create scene for a <see cref="P:Walgelijk.Scene.Game"/> without setting it as the active scene
@@ -697,6 +702,11 @@
         <member name="P:Walgelijk.System.Audio">
             <summary>
             Active audio renderer
+            </summary>
+        </member>
+        <member name="P:Walgelijk.System.Profiler">
+            <summary>
+            The active profiler
             </summary>
         </member>
         <member name="M:Walgelijk.System.Initialise">
@@ -1552,6 +1562,36 @@
         <member name="M:Walgelijk.Profiler.Render">
             <summary>
             Force the profiler to calculate render information. Should be handled by the window.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Profiler.StartTask(System.String)">
+            <summary>
+            Start a profiled task with a name
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Profiler.EndTask">
+            <summary>
+            End the ongoing profiled task
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Profiler.GetProfiledTasks">
+            <summary>
+            Get all profiled tasks for this frame
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ProfiledTask">
+            <summary>
+            Structure that holds a task name and relevant time data
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ProfiledTask.Name">
+            <summary>
+            Name
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ProfiledTask.Duration">
+            <summary>
+            How long the task took
             </summary>
         </member>
         <member name="T:Walgelijk.Resources">

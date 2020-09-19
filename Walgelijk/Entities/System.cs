@@ -31,6 +31,11 @@
         protected AudioRenderer Audio => Scene.Game.AudioRenderer;
 
         /// <summary>
+        /// The active profiler
+        /// </summary>
+        protected Profiler Profiler => Scene.Game.Profiling;
+
+        /// <summary>
         /// Initialise the system
         /// </summary>
         public virtual void Initialise() { }

@@ -1,4 +1,8 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 
 namespace Walgelijk
 {
@@ -23,9 +27,13 @@ namespace Walgelijk
 
         private readonly Game game;
         private readonly QuickProfiler quickProfiler;
+        private readonly Stopwatch stopwatch;
 
         private readonly TickRateCounter upsCounter = new TickRateCounter();
         private readonly TickRateCounter fpsCounter = new TickRateCounter();
+
+        private readonly Stack<ProfiledTask> profiledTaskStack = new Stack<ProfiledTask>();
+        private readonly List<ProfiledTask> profiledTasks = new List<ProfiledTask>();
 
         /// <summary>
         /// Create a profiler for the given game
@@ -35,6 +43,9 @@ namespace Walgelijk
         {
             this.game = game;
             quickProfiler = new QuickProfiler(this);
+
+            stopwatch = new Stopwatch();
+            stopwatch.Start();
         }
 
         /// <summary>
@@ -54,6 +65,35 @@ namespace Walgelijk
 
             if (DrawQuickProfiler)
                 quickProfiler.Render(game.RenderQueue);
+
+            profiledTasks.Clear();
+        }
+
+        /// <summary>
+        /// Start a profiled task with a name
+        /// </summary>
+        public void StartTask(string name)
+        {
+            profiledTaskStack.Push(new ProfiledTask { Name = name, StartTick = stopwatch.ElapsedTicks });
+        }
+
+        /// <summary>
+        /// End the ongoing profiled task
+        /// </summary>
+        public void EndTask()
+        {
+            if (!profiledTaskStack.TryPop(out var result)) return;
+            result.EndTick = stopwatch.ElapsedTicks;
+            profiledTasks.Add(result);
+        }
+
+        /// <summary>
+        /// Get all profiled tasks for this frame
+        /// </summary>
+        public IEnumerable<ProfiledTask> GetProfiledTasks()
+        {
+            foreach (var p in profiledTasks)
+                yield return p;
         }
 
         private void CalculateUPS()
@@ -65,6 +105,25 @@ namespace Walgelijk
         {
             fpsCounter.Tick(game.Time.SecondsSinceLoad);
         }
+    }
+
+    /// <summary>
+    /// Structure that holds a task name and relevant time data
+    /// </summary>
+    public struct ProfiledTask
+    {
+        /// <summary>
+        /// Name
+        /// </summary>
+        public string Name;
+
+        internal long StartTick;
+        internal long EndTick;
+
+        /// <summary>
+        /// How long the task took
+        /// </summary>
+        public TimeSpan Duration => TimeSpan.FromTicks(EndTick - StartTick);
     }
 
     internal class TickRateCounter

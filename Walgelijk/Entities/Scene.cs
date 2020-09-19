@@ -17,11 +17,14 @@ namespace Walgelijk
         /// </summary>
         public Game Game { get; internal set; }
 
+        /// <summary>
+        /// When set to true, safety checks will be done at runtime. This will degrade performance and should be turned off in release. <b>True by default</b>
+        /// </summary>
+        public bool DevelopmentMode { get; set; } = true;
+
         private readonly Dictionary<int, Entity> entities = new Dictionary<int, Entity>();
         private readonly Dictionary<Entity, CollectionByType> components = new Dictionary<Entity, CollectionByType>();
-
         private readonly Dictionary<Entity, CollectionByType> creationBuffer = new Dictionary<Entity, CollectionByType>();
-
         private readonly Dictionary<Type, System> systems = new Dictionary<Type, System>();
 
         private bool stepIsInLoop;
@@ -181,6 +184,9 @@ namespace Walgelijk
         /// </summary>
         public IEnumerable<object> GetAllComponentsFrom(Entity entity)
         {
+            if (stepIsInLoop && creationBuffer.TryGetValue(entity, out var c))
+                return c.GetAll();
+            
             return components[entity].GetAll();
         }
 
@@ -243,7 +249,9 @@ namespace Walgelijk
         /// </summary>
         public void AttachComponent<T>(Entity entity, T component) where T : class
         {
-            AssertComponentRequirements(entity, component);
+            if (DevelopmentMode)
+                AssertComponentRequirements(entity, component);
+
             if (creationBuffer.TryGetValue(entity, out var value))
                 value.TryAdd<T>(component);
             else
@@ -256,7 +264,7 @@ namespace Walgelijk
         {
             RequiresComponents[] requirements = ReflectionCache.GetAttributes<RequiresComponents, T>();
             if (requirements.Length == 0) return;
-            var existing = GetAllComponentsFrom(entity);
+            IEnumerable<object> existing = GetAllComponentsFrom(entity);
 
             foreach (var requirement in requirements)
                 foreach (var type in requirement.Types)

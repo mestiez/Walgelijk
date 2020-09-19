@@ -28,14 +28,9 @@ namespace Walgelijk
 
         public void Render(RenderQueue queue)
         {
-            float frameTime = MathF.Round(1000 / profiler.UpdatesPerSecond, 3);
-            float renderTime = MathF.Round(1000 / profiler.FramesPerSecond, 3);
+            string t = ConstructDisplayText(queue.Length);
 
-            text.String =
-                $"frame time {frameTime}ms\n" +
-                $"render time {renderTime}ms\n" +
-                $"{queue.Length} render tasks";
-
+            text.String = t;
             text.RenderTask.ModelMatrix = textModel;
 
             Rect textBounds = text.LocalBoundingBox;
@@ -43,6 +38,24 @@ namespace Walgelijk
 
             queue.Add(background.RenderTask, int.MaxValue);
             queue.Add(text.RenderTask, int.MaxValue);
+        }
+
+        private string ConstructDisplayText(int queuelength)
+        {
+            float frameTime = MathF.Round(1000 / profiler.UpdatesPerSecond, 3);
+            float renderTime = MathF.Round(1000 / profiler.FramesPerSecond, 3);
+
+            string t =
+                $"frame time {frameTime}ms\n" +
+                $"render time {renderTime}ms\n" +
+                $"{queuelength} render tasks\n\n";
+
+            foreach (var item in profiler.GetProfiledTasks())
+            {
+                t += $"{item.Name}: {Math.Round(item.Duration.TotalMilliseconds, 3)}ms\n";
+            }
+
+            return t;
         }
     }
 }

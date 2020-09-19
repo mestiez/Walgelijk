@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.OpenTK", "Walgeli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.NAudio", "Walgelijk.NAudio\Walgelijk.NAudio.csproj", "{467254BB-212F-416F-BE02-875EFAAA8A9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Walgelijk.UI", "Walgelijk.UI\Walgelijk.UI.csproj", "{613C1E8D-390E-496C-928D-96508321D982}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{467254BB-212F-416F-BE02-875EFAAA8A9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{467254BB-212F-416F-BE02-875EFAAA8A9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{467254BB-212F-416F-BE02-875EFAAA8A9C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{613C1E8D-390E-496C-928D-96508321D982}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{613C1E8D-390E-496C-928D-96508321D982}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{613C1E8D-390E-496C-928D-96508321D982}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{613C1E8D-390E-496C-928D-96508321D982}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
