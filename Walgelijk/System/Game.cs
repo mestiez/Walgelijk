@@ -68,7 +68,8 @@ namespace Walgelijk
         /// </summary>
         public Game(Window window, AudioRenderer audioRenderer = null)
         {
-            Logger.Log("Walgelijk v" + " nog niet uitgekomen" + "\n"); // TODO versie gedoe
+            var assemblyName = Assembly.GetAssembly(typeof(Game)).GetName();
+            Logger.Log($"{assemblyName.Name} v{assemblyName.Version}\n");
 
             Window = window;
             window.Game = this;
