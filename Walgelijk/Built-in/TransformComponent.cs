@@ -10,6 +10,20 @@ namespace Walgelijk
         private Vector2 position;
         private float rotation;
         private Vector2 scale = Vector2.One;
+        private Entity? parent;
+
+        /// <summary>
+        /// Parent entity with a transform
+        /// </summary>
+        public Entity? Parent
+        {
+            get => parent;
+            set
+            {
+                parent = value;
+                IsMatrixCached = false;
+            }
+        }
 
         /// <summary>
         /// Position of the transform in world space
@@ -38,7 +52,7 @@ namespace Walgelijk
                 IsMatrixCached = false;
             }
         }
-        
+
         /// <summary>
         /// Scale multiplier of the transform
         /// </summary>
@@ -56,26 +70,29 @@ namespace Walgelijk
         /// <summary>
         /// The generated model matrix
         /// </summary>
-        public Matrix4x4 LocalToWorldMatrix { get; private set; }
+        public Matrix4x4 LocalToWorldMatrix;
 
         /// <summary>
         /// The inverse model matrix
         /// </summary>
-        public Matrix4x4 WorldToLocalMatrix { get; private set; }
+        public Matrix4x4 WorldToLocalMatrix;
 
         /// <summary>
         /// Returns if the model matrix is aligned to transformation
         /// </summary>
-        public bool IsMatrixCached { get; private set; }
+        public bool IsMatrixCached;
 
         /// <summary>
-        /// Recalculate the model matrix
+        /// Recalculate the model matrix considering a containing matrix. This is usually <see cref="Matrix4x4.Identity"/>
         /// </summary>
-        public void RecalculateModelMatrix()
+        public void RecalculateModelMatrix(Matrix4x4 containingMatrix)
         {
             var matrix = Matrix4x4.CreateRotationZ(rotation * Utilities.DegToRad);
             matrix *= Matrix4x4.CreateScale(scale.X, scale.Y, 1);
             matrix *= Matrix4x4.CreateTranslation(position.X, position.Y, 0);
+
+           if (!containingMatrix.IsIdentity)
+                matrix *= containingMatrix;
 
             LocalToWorldMatrix = matrix;
 

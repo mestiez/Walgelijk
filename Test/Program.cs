@@ -76,7 +76,7 @@ namespace Test
 
         public override void Update()
         {
-            
+
             if (Input.IsKeyPressed(Key.Down))
                 Audio.Stop(ref music);
 
@@ -215,31 +215,31 @@ namespace Test
             coolText.TrackingMultiplier = .9f;
             coolText.RenderOrder = -1000;
 
-            {
-                var ent = scene.CreateEntity();
-                scene.AttachComponent(ent, new TransformComponent
-                {
-                    Scale = new Vector2(0.01f, 0.01f)
-                });
-                scene.AttachComponent(ent, coolText);
-            }
+            //{
+            //    var ent = scene.CreateEntity();
+            //    scene.AttachComponent(ent, new TransformComponent
+            //    {
+            //        Scale = new Vector2(0.01f, 0.01f)
+            //    });
+            //    scene.AttachComponent(ent, coolText);
+            //}
 
-            {
-                var ent = scene.CreateEntity();
-                scene.AttachComponent(ent, new TransformComponent
-                {
-                    Scale = new Vector2(0.015f, 0.015f),
-                    Position = new Vector2(-10, 0)
-                });
-                scene.AttachComponent(ent, new TextComponent("andere font tijden\nrich text zou cool zijn... zo van\n<b>super</b> cool", Resources.Load<Font>("broadway.fnt")/*, Font.Load("fonts\\kosugi maru.fnt")*/));
-            }
+            //{
+            //    var ent = scene.CreateEntity();
+            //    scene.AttachComponent(ent, new TransformComponent
+            //    {
+            //        Scale = new Vector2(0.015f, 0.015f),
+            //        Position = new Vector2(-10, 0)
+            //    });
+            //    scene.AttachComponent(ent, new TextComponent("andere font tijden\nrich text zou cool zijn... zo van\n<b>super</b> cool", Resources.Load<Font>("broadway.fnt")/*, Font.Load("fonts\\kosugi maru.fnt")*/));
+            //}
 
             coolSprite = new Material(new Shader(Resources.Load<string>("shaders/shader.vert"), Resources.Load<string>("shaders/shader.frag")));
             coolSprite.SetUniform("texture1", Resources.Load<Texture>("sadness.png"));
             coolSprite.SetUniform("texture2", Resources.Load<Texture>("pride.png"));
-
+            Entity player = default;
             //create rectangles
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < 1; i++)
             {
                 var entity = scene.CreateEntity();
 
@@ -260,7 +260,61 @@ namespace Test
                 });
 
                 if (i == 0)
+                {
+                    player = entity;
                     scene.AttachComponent(entity, new PlayerComponent());
+                }
+            }
+
+            for (int i = 0; i < 5; i++)
+            {
+                var entity = scene.CreateEntity();
+
+                scene.AttachComponent(entity, new TransformComponent
+                {
+                    Position = new Vector2(
+                        Utilities.RandomFloat(-2f, 2f),
+                        Utilities.RandomFloat(-2f, 2f)
+                        ),
+                    Rotation = Utilities.RandomFloat(0, 360),
+                    Parent = player
+                });
+
+                scene.AttachComponent(entity, new RectangleShapeComponent
+                {
+                    Size = Vector2.One * .2f,
+                    Material = coolSprite,
+                    RenderOrder = 0,
+                    Color = Color.Red
+                });
+
+                scene.AttachComponent(entity, new SpinnyComponent
+                {
+                    Speed = Utilities.RandomFloat(-64, 64)
+                });
+
+                for (int ii = 0; ii < 5; ii++)
+                {
+                    var ee = scene.CreateEntity();
+
+                    scene.AttachComponent(ee, new TransformComponent
+                    {
+                        Position = new Vector2(
+                            Utilities.RandomFloat(0, 1f),
+                            0
+                            ),
+                        Rotation = Utilities.RandomFloat(0, 360),
+                        Parent = entity
+                    });
+
+                    scene.AttachComponent(ee, new RectangleShapeComponent
+                    {
+                        Size = Vector2.One * .07f,
+                        Material = coolSprite,
+                        RenderOrder = 0,
+                        Color = Color.Blue
+                    });
+                }
             }
 
             //create camera
@@ -280,6 +334,27 @@ namespace Test
             scene.AddSystem(new TransformSystem());
             scene.AddSystem(new ShapeRendererSystem());
             scene.AddSystem(new PlayerSystem());
+            scene.AddSystem(new SpinnySystem());
+        }
+    }
+
+    [RequiresComponents(typeof(TransformComponent))]
+    public class SpinnyComponent
+    {
+        public float Speed = 64;
+    }
+
+    public class SpinnySystem : Walgelijk.System
+    {
+        public override void Update()
+        {
+            var pairs = Scene.GetAllComponentsOfType<SpinnyComponent>();
+            foreach (var item in pairs)
+            {
+                var transform = Scene.GetComponentFrom<TransformComponent>(item.Entity);
+
+                transform.Rotation += item.Component.Speed * Time.UpdateDeltaTime;
+            }
         }
     }
 }

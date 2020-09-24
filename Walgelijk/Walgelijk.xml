@@ -300,6 +300,11 @@
             Basic component that holds transformation data
             </summary>
         </member>
+        <member name="P:Walgelijk.TransformComponent.Parent">
+            <summary>
+            Parent entity with a transform
+            </summary>
+        </member>
         <member name="P:Walgelijk.TransformComponent.Position">
             <summary>
             Position of the transform in world space
@@ -315,24 +320,24 @@
             Scale multiplier of the transform
             </summary>
         </member>
-        <member name="P:Walgelijk.TransformComponent.LocalToWorldMatrix">
+        <member name="F:Walgelijk.TransformComponent.LocalToWorldMatrix">
             <summary>
             The generated model matrix
             </summary>
         </member>
-        <member name="P:Walgelijk.TransformComponent.WorldToLocalMatrix">
+        <member name="F:Walgelijk.TransformComponent.WorldToLocalMatrix">
             <summary>
             The inverse model matrix
             </summary>
         </member>
-        <member name="P:Walgelijk.TransformComponent.IsMatrixCached">
+        <member name="F:Walgelijk.TransformComponent.IsMatrixCached">
             <summary>
             Returns if the model matrix is aligned to transformation
             </summary>
         </member>
-        <member name="M:Walgelijk.TransformComponent.RecalculateModelMatrix">
+        <member name="M:Walgelijk.TransformComponent.RecalculateModelMatrix(System.Numerics.Matrix4x4)">
             <summary>
-            Recalculate the model matrix
+            Recalculate the model matrix considering a containing matrix. This is usually <see cref="P:System.Numerics.Matrix4x4.Identity"/>
             </summary>
         </member>
         <member name="T:Walgelijk.TransformSystem">
@@ -1601,7 +1606,7 @@
         </member>
         <member name="E:Walgelijk.Resources.OnStartLoad">
             <summary>
-            Event invoked when 
+            Event invoked when a resource has been requested
             </summary>
         </member>
         <member name="P:Walgelijk.Resources.BasePath">

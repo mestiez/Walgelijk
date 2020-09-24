@@ -19,7 +19,7 @@ namespace Walgelijk
         private static readonly Dictionary<Type, string> basePathByType = new Dictionary<Type, string>();
 
         /// <summary>
-        /// Event invoked when 
+        /// Event invoked when a resource has been requested
         /// </summary>
         public static event Action<Type, string> OnStartLoad;
 
@@ -59,6 +59,8 @@ namespace Walgelijk
                 path = CombineTypeSpecificPath<T>(path);
                 path = CombineBasePath(path);
             }
+
+            OnStartLoad?.Invoke(typeof(T), path);
 
             if (resources.TryGetValue(path, out var obj) && obj is T typed)
                 return typed;
