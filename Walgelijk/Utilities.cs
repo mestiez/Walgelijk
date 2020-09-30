@@ -9,7 +9,13 @@ namespace Walgelijk
     {
         private static readonly Random rand = new Random();
 
+        /// <summary>
+        /// Radians to degrees constant ratio
+        /// </summary>
         public const float RadToDeg = 180f / MathF.PI;
+        /// <summary>
+        /// Degrees to radians constant ratio
+        /// </summary>
         public const float DegToRad = MathF.PI / 180f;
 
         /// <summary>
@@ -103,6 +109,16 @@ namespace Walgelijk
         public static T PickRandom<T>(IList<T> collection)
         {
             return collection[RandomInt(0, collection.Count)];
+        }
+
+        /// <summary>
+        /// Returns a normalised <see cref="Vector2"/> corresponding to the given angle in degrees. 
+        /// 0° gives (1, 0). 90° gives (0, 1)
+        /// </summary>
+        public Vector2 AngleToVector(float degrees)
+        {
+            float rad = degrees * DegToRad;
+            return new Vector2(MathF.Cos(rad), MathF.Sin(rad));
         }
     }
 }
