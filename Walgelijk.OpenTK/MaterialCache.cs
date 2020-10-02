@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK.Graphics.OpenGL;
+using System;
 using System.Collections.Generic;
 
 namespace Walgelijk.OpenTK
@@ -25,7 +26,8 @@ namespace Walgelijk.OpenTK
 
         protected override void DisposeOf(LoadedMaterial loaded)
         {
-            throw new NotImplementedException();
+            //TODO ik weet niet of dit goed is
+            GL.DeleteProgram(loaded.ProgramHandle);
         }
     }
 }

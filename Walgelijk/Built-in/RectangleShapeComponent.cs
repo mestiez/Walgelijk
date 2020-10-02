@@ -2,6 +2,7 @@
 
 namespace Walgelijk
 {
+
     /// <summary>
     /// Basic rectangle renderer data
     /// </summary>

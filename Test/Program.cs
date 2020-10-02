@@ -252,9 +252,8 @@ namespace Test
                     Rotation = i == 0 ? 0 : Utilities.RandomFloat(0, 360)
                 });
 
-                scene.AttachComponent(entity, new RectangleShapeComponent
+                scene.AttachComponent(entity, new QuadShapeComponent(true)
                 {
-                    Size = Vector2.One * .05f,
                     Material = coolSprite,
                     RenderOrder = (i == 0) ? 1 : 0,
                 });
@@ -276,16 +275,15 @@ namespace Test
                         Utilities.RandomFloat(-2f, 2f),
                         Utilities.RandomFloat(-2f, 2f)
                         ),
+                    Scale = new Vector2(0.5f),
                     Rotation = Utilities.RandomFloat(0, 360),
                     Parent = player
                 });
 
-                scene.AttachComponent(entity, new RectangleShapeComponent
+                scene.AttachComponent(entity, new QuadShapeComponent(true)
                 {
-                    Size = Vector2.One * .2f,
                     Material = coolSprite,
                     RenderOrder = 0,
-                    Color = Color.Red
                 });
 
                 scene.AttachComponent(entity, new SpinnyComponent
@@ -304,15 +302,14 @@ namespace Test
                             0
                             ),
                         Rotation = Utilities.RandomFloat(0, 360),
+                        Scale = new Vector2(0.25f),
                         Parent = entity
                     });
 
-                    scene.AttachComponent(ee, new RectangleShapeComponent
+                    scene.AttachComponent(ee, new QuadShapeComponent(true)
                     {
-                        Size = Vector2.One * .07f,
                         Material = coolSprite,
                         RenderOrder = 0,
-                        Color = Color.Blue
                     });
                 }
             }

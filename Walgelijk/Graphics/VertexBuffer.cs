@@ -51,7 +51,7 @@
         /// </summary>
         public Vertex[] Vertices
         {
-            get => vertices; 
+            get => vertices;
 
             set
             {
@@ -65,7 +65,7 @@
         /// </summary>
         public uint[] Indices
         {
-            get => indices; 
+            get => indices;
 
             set
             {

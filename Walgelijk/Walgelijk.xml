@@ -162,6 +162,21 @@
             Zoom speed
             </summary>
         </member>
+        <member name="T:Walgelijk.QuadShapeComponent">
+            <summary>
+            Primitive quad component. Vertices can't be altered.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.QuadShapeComponent.Material">
+            <summary>
+            Material that is drawn with
+            </summary>
+        </member>
+        <member name="M:Walgelijk.QuadShapeComponent.#ctor(System.Boolean)">
+            <summary>
+            Create a quad shape component
+            </summary>
+        </member>
         <member name="T:Walgelijk.RectangleShapeComponent">
             <summary>
             Basic rectangle renderer data
@@ -949,6 +964,21 @@
         <member name="T:Walgelijk.Primitive">
             <summary>
             Way to draw vertices
+            </summary>
+        </member>
+        <member name="T:Walgelijk.PrimitiveMeshes">
+            <summary>
+            Static class that holds primitive <see cref="T:Walgelijk.VertexBuffer"/> instances. Use these instances instead of creating new ones.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.PrimitiveMeshes.CenteredQuad">
+            <summary>
+            Unit quad where (0, 0) is the center
+            </summary>
+        </member>
+        <member name="F:Walgelijk.PrimitiveMeshes.Quad">
+            <summary>
+            Unit quad where (0, 0) is the bottom left
             </summary>
         </member>
         <member name="T:Walgelijk.ActionRenderTask">
