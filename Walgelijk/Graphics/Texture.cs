@@ -36,10 +36,9 @@ namespace Walgelijk
         /// <summary>
         /// Whether the texture has generated mipmaps upon load
         /// </summary>
-        public bool GenerateMipmaps => generateMipmaps;
+        public bool GenerateMipmaps { get; }
 
         private readonly Color[] pixels;
-        private bool generateMipmaps;
 
         /// <summary>
         /// Create a texture from a series of pixels
@@ -49,7 +48,7 @@ namespace Walgelijk
             Width = width;
             Height = height;
             this.pixels = pixels;
-            this.generateMipmaps = generateMipmaps;
+            this.GenerateMipmaps = generateMipmaps;
         }
 
         /// <summary>
@@ -128,6 +127,5 @@ namespace Walgelijk
         /// 1x1 texture with a single white pixel
         /// </summary>
         public static Texture White { get; } = new Texture(1, 1, new[] { Color.White });
-
     }
 }

@@ -1942,17 +1942,37 @@
             Utility class that provides text mesh generation functions 
             </summary>
         </member>
-        <member name="M:Walgelijk.TextMeshGenerator.GenerateVertices(System.String,Walgelijk.Font,Walgelijk.Vertex[],Walgelijk.Color,System.Single,System.Single,System.Single)">
+        <member name="P:Walgelijk.TextMeshGenerator.Font">
+            <summary>
+            Font to render with
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TextMeshGenerator.Color">
+            <summary>
+            Color to set the vertices with
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TextMeshGenerator.TrackingMultiplier">
+            <summary>
+            Tracking multiplier
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TextMeshGenerator.KerningMultiplier">
+            <summary>
+            Kerning multiplier
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TextMeshGenerator.LineHeightMultiplier">
+            <summary>
+            Line height multiplier
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TextMeshGenerator.Generate(System.String,Walgelijk.Vertex[])">
             <summary>
             Generate 2D text mesh. Returns the local bounding box.
             </summary>
             <param name="displayString">Text to render</param>
-            <param name="font">Font to render with</param>
             <param name="vertices">Vertex array that will be populated. This need to be the length of displayString * 4</param>
-            <param name="color">Color to set the vertices with</param>
-            <param name="kerningAmount">Kerning multiplier</param>
-            <param name="lineHeightMultiplier">Line height multiplier</param>
-            <param name="trackingMultiplier">Tracking multiplier</param>
         </member>
         <member name="F:Walgelijk.Utilities.RadToDeg">
             <summary>

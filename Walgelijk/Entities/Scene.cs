@@ -301,8 +301,10 @@ namespace Walgelijk
 
             creationBuffer.Clear();
 
+            stepIsInLoop = true;
             foreach (var system in systems.Values)
                 system.Update();
+            stepIsInLoop = false;
         }
 
         /// <summary>

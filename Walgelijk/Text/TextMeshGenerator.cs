@@ -7,25 +7,48 @@ namespace Walgelijk
     /// <summary>
     /// Utility class that provides text mesh generation functions 
     /// </summary>
-    public static class TextMeshGenerator
+    public class TextMeshGenerator
     {
-        //TODO dit kan beter een instance class zijn met opties en een super simpele Generate() methode
+        /// <summary>
+        /// Font to render with
+        /// </summary>
+        public Font Font { get; set; } = Font.Default;
+
+        /// <summary>
+        /// Color to set the vertices with
+        /// </summary>
+        public Color Color { get; set; } = Color.White;
+
+        /// <summary>
+        /// Tracking multiplier
+        /// </summary>
+        public float TrackingMultiplier { get; set; } = 1;
+
+        /// <summary>
+        /// Kerning multiplier
+        /// </summary>
+        public float KerningMultiplier { get; set; } = 1;
+
+        /// <summary>
+        /// Line height multiplier
+        /// </summary>
+        public float LineHeightMultiplier { get; set; } = 1;
 
         /// <summary>
         /// Generate 2D text mesh. Returns the local bounding box.
         /// </summary>
         /// <param name="displayString">Text to render</param>
-        /// <param name="font">Font to render with</param>
         /// <param name="vertices">Vertex array that will be populated. This need to be the length of displayString * 4</param>
-        /// <param name="color">Color to set the vertices with</param>
-        /// <param name="kerningAmount">Kerning multiplier</param>
-        /// <param name="lineHeightMultiplier">Line height multiplier</param>
-        /// <param name="trackingMultiplier">Tracking multiplier</param>
-        public static Rect GenerateVertices(string displayString, Font font, Vertex[] vertices, Color color, float trackingMultiplier = 1, float kerningAmount = 1, float lineHeightMultiplier = 1)
+        public Rect Generate(string displayString, Vertex[] vertices)
         {
             float cursor = 0;
-            float width = font.Width;
-            float height = font.Height;
+            float width = Font.Width;
+            float height = Font.Height;
+
+            float minX = float.MaxValue;
+            float minY = float.MaxValue;
+            float maxX = float.MinValue;
+            float maxY = float.MinValue;
 
             uint vertexIndex = 0;
             char lastChar = default;
@@ -40,45 +63,57 @@ namespace Walgelijk
                         line++;
                         cursor = 0;
                         continue;
+                    //TODO andere escape character handlers
                 }
 
-                var glyph = font.GetGlyph(c);
-                Kerning kerning = i == 0 ? default : font.GetKerning(lastChar, c);
+                var glyph = Font.GetGlyph(c);
+                Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
 
-                var pos = new Vector3(cursor + glyph.XOffset + kerning.Amount * kerningAmount, -glyph.YOffset - (line * font.LineHeight * lineHeightMultiplier), 0);
+                var pos = new Vector3(cursor + glyph.XOffset + kerning.Amount * KerningMultiplier, -glyph.YOffset - (line * Font.LineHeight * LineHeightMultiplier), 0);
 
                 GlyphUVInfo uvInfo = new GlyphUVInfo(glyph.X / width, glyph.Y / height, glyph.Width / width, glyph.Height / height);
 
-                vertices[vertexIndex + 0] = AppendVertex(pos, glyph, uvInfo, color, 0, 0);
-                vertices[vertexIndex + 1] = AppendVertex(pos, glyph, uvInfo, color, 1, 0);
-                vertices[vertexIndex + 2] = AppendVertex(pos, glyph, uvInfo, color, 1, 1);
-                vertices[vertexIndex + 3] = AppendVertex(pos, glyph, uvInfo, color, 0, 1);
+                vertices[vertexIndex + 0] = appendVertex(pos, glyph, uvInfo, Color, 0, 0);
+                vertices[vertexIndex + 1] = appendVertex(pos, glyph, uvInfo, Color, 1, 0);
+                vertices[vertexIndex + 2] = appendVertex(pos, glyph, uvInfo, Color, 1, 1);
+                vertices[vertexIndex + 3] = appendVertex(pos, glyph, uvInfo, Color, 0, 1);
 
                 vertexIndex += 4;
-                cursor += (glyph.Advance + (pos.X - cursor)) * trackingMultiplier;
+                cursor += (glyph.Advance + (pos.X - cursor)) * TrackingMultiplier;
 
                 lastChar = c;
             }
 
-            Rect bounding;
-
             //TODO dit is niet goed
-            bounding.MinX = vertices.Min(v => v.Position.X);
-            bounding.MinY = vertices.Min(v => v.Position.Y);
-            bounding.MaxX = vertices.Max(v => v.Position.X);
-            bounding.MaxY = vertices.Max(v => v.Position.Y);
 
-            return bounding;
-        }
+            for (int i = 0; i < displayString.Length * 4; i++)
+            {
+                var pos = vertices[i].Position;
 
-        private static Vertex AppendVertex(Vector3 pos, Glyph glyph, GlyphUVInfo uvInfo, Color color, float xFactor, float yFactor)
-        {
-            var vertex = new Vertex(
-                pos + new Vector3(glyph.Width * xFactor, -glyph.Height * yFactor, 0),
-                new Vector2(uvInfo.X + uvInfo.Width * xFactor, uvInfo.Y + uvInfo.Height * yFactor),
-                color
-                );
-            return vertex;
+                maxX = MathF.Max(pos.X, maxX);
+                maxY = MathF.Max(pos.Y, maxY);
+                minX = MathF.Min(pos.X, minX);
+                minY = MathF.Min(pos.Y, minY);
+            }
+
+            return new Rect(minX, minY, maxX, maxY); ;
+
+            Vertex appendVertex(Vector3 pos, Glyph glyph, GlyphUVInfo uvInfo, Color color, float xFactor, float yFactor)
+            {
+                var vertex = new Vertex(
+                    pos + new Vector3(glyph.Width * xFactor, -glyph.Height * yFactor, 0),
+                    new Vector2(uvInfo.X + uvInfo.Width * xFactor, uvInfo.Y + uvInfo.Height * yFactor),
+                    color
+                    );
+
+                //TODO waarom kan dit niet?? er gaat iets mis maar ik snap niet waarom
+                //maxX = MathF.Max(vertex.Position.X, maxX);
+                //maxY = MathF.Max(vertex.Position.Y, maxY);
+                //minX = MathF.Min(vertex.Position.X, minX);
+                //minY = MathF.Min(vertex.Position.Y, minY);
+
+                return vertex;
+            }
         }
     }
 

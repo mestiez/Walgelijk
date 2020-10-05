@@ -11,9 +11,11 @@ namespace Walgelijk
         private string displayString;
         private Font font;
         private Color color = Color.White;
-        private float tracking = .7f;
+        private float trackingMultiplier = .7f;
         private float lineHeightMultiplier = .7f;
-        private float kerningAmount = 1f;
+        private float kerningMultiplier = 1f;
+
+        private TextMeshGenerator meshGenerator;
 
         /// <summary>
         /// Create a text component
@@ -27,21 +29,61 @@ namespace Walgelijk
             VertexBuffer.PrimitiveType = Primitive.Quads;
             RenderTask = new ShapeRenderTask(VertexBuffer, Matrix4x4.Identity, this.font.Material);
 
+            meshGenerator = new TextMeshGenerator
+            {
+                Color = Color,
+                Font = Font,
+                KerningMultiplier = KerningMultiplier,
+                LineHeightMultiplier = LineHeightMultiplier,
+                TrackingMultiplier = TrackingMultiplier
+            };
+
             CreateVertices();
         }
 
         /// <summary>
         /// Displayed string. Changing this forces a vertex array update.
         /// </summary>
-        public string String { get => displayString; set { if (value == displayString) return;  displayString = value; CreateVertices(); } }
+        public string String
+        {
+            get => displayString;
+            set
+            {
+                if (value == displayString) 
+                    return; 
+
+                displayString = value; 
+                CreateVertices();
+            }
+        }
+
         /// <summary>
         /// Used font. Changing this forces a vertex array update.
         /// </summary>
-        public Font Font { get => font; set { font = value; CreateVertices(); } }
+        public Font Font
+        {
+            get => font;
+            set
+            {
+                font = value;
+                meshGenerator.Font = value;
+                CreateVertices();
+            }
+        }
+
         /// <summary>
         /// Text colour. Changing this forces a vertex array update.
         /// </summary>
-        public Color Color { get => color; set { color = value; CreateVertices(); } }
+        public Color Color
+        {
+            get => color;
+            set
+            {
+                color = value;
+                meshGenerator.Color = value;
+                CreateVertices();
+            }
+        }
 
         /// <summary>
         /// The bounding box of the text in local coordinates
@@ -51,23 +93,50 @@ namespace Walgelijk
         /// <summary>
         /// Distance between letters. Changing this forces a vertex array update.
         /// </summary>
-        public float TrackingMultiplier { get => tracking; set { tracking = value; CreateVertices(); } }
+        public float TrackingMultiplier
+        {
+            get => trackingMultiplier;
+            set
+            {
+                trackingMultiplier = value; 
+                meshGenerator.TrackingMultiplier = value;
+                CreateVertices();
+            }
+        }
 
         /// <summary>
         /// Kerning amount multiplier. Changing this forces a vertex array update.
         /// </summary>
-        public float KerningMultiplier { get => kerningAmount; set { kerningAmount = value; CreateVertices(); } }
+        public float KerningMultiplier
+        {
+            get => kerningMultiplier;
+            set
+            {
+                kerningMultiplier = value;
+                meshGenerator.KerningMultiplier = value;
+                CreateVertices();
+            }
+        }
 
         /// <summary>
         /// Distance between each line.  Changing this forces a vertex array update.
         /// </summary>
-        public float LineHeightMultiplier { get => lineHeightMultiplier; set { lineHeightMultiplier = value; CreateVertices(); } }
+        public float LineHeightMultiplier
+        {
+            get => lineHeightMultiplier;
+            set
+            {
+                lineHeightMultiplier = value;
+                meshGenerator.LineHeightMultiplier = value;
+                CreateVertices();
+            }
+        }
 
         private void CreateVertices()
         {
             VertexBuffer.Vertices = new Vertex[displayString.Length * 4];
 
-            LocalBoundingBox = TextMeshGenerator.GenerateVertices(String, Font, VertexBuffer.Vertices, Color, TrackingMultiplier, KerningMultiplier, LineHeightMultiplier);
+            LocalBoundingBox = meshGenerator.Generate(String, VertexBuffer.Vertices);
 
             VertexBuffer.GenerateIndices();
             VertexBuffer.HasChanged = true;
