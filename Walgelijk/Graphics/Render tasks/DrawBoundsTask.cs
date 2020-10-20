@@ -23,5 +23,10 @@
         {
             target.DrawBounds = DrawBounds;
         }
+
+        /// <summary>
+        /// Task that disabled the drawbounds. This instance is <b>shared</b> and should not be changed.
+        /// </summary>
+        public static readonly DrawBoundsTask DisableDrawBoundsTask = new DrawBoundsTask(DrawBounds.DisabledBounds);
     }
 }

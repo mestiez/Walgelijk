@@ -10,6 +10,11 @@
         /// </summary>
         public IRenderTask[] Tasks;
 
+        public GroupRenderTask(params IRenderTask[] tasks)
+        {
+            Tasks = tasks;
+        }
+
         public void Execute(RenderTarget target)
         {
             if (Tasks == null) return;

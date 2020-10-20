@@ -20,6 +20,11 @@ namespace Walgelijk
         private Scene scene;
 
         /// <summary>
+        /// The developer console
+        /// </summary>
+        public DebugConsole Console { get; }
+
+        /// <summary>
         /// Currently active window
         /// </summary>
         public Window Window { get; }
@@ -77,6 +82,7 @@ namespace Walgelijk
             Resources.Initialise();
             AudioRenderer = audioRenderer ?? new EmptyAudioRenderer();
             Profiling = new Profiler(this);
+            Console = new DebugConsole(this);
         }
 
         /// <summary>

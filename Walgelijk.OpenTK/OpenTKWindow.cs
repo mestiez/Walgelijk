@@ -133,6 +133,7 @@ namespace Walgelijk.OpenTK
 
             Game.Scene?.RenderSystems();
             Game.Profiling.Render();
+            Game.Console.Render();
 
             RenderTarget.Clear();
             RenderQueue.RenderAndReset(RenderTarget);
@@ -148,6 +149,7 @@ namespace Walgelijk.OpenTK
 
             Game.Scene?.UpdateSystems();
             Game.Profiling.Update();
+            Game.Console.Update();
 
             inputHandler.Reset();
         }

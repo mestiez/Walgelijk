@@ -134,7 +134,7 @@ namespace Walgelijk
                 stopwatch.Restart();
                 var result = loadFromFile(path);
                 stopwatch.Stop();
-                Logger.Log($"{type.Name} resource loaded at \"{path}\" ({Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2)}ms)", nameof(Resources));
+                Logger.Log($"{type.Name} resource loaded at \"{Path.GetRelativePath(Environment.CurrentDirectory, path)}\" ({Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2)}ms)", nameof(Resources));
                 return result;
             }
             else

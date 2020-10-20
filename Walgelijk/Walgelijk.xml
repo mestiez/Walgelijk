@@ -1028,6 +1028,11 @@
             </summary>
             <param name="drawBounds"></param>
         </member>
+        <member name="F:Walgelijk.DrawBoundsTask.DisableDrawBoundsTask">
+            <summary>
+            Task that disabled the drawbounds. This instance is <b>shared</b> and should not be changed.
+            </summary>
+        </member>
         <member name="T:Walgelijk.GroupRenderTask">
             <summary>
             An ordered group of render tasks that should always be executed together
@@ -1463,54 +1468,24 @@
             Create a rectangle
             </summary>
         </member>
-        <member name="T:Walgelijk.Game">
+        <member name="T:Walgelijk.DebugConsole">
             <summary>
-            The link between the scene and the window
+            Class that renders and controls the debug console
             </summary>
         </member>
-        <member name="P:Walgelijk.Game.Main">
+        <member name="F:Walgelijk.DebugConsole.ToggleKey">
             <summary>
-            The last instance that was created
+            The key that will toggle the console
             </summary>
         </member>
-        <member name="P:Walgelijk.Game.Window">
+        <member name="P:Walgelijk.DebugConsole.IsActive">
             <summary>
-            Currently active window
+            Whether the console is shown and active or not
             </summary>
         </member>
-        <member name="P:Walgelijk.Game.Scene">
+        <member name="P:Walgelijk.DebugConsole.Game">
             <summary>
-            Currently active scene
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Game.RenderQueue">
-            <summary>
-            Returns the <see cref="T:Walgelijk.RenderQueue"/> that belongs to <see cref="P:Walgelijk.Game.Window"/>
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Game.AudioRenderer">
-            <summary>
-            The main audio renderer
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Game.Profiling">
-            <summary>
-            The game profiler
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Game.Time">
-            <summary>
-            Returns the <see cref="T:Walgelijk.Time"/> information that belongs to <see cref="P:Walgelijk.Game.Window"/>
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window,Walgelijk.AudioRenderer)">
-            <summary>
-            Create a game with a window and an optional audio renderer. If the audio renderer is not set, the game won't be able to play any sounds
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Game.Start">
-            <summary>
-            Start the game loop
+            The <see cref="P:Walgelijk.DebugConsole.Game"/> this console is associated with
             </summary>
         </member>
         <member name="T:Walgelijk.ConsoleLogger">
@@ -1561,6 +1536,51 @@
         <member name="M:Walgelijk.Logger.Error(System.Object,System.Object)">
             <summary>
             Log an error
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Logger.OnLog">
+            <summary>
+            Event dispatched when a message is logged at any level
+            </summary>
+        </member>
+        <member name="T:Walgelijk.LogLevel">
+            <summary>
+            Levels of logging
+            </summary>
+        </member>
+        <member name="F:Walgelijk.LogLevel.Info">
+            <summary>
+            Informational messages
+            </summary>
+        </member>
+        <member name="F:Walgelijk.LogLevel.Warn">
+            <summary>
+            Warning messages
+            </summary>
+        </member>
+        <member name="F:Walgelijk.LogLevel.Error">
+            <summary>
+            Error messages
+            </summary>
+        </member>
+        <member name="T:Walgelijk.LogMessage">
+            <summary>
+            Struct that contains all information associated with a logged message
+            </summary>
+        </member>
+        <member name="F:Walgelijk.LogMessage.Message">
+            <summary>
+            Object sent by the source.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.LogMessage.Source">
+            <summary>
+            Object that sent the message. Can be null.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.LogMessage.Level">
+            <summary>
+            Level of this message
             </summary>
         </member>
         <member name="T:Walgelijk.Profiler">
@@ -1627,6 +1647,97 @@
         <member name="P:Walgelijk.ProfiledTask.Duration">
             <summary>
             How long the task took
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Game">
+            <summary>
+            The link between the scene and the window
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.Main">
+            <summary>
+            The last instance that was created
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.Console">
+            <summary>
+            The developer console
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.Window">
+            <summary>
+            Currently active window
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.Scene">
+            <summary>
+            Currently active scene
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.RenderQueue">
+            <summary>
+            Returns the <see cref="T:Walgelijk.RenderQueue"/> that belongs to <see cref="P:Walgelijk.Game.Window"/>
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.AudioRenderer">
+            <summary>
+            The main audio renderer
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.Profiling">
+            <summary>
+            The game profiler
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.Time">
+            <summary>
+            Returns the <see cref="T:Walgelijk.Time"/> information that belongs to <see cref="P:Walgelijk.Game.Window"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window,Walgelijk.AudioRenderer)">
+            <summary>
+            Create a game with a window and an optional audio renderer. If the audio renderer is not set, the game won't be able to play any sounds
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Game.Start">
+            <summary>
+            Start the game loop
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Hook`1">
+            <summary>
+            Event that can be dispatched and listened to
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Hook`1.Dispatch(`0)">
+            <summary>
+            Dispatch the event to all listeners
+            </summary>
+            <param name="args"></param>
+        </member>
+        <member name="M:Walgelijk.Hook`1.AddListener(System.Action{`0})">
+            <summary>
+            Adds the given action to the listeners list
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Hook`1.RemoveListener(System.Action{`0})">
+            <summary>
+            Remove the given action from the listeners list
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Hook`1.HasListener(System.Action{`0})">
+            <summary>
+            Returns if the given action will be invoked when the event is dispatched
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Hook`1.ClearListeners">
+            <summary>
+            Clear all listeners
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Hook`1.ListenerCount">
+            <summary>
+            Amount of listeners
             </summary>
         </member>
         <member name="T:Walgelijk.Resources">

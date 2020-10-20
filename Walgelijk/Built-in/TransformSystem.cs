@@ -14,11 +14,12 @@ namespace Walgelijk
         {
             var pairs = Scene.GetAllComponentsOfType<TransformComponent>();
 
-            Parallel.ForEach(pairs, (pair) =>
+            //Parallel.ForEach(pairs, (pair) =>
+            foreach (var pair in pairs)
             {
                 if (!pair.Component.Parent.HasValue)
                     CascadeMatrixCalculation(pair, pairs);
-            });
+            }//);
         }
 
         private void CascadeMatrixCalculation(EntityWith<TransformComponent> current, IEnumerable<EntityWith<TransformComponent>> collection, TransformComponent up = null)
