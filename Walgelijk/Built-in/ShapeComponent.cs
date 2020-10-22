@@ -22,5 +22,9 @@
         /// Order of the rendering task. Lower values mean lower depth.
         /// </summary>
         public int RenderOrder { get; set; }
+        /// <summary>
+        /// Whether or not the component is rendered by the system
+        /// </summary>
+        public bool Visible { get; set; } = true;
     }
 }

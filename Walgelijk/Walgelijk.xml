@@ -232,6 +232,11 @@
             Order of the rendering task. Lower values mean lower depth.
             </summary>
         </member>
+        <member name="P:Walgelijk.ShapeComponent.Visible">
+            <summary>
+            Whether or not the component is rendered by the system
+            </summary>
+        </member>
         <member name="T:Walgelijk.ShapeRendererSystem">
             <summary>
             System that renders components that implement <see cref="T:Walgelijk.ShapeComponent"/>

@@ -19,7 +19,7 @@
         {
             var shape = pair.Component;
 
-            if (shape.RenderTask.VertexBuffer != null)
+            if (shape.Visible && shape.RenderTask.VertexBuffer != null)
             {
                 var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
                 shape.RenderTask.ScreenSpace = shape.ScreenSpace;
