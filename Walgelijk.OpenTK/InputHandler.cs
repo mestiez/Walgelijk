@@ -98,6 +98,7 @@ namespace Walgelijk.OpenTK
         public void Reset()
         {
             InputState.Reset(ref inputState);
+            inputState.WorldMousePosition = Window.WindowToWorldPoint(inputState.WindowMousePosition);
         }
 
         public OpenTKWindow Window { get; }
