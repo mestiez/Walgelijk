@@ -11,5 +11,5 @@ void main()
 {
     vec4 tex = texture(mainTex, uv);
     color = vertexColor;
-    color.a = min(tex.r, min(tex.g, min(tex.b, tex.a)));
+    color.a = min(tex.r, min(tex.g, min(tex.b, min(tex.a, color.a))));
 }

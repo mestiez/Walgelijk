@@ -801,7 +801,7 @@
         </member>
         <member name="P:Walgelijk.Color.Red">
             <summary>
-            Red
+            Bright vermilion
             </summary>
         </member>
         <member name="P:Walgelijk.Color.White">
@@ -811,7 +811,7 @@
         </member>
         <member name="P:Walgelijk.Color.Blue">
             <summary>
-            Blue
+            Cobalt blue
             </summary>
         </member>
         <member name="P:Walgelijk.Color.Orange">
@@ -819,9 +819,94 @@
             Orange
             </summary>
         </member>
+        <member name="M:Walgelijk.Color.WithAlpha(System.Single)">
+            <summary>
+            Return a copy of the colour with the given alpha
+            </summary>
+        </member>
         <member name="M:Walgelijk.Color.ToBytes">
             <summary>
             Returns a tuple where each element corresponds with a component of the colour
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Colors">
+            <summary>
+            Collection of predefined, commonly used colours
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Colors.Red">
+            <summary>
+            Red (1,0,0)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Colors.Blue">
+            <summary>
+            Blue (0,0,1)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Colors.Green">
+            <summary>
+            Green (0,1,0)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Colors.Magenta">
+            <summary>
+            Magenta (1,0,1)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Colors.Purple">
+            <summary>
+            Purple
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Colors.Orange">
+            <summary>
+            Orange
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Colors.GreenYellow">
+            <summary>
+            Green yellow
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Colors.Cyan">
+            <summary>
+            Cyan (1,1,0)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Colors.Sky">
+            <summary>
+            Sky
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Colors.Gray">
+            <summary>
+            Gray
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Colors.Black">
+            <summary>
+            Black (0,0,0)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Colors.White">
+            <summary>
+            White (1,1,1)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Colors.WhiteSmoke">
+            <summary>
+            White smoke
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Colors.Yellow">
+            <summary>
+            Yellow
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Colors.Aqua">
+            <summary>
+            Aqua
             </summary>
         </member>
         <member name="T:Walgelijk.FilterMode">
@@ -1468,6 +1553,21 @@
             Create a rectangle
             </summary>
         </member>
+        <member name="T:Walgelijk.CommandAttribute">
+            <summary>
+            Attribute that registers a command to the command processor registry
+            </summary>
+        </member>
+        <member name="T:Walgelijk.CommandProcessor">
+            <summary>
+            Object responsible for command processing. Only has static methods.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.CommandProcessor.Execute(System.String)">
+            <summary>
+            Execute the given string as a command
+            </summary>
+        </member>
         <member name="T:Walgelijk.DebugConsole">
             <summary>
             Class that renders and controls the debug console
@@ -1486,6 +1586,16 @@
         <member name="P:Walgelijk.DebugConsole.Game">
             <summary>
             The <see cref="P:Walgelijk.DebugConsole.Game"/> this console is associated with
+            </summary>
+        </member>
+        <member name="P:Walgelijk.DebugConsole.IsEatingInput">
+            <summary>
+            Whether the console is currently eating user input
+            </summary>
+        </member>
+        <member name="P:Walgelijk.DebugConsole.DrawConsoleNotification">
+            <summary>
+            Briefly draw the most recent console message to the screen even if the console is not open.
             </summary>
         </member>
         <member name="T:Walgelijk.ConsoleLogger">
@@ -1873,7 +1983,7 @@
         </member>
         <member name="P:Walgelijk.Font.Material">
             <summary>
-            Material this font uses. Be aware this may be shared across text. Use <see cref="!:FontLoader.CreateFontMaterial(Font)"/> to create a new material.
+            Material this font uses. Be aware this may be shared across text. Use <see cref="M:Walgelijk.TextMaterial.CreateFor(Walgelijk.Font)"/> to create a new material.
             </summary>
         </member>
         <member name="M:Walgelijk.Font.Load(System.String)">
@@ -1909,28 +2019,6 @@
         <member name="F:Walgelijk.KerningPair.CurrentChar">
             <summary>
             Current character in the sequence
-            </summary>
-        </member>
-        <member name="T:Walgelijk.TextMaterial">
-            <summary>
-            Utility struct that provides static text material creation functions
-            </summary>
-        </member>
-        <member name="M:Walgelijk.TextMaterial.CreateFor(Walgelijk.Font)">
-            <summary>
-            Create a material for a given font
-            </summary>
-            <param name="font"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Walgelijk.TextMaterial.CreateClipMaterial(Walgelijk.IReadableTexture[])">
-            <summary>
-            Create a material for a set of sharp textures
-            </summary>
-        </member>
-        <member name="M:Walgelijk.TextMaterial.CreateSDFMaterial(Walgelijk.IReadableTexture[])">
-            <summary>
-            Create a material for a set of SDF textures
             </summary>
         </member>
         <member name="T:Walgelijk.Glyph">
@@ -2048,6 +2136,28 @@
             Distance between each line.  Changing this forces a vertex array update.
             </summary>
         </member>
+        <member name="T:Walgelijk.TextMaterial">
+            <summary>
+            Utility struct that provides static text material creation functions
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TextMaterial.CreateFor(Walgelijk.Font)">
+            <summary>
+            Create a material for a given font
+            </summary>
+            <param name="font"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.TextMaterial.CreateClipMaterial(Walgelijk.IReadableTexture[])">
+            <summary>
+            Create a material for a set of sharp textures
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TextMaterial.CreateSDFMaterial(Walgelijk.IReadableTexture[])">
+            <summary>
+            Create a material for a set of SDF textures
+            </summary>
+        </member>
         <member name="T:Walgelijk.TextMeshGenerator">
             <summary>
             Utility class that provides text mesh generation functions 
@@ -2100,9 +2210,14 @@
             Linearly interpolate between two floats
             </summary>
         </member>
+        <member name="M:Walgelijk.Utilities.Lerp(System.Numerics.Vector4,System.Numerics.Vector4,System.Single)">
+            <summary>
+            Linearly interpolate between two colors or 4 dimensional vectors
+            </summary>
+        </member>
         <member name="M:Walgelijk.Utilities.Lerp(System.Numerics.Vector2,System.Numerics.Vector2,System.Single)">
             <summary>
-            Linearly interpolate between two floats
+            Linearly interpolate between two vectors
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.RandomFloat(System.Single,System.Single)">
@@ -2291,6 +2406,11 @@
         <member name="M:Walgelijk.InputState.IsButtonReleased(Walgelijk.Button)">
             <summary>
             Returns if the key was released
+            </summary>
+        </member>
+        <member name="M:Walgelijk.InputState.Reset(Walgelijk.InputState@)">
+            <summary>
+            Reset the given <see cref="T:Walgelijk.InputState"/>
             </summary>
         </member>
         <member name="T:Walgelijk.RenderTarget">
@@ -2515,6 +2635,11 @@
         <member name="M:Walgelijk.Window.InvokeCloseEvent">
             <summary>
             Invoke the close event
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Window.ResetInputState">
+            <summary>
+            Manually reset the input state
             </summary>
         </member>
     </members>

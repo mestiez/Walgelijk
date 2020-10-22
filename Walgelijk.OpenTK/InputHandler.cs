@@ -66,6 +66,20 @@ namespace Walgelijk.OpenTK
 
         private void KeyDown(object sender, KeyboardKeyEventArgs e)
         {
+            switch (e.Key)
+            {
+                case global::OpenTK.Input.Key.BackSpace:
+                    inputState.TextEntered += '\b';
+                    break;
+                case global::OpenTK.Input.Key.Enter:
+                case global::OpenTK.Input.Key.KeypadEnter:
+                    inputState.TextEntered += '\n';
+                    break;
+                case global::OpenTK.Input.Key.Tab:
+                    inputState.TextEntered += '\t';
+                    break;
+            }
+
             if (e.IsRepeat) return;
 
             inputState.KeysDown.Add(TypeConverter.Convert(e.Key));
@@ -75,23 +89,15 @@ namespace Walgelijk.OpenTK
 
         private void TextEnter(object sender, KeyPressEventArgs e)
         {
-            inputState.TextEntered += e.KeyChar;
+            //if (Keyboard.GetState().IsKeyDown(global::OpenTK.Input.Key.BackSpace))
+            //    inputState.TextEntered += '\b';
+            //else
+                inputState.TextEntered += e.KeyChar;
         }
 
         public void Reset()
         {
-            inputState.KeysDown.Clear();
-            inputState.KeysUp.Clear();
-            inputState.MouseButtonsDown.Clear();
-            inputState.MouseButtonsUp.Clear();
-
-            inputState.TextEntered = "";
-            inputState.AnyMouseButton = false;
-            inputState.AnyKey = false;
-            inputState.MouseScrollDelta = 0;
-            inputState.WindowMouseDelta = Vector2.Zero;
-
-            inputState.WorldMousePosition = Window.WindowToWorldPoint(inputState.WindowMousePosition);
+            InputState.Reset(ref inputState);
         }
 
         public OpenTKWindow Window { get; }

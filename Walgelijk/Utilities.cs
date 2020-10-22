@@ -27,7 +27,15 @@ namespace Walgelijk
         }
 
         /// <summary>
-        /// Linearly interpolate between two floats
+        /// Linearly interpolate between two colors or 4 dimensional vectors
+        /// </summary>
+        public static Vector4 Lerp(Vector4 a, Vector4 b, float t)
+        {
+            return a * (1 - t) + b * t;
+        }
+
+        /// <summary>
+        /// Linearly interpolate between two vectors
         /// </summary>
         public static Vector2 Lerp(Vector2 a, Vector2 b, float t)
         {

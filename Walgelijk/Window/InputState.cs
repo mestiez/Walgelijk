@@ -94,5 +94,24 @@ namespace Walgelijk
         /// </summary>
         public bool IsButtonReleased(Button button) => MouseButtonsUp.Contains(button);
         #endregion
+
+        /// <summary>
+        /// Reset the given <see cref="InputState"/>
+        /// </summary>
+        public static void Reset(ref InputState inputState)
+        {
+            inputState.KeysDown.Clear();
+            inputState.KeysUp.Clear();
+            inputState.MouseButtonsDown.Clear();
+            inputState.MouseButtonsUp.Clear();
+
+            inputState.TextEntered = "";
+            inputState.AnyMouseButton = false;
+            inputState.AnyKey = false;
+            inputState.MouseScrollDelta = 0;
+            inputState.WindowMouseDelta = Vector2.Zero;
+
+            inputState.WorldMousePosition = Vector2.Zero;
+        }
     }
 }

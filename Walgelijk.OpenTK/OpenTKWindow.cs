@@ -102,6 +102,11 @@ namespace Walgelijk.OpenTK
             window.Run();
         }
 
+        public override void ResetInputState()
+        {
+            inputHandler.Reset();
+        }
+
         private void HookIntoEvents()
         {
             window.Closing += OnWindowClose;
@@ -147,9 +152,10 @@ namespace Walgelijk.OpenTK
         {
             time.UpdateDeltaTime = (float)obj.Time;
 
-            Game.Scene?.UpdateSystems();
-            Game.Profiling.Update();
             Game.Console.Update();
+            if (!Game.Console.IsEatingInput)
+                Game.Scene?.UpdateSystems();
+            Game.Profiling.Update();
 
             inputHandler.Reset();
         }
@@ -174,6 +180,5 @@ namespace Walgelijk.OpenTK
         {
             InvokeCloseEvent();
         }
-
     }
 }

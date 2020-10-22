@@ -77,7 +77,7 @@ namespace Walgelijk
         }
 
         /// <summary>
-        /// Red
+        /// Bright vermilion
         /// </summary>
         public static Color Red => new Color("#AE1C28");
         /// <summary>
@@ -85,13 +85,18 @@ namespace Walgelijk
         /// </summary>
         public static Color White => new Color(1f, 1f, 1f);
         /// <summary>
-        /// Blue
+        /// Cobalt blue
         /// </summary>
-        public static Color Blue => new Color("#21468B");        
+        public static Color Blue => new Color("#21468B");
         /// <summary>
         /// Orange
         /// </summary>
         public static Color Orange => new Color("#FF4F00");
+
+        /// <summary>
+        /// Return a copy of the colour with the given alpha
+        /// </summary>
+        public Color WithAlpha(float alpha) => new Color(R, G, B, alpha);
 
         /// <summary>
         /// Returns a tuple where each element corresponds with a component of the colour
@@ -143,6 +148,16 @@ namespace Walgelijk
         public static implicit operator Vector4(Color value)
         {
             return new Vector4(value.R, value.G, value.B, value.A);
+        }
+
+        public static implicit operator Color((float r,float g,float b,float a) value)
+        {
+            return new Color(value.r, value.g, value.b, value.a);
+        }
+
+        public static implicit operator (float r, float g, float b, float a)(Color value)
+        {
+            return (value.R, value.G, value.B, value.A);
         }
     }
 }

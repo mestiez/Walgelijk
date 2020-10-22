@@ -92,6 +92,9 @@ namespace Test
             if (Input.IsKeyPressed(Key.K))
                 Game.Main.Scene = OtherCoolThing.CreateGameScene();
 
+            if (Input.IsKeyHeld(Key.R))
+                Logger.Warn("Warning message at " + Time.SecondsSinceLoad);
+
             var zoomIn = Input.IsKeyHeld(Key.Plus);
             var zoomOut = Input.IsKeyHeld(Key.Minus);
             var cameraSystem = Scene.GetSystem<CameraSystem>();
@@ -352,6 +355,12 @@ namespace Test
 
                 transform.Rotation += item.Component.Speed * Time.UpdateDeltaTime;
             }
+        }
+
+        [Command]
+        public static void gaming()
+        {
+            Logger.Log("Logica werkt");
         }
     }
 }

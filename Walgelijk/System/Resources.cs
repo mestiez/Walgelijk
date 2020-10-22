@@ -131,10 +131,12 @@ namespace Walgelijk
         {
             if (loadFunctions.TryGetValue(type, out var loadFromFile))
             {
+                var norm = path.Replace('/','\\');
+
                 stopwatch.Restart();
-                var result = loadFromFile(path);
+                var result = loadFromFile(norm);
                 stopwatch.Stop();
-                Logger.Log($"{type.Name} resource loaded at \"{Path.GetRelativePath(Environment.CurrentDirectory, path)}\" ({Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2)}ms)", nameof(Resources));
+                Logger.Log($"{type.Name} resource loaded at \"{norm}\" ({Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2)}ms)", nameof(Resources));
                 return result;
             }
             else

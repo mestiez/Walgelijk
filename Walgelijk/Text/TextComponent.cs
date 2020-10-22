@@ -15,14 +15,14 @@ namespace Walgelijk
         private float lineHeightMultiplier = .7f;
         private float kerningMultiplier = 1f;
 
-        private TextMeshGenerator meshGenerator;
+        private readonly TextMeshGenerator meshGenerator;
 
         /// <summary>
         /// Create a text component
         /// </summary>
-        public TextComponent(string displayString, Font font = null)
+        public TextComponent(string displayString = null, Font font = null)
         {
-            this.displayString = displayString;
+            this.displayString = displayString ?? "";
             this.font = font ?? Font.Default;
 
             VertexBuffer = new VertexBuffer();
@@ -52,7 +52,7 @@ namespace Walgelijk
                 if (value == displayString) 
                     return; 
 
-                displayString = value; 
+                displayString = value ?? ""; 
                 CreateVertices();
             }
         }
@@ -65,6 +65,9 @@ namespace Walgelijk
             get => font;
             set
             {
+                if (value == font)
+                    return;
+
                 font = value;
                 meshGenerator.Font = value;
                 CreateVertices();
@@ -79,6 +82,9 @@ namespace Walgelijk
             get => color;
             set
             {
+                if (value == color)
+                    return;
+
                 color = value;
                 meshGenerator.Color = value;
                 CreateVertices();

@@ -56,7 +56,7 @@ namespace Walgelijk
         public Dictionary<KerningPair, Kerning> Kernings { get; internal set; }
 
         /// <summary>
-        /// Material this font uses. Be aware this may be shared across text. Use <see cref="FontLoader.CreateFontMaterial(Font)"/> to create a new material.
+        /// Material this font uses. Be aware this may be shared across text. Use <see cref="TextMaterial.CreateFor(Font)"/> to create a new material.
         /// </summary>
         public Material Material
         {

@@ -149,5 +149,10 @@ namespace Walgelijk
         /// Invoke the close event
         /// </summary>
         protected void InvokeCloseEvent() => OnClose?.Invoke(this, EventArgs.Empty);
+
+        /// <summary>
+        /// Manually reset the input state
+        /// </summary>
+        public abstract void ResetInputState();
     }
 }
