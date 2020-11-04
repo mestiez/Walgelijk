@@ -52,19 +52,22 @@ namespace Test
             scene.AddSystem(new DebugCameraSystem());
             scene.AddSystem(new ParticleSystem());
 
+
             var particles = scene.CreateEntity();
             scene.AttachComponent(particles, new TransformComponent());
             scene.AttachComponent(particles, new WaveMovementComponent());
-            scene.AttachComponent(particles, new ParticlesComponent
+            scene.AttachComponent(particles, new ParticlesComponent(1000)
             {
                // Dampening = new FloatRange(0.9f),
                 RotationalDampening = new FloatRange(0.95f),
                // Gravity = new Vec2Range(Vector2.Zero),
                 StartVelocity = new Vec2Range(Vector2.One * -15, Vector2.One * 15),
                 EmissionRate = 64,
+                StartColor = new ColorRange(Colors.White),
+                ColorOverLife = new ColorCurve(new Curve<Color>.Key(Color.White, 0), new Curve<Color>.Key(Color.Red, 1)),
                 SizeOverLife = new FloatCurve(new Curve<float>.Key(0, 0), new Curve<float>.Key(1, 0.1f), new Curve<float>.Key(0, 1)),
                 WorldSpace = true,
-                SimulationSpeed = 2
+                SimulationSpeed = 2f
             });
 
             return scene;

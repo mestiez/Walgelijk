@@ -832,6 +832,46 @@
             Run post rendering code
             </summary>
         </member>
+        <member name="T:Walgelijk.AttributeType">
+            <summary>
+            Possible vertex attribute types
+            </summary>
+        </member>
+        <member name="F:Walgelijk.AttributeType.Integer">
+            <summary>
+            Integer value
+            </summary>
+        </member>
+        <member name="F:Walgelijk.AttributeType.Float">
+            <summary>
+            Single precision value
+            </summary>
+        </member>
+        <member name="F:Walgelijk.AttributeType.Double">
+            <summary>
+            Double precision value
+            </summary>
+        </member>
+        <member name="F:Walgelijk.AttributeType.Vector2">
+            <summary>
+            Two single precision values
+            </summary>
+        </member>
+        <member name="F:Walgelijk.AttributeType.Vector3">
+            <summary>
+            Three single precision values
+            </summary>
+        </member>
+        <member name="F:Walgelijk.AttributeType.Vector4">
+            <summary>
+            Four single precision values
+            </summary>
+        </member>
+        <member name="F:Walgelijk.AttributeType.Matrix4x4">
+            <summary>
+            Four rows of Vector4
+            </summary>
+        </member>
         <member name="T:Walgelijk.Color">
             <summary>
             Colour with 4 floating point components ranging from 0-1
@@ -1542,6 +1582,66 @@
             Create a vertex with a position.  White and zero UV by default;
             </summary>
         </member>
+        <member name="T:Walgelijk.VertexAttributeArray">
+            <summary>
+            Struct that holds an array and its vertex attribute type as an enum
+            </summary>
+        </member>
+        <member name="P:Walgelijk.VertexAttributeArray.AttributeType">
+            <summary>
+            Type of data
+            </summary>
+        </member>
+        <member name="M:Walgelijk.VertexAttributeArray.GetAt(System.Int32)">
+            <summary>
+            Get value at an index
+            </summary>
+        </member>
+        <member name="M:Walgelijk.VertexAttributeArray.SetAt(System.Int32,System.Object)">
+            <summary>
+            Get value at an index
+            </summary>
+        </member>
+        <member name="P:Walgelijk.VertexAttributeArray.Count">
+            <summary>
+            Amount of elements
+            </summary>
+        </member>
+        <member name="F:Walgelijk.VertexAttributeArray.Data">
+            <summary>
+            Raw object data
+            </summary>
+        </member>
+        <member name="T:Walgelijk.FloatAttributeArray">
+            <summary>
+            Float vertex attribute array
+            </summary>
+        </member>
+        <member name="T:Walgelijk.IntAttributeArray">
+            <summary>
+            Float vertex attribute array
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Vector2AttributeArray">
+            <summary>
+            Vector2 vertex attribute array
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Vector3AttributeArray">
+            <summary>
+            Vector3 vertex attribute array
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Vector4AttributeArray">
+            <summary>
+            Vector4 vertex attribute array
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Matrix4x4AttributeArray">
+            <summary>
+            Matrix4x4 vertex attribute array
+            </summary>
+        </member>
         <member name="T:Walgelijk.VertexBuffer">
             <summary>
             Holds all the data needed to draw vertices to the screen
@@ -1552,18 +1652,15 @@
             The way vertices are drawn
             </summary>
         </member>
-        <member name="M:Walgelijk.VertexBuffer.#ctor(Walgelijk.Vertex[],System.UInt32[])">
+        <member name="M:Walgelijk.VertexBuffer.#ctor(Walgelijk.Vertex[],System.UInt32[],Walgelijk.VertexAttributeArray[])">
             <summary>
             Create a VertexBuffer with the specified vertices and indices
             </summary>
-            <param name="vertices"></param>
-            <param name="indices"></param>
         </member>
         <member name="M:Walgelijk.VertexBuffer.#ctor(Walgelijk.Vertex[])">
             <summary>
             Create a VertexBuffer with the specified vertices. The indices will be set automatically
             </summary>
-            <param name="vertices"></param>
         </member>
         <member name="M:Walgelijk.VertexBuffer.#ctor">
             <summary>
@@ -1573,6 +1670,11 @@
         <member name="P:Walgelijk.VertexBuffer.HasChanged">
             <summary>
             Whether the data needs to be uploaded to the GPU again
+            </summary>
+        </member>
+        <member name="P:Walgelijk.VertexBuffer.ExtraDataHasChanged">
+            <summary>
+            Whether the extra data needs to be uploaded to the GPU again
             </summary>
         </member>
         <member name="P:Walgelijk.VertexBuffer.Vertices">
@@ -1603,6 +1705,16 @@
         <member name="M:Walgelijk.VertexBuffer.GenerateIndices">
             <summary>
             Generates indices that simply walk the vertex array from beginning to end
+            </summary>
+        </member>
+        <member name="M:Walgelijk.VertexBuffer.GetAttribute(System.Int32)">
+            <summary>
+            Get a vertex attribute array. Returns null if nothing is found. This is a reference value.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.VertexBuffer.ExtraAttributeCount">
+            <summary>
+            Returns the amount of extra attributes. The total amount of attributes equals this value + 3
             </summary>
         </member>
         <member name="T:Walgelijk.WrapMode">

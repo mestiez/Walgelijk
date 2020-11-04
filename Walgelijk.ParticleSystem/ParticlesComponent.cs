@@ -9,20 +9,17 @@ namespace Walgelijk.ParticleSystem
         public int CurrentParticleCount = 0;
 
         public readonly Particle[] RawParticleArray;
-        public readonly InstanceArrays InstanceData;
 
         public ParticlesComponent(int maxCount = 1000)
         {
             MaxParticleCount = maxCount;
             RawParticleArray = new Particle[MaxParticleCount];
 
-            InstanceData = new InstanceArrays
-            {
-                RawModelArray = new Matrix4x4[MaxParticleCount],
-                RawColorArray = new Color[MaxParticleCount]
-            };
+            VertexBuffer = new VertexBuffer(PrimitiveMeshes.CenteredQuad.Vertices, PrimitiveMeshes.CenteredQuad.Indices, new VertexAttributeArray[]{
+                new Matrix4x4AttributeArray(new Matrix4x4[MaxParticleCount]), // transform
+                new Vector4AttributeArray(new Vector4[MaxParticleCount]), // color
+            });
 
-            VertexBuffer = PrimitiveMeshes.CenteredQuad;
             RenderTask = new InstancedShapeRenderTask(VertexBuffer, material: Material);
         }
 
@@ -36,7 +33,7 @@ namespace Walgelijk.ParticleSystem
         public FloatRange StartRotation = new FloatRange(0);
         public Vec2Range StartVelocity = new Vec2Range(Vector2.One * -4, Vector2.One * 4);
         public FloatRange StartRotationalVelocity = new FloatRange(-4, 4);
-        public ColorRange StartColor = new ColorRange(Color.White);
+        public ColorRange StartColor = new ColorRange(Colors.White);
         public FloatRange Dampening = new FloatRange(0.1f);
         public FloatRange RotationalDampening = new FloatRange(0.1f);
 
@@ -55,10 +52,25 @@ namespace Walgelijk.ParticleSystem
 
         public float Clock;
 
-        public struct InstanceArrays
+        public Particle GenerateParticleObject()
         {
-            public Matrix4x4[] RawModelArray;
-            public Color[] RawColorArray;
+            Particle particle = new Particle
+            {
+                Angle = StartRotation.GetRandom(),
+                Position = Utilities.RandomPointInCircle(SpawnRadius.Min, SpawnRadius.Max),
+                Velocity = StartVelocity.GetRandom(),
+                MaxLife = LifeRange.GetRandom(),
+                InitialColor = StartColor.GetRandom(),
+                Gravity = Gravity.GetRandom(),
+                InitialSize = StartSize.GetRandom(),
+                RotationalVelocity = StartRotationalVelocity.GetRandom(),
+                Dampening = Dampening.GetRandom(),
+                RotationalDampening = RotationalDampening.GetRandom(),
+
+                Life = 0,
+            };
+
+            return particle;
         }
     }
 }

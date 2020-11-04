@@ -191,7 +191,7 @@ namespace Walgelijk
 
         public override Color GetRandom()
         {
-            return Utilities.RandomColour();
+            return Utilities.Lerp(Min, Max, Utilities.RandomFloat(0, 1));
         }
 
         public override bool IsInRange(Color v)

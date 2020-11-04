@@ -1,4 +1,7 @@
-﻿namespace Walgelijk
+﻿using System.Collections.Generic;
+using System.Numerics;
+
+namespace Walgelijk
 {
     /// <summary>
     /// Holds all the data needed to draw vertices to the screen
@@ -8,6 +11,8 @@
         private Vertex[] vertices;
         private uint[] indices;
 
+        private readonly VertexAttributeArray[] extraAttributes = null;
+
         /// <summary>
         /// The way vertices are drawn
         /// </summary>
@@ -16,18 +21,17 @@
         /// <summary>
         /// Create a VertexBuffer with the specified vertices and indices
         /// </summary>
-        /// <param name="vertices"></param>
-        /// <param name="indices"></param>
-        public VertexBuffer(Vertex[] vertices, uint[] indices)
+        public VertexBuffer(Vertex[] vertices, uint[] indices, VertexAttributeArray[] extraAttributes = null)
         {
             this.vertices = vertices;
             this.indices = indices;
+
+            this.extraAttributes = extraAttributes;
         }
 
         /// <summary>
         /// Create a VertexBuffer with the specified vertices. The indices will be set automatically
         /// </summary>
-        /// <param name="vertices"></param>
         public VertexBuffer(Vertex[] vertices)
         {
             Vertices = vertices;
@@ -45,6 +49,12 @@
         /// Whether the data needs to be uploaded to the GPU again
         /// </summary>
         public bool HasChanged { get; set; } = false;
+
+        // TODO dit moet automatisch op true gezet worden als iets in de extraAttributes array verandert
+        /// <summary>
+        /// Whether the extra data needs to be uploaded to the GPU again
+        /// </summary>
+        public bool ExtraDataHasChanged { get; set; } = false;
 
         /// <summary>
         /// Vertices to draw. <b>Do not forget to set the corresponding indices, or use <see cref="GenerateIndices"/></b>
@@ -102,5 +112,39 @@
                 indices[i] = i;
             HasChanged = true;
         }
+
+        ///// <summary>
+        ///// Add a new vertex attribute array
+        ///// </summary>
+        ///// <returns>Location of the attribute (-3)</returns>
+        //public int AddAttribute(VertexAttributeArray array)
+        //{
+        //    ja dit mag dus niet. het mag een keer op het begin maar daarna mag je alleen maar de arrays aanpassen
+
+        //    if (extraAttributes == null)
+        //        throw new global::System.InvalidOperationException("This vertex buffer was created without an extra attribute list. You can't add an attribute.");
+
+        //    extraAttributes.Add(array);
+        //    return ExtraAttributeCount - 1;
+        //}
+
+        /// <summary>
+        /// Get a vertex attribute array. Returns null if nothing is found. This is a reference value.
+        /// </summary>
+        public VertexAttributeArray GetAttribute(int location)
+        {
+            if (extraAttributes == null)
+                return null;
+
+            if (location < 0 || location >= ExtraAttributeCount)
+                return null;
+
+            return extraAttributes[location];
+        }
+
+        /// <summary>
+        /// Returns the amount of extra attributes. The total amount of attributes equals this value + 3
+        /// </summary>
+        public int ExtraAttributeCount => extraAttributes?.Length ?? 0;
     }
 }

@@ -17,11 +17,18 @@
         /// </summary>
         public int IBO;
 
-        public VertexBufferCacheHandles(int vbo, int vao, int ibo)
+        /// <summary>
+        /// User added vertex buffer object indices
+        /// </summary>
+        public int[] ExtraVBO;
+
+        public VertexBufferCacheHandles(int vbo, int vao, int ibo, int[] extraVbos = null)
         {
             VBO = vbo;
             VAO = vao;
             IBO = ibo;
+
+            ExtraVBO = extraVbos;
         }
     }
 }

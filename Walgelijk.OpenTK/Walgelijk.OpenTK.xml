@@ -19,5 +19,10 @@
             Index buffer object index
             </summary>
         </member>
+        <member name="F:Walgelijk.OpenTK.VertexBufferCacheHandles.ExtraVBO">
+            <summary>
+            User added vertex buffer object indices
+            </summary>
+        </member>
     </members>
 </doc>

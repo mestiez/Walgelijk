@@ -107,11 +107,14 @@ namespace Walgelijk.OpenTK
             }
 
             VertexBufferCacheHandles handles = vertexBufferCache.Load(vertexBuffer);
+
+            GL.BindVertexArray(handles.VAO);
+
             if (vertexBuffer.HasChanged)
                 vertexBufferCache.UpdateBuffer(vertexBuffer, handles);
 
-            GL.BindVertexArray(handles.VAO);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, handles.IBO);
+            if (vertexBuffer.ExtraDataHasChanged)
+                vertexBufferCache.UpdateExtraData(vertexBuffer, handles);
         }
 
         private void SetTransformationMatrixUniforms(Material material)

@@ -43,11 +43,13 @@ namespace Walgelijk.ParticleSystem
         private void HandleEmission(ParticlesComponent particles, TransformComponent transform)
         {
             if (particles.EmissionRate < 0.001f) return;
-
-            if (particles.Clock > 1 / particles.EmissionRate)
+            float inverseRate = 1 / particles.EmissionRate;
+            if (particles.Clock > inverseRate)
             {
+                int particlesToSpawn = (int)MathF.Ceiling(particles.Clock / inverseRate);
                 particles.Clock = 0;
-                CreateParticle(particles, transform);
+                for (int i = 0; i < particlesToSpawn; i++)
+                    CreateParticle(particles, transform);
             }
         }
 
@@ -55,21 +57,14 @@ namespace Walgelijk.ParticleSystem
         {
             if (particles.CurrentParticleCount >= particles.MaxParticleCount) return;
 
-            Particle particle = new Particle
-            {
-                Angle = particles.StartRotation.GetRandom(),
-                Position = Utilities.RandomPointInCircle(particles.SpawnRadius.Min, particles.SpawnRadius.Max),
-                Velocity = particles.StartVelocity.GetRandom(),
-                MaxLife = particles.LifeRange.GetRandom(),
-                InitialColor = particles.StartColor.GetRandom(),
-                Gravity = particles.Gravity.GetRandom(),
-                InitialSize = particles.StartSize.GetRandom(),
-                RotationalVelocity = particles.StartRotationalVelocity.GetRandom(),
-                Dampening = particles.Dampening.GetRandom(),
-                RotationalDampening = particles.RotationalDampening.GetRandom(),
+            CreateParticle(particles, transform, particles.GenerateParticleObject());
+        }
 
-                Life = 0,
-            };
+        public void CreateParticle(ParticlesComponent particles, TransformComponent transform, Particle particleToAdd)
+        {
+            if (particles.CurrentParticleCount >= particles.MaxParticleCount) return;
+
+            var particle = particleToAdd;
 
             particle.Color = particle.InitialColor;
             particle.Size = particle.InitialSize;
@@ -96,6 +91,7 @@ namespace Walgelijk.ParticleSystem
 
             for (int i = index; i < maxCount; i++)
             {
+                //TODO dit moet sneller. vervang particles die al dood zijn ipv alles opschuiven als een gek
                 particles.RawParticleArray[i] = particles.RawParticleArray[i + 1];
             }
 
@@ -137,21 +133,24 @@ namespace Walgelijk.ParticleSystem
 
         private void RenderParticleSystem(ParticlesComponent particles, TransformComponent transform)
         {
+            var posArray = particles.VertexBuffer.GetAttribute(0);
+            var colArray = particles.VertexBuffer.GetAttribute(1);
+
             for (int i = 0; i < particles.CurrentParticleCount; i++)
             {
                 var particle = particles.RawParticleArray[i];
 
                 Matrix4x4 model = Matrix4x4.CreateRotationZ(particle.Angle) * Matrix4x4.CreateScale(particle.Size) * Matrix4x4.CreateTranslation(particle.Position.X, particle.Position.Y, 0);
 
-                particles.InstanceData.RawModelArray[i] = model;
-                particles.InstanceData.RawColorArray[i] = particle.Color;
-
-                //TODO instancing data naar vertex buffer en dan dat de implementatie van de graphics renderer het als vertex attributes doet en al
+                posArray.SetAt(i, model);
+                colArray.SetAt(i, (Vector4)particle.Color);
             }
 
             var task = particles.RenderTask;
             task.InstanceCount = particles.CurrentParticleCount;
             task.ModelMatrix = particles.WorldSpace ? Matrix4x4.Identity : transform.LocalToWorldMatrix;
+
+            particles.VertexBuffer.ExtraDataHasChanged = true;
 
             RenderQueue.Add(particles.RenderTask, particles.Depth);
         }
