@@ -52,7 +52,6 @@ namespace Walgelijk
         /// <summary>
         /// Create a vertex with a position.  White and zero UV by default;
         /// </summary>
-        /// <param name="position"></param>
         public Vertex(float x, float y, float z = 0)
         {
             Position = new Vector3(x,y,z);

@@ -18,5 +18,10 @@
         /// Returns the amount of seconds that have passed since the game was launched
         /// </summary>
         public float SecondsSinceLoad { get; set; }
+
+        /// <summary>
+        /// Factor by which the time is multiplied
+        /// </summary>
+        public float TimeScale { get; set; }
     }
 }

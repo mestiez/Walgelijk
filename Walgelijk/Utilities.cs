@@ -46,11 +46,36 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Linearly interpolate between two vectors
+        /// </summary>
+        public static Vector3 Lerp(Vector3 a, Vector3 b, float t)
+        {
+            return new Vector3(
+                Lerp(a.X, b.X, t),
+                Lerp(a.Y, b.Y, t),
+                Lerp(a.Z, b.Z, t)
+                );
+        }
+
+        /// <summary>
         /// Returns a random float in a range
         /// </summary>
         public static float RandomFloat(float min = 0, float max = 1)
         {
             return Lerp(min, max, (float)rand.NextDouble());
+        }
+
+        /// <summary>
+        /// Returns a random point in a circle
+        /// </summary>
+        public static Vector2 RandomPointInCircle(float minRadius = 0, float maxRadius = 1)
+        {
+            Vector2 pos = Vector2.Normalize(new Vector2(
+                RandomFloat(-1, 1),
+                RandomFloat(-1, 1)
+                ));
+
+            return pos * RandomFloat(minRadius, maxRadius);
         }
 
         /// <summary>
@@ -127,6 +152,58 @@ namespace Walgelijk
         {
             float rad = degrees * DegToRad;
             return new Vector2(MathF.Cos(rad), MathF.Sin(rad));
+        }
+
+        /// <summary>
+        /// Linearly map a value in a range onto another range
+        /// </summary>
+        /// <param name="a1"></param>
+        /// <param name="a2"></param>
+        /// <param name="b1"></param>
+        /// <param name="b2"></param>
+        /// <param name="s"></param>
+        /// <returns>Remapped value <paramref name="s"/></returns>
+        public static float MapRange(float a1, float a2, float b1, float b2, float s)
+        {
+            return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
+        }
+
+        /// <summary>
+        /// Apply a constant acceleration to the given 2D position and 2D velocity, considering a time step.
+        /// </summary>
+        /// <param name="acceleration">The acceleration</param>
+        /// <param name="currentPos">The initial position</param>
+        /// <param name="currentVelocity">The initial velocity</param>
+        /// <param name="deltaTime">The time step</param>
+        /// <param name="dampening">Optional dampening parameter (0 - 1)</param>
+        /// <returns>A struct with the new position and new velocity</returns>
+        public static (Vector2 newPosition, Vector2 newVelocity) ApplyAcceleration(Vector2 acceleration, Vector2 currentPos, Vector2 currentVelocity, float deltaTime, float dampening = 1)
+        {
+            currentVelocity *= MathF.Pow(1 - dampening, deltaTime);
+
+            var newVel = deltaTime * acceleration + currentVelocity;
+            var newPos = 0.5f * acceleration * deltaTime * deltaTime + currentVelocity * deltaTime + currentPos;
+
+            return (newPos, newVel);
+        }
+
+        /// <summary>
+        /// Apply a constant acceleration to the given 1D position and 1D velocity, considering a time step.
+        /// </summary>
+        /// <param name="acceleration">The acceleration</param>
+        /// <param name="currentPos">The initial position</param>
+        /// <param name="currentVelocity">The initial velocity</param>
+        /// <param name="deltaTime">The time step</param>
+        /// <param name="dampening">Optional dampening parameter (0 - 1)</param>
+        /// <returns>A struct with the new position and new velocity</returns>
+        public static (float newPosition, float newVelocity) ApplyAcceleration(float acceleration, float currentPos, float currentVelocity, float deltaTime, float dampening = 1)
+        {
+            currentVelocity *= MathF.Pow(1 - dampening, deltaTime);
+
+            var newVel = deltaTime * acceleration + currentVelocity;
+            var newPos = 0.5f * acceleration * deltaTime * deltaTime + currentVelocity * deltaTime + currentPos;
+
+            return (newPos, newVel);
         }
     }
 }

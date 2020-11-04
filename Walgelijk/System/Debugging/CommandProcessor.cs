@@ -25,7 +25,7 @@ namespace Walgelijk
             if (parts.Length == 0) //dit kan eigenlijk nooit maar wat nou als iets gebeurt dat letterlijk onmogelijk is?
                 return;
 
-            string cmd = parts[0];
+            string cmd = parts[0].ToLower();
             string[] arguments = parts.Skip(1).ToArray(); //TODO linq langzaam
 
             //TODO command arguments
@@ -54,9 +54,11 @@ namespace Walgelijk
                 if (!initialised)
                     Initialise();
 
+                raw = raw.ToLower();
+
                 foreach (var method in methods)
                 {
-                    if (method.Name != raw) continue;
+                    if (method.Name.ToLower() != raw) continue;
 
                     var action = method.CreateDelegate(typeof(Action)) as Action;
                     return action;
@@ -108,8 +110,8 @@ namespace Walgelijk
                 foreach (var a in methods)
                     foreach (var b in methods)
                     {
-                        if (a != b && a.Name == b.Name)
-                            Logger.Warn($"Command \"{b.Name}\" has to entries. Only one of them will work. This behaviour is undefined.");
+                        if (a != b && a.Name.ToLower() == b.Name.ToLower())
+                            Logger.Warn($"Command \"{b.Name}\" has two entries. Only one of them will work. This behaviour is undefined.");
                     }
             }
 

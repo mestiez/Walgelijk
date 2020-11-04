@@ -130,20 +130,5 @@ namespace Walgelijk
         {
             renderer.Render();
         }
-
-        [Command]
-        private static void List()
-        {
-            var builder = new StringBuilder();
-            builder.Append(Environment.NewLine);
-            builder.Append("All commands:");
-            builder.Append(Environment.NewLine);
-            foreach (var item in CommandProcessor.GetAllCommands())
-            {
-                builder.Append(item);
-                builder.Append(Environment.NewLine);
-            }
-            Logger.Log(builder);
-        }
     }
 }

@@ -75,7 +75,7 @@ namespace Walgelijk
         {
             if (!mainCameraSet) return;
             SetRenderTask();
-            RenderQueue.Add(renderTask);
+            RenderQueue.Add(renderTask, int.MinValue);
         }
 
         private void SetRenderTask()

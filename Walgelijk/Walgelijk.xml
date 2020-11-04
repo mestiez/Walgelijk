@@ -407,6 +407,79 @@
             Clear the cache
             </summary>
         </member>
+        <member name="T:Walgelijk.Curve`1">
+            <summary>
+            Linear curve
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Curve`1.Keys">
+            <summary>
+            Value keys
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Curve`1.#ctor(Walgelijk.Curve{`0}.Key[])">
+            <summary>
+            Construct a curve
+            </summary>
+            <param name="keys"></param>
+        </member>
+        <member name="M:Walgelijk.Curve`1.Evaluate(System.Single)">
+            <summary>
+            Get value at a position in the curve using linear interpolation
+            </summary>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Curve`1.Lerp(`0,`0,System.Single)">
+            <summary>
+            Linear interpolation implementation for type <typeparamref name="T"/>
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Curve`1.Key">
+            <summary>
+            Key with a position and value of type <typeparamref name="T"/>
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Curve`1.Key.Value">
+            <summary>
+            Value
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Curve`1.Key.Position">
+            <summary>
+            Position in range 0, 1
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Curve`1.Key.#ctor(`0,System.Single)">
+            <summary>
+            Construct a Key
+            </summary>
+        </member>
+        <member name="T:Walgelijk.FloatCurve">
+            <summary>
+            <see cref="T:System.Single"/> curve
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ColorCurve">
+            <summary>
+            <see cref="T:Walgelijk.Color"/> curve
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Vec4Curve">
+            <summary>
+            <see cref="T:System.Numerics.Vector4"/> curve
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Vec2Curve">
+            <summary>
+            <see cref="T:System.Numerics.Vector2"/> curve
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Vec3Curve">
+            <summary>
+            <see cref="T:System.Numerics.Vector3"/> curve
+            </summary>
+        </member>
         <member name="T:Walgelijk.CollectionByType">
             <summary>
             Collection that is able to quicky get objects by their type
@@ -1433,7 +1506,6 @@
             <summary>
             Create a vertex with a position.  White and zero UV by default;
             </summary>
-            <param name="position"></param>
         </member>
         <member name="T:Walgelijk.VertexBuffer">
             <summary>
@@ -1516,6 +1588,109 @@
         <member name="F:Walgelijk.WrapMode.Mirror">
             <summary>
             Mirrors the UV
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Range`1">
+            <summary>
+            Object with a minimum and maximum value
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Range`1.Min">
+            <summary>
+            Minimum bound
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Range`1.Max">
+            <summary>
+            Maximum bound
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Range`1.#ctor(`0,`0)">
+            <summary>
+            Construct a <see cref="T:Walgelijk.Range`1"/> with the given range values
+            </summary>
+            <param name="min"></param>
+            <param name="max"></param>
+        </member>
+        <member name="M:Walgelijk.Range`1.#ctor(`0)">
+            <summary>
+            Construct a <see cref="T:Walgelijk.Range`1"/> where both bounds are identical
+            </summary>
+            <param name="val"></param>
+        </member>
+        <member name="M:Walgelijk.Range`1.GetRandom">
+            <summary>
+            Get a random number between <see cref="P:Walgelijk.Range`1.Min"/> and <see cref="P:Walgelijk.Range`1.Max"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Range`1.IsInRange(`0)">
+            <summary>
+            Returns true if a value is within the range, and false otherwise
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Range`1.Clamp(`0)">
+            <summary>
+            Clamps the given value within the range
+            </summary>
+        </member>
+        <member name="T:Walgelijk.FloatRange">
+            <summary>
+            Struct with a minimum and maximum float value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.FloatRange.#ctor(System.Single,System.Single)">
+            <summary>
+            Construct a float range
+            </summary>
+        </member>
+        <member name="M:Walgelijk.FloatRange.#ctor(System.Single)">
+            <summary>
+            Construct a float range
+            </summary>
+        </member>
+        <member name="T:Walgelijk.IntRange">
+            <summary>
+            Struct with a minimum and maximum integer value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IntRange.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Construct an integer range
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IntRange.#ctor(System.Int32)">
+            <summary>
+            Construct an integer range
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Vec2Range">
+            <summary>
+            Struct with a minimum and maximum <see cref="T:System.Numerics.Vector2"/> value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Vec2Range.#ctor(System.Numerics.Vector2,System.Numerics.Vector2)">
+            <summary>
+            Construct a <see cref="T:System.Numerics.Vector2"/> range
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Vec2Range.#ctor(System.Numerics.Vector2)">
+            <summary>
+            Construct a <see cref="T:System.Numerics.Vector2"/>  range
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ColorRange">
+            <summary>
+            Struct with a minimum and maximum <see cref="T:Walgelijk.Color"/> value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ColorRange.#ctor(Walgelijk.Color,Walgelijk.Color)">
+            <summary>
+            Construct a <see cref="T:System.Numerics.Vector2"/> range
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ColorRange.#ctor(Walgelijk.Color)">
+            <summary>
+            Construct a <see cref="T:System.Numerics.Vector2"/>  range
             </summary>
         </member>
         <member name="T:Walgelijk.Rect">
@@ -1926,6 +2101,11 @@
             Returns the amount of seconds that have passed since the game was launched
             </summary>
         </member>
+        <member name="P:Walgelijk.Time.TimeScale">
+            <summary>
+            Factor by which the time is multiplied
+            </summary>
+        </member>
         <member name="T:Walgelijk.Font">
             <summary>
             Object that holds font information and pages
@@ -2225,9 +2405,19 @@
             Linearly interpolate between two vectors
             </summary>
         </member>
+        <member name="M:Walgelijk.Utilities.Lerp(System.Numerics.Vector3,System.Numerics.Vector3,System.Single)">
+            <summary>
+            Linearly interpolate between two vectors
+            </summary>
+        </member>
         <member name="M:Walgelijk.Utilities.RandomFloat(System.Single,System.Single)">
             <summary>
             Returns a random float in a range
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.RandomPointInCircle(System.Single,System.Single)">
+            <summary>
+            Returns a random point in a circle
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.RandomInt(System.Int32,System.Int32)">
@@ -2277,6 +2467,39 @@
             Returns a normalised <see cref="T:System.Numerics.Vector2"/> corresponding to the given angle in degrees. 
             0° gives (1, 0). 90° gives (0, 1)
             </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.MapRange(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Linearly map a value in a range onto another range
+            </summary>
+            <param name="a1"></param>
+            <param name="a2"></param>
+            <param name="b1"></param>
+            <param name="b2"></param>
+            <param name="s"></param>
+            <returns>Remapped value <paramref name="s"/></returns>
+        </member>
+        <member name="M:Walgelijk.Utilities.ApplyAcceleration(System.Numerics.Vector2,System.Numerics.Vector2,System.Numerics.Vector2,System.Single,System.Single)">
+            <summary>
+            Apply a constant acceleration to the given 2D position and 2D velocity, considering a time step.
+            </summary>
+            <param name="acceleration">The acceleration</param>
+            <param name="currentPos">The initial position</param>
+            <param name="currentVelocity">The initial velocity</param>
+            <param name="deltaTime">The time step</param>
+            <param name="dampening">Optional dampening parameter (0 - 1)</param>
+            <returns>A struct with the new position and new velocity</returns>
+        </member>
+        <member name="M:Walgelijk.Utilities.ApplyAcceleration(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Apply a constant acceleration to the given 1D position and 1D velocity, considering a time step.
+            </summary>
+            <param name="acceleration">The acceleration</param>
+            <param name="currentPos">The initial position</param>
+            <param name="currentVelocity">The initial velocity</param>
+            <param name="deltaTime">The time step</param>
+            <param name="dampening">Optional dampening parameter (0 - 1)</param>
+            <returns>A struct with the new position and new velocity</returns>
         </member>
         <member name="T:Walgelijk.DrawBounds">
             <summary>

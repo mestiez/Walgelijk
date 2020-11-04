@@ -55,6 +55,7 @@ namespace Walgelijk
         /// <summary>
         /// Draw vertices immediately
         /// </summary>
+        [global::System.Obsolete]
         public abstract void Draw(Vertex[] vertices, Primitive primitive, Material material = null);
 
         //TODO Cache dit

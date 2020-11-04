@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Walgelijk.NAudio\Walgelijk.NAudio.csproj" />
     <ProjectReference Include="..\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />
+    <ProjectReference Include="..\Walgelijk.ParticleSystem\Walgelijk.ParticleSystem.csproj" />
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
   </ItemGroup>
 

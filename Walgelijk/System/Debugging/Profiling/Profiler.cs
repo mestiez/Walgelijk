@@ -105,13 +105,6 @@ namespace Walgelijk
         {
             fpsCounter.Tick(game.Time.SecondsSinceLoad);
         }
-
-        [Command]
-        private static void ToggleProfiler()
-        {
-            var inst = Game.Main.Profiling;
-            inst.DrawQuickProfiler = !inst.DrawQuickProfiler;
-        }
     }
 
     /// <summary>
