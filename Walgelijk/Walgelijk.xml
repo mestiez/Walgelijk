@@ -1231,6 +1231,41 @@
             Primitive type to draw the vertices as
             </summary>
         </member>
+        <member name="T:Walgelijk.InstancedShapeRenderTask">
+            <summary>
+            Render task that renders an instanced vertex buffer with a material
+            </summary>
+        </member>
+        <member name="M:Walgelijk.InstancedShapeRenderTask.#ctor(Walgelijk.VertexBuffer,System.Numerics.Matrix4x4,Walgelijk.Material)">
+            <summary>
+            Create a shape render task
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InstancedShapeRenderTask.ModelMatrix">
+            <summary>
+            The matrix to transform the vertices with
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InstancedShapeRenderTask.VertexBuffer">
+            <summary>
+            Vertex buffer to draw
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InstancedShapeRenderTask.Material">
+            <summary>
+            Material to draw with
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InstancedShapeRenderTask.ScreenSpace">
+            <summary>
+            Should the task set the view matrix to <see cref="P:System.Numerics.Matrix4x4.Identity"/> 
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InstancedShapeRenderTask.InstanceCount">
+            <summary>
+            Amount of instances 
+            </summary>
+        </member>
         <member name="T:Walgelijk.IRenderTask">
             <summary>
             A task that can be queued in the render queue
@@ -2691,6 +2726,14 @@
             Draw a vertex buffer
             </summary>
             <param name="vertexBuffer">VertexBuffer to draw</param>
+            <param name="material">Material to draw it with</param>
+        </member>
+        <member name="M:Walgelijk.RenderTarget.DrawInstanced(Walgelijk.VertexBuffer,System.Int32,Walgelijk.Material)">
+            <summary>
+            Draw a instanced vertex buffer
+            </summary>
+            <param name="vertexBuffer">VertexBuffer to draw</param>
+            <param name="instanceCount">Amount of elements to draw</param>
             <param name="material">Material to draw it with</param>
         </member>
         <member name="M:Walgelijk.RenderTarget.Draw(Walgelijk.Vertex[],Walgelijk.Primitive,Walgelijk.Material)">

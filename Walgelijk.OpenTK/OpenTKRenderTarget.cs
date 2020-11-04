@@ -69,20 +69,17 @@ namespace Walgelijk.OpenTK
 
         public override void Draw(VertexBuffer vertexBuffer, Material material)
         {
-            SetMaterial(material);
-            if (material != null)
-            {
-                SetTransformationMatrixUniforms(material);
-            }
-
-            VertexBufferCacheHandles handles = vertexBufferCache.Load(vertexBuffer);
-            if (vertexBuffer.HasChanged)
-                vertexBufferCache.UpdateBuffer(vertexBuffer, handles);
-
-            GL.BindVertexArray(handles.VAO);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, handles.IBO);
+            PrepareVertexBuffer(vertexBuffer, material);
 
             GL.DrawElements(TypeConverter.Convert(vertexBuffer.PrimitiveType), vertexBuffer.IndexCount, DrawElementsType.UnsignedInt, 0);
+        }
+
+        public override void DrawInstanced(VertexBuffer vertexBuffer, int instanceCount, Material material = null)
+        {
+            PrepareVertexBuffer(vertexBuffer, material);
+
+            GL.DrawElementsInstanced(TypeConverter.Convert(vertexBuffer.PrimitiveType), vertexBuffer.IndexCount, DrawElementsType.UnsignedInt, IntPtr.Zero, instanceCount);
+            //GL.DrawElementsInstanced(TypeConverter.Convert(vertexBuffer.PrimitiveType), vertexBuffer.IndexCount, DrawElementsType.UnsignedInt, 0, instanceCount);
         }
 
         public override void Draw(Vertex[] vertices, Primitive primitive, Material material = null)
@@ -99,6 +96,22 @@ namespace Walgelijk.OpenTK
             }
 
             GL.End();
+        }
+
+        private void PrepareVertexBuffer(VertexBuffer vertexBuffer, Material material)
+        {
+            SetMaterial(material);
+            if (material != null)
+            {
+                SetTransformationMatrixUniforms(material);
+            }
+
+            VertexBufferCacheHandles handles = vertexBufferCache.Load(vertexBuffer);
+            if (vertexBuffer.HasChanged)
+                vertexBufferCache.UpdateBuffer(vertexBuffer, handles);
+
+            GL.BindVertexArray(handles.VAO);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, handles.IBO);
         }
 
         private void SetTransformationMatrixUniforms(Material material)

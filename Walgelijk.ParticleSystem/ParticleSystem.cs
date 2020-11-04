@@ -125,7 +125,10 @@ namespace Walgelijk.ParticleSystem
                     particle.RotationalVelocity = rotationData.newVelocity;
                     particle.Angle = rotationData.newPosition;
 
-                    particle.Size = particle.InitialSize * particles.SizeOverLife.Evaluate(particle.Life / particle.MaxLife);
+                    float lifePercentage = particle.Life / particle.MaxLife;
+
+                    particle.Size = particle.InitialSize * particles.SizeOverLife.Evaluate(lifePercentage);
+                    particle.Color = particle.InitialColor * particles.ColorOverLife.Evaluate(lifePercentage);
 
                     particles.RawParticleArray[i] = particle;
                 }
@@ -137,19 +140,20 @@ namespace Walgelijk.ParticleSystem
             for (int i = 0; i < particles.CurrentParticleCount; i++)
             {
                 var particle = particles.RawParticleArray[i];
-                //TODO instancing
 
                 Matrix4x4 model = Matrix4x4.CreateRotationZ(particle.Angle) * Matrix4x4.CreateScale(particle.Size) * Matrix4x4.CreateTranslation(particle.Position.X, particle.Position.Y, 0);
 
-                if (!particles.WorldSpace)
-                    model *= transform.LocalToWorldMatrix;
+                particles.InstanceData.RawModelArray[i] = model;
+                particles.InstanceData.RawColorArray[i] = particle.Color;
 
-                RenderQueue.Add(new ShapeRenderTask(
-                    PrimitiveMeshes.CenteredQuad,
-                    model,
-                    particles.Material
-                    ));
+                //TODO instancing data naar vertex buffer en dan dat de implementatie van de graphics renderer het als vertex attributes doet en al
             }
+
+            var task = particles.RenderTask;
+            task.InstanceCount = particles.CurrentParticleCount;
+            task.ModelMatrix = particles.WorldSpace ? Matrix4x4.Identity : transform.LocalToWorldMatrix;
+
+            RenderQueue.Add(particles.RenderTask, particles.Depth);
         }
     }
 }

@@ -140,6 +140,16 @@ namespace Walgelijk
             return !(left == right);
         }
 
+        public static Color operator *(Color left, Color right)
+        {
+            return new Color(
+                left.R * right.R,
+                left.G * right.G,
+                left.B * right.B,
+                left.A * right.A
+                );
+        }
+
         public static bool operator >(Color left, Color right)
         {
             return

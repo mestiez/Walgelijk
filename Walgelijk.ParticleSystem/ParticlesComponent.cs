@@ -8,15 +8,22 @@ namespace Walgelijk.ParticleSystem
         public readonly int MaxParticleCount = 1000;
         public int CurrentParticleCount = 0;
 
-        public Particle[] RawParticleArray;
+        public readonly Particle[] RawParticleArray;
+        public readonly InstanceArrays InstanceData;
 
         public ParticlesComponent(int maxCount = 1000)
         {
             MaxParticleCount = maxCount;
             RawParticleArray = new Particle[MaxParticleCount];
 
-            VertexBuffer = new VertexBuffer();
-            RenderTask = new ShapeRenderTask(VertexBuffer);
+            InstanceData = new InstanceArrays
+            {
+                RawModelArray = new Matrix4x4[MaxParticleCount],
+                RawColorArray = new Color[MaxParticleCount]
+            };
+
+            VertexBuffer = PrimitiveMeshes.CenteredQuad;
+            RenderTask = new InstancedShapeRenderTask(VertexBuffer, material: Material);
         }
 
         public Material Material = Particle.DefaultMaterial;
@@ -34,15 +41,24 @@ namespace Walgelijk.ParticleSystem
         public FloatRange RotationalDampening = new FloatRange(0.1f);
 
         public FloatCurve SizeOverLife = new FloatCurve(new Curve<float>.Key(1, 1));
+        public ColorCurve ColorOverLife = new ColorCurve(new Curve<Color>.Key(Colors.White, 1));
 
         public float SimulationSpeed = 1;
         public bool WorldSpace;
         public float EmissionRate = 150;
         public bool CircularStartVelocity = false;
 
-        public ShapeRenderTask RenderTask;
-        public VertexBuffer VertexBuffer;
+        public readonly InstancedShapeRenderTask RenderTask;
+        public readonly VertexBuffer VertexBuffer;
+
+        public int Depth = 0;
 
         public float Clock;
+
+        public struct InstanceArrays
+        {
+            public Matrix4x4[] RawModelArray;
+            public Color[] RawColorArray;
+        }
     }
 }

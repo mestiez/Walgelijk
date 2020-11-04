@@ -16,6 +16,8 @@ namespace Walgelijk.OpenTK
 
         private readonly float[] matrixBuffer = new float[16];
 
+        private MatrixArrayCache matrixArrayCache = new MatrixArrayCache();
+
         public void SetUniform(Material material, string uniformName, object data)
         {
             var loaded = MaterialCache.Load(material);
@@ -29,7 +31,7 @@ namespace Walgelijk.OpenTK
                 case IReadableTexture v:
                     var loadedTexture = TextureCache.Load(new MaterialTexturePair(loaded, v));
                     GL.ProgramUniform1(prog, loc, TypeConverter.Convert(loadedTexture.TextureUnit));
-                    break;                
+                    break;
                 case float v:
                     GL.ProgramUniform1(prog, loc, v);
                     break;
@@ -68,24 +70,28 @@ namespace Walgelijk.OpenTK
                     SetMatrixBuffer(v);
                     GL.ProgramUniformMatrix4(prog, loc, 1, false, matrixBuffer);
                     break;
+                case Matrix4x4[] v:
+                    var a = matrixArrayCache.Load(v);
+                    GL.ProgramUniformMatrix4(prog, loc, v.Length, false, a);
+                    break;
             }
         }
 
         private void SetMatrixBuffer(Matrix4x4 v)
         {
             //Ja dankjewel System.Numerics voor deze shitshow. hartelijk bedankt
-            matrixBuffer[0]  = v.M11;
-            matrixBuffer[1]  = v.M12;
-            matrixBuffer[2]  = v.M13;
-            matrixBuffer[3]  = v.M14;
-                             
-            matrixBuffer[4]  = v.M21;
-            matrixBuffer[5]  = v.M22;
-            matrixBuffer[6]  = v.M23;
-            matrixBuffer[7]  = v.M24;
-                             
-            matrixBuffer[8]  = v.M31;
-            matrixBuffer[9]  = v.M32;
+            matrixBuffer[0] = v.M11;
+            matrixBuffer[1] = v.M12;
+            matrixBuffer[2] = v.M13;
+            matrixBuffer[3] = v.M14;
+
+            matrixBuffer[4] = v.M21;
+            matrixBuffer[5] = v.M22;
+            matrixBuffer[6] = v.M23;
+            matrixBuffer[7] = v.M24;
+
+            matrixBuffer[8] = v.M31;
+            matrixBuffer[9] = v.M32;
             matrixBuffer[10] = v.M33;
             matrixBuffer[11] = v.M34;
 
@@ -101,6 +107,49 @@ namespace Walgelijk.OpenTK
             int prog = loaded.ProgramHandle;
             int loc = loaded.GetUniformLocation(uniformName);
             throw new NotImplementedException();
+        }
+    }
+
+    internal class MatrixArrayCache : Cache<Matrix4x4[], float[]>
+    {
+        private const int MatrixLength = 16;
+
+        protected override float[] CreateNew(Matrix4x4[] raw)
+        {
+            var array = new float[MatrixLength * raw.Length];
+
+            for (int i = 0; i < raw.Length; i++)
+            {
+                var v = raw[i];
+                int index = i * MatrixLength;
+
+                array[index + 0] = v.M11;
+                array[index + 1] = v.M12;
+                array[index + 2] = v.M13;
+                array[index + 3] = v.M14;
+
+                array[index + 4] = v.M21;
+                array[index + 5] = v.M22;
+                array[index + 6] = v.M23;
+                array[index + 7] = v.M24;
+
+                array[index + 8] = v.M31;
+                array[index + 9] = v.M32;
+                array[index + 10] = v.M33;
+                array[index + 11] = v.M34;
+
+                array[index + 12] = v.M41;
+                array[index + 13] = v.M42;
+                array[index + 14] = v.M43;
+                array[index + 15] = v.M44;
+            }
+
+            return array;
+        }
+
+        protected override void DisposeOf(float[] loaded)
+        {
+
         }
     }
 }

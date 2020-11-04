@@ -53,6 +53,14 @@ namespace Walgelijk
         public abstract void Draw(VertexBuffer vertexBuffer, Material material = null);
 
         /// <summary>
+        /// Draw a instanced vertex buffer
+        /// </summary>
+        /// <param name="vertexBuffer">VertexBuffer to draw</param>
+        /// <param name="instanceCount">Amount of elements to draw</param>
+        /// <param name="material">Material to draw it with</param>
+        public abstract void DrawInstanced(VertexBuffer vertexBuffer, int instanceCount, Material material = null);
+
+        /// <summary>
         /// Draw vertices immediately
         /// </summary>
         [global::System.Obsolete]

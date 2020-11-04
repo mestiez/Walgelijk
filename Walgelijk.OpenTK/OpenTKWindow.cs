@@ -133,6 +133,14 @@ namespace Walgelijk.OpenTK
 
         private void OnRenderFrame(object sender, FrameEventArgs obj)
         {
+            while (true)
+            {
+                var e = GL.GetError();
+                if (e == ErrorCode.NoError)
+                    break;
+                Logger.Error(e, nameof(OpenTKWindow));
+            }
+
             time.RenderDeltaTime = (float)obj.Time;
             time.SecondsSinceLoad = (float)stopwatch.Elapsed.TotalSeconds;
 
