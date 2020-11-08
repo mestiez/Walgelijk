@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Threading.Tasks;
 
 namespace Walgelijk.ParticleSystem
 {
@@ -66,6 +67,7 @@ namespace Walgelijk.ParticleSystem
 
             var particle = particleToAdd;
 
+            particle.Active = true;
             particle.Color = particle.InitialColor;
             particle.Size = particle.InitialSize;
 
@@ -104,7 +106,7 @@ namespace Walgelijk.ParticleSystem
 
             particles.Clock += dt;
 
-            for (int i = 0; i < particles.CurrentParticleCount; i++)
+            Parallel.For(0, particles.CurrentParticleCount, (i) =>
             {
                 var particle = particles.RawParticleArray[i];
                 particle.Life += dt;
@@ -128,7 +130,12 @@ namespace Walgelijk.ParticleSystem
 
                     particles.RawParticleArray[i] = particle;
                 }
-            }
+            });
+
+            //for (int i = 0; i < particles.CurrentParticleCount; i++)
+            //{
+                
+            //}
         }
 
         private void RenderParticleSystem(ParticlesComponent particles, TransformComponent transform)

@@ -132,7 +132,7 @@ namespace Walgelijk.OpenTK
                         GL.VertexAttribDivisor(location + 1, 1);
                         GL.VertexAttribDivisor(location + 2, 1);
                         GL.VertexAttribDivisor(location + 3, 1);
-                        //TODO eigenlijk moet je met 1 VertexAttributeArray meerdere pointers moeten kunnen definieren
+                        //TODO eigenlijk moet je met 1 VertexAttributeArray meerdere pointers moeten kunnen definieren zodat dit geen special case is
                         location += 4;
                         break;
                     default:
