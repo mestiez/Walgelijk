@@ -19,9 +19,9 @@
             DrawBounds = drawBounds;
         }
 
-        public void Execute(RenderTarget target)
+        public void Execute(IGraphics graphics)
         {
-            target.DrawBounds = DrawBounds;
+            Game.Main.Window.Graphics.DrawBounds = DrawBounds;
         }
 
         /// <summary>

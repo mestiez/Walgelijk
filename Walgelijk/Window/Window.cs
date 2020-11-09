@@ -53,6 +53,10 @@ namespace Walgelijk
         /// The current input state
         /// </summary>
         public abstract InputState InputState { get; }
+        /// <summary>
+        /// Graphics functions
+        /// </summary>
+        public abstract IGraphics Graphics { get; }
 
         /// <summary>
         /// Time information
@@ -70,14 +74,9 @@ namespace Walgelijk
         public Game Game { get; set; }
 
         /// <summary>
-        /// RenderTarget for this window
+        /// The main rendertarget for this window
         /// </summary>
         public abstract RenderTarget RenderTarget { get; }
-
-        /// <summary>
-        /// Provides shader specific functions
-        /// </summary>
-        public abstract IShaderManager ShaderManager { get; }
 
         /// <summary>
         /// Fires when the window is resized. Provides new size

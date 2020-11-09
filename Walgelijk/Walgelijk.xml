@@ -142,6 +142,11 @@
             Main camera transform component
             </summary>
         </member>
+        <member name="P:Walgelijk.CameraSystem.DoClear">
+            <summary>
+            Should the system clear the target as well
+            </summary>
+        </member>
         <member name="M:Walgelijk.CameraSystem.SetMainCamera(Walgelijk.Entity)">
             <summary>
             Set the main camera for this system
@@ -1089,22 +1094,6 @@
             Whether the texture has generated mipmaps upon load
             </summary>
         </member>
-        <member name="T:Walgelijk.IShaderManager">
-            <summary>
-            Shader specific link between the engine and the graphics API
-            </summary>
-        </member>
-        <member name="M:Walgelijk.IShaderManager.SetUniform(Walgelijk.Material,System.String,System.Object)">
-            <summary>
-            Set a shader program uniform
-            </summary>
-        </member>
-        <member name="M:Walgelijk.IShaderManager.TryDownloadUniform``1(Walgelijk.Material,System.String,``0@)">
-            <summary>
-            Try to get a shader program uniform.
-            </summary>
-            <returns>Boolean indicating whether the operation was successful</returns>
-        </member>
         <member name="T:Walgelijk.IWritableTexture">
             <summary>
             A texture that can be written to
@@ -1189,11 +1178,10 @@
             Render task that will invoke the action you give. Useful for unique smaller actions
             </summary>
         </member>
-        <member name="M:Walgelijk.ActionRenderTask.#ctor(System.Action{Walgelijk.RenderTarget})">
+        <member name="M:Walgelijk.ActionRenderTask.#ctor(System.Action{Walgelijk.IGraphics})">
             <summary>
             Crate action render task
             </summary>
-            <param name="action"></param>
         </member>
         <member name="F:Walgelijk.ActionRenderTask.Action">
             <summary>
@@ -1213,6 +1201,16 @@
         <member name="F:Walgelijk.CameraRenderTask.Projection">
             <summary>
             Projection matrix
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ClearRenderTask">
+            <summary>
+            Task that clears the target
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ClearRenderTask.ClearColor">
+            <summary>
+            The colour to clear the target with
             </summary>
         </member>
         <member name="T:Walgelijk.DrawBoundsTask">
@@ -1246,31 +1244,6 @@
             The group of render tasks
             </summary>
         </member>
-        <member name="T:Walgelijk.ImmediateRenderTask">
-            <summary>
-            Render task that renders a collection of vertices immediately
-            </summary>
-        </member>
-        <member name="F:Walgelijk.ImmediateRenderTask.ModelMatrix">
-            <summary>
-            The matrix to transform the vertices with
-            </summary>
-        </member>
-        <member name="F:Walgelijk.ImmediateRenderTask.Vertices">
-            <summary>
-            Vertices to draw
-            </summary>
-        </member>
-        <member name="F:Walgelijk.ImmediateRenderTask.Material">
-            <summary>
-            Material to draw with
-            </summary>
-        </member>
-        <member name="F:Walgelijk.ImmediateRenderTask.PrimitiveType">
-            <summary>
-            Primitive type to draw the vertices as
-            </summary>
-        </member>
         <member name="T:Walgelijk.InstancedShapeRenderTask">
             <summary>
             Render task that renders an instanced vertex buffer with a material
@@ -1279,26 +1252,6 @@
         <member name="M:Walgelijk.InstancedShapeRenderTask.#ctor(Walgelijk.VertexBuffer,System.Numerics.Matrix4x4,Walgelijk.Material)">
             <summary>
             Create a shape render task
-            </summary>
-        </member>
-        <member name="F:Walgelijk.InstancedShapeRenderTask.ModelMatrix">
-            <summary>
-            The matrix to transform the vertices with
-            </summary>
-        </member>
-        <member name="F:Walgelijk.InstancedShapeRenderTask.VertexBuffer">
-            <summary>
-            Vertex buffer to draw
-            </summary>
-        </member>
-        <member name="F:Walgelijk.InstancedShapeRenderTask.Material">
-            <summary>
-            Material to draw with
-            </summary>
-        </member>
-        <member name="F:Walgelijk.InstancedShapeRenderTask.ScreenSpace">
-            <summary>
-            Should the task set the view matrix to <see cref="P:System.Numerics.Matrix4x4.Identity"/> 
             </summary>
         </member>
         <member name="F:Walgelijk.InstancedShapeRenderTask.InstanceCount">
@@ -1311,7 +1264,7 @@
             A task that can be queued in the render queue
             </summary>
         </member>
-        <member name="M:Walgelijk.IRenderTask.Execute(Walgelijk.RenderTarget)">
+        <member name="M:Walgelijk.IRenderTask.Execute(Walgelijk.IGraphics)">
             <summary>
             Execute the render task on the given render target
             </summary>
@@ -1352,7 +1305,7 @@
             This object manages a render queue of <see cref="T:Walgelijk.IRenderTask"/>
             </summary>
         </member>
-        <member name="M:Walgelijk.RenderQueue.RenderAndReset(Walgelijk.RenderTarget)">
+        <member name="M:Walgelijk.RenderQueue.RenderAndReset(Walgelijk.IGraphics)">
             <summary>
             Render the queue by dequeuing and executing each entry
             </summary>
@@ -1366,6 +1319,81 @@
         <member name="P:Walgelijk.RenderQueue.Length">
             <summary>
             Length of the queue
+            </summary>
+        </member>
+        <member name="T:Walgelijk.IGraphics">
+            <summary>
+            Graphics utility interface meant to be implemented by the rendering implementation
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IGraphics.Clear(Walgelijk.Color)">
+            <summary>
+            Clear current target
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IGraphics.Draw(Walgelijk.VertexBuffer,Walgelijk.Material)">
+            <summary>
+            Draw a vertex buffer to the currently activated target
+            </summary>
+            <param name="vertexBuffer">VertexBuffer to draw</param>
+            <param name="material">Material to draw it with</param>
+        </member>
+        <member name="M:Walgelijk.IGraphics.DrawInstanced(Walgelijk.VertexBuffer,System.Int32,Walgelijk.Material)">
+            <summary>
+            Draw a instanced vertex buffer to the currently activated target
+            </summary>
+            <param name="vertexBuffer">VertexBuffer to draw</param>
+            <param name="instanceCount">Amount of elements to draw</param>
+            <param name="material">Material to draw it with</param>
+        </member>
+        <member name="M:Walgelijk.IGraphics.SetUniform(Walgelijk.Material,System.String,System.Object)">
+            <summary>
+            Set a shader program uniform
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IGraphics.DrawBounds">
+            <summary>
+            Drawing bounds settings 
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IGraphics.CurrentTarget">
+            <summary>
+            Set or get the currently active target
+            </summary>
+        </member>
+        <member name="T:Walgelijk.RenderTarget">
+            <summary>
+            A target that can be rendered to
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RenderTarget.ViewMatrix">
+            <summary>
+            The view matrix
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RenderTarget.ProjectionMatrix">
+            <summary>
+            The projection matrix
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RenderTarget.ModelMatrix">
+            <summary>
+            The model matrix
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RenderTarget.Size">
+            <summary>
+            Size of the target. This should be automatically set to the window size
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RenderTarget.AspectRatio">
+            <summary>
+            Calculate the aspect ratio from the current render target size. Identical to Size.Y / Size.X
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RenderTarget.OrthographicMatrix">
+            <summary>
+            An orthographic projection matrix matrix where the top left is 0,0 and the bottom right is <see cref="P:Walgelijk.RenderTarget.Size"/>
             </summary>
         </member>
         <member name="T:Walgelijk.Shader">
@@ -2788,76 +2816,6 @@
             Reset the given <see cref="T:Walgelijk.InputState"/>
             </summary>
         </member>
-        <member name="T:Walgelijk.RenderTarget">
-            <summary>
-            A target that can be rendered to
-            </summary>
-        </member>
-        <member name="P:Walgelijk.RenderTarget.Size">
-            <summary>
-            Size of the target. This should be automatically set to the window size
-            </summary>
-        </member>
-        <member name="P:Walgelijk.RenderTarget.ClearColour">
-            <summary>
-            Colour to clear with
-            </summary>
-        </member>
-        <member name="P:Walgelijk.RenderTarget.ViewMatrix">
-            <summary>
-            The view matrix
-            </summary>
-        </member>
-        <member name="P:Walgelijk.RenderTarget.ProjectionMatrix">
-            <summary>
-            The projection matrix
-            </summary>
-        </member>
-        <member name="P:Walgelijk.RenderTarget.ModelMatrix">
-            <summary>
-            The model matrix
-            </summary>
-        </member>
-        <member name="P:Walgelijk.RenderTarget.DrawBounds">
-            <summary>
-            Drawing bounds settings 
-            </summary>
-        </member>
-        <member name="P:Walgelijk.RenderTarget.AspectRatio">
-            <summary>
-            Calculate the aspect ratio from the current rendertarget size. Identical to Size.Y / Size.X
-            </summary>
-        </member>
-        <member name="M:Walgelijk.RenderTarget.Clear">
-            <summary>
-            Clear target
-            </summary>
-        </member>
-        <member name="M:Walgelijk.RenderTarget.Draw(Walgelijk.VertexBuffer,Walgelijk.Material)">
-            <summary>
-            Draw a vertex buffer
-            </summary>
-            <param name="vertexBuffer">VertexBuffer to draw</param>
-            <param name="material">Material to draw it with</param>
-        </member>
-        <member name="M:Walgelijk.RenderTarget.DrawInstanced(Walgelijk.VertexBuffer,System.Int32,Walgelijk.Material)">
-            <summary>
-            Draw a instanced vertex buffer
-            </summary>
-            <param name="vertexBuffer">VertexBuffer to draw</param>
-            <param name="instanceCount">Amount of elements to draw</param>
-            <param name="material">Material to draw it with</param>
-        </member>
-        <member name="M:Walgelijk.RenderTarget.Draw(Walgelijk.Vertex[],Walgelijk.Primitive,Walgelijk.Material)">
-            <summary>
-            Draw vertices immediately
-            </summary>
-        </member>
-        <member name="P:Walgelijk.RenderTarget.CalculatedWindowMatrix">
-            <summary>
-            An orthographic projection matrix matrix where the top left is 0,0 and the bottom right is <see cref="P:Walgelijk.RenderTarget.Size"/>
-            </summary>
-        </member>
         <member name="T:Walgelijk.Window">
             <summary>
             A game window
@@ -2918,6 +2876,11 @@
             The current input state
             </summary>
         </member>
+        <member name="P:Walgelijk.Window.Graphics">
+            <summary>
+            Graphics functions
+            </summary>
+        </member>
         <member name="P:Walgelijk.Window.Time">
             <summary>
             Time information
@@ -2935,12 +2898,7 @@
         </member>
         <member name="P:Walgelijk.Window.RenderTarget">
             <summary>
-            RenderTarget for this window
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Window.ShaderManager">
-            <summary>
-            Provides shader specific functions
+            The main rendertarget for this window
             </summary>
         </member>
         <member name="E:Walgelijk.Window.OnResize">

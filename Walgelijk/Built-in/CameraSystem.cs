@@ -10,7 +10,8 @@ namespace Walgelijk
     public class CameraSystem : System
     {
         private CameraRenderTask renderTask;
-        
+        private ClearRenderTask clearTask;
+
         /// <summary>
         /// Main camera entity
         /// </summary>
@@ -26,11 +27,17 @@ namespace Walgelijk
         /// </summary>
         public TransformComponent MainCameraTransform { get; private set; }
 
+        /// <summary>
+        /// Should the system clear the target as well
+        /// </summary>
+        public bool DoClear { get; set; } = true;
+
         private bool mainCameraSet;
 
         public override void Initialise()
         {
             renderTask = new CameraRenderTask();
+            clearTask = new ClearRenderTask();
 
             if (MainCameraTransform == null)
                 FallbackToFirstCamera();
@@ -75,6 +82,8 @@ namespace Walgelijk
         {
             if (!mainCameraSet) return;
             SetRenderTask();
+            if (DoClear)
+                RenderQueue.Add(clearTask, int.MinValue);
             RenderQueue.Add(renderTask, int.MinValue);
         }
 

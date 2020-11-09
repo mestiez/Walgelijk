@@ -15,11 +15,11 @@
             Tasks = tasks;
         }
 
-        public void Execute(RenderTarget target)
+        public void Execute(IGraphics graphics)
         {
             if (Tasks == null) return;
             for (int i = 0; i < Tasks.Length; i++)
-                Tasks[i].Execute(target);
+                Tasks[i].Execute(graphics);
         }
     }
 }

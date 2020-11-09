@@ -9,14 +9,17 @@ using Vector4 = System.Numerics.Vector4;
 
 namespace Walgelijk.OpenTK
 {
-    public class OpenTKShaderManager : IShaderManager
+    public class ShaderManager 
     {
+        public static ShaderManager Instance { get; } = new ShaderManager();
+
         public MaterialCache MaterialCache { get; } = new MaterialCache();
         public TextureCache TextureCache { get; } = new TextureCache();
 
         private readonly float[] matrixBuffer = new float[16];
 
-        private MatrixArrayCache matrixArrayCache = new MatrixArrayCache();
+        //TODO dit is geen goede oplossing
+        private readonly MatrixArrayCache matrixArrayCache = new MatrixArrayCache();
 
         public void SetUniform(Material material, string uniformName, object data)
         {
@@ -99,14 +102,6 @@ namespace Walgelijk.OpenTK
             matrixBuffer[13] = v.M42;
             matrixBuffer[14] = v.M43;
             matrixBuffer[15] = v.M44;
-        }
-
-        public bool TryDownloadUniform<T>(Material material, string uniformName, out T data)
-        {
-            var loaded = MaterialCache.Load(material);
-            int prog = loaded.ProgramHandle;
-            int loc = loaded.GetUniformLocation(uniformName);
-            throw new NotImplementedException();
         }
     }
 

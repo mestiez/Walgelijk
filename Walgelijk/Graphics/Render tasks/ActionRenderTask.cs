@@ -3,7 +3,6 @@ using System.Numerics;
 
 namespace Walgelijk
 {
-
     /// <summary>
     /// Render task that will invoke the action you give. Useful for unique smaller actions
     /// </summary>
@@ -12,8 +11,7 @@ namespace Walgelijk
         /// <summary>
         /// Crate action render task
         /// </summary>
-        /// <param name="action"></param>
-        public ActionRenderTask(Action<RenderTarget> action)
+        public ActionRenderTask(Action<IGraphics> action)
         {
             Action = action;
         }
@@ -21,11 +19,11 @@ namespace Walgelijk
         /// <summary>
         /// The action to invoke
         /// </summary>
-        public Action<RenderTarget> Action;
+        public Action<IGraphics> Action;
 
-        public void Execute(RenderTarget renderTarget)
+        public void Execute(IGraphics graphics)
         {
-            Action?.Invoke(renderTarget);
+            Action?.Invoke(graphics);
         }
     }
 }

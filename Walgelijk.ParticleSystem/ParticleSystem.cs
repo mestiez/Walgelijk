@@ -89,7 +89,7 @@ namespace Walgelijk.ParticleSystem
         {
             if (particles.CurrentParticleCount <= 0) return;
 
-            int maxCount = Math.Max(particles.CurrentParticleCount, particles.MaxParticleCount - 1);
+            int maxCount = Math.Min(particles.CurrentParticleCount, particles.MaxParticleCount - 1);
 
             for (int i = index; i < maxCount; i++)
             {

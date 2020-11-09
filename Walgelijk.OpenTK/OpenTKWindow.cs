@@ -12,10 +12,11 @@ namespace Walgelijk.OpenTK
     public class OpenTKWindow : Window
     {
         internal readonly GameWindow window;
-        internal readonly OpenTKRenderTarget renderTarget;
-        internal readonly OpenTKShaderManager shaderManager;
+        internal readonly OpenTKWindowRenderTarget renderTarget;
 
-        private InputHandler inputHandler;
+        private readonly InputHandler inputHandler;
+        private readonly OpenTKGraphics graphics;
+
         private Time time = new Time();
         private Stopwatch stopwatch;
 
@@ -26,10 +27,11 @@ namespace Walgelijk.OpenTK
             if (position.X >= 0 && position.Y >= 0)
                 Position = position;
 
-            renderTarget = new OpenTKRenderTarget();
+            renderTarget = new OpenTKWindowRenderTarget();
             renderTarget.Window = this;
-            shaderManager = new OpenTKShaderManager();
+
             inputHandler = new InputHandler(this);
+            graphics = new OpenTKGraphics();
         }
 
         public override string Title { get => window.Title; set => window.Title = value; }
@@ -44,7 +46,7 @@ namespace Walgelijk.OpenTK
         public override bool Resizable { get => window.WindowBorder == WindowBorder.Resizable; set => window.WindowBorder = value ? WindowBorder.Resizable : WindowBorder.Fixed; }
         public override InputState InputState => inputHandler?.InputState ?? default;
         public override RenderTarget RenderTarget => renderTarget;
-        public override IShaderManager ShaderManager => shaderManager;
+        public override IGraphics Graphics => graphics;
 
         public override Vector2 Size
         {
@@ -148,8 +150,7 @@ namespace Walgelijk.OpenTK
             Game.Profiling.Render();
             Game.Console.Render();
 
-            RenderTarget.Clear();
-            RenderQueue.RenderAndReset(RenderTarget);
+            RenderQueue.RenderAndReset(graphics);
 
             GL.Flush();
             GL.Finish();

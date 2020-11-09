@@ -16,10 +16,10 @@ namespace Walgelijk
         /// </summary>
         public Matrix4x4 Projection;
 
-        public void Execute(RenderTarget target)
+        public void Execute(IGraphics graphics)
         {
-            target.ViewMatrix = View;
-            target.ProjectionMatrix = Projection;
+            graphics.CurrentTarget.ViewMatrix = View;
+            graphics.CurrentTarget.ProjectionMatrix = Projection;
         }
     }
 }

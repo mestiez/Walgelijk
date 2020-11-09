@@ -16,11 +16,11 @@ namespace Walgelijk
         /// Render the queue by dequeuing and executing each entry
         /// </summary>
         /// <param name="target"></param>
-        public void RenderAndReset(RenderTarget target)
+        public void RenderAndReset(IGraphics graphics)
         {
             for (int i = 0; i < commands.Count; i++)
             {
-                commands[i].RenderTask.Execute(target);
+                commands[i].RenderTask.Execute(graphics);
             }
             commands.Clear();
         }

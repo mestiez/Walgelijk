@@ -35,31 +35,33 @@ namespace Walgelijk
         /// </summary>
         public bool ScreenSpace;
 
-        public void Execute(RenderTarget target)
+        public void Execute(IGraphics graphics)
         {
             if (ScreenSpace)
-                DrawScreenSpace(target);
+                DrawScreenSpace(graphics);
             else
-                Draw(target);
+                Draw(graphics);
         }
 
-        private void DrawScreenSpace(RenderTarget target)
+        private void DrawScreenSpace(IGraphics graphics)
         {
+            var target = graphics.CurrentTarget;
+
             var view = target.ViewMatrix;
             var proj = target.ProjectionMatrix;
-            target.ProjectionMatrix = target.CalculatedWindowMatrix;
+            target.ProjectionMatrix = target.OrthographicMatrix;
             target.ViewMatrix = Matrix4x4.Identity;
 
-            Draw(target);
+            Draw(graphics);
 
             target.ViewMatrix = view;
             target.ProjectionMatrix = proj;
         }
 
-        private void Draw(RenderTarget target)
+        protected virtual void Draw(IGraphics graphics)
         {
-            target.ModelMatrix = ModelMatrix;
-            target.Draw(VertexBuffer, Material);
+            graphics.CurrentTarget.ModelMatrix = ModelMatrix;
+            graphics.Draw(VertexBuffer, Material);
         }
     }
 }

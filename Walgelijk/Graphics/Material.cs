@@ -47,7 +47,7 @@ namespace Walgelijk
             uniforms.TryAdd(name, value);
 
             uniforms[name] = value;
-            Game.Main.Window.ShaderManager.SetUniform(this, name, value);
+            Game.Main.Window.Graphics.SetUniform(this, name, value);
         }
 
         /// <summary>

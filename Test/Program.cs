@@ -23,7 +23,6 @@ namespace Test
             game.Window.TargetFrameRate = 0;
             game.Window.TargetUpdateRate = 0;
             game.Window.VSync = false;
-            game.Window.RenderTarget.ClearColour = Colors.Black;
 
             Resources.SetBasePathForType<Sound>("audio");
             Resources.SetBasePathForType<Prefab>("prefabs");
