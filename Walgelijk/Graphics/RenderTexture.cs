@@ -36,18 +36,13 @@ namespace Walgelijk
             }
         }
 
-        /// <summary>
-        /// Whether or not the renderer needs to send new information to the GPU
-        /// </summary>
-        public bool NeedsUpdate { get; private set; }
-
         public int Width => (int)Size.X;
 
         public int Height => (int)Size.Y;
 
         public WrapMode WrapMode
         {
-            get => wrapMode; 
+            get => wrapMode;
             set
             {
                 wrapMode = value;
@@ -58,7 +53,7 @@ namespace Walgelijk
 
         public FilterMode FilterMode
         {
-            get => filterMode; 
+            get => filterMode;
             set
             {
                 filterMode = value;
@@ -66,6 +61,8 @@ namespace Walgelijk
                     NeedsUpdate = true;
             }
         }
+
+        public bool NeedsUpdate { get; protected set; }
 
         public bool GenerateMipmaps { get; }
 
@@ -75,6 +72,9 @@ namespace Walgelijk
 
         public ImmutableArray<Color>? GetPixels() => null;
 
+        /// <summary>
+        /// Force an update
+        /// </summary>
         public void ForceUpdate()
         {
             NeedsUpdate = true;

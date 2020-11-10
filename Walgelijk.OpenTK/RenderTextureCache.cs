@@ -9,8 +9,6 @@ namespace Walgelijk.OpenTK
             int framebufferID = GL.GenFramebuffer();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebufferID);
 
-            var internalPixelFormat = raw.HDR ? PixelInternalFormat.Rgba16f : PixelInternalFormat.Rgba;
-            //TODO HDR textures
             var loadedTexture = GPUObjects.TextureCache.Load(raw);
 
             GL.FramebufferTexture2D(

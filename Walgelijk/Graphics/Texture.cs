@@ -17,32 +17,61 @@ namespace Walgelijk
         /// Width of the texture in pixels
         /// </summary>
         public int Width { get; }
+
         /// <summary>
         /// Height of the texture in pixels
         /// </summary>
         public int Height { get; }
+
         /// <summary>
         /// Size of the image. This returns a <see cref="Vector2"/> with <see cref="Width"/> and <see cref="Height"/>
         /// </summary>
         public Vector2 Size => new Vector2(Width, Height);
+
         /// <summary>
         /// Wrap mode
         /// </summary>
-        public WrapMode WrapMode { get; set; } = WrapMode.Clamp;        
+        public WrapMode WrapMode
+        {
+            get => wrapMode; 
+            set
+            {
+                wrapMode = value;
+                if (value != wrapMode)
+                    NeedsUpdate = true;
+            }
+        }
         /// <summary>
         /// Filter mode. Determines how pixels are interpolated between
         /// </summary>
-        public FilterMode FilterMode { get; set; } = FilterMode.Nearest;
+        public FilterMode FilterMode
+        {
+            get => filterMode; 
+            set
+            {
+                filterMode = value;
+                if (value != filterMode)
+                    NeedsUpdate = true;
+            }
+        }
         /// <summary>
         /// Whether the texture has generated mipmaps upon load
         /// </summary>
         public bool GenerateMipmaps { get; }
+
         /// <summary>
         /// Whether the texture can store HDR image data
         /// </summary>
         public bool HDR { get; }
 
+        /// <summary>
+        /// Whether or not the renderer needs to send new information to the GPU
+        /// </summary>
+        public bool NeedsUpdate { get; protected set; }
+
         private readonly Color[] pixels;
+        private FilterMode filterMode = FilterMode.Nearest;
+        private WrapMode wrapMode = WrapMode.Clamp;
 
         /// <summary>
         /// Create a texture from a series of pixels
@@ -95,10 +124,10 @@ namespace Walgelijk
         /// <returns></returns>
         public ImmutableArray<Color>? GetPixels()
         {
-            if (pixels == null) 
+            if (pixels == null)
                 return null;
 
-            return pixels.ToImmutableArray() ;
+            return pixels.ToImmutableArray();
         }
 
         /// <summary>
@@ -135,17 +164,24 @@ namespace Walgelijk
 
         private void GetCoordinatesFromIndex(int index, out int x, out int y)
         {
-            if (index >= Width* Height)
-                throw new ArgumentOutOfRangeException($"Index ({index}) is out of range ({Width*Height})");
+            if (index >= Width * Height)
+                throw new ArgumentOutOfRangeException($"Index ({index}) is out of range ({Width * Height})");
 
             x = index % Width;
             y = (int)MathF.Floor(index / Width);
         }
 
         /// <summary>
+        /// Force an update
+        /// </summary>
+        public void ForceUpdate()
+        {
+            NeedsUpdate = true;
+        }
+
+        /// <summary>
         /// 1x1 texture with a single white pixel
         /// </summary>
         public static Texture White { get; } = new Texture(1, 1, new[] { Color.White });
-
     }
 }

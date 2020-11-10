@@ -41,6 +41,7 @@ namespace Test
             RenderTexture gaming = new RenderTexture(512,512);
             game.Window.Graphics.CurrentTarget = gaming;
             game.Window.Graphics.Clear(Colors.Purple);
+            game.Window.Graphics.Draw(PrimitiveMeshes.CenteredQuad, Material.DefaultTextured);
             //game.Window.Graphics.CurrentTarget = game.Window.RenderTarget;
 
             var camera = scene.CreateEntity();
@@ -69,7 +70,7 @@ namespace Test
                 ColorOverLife = new ColorCurve(new Curve<Color>.Key(Color.White, 0), new Curve<Color>.Key(Color.Red, 1)),
                 SizeOverLife = new FloatCurve(new Curve<float>.Key(0, 0), new Curve<float>.Key(1, 0.1f), new Curve<float>.Key(0, 1)),
                 WorldSpace = true,
-                SimulationSpeed = 1f
+                SimulationSpeed = 2f
             };
 
             scene.AttachComponent(particles, particleComponent);

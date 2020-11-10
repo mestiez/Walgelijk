@@ -1139,6 +1139,11 @@
             Whether the texture has generated mipmaps upon load
             </summary>
         </member>
+        <member name="P:Walgelijk.IReadableTexture.NeedsUpdate">
+            <summary>
+            Whether or not the renderer needs to send new information to the GPU
+            </summary>
+        </member>
         <member name="T:Walgelijk.Material">
             <summary>
             Object that holds unique information specific to a shader
@@ -1411,9 +1416,9 @@
             Construct a <see cref="T:Walgelijk.RenderTexture"/>
             </summary>
         </member>
-        <member name="P:Walgelijk.RenderTexture.NeedsUpdate">
+        <member name="M:Walgelijk.RenderTexture.ForceUpdate">
             <summary>
-            Whether or not the renderer needs to send new information to the GPU
+            Force an update
             </summary>
         </member>
         <member name="T:Walgelijk.Shader">
@@ -1526,6 +1531,11 @@
             Whether the texture can store HDR image data
             </summary>
         </member>
+        <member name="P:Walgelijk.Texture.NeedsUpdate">
+            <summary>
+            Whether or not the renderer needs to send new information to the GPU
+            </summary>
+        </member>
         <member name="M:Walgelijk.Texture.#ctor(System.Int32,System.Int32,Walgelijk.Color[],System.Boolean)">
             <summary>
             Create a texture from a series of pixels
@@ -1556,6 +1566,11 @@
         <member name="M:Walgelijk.Texture.SetPixel(System.Int32,System.Int32,Walgelijk.Color)">
             <summary>
             Set a pixel to a colour
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Texture.ForceUpdate">
+            <summary>
+            Force an update
             </summary>
         </member>
         <member name="P:Walgelijk.Texture.White">

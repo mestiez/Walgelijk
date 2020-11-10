@@ -54,5 +54,10 @@ namespace Walgelijk
         /// Whether the texture has generated mipmaps upon load
         /// </summary>
         public bool GenerateMipmaps { get; }
+
+        /// <summary>
+        /// Whether or not the renderer needs to send new information to the GPU
+        /// </summary>
+        public bool NeedsUpdate { get; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL;
+using System.Collections.Immutable;
 
 namespace Walgelijk.OpenTK
 {
@@ -8,31 +9,67 @@ namespace Walgelijk.OpenTK
         {
             const int componentCount = 4;
 
+            GenerateGLTexture(raw, out var textureIndex);
+
             var pixels = raw.GetPixels();
-            byte[] data = pixels.HasValue ? new byte[pixels.Value.Length * componentCount] : null;
 
             if (pixels.HasValue)
             {
-                int i = 0;
-                foreach (var pixel in pixels)
-                {
-                    (byte r, byte g, byte b, byte a) = pixel.ToBytes();
-
-                    data[i] = r;
-                    data[i + 1] = g;
-                    data[i + 2] = b;
-                    data[i + 3] = a;
-
-                    i += componentCount;
-                }
+                //TODO dit is een beetje lelijke code
+                if (raw.HDR)
+                    WriteHDRData(raw, componentCount, pixels);
+                else
+                    WriteSDRData(raw, componentCount, pixels);
+            }
+            else
+            {
+                if (raw.HDR)
+                    SetTextureData((float[])null, raw);
+                else
+                    SetTextureData((byte[])null, raw);
             }
 
-            GenerateGLTexture(data, raw, out var textureIndex);
+            if (raw.GenerateMipmaps)
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-            return new LoadedTexture(data, raw.Width, raw.Height, textureIndex);
+            return new LoadedTexture(raw.Width, raw.Height, textureIndex);
         }
 
-        private void GenerateGLTexture(byte[] data, IReadableTexture raw, out int textureIndex)
+        private void WriteSDRData(IReadableTexture raw, int componentCount, ImmutableArray<Color>? pixels)
+        {
+            var data = new byte[raw.Width * raw.Height * componentCount];
+            int i = 0;
+            foreach (var pixel in pixels)
+            {
+                (byte r, byte g, byte b, byte a) = pixel.ToBytes();
+
+                data[i] = r;
+                data[i + 1] = g;
+                data[i + 2] = b;
+                data[i + 3] = a;
+
+                i += componentCount;
+            }
+            SetTextureData(data, raw);
+        }
+
+        private void WriteHDRData(IReadableTexture raw, int componentCount, ImmutableArray<Color>? pixels)
+        {
+            var data = new float[raw.Width * raw.Height * componentCount];
+            int i = 0;
+            foreach (var pixel in pixels)
+            {
+                data[i] = pixel.R;
+                data[i + 1] = pixel.G;
+                data[i + 2] = pixel.B;
+                data[i + 3] = pixel.A;
+
+                i += componentCount;
+            }
+            SetTextureData(data, raw);
+        }
+
+        private void GenerateGLTexture(IReadableTexture raw, out int textureIndex)
         {
             textureIndex = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, textureIndex);
@@ -45,10 +82,18 @@ namespace Walgelijk.OpenTK
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, wrap);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, raw.GenerateMipmaps ? mipmapFilter : maxFilter);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, maxFilter);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, maxFilter); ;
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, raw.Width, raw.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+        }
+
+        private void SetTextureData(byte[] data, IReadableTexture raw)
+        {
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, raw.Width, raw.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
+        }
+
+        private void SetTextureData(float[] data, IReadableTexture raw)
+        {
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16, raw.Width, raw.Height, 0, PixelFormat.Rgba, PixelType.Float, data);
         }
 
         protected override void DisposeOf(LoadedTexture loaded)
