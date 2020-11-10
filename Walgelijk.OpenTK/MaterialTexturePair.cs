@@ -17,8 +17,8 @@ namespace Walgelijk.OpenTK
         public override bool Equals(object obj)
         {
             return obj is MaterialTexturePair pair &&
-                   EqualityComparer<LoadedMaterial>.Default.Equals(Material, pair.Material) &&
-                   EqualityComparer<LoadedTexture>.Default.Equals(Texture, pair.Texture);
+                   pair.Material.ProgramHandle == Material.ProgramHandle &&
+                   pair.Texture.Index == Texture.Index;
         }
 
         public override int GetHashCode()

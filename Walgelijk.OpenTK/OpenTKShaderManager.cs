@@ -30,12 +30,6 @@ namespace Walgelijk.OpenTK
 
             switch (data)
             {
-                //TODO Bijna dezelfde code. Beetje raar, vind je niet
-                case RenderTexture v:
-                    loadedTexture = GPUObjects.TextureCache.Load(v.Texture);
-                    unitLink = GPUObjects.MaterialTextureCache.Load(new MaterialTexturePair(loaded, loadedTexture));
-                    GL.ProgramUniform1(prog, loc, TypeConverter.Convert(unitLink.Unit));
-                    break;
                 case IReadableTexture v:
                     loadedTexture = GPUObjects.TextureCache.Load(v);
                     unitLink = GPUObjects.MaterialTextureCache.Load(new MaterialTexturePair(loaded, loadedTexture));

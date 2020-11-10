@@ -11,7 +11,7 @@ namespace Walgelijk.OpenTK
 
             var internalPixelFormat = raw.HDR ? PixelInternalFormat.Rgba16f : PixelInternalFormat.Rgba;
             //TODO HDR textures
-            var loadedTexture = GPUObjects.TextureCache.Load(raw.Texture);
+            var loadedTexture = GPUObjects.TextureCache.Load(raw);
 
             GL.FramebufferTexture2D(
                 FramebufferTarget.Framebuffer, 

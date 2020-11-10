@@ -11,7 +11,7 @@ namespace Walgelijk
     /// <summary>
     /// Represents a texture
     /// </summary>
-    public class Texture : IReadableTexture, IWritableTexture
+    public class Texture : IReadableTexture
     {
         /// <summary>
         /// Width of the texture in pixels
@@ -37,6 +37,10 @@ namespace Walgelijk
         /// Whether the texture has generated mipmaps upon load
         /// </summary>
         public bool GenerateMipmaps { get; }
+        /// <summary>
+        /// Whether the texture can store HDR image data
+        /// </summary>
+        public bool HDR { get; }
 
         private readonly Color[] pixels;
 
@@ -89,9 +93,12 @@ namespace Walgelijk
         /// Get an immutable array of all pixels
         /// </summary>
         /// <returns></returns>
-        public ImmutableArray<Color> GetPixels()
+        public ImmutableArray<Color>? GetPixels()
         {
-            return pixels.ToImmutableArray();
+            if (pixels == null) 
+                return null;
+
+            return pixels.ToImmutableArray() ;
         }
 
         /// <summary>
@@ -111,6 +118,7 @@ namespace Walgelijk
         {
             int index = GetIndexFrom(x, y);
             pixels[index] = color;
+            //TODO deze doet nog niks met de GPU
         }
 
         private int GetIndexFrom(int x, int y)
@@ -138,5 +146,6 @@ namespace Walgelijk
         /// 1x1 texture with a single white pixel
         /// </summary>
         public static Texture White { get; } = new Texture(1, 1, new[] { Color.White });
+
     }
 }

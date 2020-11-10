@@ -2,43 +2,6 @@
 
 namespace Walgelijk.OpenTK
 {
-    public class MaterialTextureCache : Cache<MaterialTexturePair, TextureUnitLink>
-    {
-        protected override TextureUnitLink CreateNew(MaterialTexturePair raw)
-        {
-            return new TextureUnitLink(raw.Texture, raw.Material.GetNextTextureUnit());
-        }
-
-        protected override void DisposeOf(TextureUnitLink loaded) { }
-
-        internal void ActivateTexturesFor(LoadedMaterial material)
-        {
-            var allUniforms = material.Material.GetAllUniforms();
-
-            LoadedTexture loadedTexture;
-            TextureUnitLink unitLink;
-
-            foreach (var pair in allUniforms)
-            {
-                switch (pair.Value)
-                {
-                    case IReadableTexture v:
-                        loadedTexture  = GPUObjects.TextureCache.Load(v);
-                        break;
-                    case RenderTexture v:
-                        //TODO eigenlijk is dit een beetje raar. RenderTexture moet een texture zijn maar dat is ook vreemd want een RenderTexture is een framebuffer met een texture attachement dus.. niet echt een texture.
-                        loadedTexture = GPUObjects.TextureCache.Load(v.Texture);
-                        break;
-                    default:
-                        continue;
-                }
-
-                unitLink = Load(new MaterialTexturePair(material, loadedTexture));
-                unitLink.Bind();
-            }
-        }
-    }
-
     public class TextureCache : Cache<IReadableTexture, LoadedTexture>
     {
         protected override LoadedTexture CreateNew(IReadableTexture raw)
@@ -46,9 +9,9 @@ namespace Walgelijk.OpenTK
             const int componentCount = 4;
 
             var pixels = raw.GetPixels();
-            byte[] data = pixels == null ? null : new byte[pixels.Length * componentCount];
+            byte[] data = pixels.HasValue ? new byte[pixels.Value.Length * componentCount] : null;
 
-            if (data != null)
+            if (pixels.HasValue)
             {
                 int i = 0;
                 foreach (var pixel in pixels)

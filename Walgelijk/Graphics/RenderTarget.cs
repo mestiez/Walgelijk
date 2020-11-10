@@ -11,18 +11,18 @@ namespace Walgelijk
         /// <summary>
         /// The view matrix
         /// </summary>
-        public Matrix4x4 ViewMatrix { get; set; }
+        public Matrix4x4 ViewMatrix { get; set; } = Matrix4x4.Identity;
         /// <summary>
         /// The projection matrix
         /// </summary>
-        public Matrix4x4 ProjectionMatrix { get; set; }
+        public Matrix4x4 ProjectionMatrix { get; set; } = Matrix4x4.Identity;
         /// <summary>
         /// The model matrix
         /// </summary>
-        public Matrix4x4 ModelMatrix { get; set; }
+        public Matrix4x4 ModelMatrix { get; set; } = Matrix4x4.Identity;
 
         /// <summary>
-        /// Size of the target. This should be automatically set to the window size
+        /// Size of the target.
         /// </summary>
         public abstract Vector2 Size { get; set; }
 

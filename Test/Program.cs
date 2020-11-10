@@ -27,8 +27,6 @@ namespace Test
             Resources.SetBasePathForType<Sound>("audio");
             Resources.SetBasePathForType<Prefab>("prefabs");
             Resources.SetBasePathForType<Texture>("textures");
-            Resources.SetBasePathForType<IReadableTexture>("textures");
-            Resources.SetBasePathForType<IWritableTexture>("textures");
             Resources.SetBasePathForType<Font>("fonts");
 
             game.Scene = LoadScene(game);
@@ -39,6 +37,11 @@ namespace Test
         private static Scene LoadScene(Game game)
         {
             Scene scene = new Scene(game);
+
+            RenderTexture gaming = new RenderTexture(512,512);
+            game.Window.Graphics.CurrentTarget = gaming;
+            game.Window.Graphics.Clear(Colors.Purple);
+            //game.Window.Graphics.CurrentTarget = game.Window.RenderTarget;
 
             var camera = scene.CreateEntity();
             scene.AttachComponent(camera, new TransformComponent());
@@ -51,23 +54,27 @@ namespace Test
             scene.AddSystem(new DebugCameraSystem());
             scene.AddSystem(new ParticleSystem());
 
-
             var particles = scene.CreateEntity();
             scene.AttachComponent(particles, new TransformComponent());
             scene.AttachComponent(particles, new WaveMovementComponent());
-            scene.AttachComponent(particles, new ParticlesComponent(1000)
+
+            var particleComponent = new ParticlesComponent(1000)
             {
-               // Dampening = new FloatRange(0.9f),
+                // Dampening = new FloatRange(0.9f),
                 RotationalDampening = new FloatRange(0.95f),
-               // Gravity = new Vec2Range(Vector2.Zero),
+                // Gravity = new Vec2Range(Vector2.Zero),
                 StartVelocity = new Vec2Range(Vector2.One * -15, Vector2.One * 15),
-                EmissionRate = 640,
+                EmissionRate = 128,
                 StartColor = new ColorRange(Colors.White),
                 ColorOverLife = new ColorCurve(new Curve<Color>.Key(Color.White, 0), new Curve<Color>.Key(Color.Red, 1)),
                 SizeOverLife = new FloatCurve(new Curve<float>.Key(0, 0), new Curve<float>.Key(1, 0.1f), new Curve<float>.Key(0, 1)),
                 WorldSpace = true,
-                SimulationSpeed = 2f
-            });
+                SimulationSpeed = 1f
+            };
+
+            scene.AttachComponent(particles, particleComponent);
+
+            particleComponent.Material.SetUniform(ShaderDefaults.MainTextureUniform, gaming);
 
             return scene;
         }

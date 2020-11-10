@@ -1129,19 +1129,14 @@
             Filter mode. Determines how pixels are interpolated between
             </summary>
         </member>
+        <member name="P:Walgelijk.IReadableTexture.HDR">
+            <summary>
+            Whether the texture can store HDR image data
+            </summary>
+        </member>
         <member name="P:Walgelijk.IReadableTexture.GenerateMipmaps">
             <summary>
             Whether the texture has generated mipmaps upon load
-            </summary>
-        </member>
-        <member name="T:Walgelijk.IWritableTexture">
-            <summary>
-            A texture that can be written to
-            </summary>
-        </member>
-        <member name="M:Walgelijk.IWritableTexture.SetPixel(System.Int32,System.Int32,Walgelijk.Color)">
-            <summary>
-            Set a pixel to a colour
             </summary>
         </member>
         <member name="T:Walgelijk.Material">
@@ -1393,7 +1388,7 @@
         </member>
         <member name="P:Walgelijk.RenderTarget.Size">
             <summary>
-            Size of the target. This should be automatically set to the window size
+            Size of the target.
             </summary>
         </member>
         <member name="P:Walgelijk.RenderTarget.AspectRatio">
@@ -1404,6 +1399,21 @@
         <member name="P:Walgelijk.RenderTarget.OrthographicMatrix">
             <summary>
             An orthographic projection matrix matrix where the top left is 0,0 and the bottom right is <see cref="P:Walgelijk.RenderTarget.Size"/>
+            </summary>
+        </member>
+        <member name="T:Walgelijk.RenderTexture">
+            <summary>
+            A render target of an arbitrary size that can be used as a texture
+            </summary>
+        </member>
+        <member name="M:Walgelijk.RenderTexture.#ctor(System.Int32,System.Int32,Walgelijk.WrapMode,Walgelijk.FilterMode,System.Boolean,System.Boolean)">
+            <summary>
+            Construct a <see cref="T:Walgelijk.RenderTexture"/>
+            </summary>
+        </member>
+        <member name="P:Walgelijk.RenderTexture.NeedsUpdate">
+            <summary>
+            Whether or not the renderer needs to send new information to the GPU
             </summary>
         </member>
         <member name="T:Walgelijk.Shader">
@@ -1509,6 +1519,11 @@
         <member name="P:Walgelijk.Texture.GenerateMipmaps">
             <summary>
             Whether the texture has generated mipmaps upon load
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Texture.HDR">
+            <summary>
+            Whether the texture can store HDR image data
             </summary>
         </member>
         <member name="M:Walgelijk.Texture.#ctor(System.Int32,System.Int32,Walgelijk.Color[],System.Boolean)">

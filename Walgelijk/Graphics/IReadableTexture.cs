@@ -18,7 +18,7 @@ namespace Walgelijk
         /// Get an immutable array of all pixels
         /// </summary>
         /// <returns></returns>
-        public ImmutableArray<Color> GetPixels();
+        public ImmutableArray<Color>? GetPixels();
 
         /// <summary>
         /// Width of the texture in pixels
@@ -33,17 +33,22 @@ namespace Walgelijk
         /// <summary>
         /// Size of the image. This returns a <see cref="Vector2"/> with <see cref="Width"/> and <see cref="Height"/>
         /// </summary>
-        public Vector2 Size => new Vector2(Width, Height);
+        public virtual Vector2 Size => new Vector2(Width, Height);
 
         /// <summary>
         /// Wrap mode
         /// </summary>
-        public WrapMode WrapMode { get; set; }
+        public WrapMode WrapMode { get; }
 
         /// <summary>
         /// Filter mode. Determines how pixels are interpolated between
         /// </summary>
-        public FilterMode FilterMode { get; set; }
+        public FilterMode FilterMode { get; }
+
+        /// <summary>
+        /// Whether the texture can store HDR image data
+        /// </summary>
+        public bool HDR { get; }
 
         /// <summary>
         /// Whether the texture has generated mipmaps upon load

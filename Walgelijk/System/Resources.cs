@@ -37,8 +37,6 @@ namespace Walgelijk
             initialised = true;
 
             RegisterType(typeof(Texture), (string path) => Texture.Load(path));
-            RegisterType(typeof(IReadableTexture), (string path) => Texture.Load(path));
-            RegisterType(typeof(IWritableTexture), (string path) => Texture.Load(path));
             RegisterType(typeof(Font), Font.Load);
             RegisterType(typeof(string), File.ReadAllText);
             RegisterType(typeof(string[]), File.ReadAllLines);

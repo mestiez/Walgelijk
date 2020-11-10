@@ -152,8 +152,8 @@ namespace Walgelijk.OpenTK
 
             RenderQueue.RenderAndReset(internalGraphics);
 
-            GL.Flush();
-            GL.Finish();
+            //GL.Flush();
+            //GL.Finish();
             window.SwapBuffers();
         }
 
