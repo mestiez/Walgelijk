@@ -1,17 +1,17 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using System;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Walgelijk.OpenTK
 {
     public class OpenTKGraphics : IGraphics
     {
-        private static readonly VertexBufferCache vertexBufferCache = new VertexBufferCache();
+        internal static readonly VertexBufferCache VertexBufferCache = new VertexBufferCache();
+        internal static readonly RenderTextureCache RenderTextureCache = new RenderTextureCache();
+        internal static readonly RenderTargetDictionary RenderTargetDictionary = new RenderTargetDictionary();
 
         private RenderTarget currentTarget;
         private DrawBounds drawBounds;
-        private Color clearColour;
         private bool drawBoundEnabledCache;
         private Material currentMaterial;
 
@@ -28,14 +28,26 @@ namespace Walgelijk.OpenTK
 
         public RenderTarget CurrentTarget
         {
-            get => currentTarget; 
-            
+            get => currentTarget;
+
             set
             {
                 if (currentTarget != value)
                     SetDrawbounds(drawBounds);
 
                 currentTarget = value;
+
+                if (currentTarget is RenderTexture rt)
+                {
+                    var handles = RenderTextureCache.Load(rt);
+                    RenderTargetDictionary.Set(rt, handles.FramebufferID);
+                }
+
+                var id = RenderTargetDictionary.Get(currentTarget);
+                if (id == -1)
+                    Logger.Error("Attempt to set non-existent render target");
+                else
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer,id);
             }
         }
 
@@ -48,8 +60,8 @@ namespace Walgelijk.OpenTK
         public void Draw(VertexBuffer vertexBuffer, Material material = null)
         {
             if (currentTarget == null)
-
                 return;
+
             PrepareVertexBuffer(vertexBuffer, material);
             GL.DrawElements(TypeConverter.Convert(vertexBuffer.PrimitiveType), vertexBuffer.IndexCount, DrawElementsType.UnsignedInt, 0);
         }
@@ -75,15 +87,15 @@ namespace Walgelijk.OpenTK
             if (material != null)
                 SetTransformationMatrixUniforms(material);
 
-            VertexBufferCacheHandles handles = vertexBufferCache.Load(vertexBuffer);
+            VertexBufferCacheHandles handles = VertexBufferCache.Load(vertexBuffer);
 
             GL.BindVertexArray(handles.VAO);
 
             if (vertexBuffer.HasChanged)
-                vertexBufferCache.UpdateBuffer(vertexBuffer, handles);
+                VertexBufferCache.UpdateBuffer(vertexBuffer, handles);
 
             if (vertexBuffer.ExtraDataHasChanged)
-                vertexBufferCache.UpdateExtraData(vertexBuffer, handles);
+                VertexBufferCache.UpdateExtraData(vertexBuffer, handles);
         }
 
         private void SetTransformationMatrixUniforms(Material material)
@@ -97,10 +109,10 @@ namespace Walgelijk.OpenTK
         {
             if (currentMaterial == material) return;
             currentMaterial = material;
-            var loadedShader = ShaderManager.Instance.MaterialCache.Load(material);
+            var loadedShader = GPUObjects.MaterialCache.Load(material);
             int prog = loadedShader.ProgramHandle;
 
-            ShaderManager.Instance.TextureCache.ActivateTexturesFor(loadedShader);
+            GPUObjects.MaterialTextureCache.ActivateTexturesFor(loadedShader);
             GL.UseProgram(prog);
         }
 

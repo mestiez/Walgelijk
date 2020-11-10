@@ -13,9 +13,6 @@ namespace Walgelijk.OpenTK
     {
         public static ShaderManager Instance { get; } = new ShaderManager();
 
-        public MaterialCache MaterialCache { get; } = new MaterialCache();
-        public TextureCache TextureCache { get; } = new TextureCache();
-
         private readonly float[] matrixBuffer = new float[16];
 
         //TODO dit is geen goede oplossing
@@ -23,17 +20,26 @@ namespace Walgelijk.OpenTK
 
         public void SetUniform(Material material, string uniformName, object data)
         {
-            var loaded = MaterialCache.Load(material);
+            var loaded = GPUObjects.MaterialCache.Load(material);
             int prog = loaded.ProgramHandle;
             int loc = loaded.GetUniformLocation(uniformName);
 
             // Ik haat dit. Ik haat deze hele class.
+            LoadedTexture loadedTexture;
+            TextureUnitLink unitLink;
 
             switch (data)
             {
+                //TODO Bijna dezelfde code. Beetje raar, vind je niet
+                case RenderTexture v:
+                    loadedTexture = GPUObjects.TextureCache.Load(v.Texture);
+                    unitLink = GPUObjects.MaterialTextureCache.Load(new MaterialTexturePair(loaded, loadedTexture));
+                    GL.ProgramUniform1(prog, loc, TypeConverter.Convert(unitLink.Unit));
+                    break;
                 case IReadableTexture v:
-                    var loadedTexture = TextureCache.Load(new MaterialTexturePair(loaded, v));
-                    GL.ProgramUniform1(prog, loc, TypeConverter.Convert(loadedTexture.TextureUnit));
+                    loadedTexture = GPUObjects.TextureCache.Load(v);
+                    unitLink = GPUObjects.MaterialTextureCache.Load(new MaterialTexturePair(loaded, loadedTexture));
+                    GL.ProgramUniform1(prog, loc, TypeConverter.Convert(unitLink.Unit));
                     break;
                 case float v:
                     GL.ProgramUniform1(prog, loc, v);

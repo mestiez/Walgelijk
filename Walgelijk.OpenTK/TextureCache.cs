@@ -1,71 +1,77 @@
 ﻿using OpenTK.Graphics.OpenGL;
-using System;
 
 namespace Walgelijk.OpenTK
 {
-    public struct MaterialTexturePair
+    public class MaterialTextureCache : Cache<MaterialTexturePair, TextureUnitLink>
     {
-        public LoadedMaterial Material;
-        public IReadableTexture Texture;
-
-        public MaterialTexturePair(LoadedMaterial material, IReadableTexture texture)
+        protected override TextureUnitLink CreateNew(MaterialTexturePair raw)
         {
-            Material = material;
-            Texture = texture;
+            return new TextureUnitLink(raw.Texture, raw.Material.GetNextTextureUnit());
         }
-    }
 
-    public class TextureCache : Cache<MaterialTexturePair, LoadedTexture>
-    {
-        public void ActivateTexturesFor(LoadedMaterial material)
+        protected override void DisposeOf(TextureUnitLink loaded) { }
+
+        internal void ActivateTexturesFor(LoadedMaterial material)
         {
-            //TODO dit moet sneller??
             var allUniforms = material.Material.GetAllUniforms();
+
+            LoadedTexture loadedTexture;
+            TextureUnitLink unitLink;
 
             foreach (var pair in allUniforms)
             {
-                if (pair.Value is IReadableTexture texture)
+                switch (pair.Value)
                 {
-                    var loaded = Load(new MaterialTexturePair(material, texture));
-                    loaded.Bind();
+                    case IReadableTexture v:
+                        loadedTexture  = GPUObjects.TextureCache.Load(v);
+                        break;
+                    case RenderTexture v:
+                        //TODO eigenlijk is dit een beetje raar. RenderTexture moet een texture zijn maar dat is ook vreemd want een RenderTexture is een framebuffer met een texture attachement dus.. niet echt een texture.
+                        loadedTexture = GPUObjects.TextureCache.Load(v.Texture);
+                        break;
+                    default:
+                        continue;
                 }
+
+                unitLink = Load(new MaterialTexturePair(material, loadedTexture));
+                unitLink.Bind();
             }
         }
+    }
 
-        protected override LoadedTexture CreateNew(MaterialTexturePair pair)
+    public class TextureCache : Cache<IReadableTexture, LoadedTexture>
+    {
+        protected override LoadedTexture CreateNew(IReadableTexture raw)
         {
             const int componentCount = 4;
 
-            var raw = pair.Texture;
-
             var pixels = raw.GetPixels();
-            byte[] data = new byte[pixels.Length * componentCount];
+            byte[] data = pixels == null ? null : new byte[pixels.Length * componentCount];
 
-            int i = 0;
-            foreach (var pixel in pixels)
+            if (data != null)
             {
-                (byte r, byte g, byte b, byte a) = pixel.ToBytes();
+                int i = 0;
+                foreach (var pixel in pixels)
+                {
+                    (byte r, byte g, byte b, byte a) = pixel.ToBytes();
 
-                data[i] = r;
-                data[i + 1] = g;
-                data[i + 2] = b;
-                data[i + 3] = a;
+                    data[i] = r;
+                    data[i + 1] = g;
+                    data[i + 2] = b;
+                    data[i + 3] = a;
 
-                i += componentCount;
+                    i += componentCount;
+                }
             }
 
-            GenerateGLTexture(data, pair, out var textureIndex, out var textureUnit);
+            GenerateGLTexture(data, raw, out var textureIndex);
 
-            return new LoadedTexture(data, raw.Width, raw.Height, textureUnit, textureIndex);
+            return new LoadedTexture(data, raw.Width, raw.Height, textureIndex);
         }
 
-        private void GenerateGLTexture(byte[] data, MaterialTexturePair pair, out int textureIndex, out TextureUnit textureUnit)
+        private void GenerateGLTexture(byte[] data, IReadableTexture raw, out int textureIndex)
         {
-            var raw = pair.Texture;
-
-            textureUnit = pair.Material.GetNextTextureUnit();
             textureIndex = GL.GenTexture();
-            GL.ActiveTexture(textureUnit);
             GL.BindTexture(TextureTarget.Texture2D, textureIndex);
 
             var wrap = (int)TypeConverter.Convert(raw.WrapMode);

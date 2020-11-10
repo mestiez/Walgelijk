@@ -52,6 +52,17 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Create an empty texture
+        /// </summary>
+        public Texture(int width, int height, bool generateMipmaps = true)
+        {
+            Width = width;
+            Height = height;
+            this.pixels = null;
+            this.GenerateMipmaps = generateMipmaps;
+        }
+
+        /// <summary>
         /// Load an image from a path
         /// </summary>
         public static Texture Load(string path, bool flipY = true, bool generateMipmaps = true)

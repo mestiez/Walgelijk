@@ -1047,6 +1047,46 @@
             Linear pixel interpolation. Results in somewhat smooth images
             </summary>
         </member>
+        <member name="T:Walgelijk.IGraphics">
+            <summary>
+            Graphics utility interface meant to be implemented by the rendering implementation
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IGraphics.Clear(Walgelijk.Color)">
+            <summary>
+            Clear current target
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IGraphics.Draw(Walgelijk.VertexBuffer,Walgelijk.Material)">
+            <summary>
+            Draw a vertex buffer to the currently activated target
+            </summary>
+            <param name="vertexBuffer">VertexBuffer to draw</param>
+            <param name="material">Material to draw it with</param>
+        </member>
+        <member name="M:Walgelijk.IGraphics.DrawInstanced(Walgelijk.VertexBuffer,System.Int32,Walgelijk.Material)">
+            <summary>
+            Draw a instanced vertex buffer to the currently activated target
+            </summary>
+            <param name="vertexBuffer">VertexBuffer to draw</param>
+            <param name="instanceCount">Amount of elements to draw</param>
+            <param name="material">Material to draw it with</param>
+        </member>
+        <member name="M:Walgelijk.IGraphics.SetUniform(Walgelijk.Material,System.String,System.Object)">
+            <summary>
+            Set a shader program uniform
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IGraphics.DrawBounds">
+            <summary>
+            Drawing bounds settings 
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IGraphics.CurrentTarget">
+            <summary>
+            Set or get the currently active target
+            </summary>
+        </member>
         <member name="T:Walgelijk.IReadableTexture">
             <summary>
             A texture that can be written to
@@ -1300,6 +1340,16 @@
             Should the task set the view matrix to <see cref="P:System.Numerics.Matrix4x4.Identity"/> 
             </summary>
         </member>
+        <member name="T:Walgelijk.TargetRenderTask">
+            <summary>
+            Task that sets the active render target
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TargetRenderTask.Target">
+            <summary>
+            The target to set
+            </summary>
+        </member>
         <member name="T:Walgelijk.RenderQueue">
             <summary>
             This object manages a render queue of <see cref="T:Walgelijk.IRenderTask"/>
@@ -1319,46 +1369,6 @@
         <member name="P:Walgelijk.RenderQueue.Length">
             <summary>
             Length of the queue
-            </summary>
-        </member>
-        <member name="T:Walgelijk.IGraphics">
-            <summary>
-            Graphics utility interface meant to be implemented by the rendering implementation
-            </summary>
-        </member>
-        <member name="M:Walgelijk.IGraphics.Clear(Walgelijk.Color)">
-            <summary>
-            Clear current target
-            </summary>
-        </member>
-        <member name="M:Walgelijk.IGraphics.Draw(Walgelijk.VertexBuffer,Walgelijk.Material)">
-            <summary>
-            Draw a vertex buffer to the currently activated target
-            </summary>
-            <param name="vertexBuffer">VertexBuffer to draw</param>
-            <param name="material">Material to draw it with</param>
-        </member>
-        <member name="M:Walgelijk.IGraphics.DrawInstanced(Walgelijk.VertexBuffer,System.Int32,Walgelijk.Material)">
-            <summary>
-            Draw a instanced vertex buffer to the currently activated target
-            </summary>
-            <param name="vertexBuffer">VertexBuffer to draw</param>
-            <param name="instanceCount">Amount of elements to draw</param>
-            <param name="material">Material to draw it with</param>
-        </member>
-        <member name="M:Walgelijk.IGraphics.SetUniform(Walgelijk.Material,System.String,System.Object)">
-            <summary>
-            Set a shader program uniform
-            </summary>
-        </member>
-        <member name="P:Walgelijk.IGraphics.DrawBounds">
-            <summary>
-            Drawing bounds settings 
-            </summary>
-        </member>
-        <member name="P:Walgelijk.IGraphics.CurrentTarget">
-            <summary>
-            Set or get the currently active target
             </summary>
         </member>
         <member name="T:Walgelijk.RenderTarget">
@@ -1504,6 +1514,11 @@
         <member name="M:Walgelijk.Texture.#ctor(System.Int32,System.Int32,Walgelijk.Color[],System.Boolean)">
             <summary>
             Create a texture from a series of pixels
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Texture.#ctor(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Create an empty texture
             </summary>
         </member>
         <member name="M:Walgelijk.Texture.Load(System.String,System.Boolean,System.Boolean)">

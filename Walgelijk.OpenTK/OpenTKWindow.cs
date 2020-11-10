@@ -15,7 +15,7 @@ namespace Walgelijk.OpenTK
         internal readonly OpenTKWindowRenderTarget renderTarget;
 
         private readonly InputHandler inputHandler;
-        private readonly OpenTKGraphics graphics;
+        internal readonly OpenTKGraphics internalGraphics;
 
         private Time time = new Time();
         private Stopwatch stopwatch;
@@ -31,7 +31,7 @@ namespace Walgelijk.OpenTK
             renderTarget.Window = this;
 
             inputHandler = new InputHandler(this);
-            graphics = new OpenTKGraphics();
+            internalGraphics = new OpenTKGraphics();
         }
 
         public override string Title { get => window.Title; set => window.Title = value; }
@@ -46,7 +46,7 @@ namespace Walgelijk.OpenTK
         public override bool Resizable { get => window.WindowBorder == WindowBorder.Resizable; set => window.WindowBorder = value ? WindowBorder.Resizable : WindowBorder.Fixed; }
         public override InputState InputState => inputHandler?.InputState ?? default;
         public override RenderTarget RenderTarget => renderTarget;
-        public override IGraphics Graphics => graphics;
+        public override IGraphics Graphics => internalGraphics;
 
         public override Vector2 Size
         {
@@ -150,7 +150,7 @@ namespace Walgelijk.OpenTK
             Game.Profiling.Render();
             Game.Console.Render();
 
-            RenderQueue.RenderAndReset(graphics);
+            RenderQueue.RenderAndReset(internalGraphics);
 
             GL.Flush();
             GL.Finish();
