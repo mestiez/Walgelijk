@@ -19,7 +19,7 @@ namespace Walgelijk.OpenTK
                 if (raw.HDR)
                     WriteHDRData(raw, componentCount, pixels);
                 else
-                    WriteSDRData(raw, componentCount, pixels);
+                    WriteLDRData(raw, componentCount, pixels);
             }
             else
             {
@@ -35,7 +35,7 @@ namespace Walgelijk.OpenTK
             return new LoadedTexture(raw.Width, raw.Height, textureIndex);
         }
 
-        private void WriteSDRData(IReadableTexture raw, int componentCount, ImmutableArray<Color>? pixels)
+        private void WriteLDRData(IReadableTexture raw, int componentCount, ImmutableArray<Color>? pixels)
         {
             var data = new byte[raw.Width * raw.Height * componentCount];
             int i = 0;
