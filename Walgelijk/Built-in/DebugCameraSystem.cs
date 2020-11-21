@@ -11,7 +11,7 @@ namespace Walgelijk
         /// <summary>
         /// Movement speed
         /// </summary>
-        public float Speed { get; set; } = 1;
+        public float Speed { get; set; } = 500;
         /// <summary>
         /// Zoom speed
         /// </summary>

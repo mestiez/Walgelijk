@@ -41,9 +41,9 @@
         public static readonly Color GreenYellow = new Color(146, 255, 43);
 
         /// <summary>
-        /// Cyan (1,1,0)
+        /// Cyan (0,1,1)
         /// </summary>
-        public static readonly Color Cyan = new Color(1f, 1f, 0);
+        public static readonly Color Cyan = new Color(0, 1f, 1f);
 
         /// <summary>
         /// Sky

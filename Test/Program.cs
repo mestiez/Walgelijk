@@ -53,7 +53,19 @@ namespace Test
             scene.AddSystem(new ShapeRendererSystem());
             scene.AddSystem(new WaveMovementSystem());
             scene.AddSystem(new DebugCameraSystem());
-            scene.AddSystem(new ParticleSystem());
+            //scene.AddSystem(new ParticleSystem());
+
+            var orgin = scene.CreateEntity();
+            scene.AttachComponent(orgin, new TransformComponent { Position = new Vector2(0, 0) });
+            scene.AttachComponent(orgin, new RectangleShapeComponent { Color = Colors.Red });
+
+            var x100 = scene.CreateEntity();
+            scene.AttachComponent(x100, new TransformComponent { Position = new Vector2(100, 0) });
+            scene.AttachComponent(x100, new RectangleShapeComponent { Color = Colors.GreenYellow });
+
+            var x50y50 = scene.CreateEntity();
+            scene.AttachComponent(x50y50, new TransformComponent { Position = new Vector2(50, 50) });
+            scene.AttachComponent(x50y50, new RectangleShapeComponent { Color = Colors.Blue });
 
             var particles = scene.CreateEntity();
             scene.AttachComponent(particles, new TransformComponent());
@@ -93,6 +105,8 @@ namespace Test
     {
         public override void Update()
         {
+            Logger.Log(Input.WorldMousePosition);
+
             var components = Scene.GetAllComponentsOfType<WaveMovementComponent>();
             foreach (var item in components)
             {

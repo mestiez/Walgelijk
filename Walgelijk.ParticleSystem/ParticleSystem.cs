@@ -11,8 +11,6 @@ namespace Walgelijk.ParticleSystem
 
         public override void Update()
         {
-            Profiler.StartTask("Particle system update");
-
             retrievedParticleSystems = Scene.GetAllComponentsOfType<ParticlesComponent>();
             foreach (var item in retrievedParticleSystems)
             {
@@ -22,15 +20,12 @@ namespace Walgelijk.ParticleSystem
                 HandleEmission(particles, transform);
                 UpdateParticleSystem(particles, transform);
             }
-
-            Profiler.EndTask();
         }
 
         public override void Render()
         {
             if (retrievedParticleSystems == null) return;
 
-            Profiler.StartTask("Particle system render");
             foreach (var item in retrievedParticleSystems)
             {
                 var transform = Scene.GetComponentFrom<TransformComponent>(item.Entity);
@@ -38,7 +33,6 @@ namespace Walgelijk.ParticleSystem
 
                 RenderParticleSystem(particles, transform);
             }
-            Profiler.EndTask();
         }
 
         private void HandleEmission(ParticlesComponent particles, TransformComponent transform)

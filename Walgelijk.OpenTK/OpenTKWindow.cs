@@ -75,6 +75,7 @@ namespace Walgelijk.OpenTK
             return new Vector2(pos.X, pos.Y);
         }
 
+        //TODO dit is eigenlijk iets van de rendertarget
         public override Vector2 WorldToWindowPoint(Vector2 point)
         {
             var result = Vector2.Transform(new Vector2(point.X, point.Y), renderTarget.ProjectionMatrix * renderTarget.ViewMatrix);
@@ -83,19 +84,20 @@ namespace Walgelijk.OpenTK
             return result;
         }
 
+        //TODO dit is eigenlijk iets van de rendertarget
         public override Vector2 WindowToWorldPoint(Vector2 point)
         {
             point /= renderTarget.Size;
             point.X -= 0.5f;
             point.Y += 0.5f;
+            point.Y = 1 - point.Y;
+            point *= 2;
+            //TODO HOEZO WERKT DIT? WAAROM MOET IK HET KEER 2 DOEN?
 
-            if (!Matrix4x4.Invert(renderTarget.ViewMatrix, out var view)) return point;
-            if (!Matrix4x4.Invert(renderTarget.ProjectionMatrix, out var proj)) return point;
-            return Vector2.Transform(
-                new Vector2(point.X, 1 - point.Y),
-                proj * view);
+            var m = renderTarget.ViewMatrix * renderTarget.ProjectionMatrix;
+            if (!Matrix4x4.Invert(m, out var inverted)) return point;
 
-            //TODO projection matrix doet super raar. als je helemaal inzoemt dan is de calculatie correct
+            return Vector2.Transform(point, inverted);
         }
 
         public override void StartLoop()
