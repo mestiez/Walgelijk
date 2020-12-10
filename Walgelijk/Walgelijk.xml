@@ -731,6 +731,11 @@
             Get all entities
             </summary>
         </member>
+        <member name="P:Walgelijk.Scene.EntityCount">
+            <summary>
+            Amount of entities in the scene
+            </summary>
+        </member>
         <member name="M:Walgelijk.Scene.GetAllComponentsFrom(Walgelijk.Entity)">
             <summary>
             Get all components attached to the given entity

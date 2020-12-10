@@ -53,7 +53,7 @@ namespace Test
             scene.AddSystem(new ShapeRendererSystem());
             scene.AddSystem(new WaveMovementSystem());
             scene.AddSystem(new DebugCameraSystem());
-            //scene.AddSystem(new ParticleSystem());
+            scene.AddSystem(new ParticleSystem());
 
             var orgin = scene.CreateEntity();
             scene.AttachComponent(orgin, new TransformComponent { Position = new Vector2(0, 0) });
@@ -105,7 +105,7 @@ namespace Test
     {
         public override void Update()
         {
-            Logger.Log(Input.WorldMousePosition);
+            //Logger.Log(Input.WorldMousePosition);
 
             var components = Scene.GetAllComponentsOfType<WaveMovementComponent>();
             foreach (var item in components)

@@ -57,7 +57,12 @@ namespace Walgelijk.ParticleSystem
 
         public void CreateParticle(ParticlesComponent particles, TransformComponent transform, Particle particleToAdd)
         {
-            if (particles.CurrentParticleCount >= particles.MaxParticleCount) return;
+            if (particles.CurrentParticleCount >= particles.MaxParticleCount) 
+                return;
+
+            int targetIndex = GetFreeParticleIndex(particles);
+            if (targetIndex == -1)
+                return;
 
             var particle = particleToAdd;
 
@@ -74,22 +79,31 @@ namespace Walgelijk.ParticleSystem
             if (particles.WorldSpace)
                 particle.Position += transform.Position;
 
-            particles.RawParticleArray[particles.CurrentParticleCount] = particle;
+            particles.RawParticleArray[targetIndex] = particle;
 
             particles.CurrentParticleCount++;
+        }
+
+        private int GetFreeParticleIndex(ParticlesComponent particles)
+        {
+            for (int i = 0; i < particles.MaxParticleCount; i++)
+                if (!particles.RawParticleArray[i].Active)
+                    return i;
+
+            return -1;
         }
 
         private void RemoveParticle(ParticlesComponent particles, int index)
         {
             if (particles.CurrentParticleCount <= 0) return;
 
-            int maxCount = Math.Min(particles.CurrentParticleCount, particles.MaxParticleCount - 1);
+            particles.RawParticleArray[index].Active = false;
 
-            for (int i = index; i < maxCount; i++)
-            {
-                //TODO dit moet sneller. vervang particles die al dood zijn ipv alles opschuiven als een gek
-                particles.RawParticleArray[i] = particles.RawParticleArray[i + 1];
-            }
+            //int maxCount = Math.Min(particles.CurrentParticleCount, particles.MaxParticleCount - 1);
+            //for (int i = index; i < maxCount; i++)
+            //{
+            //    particles.RawParticleArray[i] = particles.RawParticleArray[i + 1];
+            //}
 
             particles.CurrentParticleCount--;
         }
@@ -100,9 +114,14 @@ namespace Walgelijk.ParticleSystem
 
             particles.Clock += dt;
 
-            Parallel.For(0, particles.CurrentParticleCount, (i) =>
+            //Parallel.For(0, particles.MaxParticleCount, (i) =>
+            for (int i = 0; i < particles.MaxParticleCount; i++)
             {
                 var particle = particles.RawParticleArray[i];
+
+                if (!particle.Active)
+                    continue;
+
                 particle.Life += dt;
 
                 if (particle.Life >= particle.MaxLife)
@@ -124,12 +143,7 @@ namespace Walgelijk.ParticleSystem
 
                     particles.RawParticleArray[i] = particle;
                 }
-            });
-
-            //for (int i = 0; i < particles.CurrentParticleCount; i++)
-            //{
-                
-            //}
+            };//);
         }
 
         private void RenderParticleSystem(ParticlesComponent particles, TransformComponent transform)
@@ -137,15 +151,25 @@ namespace Walgelijk.ParticleSystem
             var posArray = particles.VertexBuffer.GetAttribute(0);
             var colArray = particles.VertexBuffer.GetAttribute(1);
 
-            for (int i = 0; i < particles.CurrentParticleCount; i++)
+            int activeIndex = 0;
+
+            for (int i = 0; i < particles.MaxParticleCount; i++)
             {
                 var particle = particles.RawParticleArray[i];
 
+                if (!particle.Active)
+                    continue;
+
                 Matrix4x4 model = Matrix4x4.CreateRotationZ(particle.Angle) * Matrix4x4.CreateScale(particle.Size) * Matrix4x4.CreateTranslation(particle.Position.X, particle.Position.Y, 0);
 
-                posArray.SetAt(i, model);
-                colArray.SetAt(i, (Vector4)particle.Color);
+                posArray.SetAt(activeIndex, model);
+                colArray.SetAt(activeIndex, (Vector4)particle.Color);
+
+                activeIndex++;
             }
+
+            if (activeIndex != particles.CurrentParticleCount)
+                throw new Exception("hoe kan dit nou");
 
             var task = particles.RenderTask;
             task.InstanceCount = particles.CurrentParticleCount;

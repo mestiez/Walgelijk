@@ -177,6 +177,11 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Amount of entities in the scene
+        /// </summary>
+        public int EntityCount => entities.Count;
+
+        /// <summary>
         /// Get all components attached to the given entity
         /// </summary>
         public IEnumerable<object> GetAllComponentsFrom(Entity entity)

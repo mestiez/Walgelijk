@@ -16,6 +16,7 @@ namespace Walgelijk
         private Matrix4x4 model = Matrix4x4.Identity;
         private bool dirtyLog;
         private float overlayLife;
+        private float consoleSlideOffset;
 
         public string InputString { get; set; }
         public Rect TextBounds => text.LocalBoundingBox;
@@ -33,7 +34,7 @@ namespace Walgelijk
             text.TrackingMultiplier = .91f;
             text.LineHeightMultiplier = .7f;
             text.RenderTask.ScreenSpace = true;
-            text.Color = new Color(200, 200, 200);
+            text.Color = new Color(222, 175, 213);
 
             inputBox = new TextComponent();
             inputBox.TrackingMultiplier = .91f;
@@ -46,7 +47,7 @@ namespace Walgelijk
             overlay.RenderTask.ScreenSpace = true;
 
             background = new RectangleShapeComponent();
-            background.Color = new Color(0, 0, 0, 0.9f);
+            background.Color = new Color(173, 85, 156, 230);
             background.Pivot = Vector2.Zero;
             background.RenderTask.ScreenSpace = true;
 
@@ -63,9 +64,14 @@ namespace Walgelijk
 
         public void Render()
         {
-            if (debugConsole.IsActive)
+            if (consoleSlideOffset > float.Epsilon)
                 RenderActiveConsole();
-            else if (debugConsole.DrawConsoleNotification)
+
+            float consoleSpeed = debugConsole.Game.Time.RenderDeltaTime * 4;
+            consoleSlideOffset += debugConsole.IsActive ? consoleSpeed : -consoleSpeed;
+            consoleSlideOffset = Utilities.Clamp(consoleSlideOffset);
+
+            if (debugConsole.DrawConsoleNotification && !debugConsole.IsActive)
                 RenderOverlayConsole();
         }
 
@@ -83,9 +89,9 @@ namespace Walgelijk
             if (overlayLife < ConsoleNotificationDuration)
             {
                 overlay.RenderTask.ModelMatrix = textModel * Matrix4x4.CreateTranslation(
-                    debugConsole.Game.Window.Size.X - overlay.LocalBoundingBox.Width - 5, 
-                    5, 
-                    0) * model;
+                    debugConsole.Game.Window.Size.X - overlay.LocalBoundingBox.Width - 5,
+                    5,
+                    0);
 
                 if (overlayLife > ConsoleNotificationDuration * .75f)
                     overlay.Color = Colors.White.WithAlpha(0.5f);
@@ -110,6 +116,8 @@ namespace Walgelijk
             }
 
             inputBox.String = InputString;
+
+            model = Matrix4x4.CreateTranslation(0, (1 - consoleSlideOffset) * -TotalHeight, 0);
 
             boundsTask.DrawBounds = new DrawBounds(new Vector2(debugConsole.Game.Window.Size.X, LogHeight), Vector2.Zero);
             text.RenderTask.ModelMatrix = textModel * Matrix4x4.CreateTranslation(0, -text.LocalBoundingBox.Height + LogHeight + debugConsole.ScrollOffset, 0) * model;

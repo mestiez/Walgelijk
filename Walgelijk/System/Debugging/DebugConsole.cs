@@ -101,7 +101,6 @@ namespace Walgelijk
                 }
             }
 
-
             if (InputHistory.Count != 0)
             {
                 if (Input.IsKeyReleased(Key.Up))

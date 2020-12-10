@@ -5,13 +5,15 @@ VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk", "Walgelijk\Walgelijk.csproj", "{4A50B7E8-4661-439B-8B02-13E0A8469774}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{D0041A83-BEDD-47C0-8BF9-8200DD3228FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestWorld", "Test\TestWorld.csproj", "{D0041A83-BEDD-47C0-8BF9-8200DD3228FC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.OpenTK", "Walgelijk.OpenTK\Walgelijk.OpenTK.csproj", "{36FB09D0-F063-48BD-BB57-EA0996FBE98E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.NAudio", "Walgelijk.NAudio\Walgelijk.NAudio.csproj", "{467254BB-212F-416F-BE02-875EFAAA8A9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Walgelijk.ParticleSystem", "Walgelijk.ParticleSystem\Walgelijk.ParticleSystem.csproj", "{5FD74DF4-F720-4D60-9E0E-F93DF437152D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.ParticleSystem", "Walgelijk.ParticleSystem\Walgelijk.ParticleSystem.csproj", "{5FD74DF4-F720-4D60-9E0E-F93DF437152D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{09F5F9AB-C0D9-4034-89D4-36CDE0697066}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{5FD74DF4-F720-4D60-9E0E-F93DF437152D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FD74DF4-F720-4D60-9E0E-F93DF437152D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FD74DF4-F720-4D60-9E0E-F93DF437152D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09F5F9AB-C0D9-4034-89D4-36CDE0697066}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09F5F9AB-C0D9-4034-89D4-36CDE0697066}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09F5F9AB-C0D9-4034-89D4-36CDE0697066}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09F5F9AB-C0D9-4034-89D4-36CDE0697066}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

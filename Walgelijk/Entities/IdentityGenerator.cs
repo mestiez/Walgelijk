@@ -11,7 +11,7 @@
         /// <returns></returns>
         public static int Generate()
         {
-            return Utilities.RandomInt(0, int.MaxValue);
+            return Utilities.RandomInt(int.MinValue, int.MaxValue);
         }
     }
 }

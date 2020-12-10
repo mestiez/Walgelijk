@@ -127,6 +127,8 @@ namespace Walgelijk
             //    set.Clear();
             //}
 
+            GC.SuppressFinalize(this);
+
             objectCollectionByType.Clear();
             objectCollectionByType = null;
             objects.Clear();
