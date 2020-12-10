@@ -93,5 +93,16 @@ namespace Walgelijk
             if (Window == null) throw new InvalidOperationException("Window is null");
             Window.StartLoop();
         }
+
+        /// <summary>
+        /// Exit the game
+        /// </summary>
+        public void Stop()
+        {
+            if (Window == null) 
+                throw new InvalidOperationException("Window is null");
+
+            Window.Close();
+        }
     }
 }

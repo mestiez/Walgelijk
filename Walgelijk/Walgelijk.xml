@@ -1968,9 +1968,44 @@
             Object responsible for command processing. Only has static methods.
             </summary>
         </member>
-        <member name="M:Walgelijk.CommandProcessor.Execute(System.String)">
+        <member name="M:Walgelijk.CommandProcessor.Execute(System.String,Walgelijk.DebugConsole)">
             <summary>
             Execute the given string as a command
+            </summary>
+        </member>
+        <member name="M:Walgelijk.CommandProcessor.GetAllCommands">
+            <summary>
+            Get all commands
+            </summary>
+        </member>
+        <member name="T:Walgelijk.CommandResult">
+            <summary>
+            A struct you can return that the command processor will interpret
+            </summary>
+        </member>
+        <member name="F:Walgelijk.CommandResult.Message">
+            <summary>
+            Message to return
+            </summary>
+        </member>
+        <member name="F:Walgelijk.CommandResult.Type">
+            <summary>
+            Message type
+            </summary>
+        </member>
+        <member name="M:Walgelijk.CommandResult.Info(System.String)">
+            <summary>
+            Create a <see cref="T:Walgelijk.CommandResult"/> of type Info
+            </summary>
+        </member>
+        <member name="M:Walgelijk.CommandResult.Warn(System.String)">
+            <summary>
+            Create a <see cref="T:Walgelijk.CommandResult"/> of type Warn
+            </summary>
+        </member>
+        <member name="M:Walgelijk.CommandResult.Error(System.String)">
+            <summary>
+            Create a <see cref="T:Walgelijk.CommandResult"/> of type Error
             </summary>
         </member>
         <member name="T:Walgelijk.DebugConsole">
@@ -2001,6 +2036,16 @@
         <member name="P:Walgelijk.DebugConsole.DrawConsoleNotification">
             <summary>
             Briefly draw the most recent console message to the screen even if the console is not open.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.DebugConsole.Print(System.String)">
+            <summary>
+            Print text to the console
+            </summary>
+        </member>
+        <member name="M:Walgelijk.DebugConsole.Clear">
+            <summary>
+            Clear the console
             </summary>
         </member>
         <member name="T:Walgelijk.ConsoleLogger">
@@ -2217,6 +2262,11 @@
         <member name="M:Walgelijk.Game.Start">
             <summary>
             Start the game loop
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Game.Stop">
+            <summary>
+            Exit the game
             </summary>
         </member>
         <member name="T:Walgelijk.Hook`1">

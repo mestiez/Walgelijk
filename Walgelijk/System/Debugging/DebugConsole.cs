@@ -54,10 +54,7 @@ namespace Walgelijk
 
             Logger.OnLog.AddListener((e) =>
             {
-                if (Log.Count == Log.Capacity - 1)
-                    Log.RemoveAt(0);
-                Log.Add($"[{e.Level}] {e.Message}");
-                renderer.SetDirtyLog();
+                Print($"[{e.Level}] {e.Message}");
             });
         }
 
@@ -70,6 +67,26 @@ namespace Walgelijk
             }
 
             UpdateConsole();
+        }
+        
+        /// <summary>
+        /// Print text to the console
+        /// </summary>
+        public void Print(string text)
+        {
+            if (Log.Count == Log.Capacity - 1)
+                Log.RemoveAt(0);
+            Log.Add(text);
+            renderer.SetDirtyLog();
+        }
+                
+        /// <summary>
+        /// Clear the console
+        /// </summary>
+        public void Clear()
+        {
+            Log.Clear();
+            renderer.SetDirtyLog();
         }
 
         private void UpdateConsole()
@@ -85,7 +102,7 @@ namespace Walgelijk
                 {
                     case '\n':
                     case '\r':
-                        CommandProcessor.Execute(currentInput);
+                        CommandProcessor.Execute(currentInput, this);
                         InputHistory.Add(currentInput);
                         historyIndex = InputHistory.Count;
                         currentInput = string.Empty;
