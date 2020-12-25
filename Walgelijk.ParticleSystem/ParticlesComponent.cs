@@ -48,9 +48,9 @@ namespace Walgelijk.ParticleSystem
         public readonly InstancedShapeRenderTask RenderTask;
         public readonly VertexBuffer VertexBuffer;
 
-        public int Depth = 0;
+        internal FixedIntervalDistributor EmissionDistributor = new FixedIntervalDistributor();
 
-        public float Clock;
+        public int Depth = 0;
 
         public Particle GenerateParticleObject()
         {

@@ -223,6 +223,22 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Get the <see cref="Entity"/> connected to the given component
+        /// </summary>
+        public bool TryGetEntityWith(object component, out Entity entity)
+        {
+            foreach (var pair in components)
+                if (pair.Value.HasObject(component))
+                {
+                    entity = pair.Key;
+                    return true;
+                }
+
+            entity = default;
+            return false;
+        }
+
+        /// <summary>
         /// Retrieve the first component of the specified type on the given entity
         /// </summary>
         public bool TryGetComponentFrom<T>(Entity entity, out T component) where T : class

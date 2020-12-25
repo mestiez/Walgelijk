@@ -11,7 +11,6 @@ namespace Walgelijk
     /// </summary>
     public class Game
     {
-        // TODO moet dit wel? singleton game? echt???? fix dit
         /// <summary>
         /// The last instance that was created
         /// </summary>

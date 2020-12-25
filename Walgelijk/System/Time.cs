@@ -8,7 +8,7 @@
         /// <summary>
         /// Returns the amount of seconds that have passed since the last update frame
         /// </summary>
-        public float UpdateDeltaTime { get; set; }        
+        public float UpdateDeltaTime { get; set; }
         /// <summary>
         /// Returns the amount of seconds that have passed since the last rendered frame
         /// </summary>

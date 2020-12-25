@@ -36,7 +36,7 @@ namespace Walgelijk
             if (initialised) return;
             initialised = true;
 
-            RegisterType(typeof(Texture), (string path) => Texture.Load(path));
+            RegisterType(typeof(Texture), (string path) => TextureLoader.FromFile(path));
             RegisterType(typeof(Font), Font.Load);
             RegisterType(typeof(string), File.ReadAllText);
             RegisterType(typeof(string[]), File.ReadAllLines);

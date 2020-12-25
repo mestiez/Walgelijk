@@ -9,6 +9,8 @@ namespace Walgelijk
         private readonly TextComponent overlay;
         private readonly TextComponent inputBox;
         private readonly RectangleShapeComponent background;
+        private readonly RectangleShapeComponent inputBackground;
+
         private readonly DrawBoundsTask boundsTask;
         private readonly GroupRenderTask activeConsoleTask;
 
@@ -25,6 +27,7 @@ namespace Walgelijk
         public const int TotalHeight = 150;
         public const int InputHeight = 20;
         public const int LogHeight = TotalHeight - InputHeight;
+        public const float ConsoleSlideDuration = 0.3f;
 
         public DebugConsoleRenderer(DebugConsole debugConsole)
         {
@@ -46,8 +49,13 @@ namespace Walgelijk
             overlay.LineHeightMultiplier = .7f;
             overlay.RenderTask.ScreenSpace = true;
 
+            inputBackground = new RectangleShapeComponent();
+            inputBackground.Color = new Color(173, 85, 156, 230);
+            inputBackground.Pivot = Vector2.Zero;
+            inputBackground.RenderTask.ScreenSpace = true;
+
             background = new RectangleShapeComponent();
-            background.Color = new Color(173, 85, 156, 230);
+            background.Color = (0.9f * inputBackground.Color).WithAlpha(0.9f); 
             background.Pivot = Vector2.Zero;
             background.RenderTask.ScreenSpace = true;
 
@@ -55,6 +63,7 @@ namespace Walgelijk
 
             activeConsoleTask = new GroupRenderTask(
                 background.RenderTask,
+                inputBackground.RenderTask,
                 inputBox.RenderTask,
                 boundsTask,
                 text.RenderTask,
@@ -67,7 +76,7 @@ namespace Walgelijk
             if (consoleSlideOffset > float.Epsilon)
                 RenderActiveConsole();
 
-            float consoleSpeed = debugConsole.Game.Time.RenderDeltaTime * 4;
+            float consoleSpeed = debugConsole.Game.Time.RenderDeltaTime / ConsoleSlideDuration;
             consoleSlideOffset += debugConsole.IsActive ? consoleSpeed : -consoleSpeed;
             consoleSlideOffset = Utilities.Clamp(consoleSlideOffset);
 
@@ -120,8 +129,11 @@ namespace Walgelijk
             model = Matrix4x4.CreateTranslation(0, (1 - consoleSlideOffset) * -TotalHeight, 0);
 
             boundsTask.DrawBounds = new DrawBounds(new Vector2(debugConsole.Game.Window.Size.X, LogHeight), Vector2.Zero);
-            text.RenderTask.ModelMatrix = textModel * Matrix4x4.CreateTranslation(0, -text.LocalBoundingBox.Height + LogHeight + debugConsole.ScrollOffset, 0) * model;
-            inputBox.RenderTask.ModelMatrix = textModel * Matrix4x4.CreateTranslation(5, -InputHeight + TotalHeight, 0) * model;
+
+            text.RenderTask.ModelMatrix = textModel * Matrix4x4.CreateTranslation(5, -text.LocalBoundingBox.Height + LogHeight + debugConsole.ScrollOffset - 5, 0) * model;
+
+            inputBackground.RenderTask.ModelMatrix = Matrix4x4.CreateScale(debugConsole.Game.Window.Size.X, -InputHeight, 1) * Matrix4x4.CreateTranslation(0, -InputHeight + TotalHeight, 0) * model;
+            inputBox.RenderTask.ModelMatrix = textModel * Matrix4x4.CreateTranslation(5, -InputHeight + TotalHeight + 1, 0) * model;
             background.RenderTask.ModelMatrix = Matrix4x4.CreateScale(debugConsole.Game.Window.Size.X, -TotalHeight, 1) * model;
 
             var queue = debugConsole.Game.RenderQueue;

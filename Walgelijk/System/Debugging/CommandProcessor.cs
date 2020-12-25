@@ -112,13 +112,13 @@ namespace Walgelijk
                         switch (commandResult.Type)
                         {
                             case LogLevel.Info:
-                                Logger.Log(commandResult);
+                                Logger.Log(commandResult.Message);
                                 break;
                             case LogLevel.Warn:
-                                Logger.Warn(commandResult);
+                                Logger.Warn(commandResult.Message);
                                 break;
                             case LogLevel.Error:
-                                Logger.Error(commandResult);
+                                Logger.Error(commandResult.Message);
                                 break;
                         }
                         break;

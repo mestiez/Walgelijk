@@ -9,6 +9,9 @@ using Vector2 = System.Numerics.Vector2;
 
 namespace Walgelijk.OpenTK
 {
+    /// <summary>
+    /// OpenTK implementation of <see cref="Window"/>
+    /// </summary>
     public class OpenTKWindow : Window
     {
         internal readonly GameWindow window;
@@ -116,7 +119,7 @@ namespace Walgelijk.OpenTK
             window.Closing += OnWindowClose;
             window.Resize += OnWindowResize;
             window.Move += OnWindowMove;
-            window.FileDrop += OnFireDrop;
+            window.FileDrop += OnFileDrop;
 
             window.UpdateFrame += OnUpdateFrame;
             window.RenderFrame += OnRenderFrame;
@@ -171,7 +174,7 @@ namespace Walgelijk.OpenTK
             inputHandler.Reset();
         }
 
-        private void OnFireDrop(object sender, FileDropEventArgs obj)
+        private void OnFileDrop(object sender, FileDropEventArgs obj)
         {
             InvokeFileDropEvent(new[] { obj.FileName });
         }

@@ -505,6 +505,11 @@
             Returns if the collection has an object of the given type
             </summary>
         </member>
+        <member name="M:Walgelijk.CollectionByType.HasObject(System.Object)">
+            <summary>
+            Returns if the collection has a specific object instance
+            </summary>
+        </member>
         <member name="M:Walgelijk.CollectionByType.TryAdd``1(System.Object)">
             <summary>
             Try to add a value to the collection
@@ -749,6 +754,11 @@
         <member name="M:Walgelijk.Scene.GetComponentFrom``1(Walgelijk.Entity)">
             <summary>
             Retrieve the first component of the specified type on the given entity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.TryGetEntityWith(System.Object,Walgelijk.Entity@)">
+            <summary>
+            Get the <see cref="T:Walgelijk.Entity"/> connected to the given component
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.TryGetComponentFrom``1(Walgelijk.Entity,``0@)">
@@ -2207,6 +2217,31 @@
         <member name="P:Walgelijk.ProfiledTask.Duration">
             <summary>
             How long the task took
+            </summary>
+        </member>
+        <member name="T:Walgelijk.FixedIntervalDistributor">
+            <summary>
+            Class that calculates the amount of times something needs to execute to adhere to a specific rate
+            </summary>
+        </member>
+        <member name="P:Walgelijk.FixedIntervalDistributor.Rate">
+            <summary>
+            Preferred cycles rate
+            </summary>
+        </member>
+        <member name="P:Walgelijk.FixedIntervalDistributor.MaxRate">
+            <summary>
+            Maximum ouput cycles rate that
+            </summary>
+        </member>
+        <member name="P:Walgelijk.FixedIntervalDistributor.Interval">
+            <summary>
+            1.0f / <see cref="P:Walgelijk.FixedIntervalDistributor.Rate"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.FixedIntervalDistributor.CalculateCycleCount(System.Single)">
+            <summary>
+            Calculate the amount of cycles to execute
             </summary>
         </member>
         <member name="T:Walgelijk.Game">

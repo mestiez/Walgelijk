@@ -25,7 +25,7 @@ void main()
    uv = texcoord;
    vertexColor = color * particleColor;
    
-   gl_Position = projection * view * (particleModel * model) * vec4(position, 1.0);
+   gl_Position = projection * view * (model * particleModel) * vec4(position, 1.0);
 }",
     @"
 #version 460

@@ -7,12 +7,10 @@ namespace Walgelijk.ParticleSystem
 {
     public class ParticleSystem : Walgelijk.System
     {
-        private IEnumerable<EntityWith<ParticlesComponent>> retrievedParticleSystems = null;
-
         public override void Update()
         {
-            retrievedParticleSystems = Scene.GetAllComponentsOfType<ParticlesComponent>();
-            foreach (var item in retrievedParticleSystems)
+            var s = Scene.GetAllComponentsOfType<ParticlesComponent>();
+            foreach (var item in s)
             {
                 var transform = Scene.GetComponentFrom<TransformComponent>(item.Entity);
                 var particles = item.Component;
@@ -24,9 +22,8 @@ namespace Walgelijk.ParticleSystem
 
         public override void Render()
         {
-            if (retrievedParticleSystems == null) return;
-
-            foreach (var item in retrievedParticleSystems)
+            var s = Scene.GetAllComponentsOfType<ParticlesComponent>();
+            foreach (var item in s)
             {
                 var transform = Scene.GetComponentFrom<TransformComponent>(item.Entity);
                 var particles = item.Component;
@@ -37,15 +34,13 @@ namespace Walgelijk.ParticleSystem
 
         private void HandleEmission(ParticlesComponent particles, TransformComponent transform)
         {
-            if (particles.EmissionRate < 0.001f) return;
-            float inverseRate = 1 / particles.EmissionRate;
-            if (particles.Clock > inverseRate)
-            {
-                int particlesToSpawn = (int)MathF.Ceiling(particles.Clock / inverseRate);
-                particles.Clock = 0;
-                for (int i = 0; i < particlesToSpawn; i++)
-                    CreateParticle(particles, transform);
-            }
+            if (particles.EmissionRate <= float.Epsilon) return;
+
+            particles.EmissionDistributor.Rate = particles.EmissionRate;
+            var cycles = particles.EmissionDistributor.CalculateCycleCount(Time.UpdateDeltaTime);
+
+            for (int i = 0; i < cycles; i++)
+                CreateParticle(particles, transform);
         }
 
         public void CreateParticle(ParticlesComponent particles, TransformComponent transform)
@@ -112,8 +107,6 @@ namespace Walgelijk.ParticleSystem
         {
             var dt = Time.UpdateDeltaTime * particles.SimulationSpeed;
 
-            particles.Clock += dt;
-
             //Parallel.For(0, particles.MaxParticleCount, (i) =>
             for (int i = 0; i < particles.MaxParticleCount; i++)
             {
@@ -167,9 +160,8 @@ namespace Walgelijk.ParticleSystem
 
                 activeIndex++;
             }
-
             if (activeIndex != particles.CurrentParticleCount)
-                throw new Exception("hoe kan dit nou");
+                Logger.Warn($"Set particles and current expected particle count are not equal: {particles.CurrentParticleCount} expected, actual {activeIndex}");
 
             var task = particles.RenderTask;
             task.InstanceCount = particles.CurrentParticleCount;

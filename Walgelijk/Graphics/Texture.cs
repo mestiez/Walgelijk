@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Numerics;
 using System.Text;
 
@@ -33,7 +35,7 @@ namespace Walgelijk
         /// </summary>
         public WrapMode WrapMode
         {
-            get => wrapMode; 
+            get => wrapMode;
             set
             {
                 wrapMode = value;
@@ -46,7 +48,7 @@ namespace Walgelijk
         /// </summary>
         public FilterMode FilterMode
         {
-            get => filterMode; 
+            get => filterMode;
             set
             {
                 filterMode = value;
@@ -100,22 +102,36 @@ namespace Walgelijk
         /// </summary>
         public static Texture Load(string path, bool flipY = true, bool generateMipmaps = true)
         {
-            var bitmap = Image.FromFile(path) as Bitmap;
+            return TextureLoader.FromFile(path, flipY, generateMipmaps);
 
-            Color[] pixels = new Color[bitmap.Height * bitmap.Width];
+            //var bitmap = Image.FromFile(path) as Bitmap;
 
-            //TODO bitmapdata technique
+            //Color[] pixels = new Color[bitmap.Height * bitmap.Width];
 
-            int i = 0;
-            for (int y = 0; y < bitmap.Height; y++)
-                for (int x = 0; x < bitmap.Width; x++)
-                {
-                    var pixel = bitmap.GetPixel(x, flipY ? (bitmap.Height - 1 - y) : y);
-                    pixels[i] = new Color(pixel.R, pixel.G, pixel.B, pixel.A);
-                    i++;
-                }
+            ////int bytes = Math.Abs(bmpData.Stride) * bitmap.Height;
+            ////byte[] rgbValues = new byte[bytes];
 
-            return new Texture(bitmap.Width, bitmap.Height, pixels, generateMipmaps);
+            ////global::System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
+
+            ////for (int counter = 2; counter < rgbValues.Length; counter += 3)
+            ////    rgbValues[counter] = 255;
+
+            //int i = 0;
+            //for (int y = 0; y < bitmap.Height; y++)
+            //    for (int x = 0; x < bitmap.Width; x++)
+            //    {
+            //        var pixel = bitmap.GetPixel(x, flipY ? (bitmap.Height - 1 - y) : y);
+            //        //var r = rgbValues[i];
+            //        //var g = rgbValues[i + 1];
+            //        //var b = rgbValues[i + 2];
+            //        //var a = rgbValues[i + 4];
+
+            //        pixels[i] = new Color(pixel.R, pixel.G, pixel.B, pixel.A);
+
+            //        i++;
+            //    }
+
+            //return new Texture(bitmap.Width, bitmap.Height, pixels, generateMipmaps);
         }
 
         /// <summary>

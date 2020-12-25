@@ -3,10 +3,11 @@ using System.Text;
 
 namespace Walgelijk
 {
+    [global::System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "These are console commands, they are used and invoked via reflection")]
     internal struct DebugCommands
     {
         [Command]
-        private static void Profiler(bool state)
+        private static void ShowStats(bool state)
         {
             var inst = Game.Main.Profiling;
             inst.DrawQuickProfiler = state;
@@ -24,11 +25,25 @@ namespace Walgelijk
         {
             Game.Main.Console.Clear();
         }
-        
+
         [Command]
         private static void Quit()
         {
             Game.Main.Stop();
+        }
+
+        [Command]
+        private static string FpsCap(int target = 0)
+        {
+            Game.Main.Window.TargetFrameRate = target;
+            return "Target frame render rate set to " + target;
+        }
+
+        [Command]
+        private static string UpsCap(int target = 0)
+        {
+            Game.Main.Window.TargetUpdateRate = target;
+            return "Target update rate set to " + target;
         }
 
         [Command]

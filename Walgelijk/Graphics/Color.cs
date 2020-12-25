@@ -148,6 +148,26 @@ namespace Walgelijk
                 left.B * right.B,
                 left.A * right.A
                 );
+        }        
+        
+        public static Color operator *(float v, Color c)
+        {
+            return new Color(
+                c.R * v,
+                c.G * v,
+                c.B * v,
+                c.A * v
+                );
+        } 
+        
+        public static Color operator *(Color c, float v)
+        {
+            return new Color(
+                c.R * v,
+                c.G * v,
+                c.B * v,
+                c.A * v
+                );
         }
 
         public static bool operator >(Color left, Color right)

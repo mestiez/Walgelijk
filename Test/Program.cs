@@ -77,12 +77,12 @@ namespace Test
                 RotationalDampening = new FloatRange(0.95f),
                 // Gravity = new Vec2Range(Vector2.Zero),
                 StartVelocity = new Vec2Range(Vector2.One * -15, Vector2.One * 15),
-                EmissionRate = 128,
+                EmissionRate = 32,
                 StartColor = new ColorRange(Colors.White),
                 ColorOverLife = new ColorCurve(new Curve<Color>.Key(Color.White, 0), new Curve<Color>.Key(Color.Red, 1)),
                 SizeOverLife = new FloatCurve(new Curve<float>.Key(0, 0), new Curve<float>.Key(1, 0.1f), new Curve<float>.Key(0, 1)),
-                WorldSpace = true,
-                SimulationSpeed = 2f
+                WorldSpace = false,
+                SimulationSpeed = 1f
             };
 
             scene.AttachComponent(particles, particleComponent);

@@ -79,6 +79,11 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Returns if the collection has a specific object instance
+        /// </summary>
+        public bool HasObject(object instance) => objects.Contains(instance);
+
+        /// <summary>
         /// Try to add a value to the collection
         /// </summary>
         public bool TryAdd<T>(object value)
