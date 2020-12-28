@@ -648,11 +648,6 @@
             Game this scene belongs to
             </summary>
         </member>
-        <member name="P:Walgelijk.Scene.DevelopmentMode">
-            <summary>
-            When set to true, safety checks will be done at runtime. This will degrade performance and should be turned off in release. <b>True by default</b>
-            </summary>
-        </member>
         <member name="M:Walgelijk.Scene.#ctor(Walgelijk.Game)">
             <summary>
             Create scene for a <see cref="P:Walgelijk.Scene.Game"/> without setting it as the active scene
@@ -820,6 +815,11 @@
         <member name="P:Walgelijk.System.Audio">
             <summary>
             Active audio renderer
+            </summary>
+        </member>
+        <member name="P:Walgelijk.System.DebugDraw">
+            <summary>
+            Debug drawing utilities
             </summary>
         </member>
         <member name="P:Walgelijk.System.Profiler">
@@ -1047,6 +1047,37 @@
             Aqua
             </summary>
         </member>
+        <member name="T:Walgelijk.DebugDraw">
+            <summary>
+            Debug drawing utility class. Usually accessed using <see cref="P:Walgelijk.System.DebugDraw"/> or <see cref="P:Walgelijk.Game.DebugDraw"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.DebugDraw.#ctor(Walgelijk.Game)">
+            <summary>
+            Construct debug draw
+            </summary>
+            <param name="game"></param>
+        </member>
+        <member name="M:Walgelijk.DebugDraw.Render">
+            <summary>
+            Update the debug drawer and remove expired drawings
+            </summary>
+        </member>
+        <member name="M:Walgelijk.DebugDraw.Line(System.Numerics.Vector3,System.Numerics.Vector3,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},System.Int32)">
+            <summary>
+            Draw a line
+            </summary>
+        </member>
+        <member name="M:Walgelijk.DebugDraw.Cross(System.Numerics.Vector3,System.Single,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},System.Int32)">
+            <summary>
+            Draw a cross
+            </summary>
+        </member>
+        <member name="M:Walgelijk.DebugDraw.Circle(System.Numerics.Vector3,System.Single,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},System.Int32)">
+            <summary>
+            Draw a wire circle
+            </summary>
+        </member>
         <member name="T:Walgelijk.FilterMode">
             <summary>
             Filter mode for textures
@@ -1226,6 +1257,21 @@
         <member name="F:Walgelijk.PrimitiveMeshes.Quad">
             <summary>
             Unit quad where (0, 0) is the bottom left
+            </summary>
+        </member>
+        <member name="F:Walgelijk.PrimitiveMeshes.Line">
+            <summary>
+            A line segment from (0, 0) to (1, 0)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.PrimitiveMeshes.Circle">
+            <summary>
+            A unit circle primitive with 33 vertices
+            </summary>
+        </member>
+        <member name="M:Walgelijk.PrimitiveMeshes.GenerateCircle(System.Int32,System.Single)">
+            <summary>
+            Generates a centered circle vertex buffer
             </summary>
         </member>
         <member name="T:Walgelijk.ActionRenderTask">
@@ -2279,6 +2325,11 @@
             The main audio renderer
             </summary>
         </member>
+        <member name="P:Walgelijk.Game.DebugDraw">
+            <summary>
+            Debug drawing utilities
+            </summary>
+        </member>
         <member name="P:Walgelijk.Game.Profiling">
             <summary>
             The game profiler
@@ -2287,6 +2338,11 @@
         <member name="P:Walgelijk.Game.Time">
             <summary>
             Returns the <see cref="T:Walgelijk.Time"/> information that belongs to <see cref="P:Walgelijk.Game.Window"/>
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.DevelopmentMode">
+            <summary>
+            When set to true, safety checks will be done at runtime. This will degrade performance and should be turned off in release. <b>True by default</b>
             </summary>
         </member>
         <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window,Walgelijk.AudioRenderer)">

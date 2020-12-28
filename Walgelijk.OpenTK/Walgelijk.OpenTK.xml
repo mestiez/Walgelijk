@@ -4,6 +4,11 @@
         <name>Walgelijk.OpenTK</name>
     </assembly>
     <members>
+        <member name="T:Walgelijk.OpenTK.OpenTKWindow">
+            <summary>
+            OpenTK implementation of <see cref="T:Walgelijk.Window"/>
+            </summary>
+        </member>
         <member name="F:Walgelijk.OpenTK.VertexBufferCacheHandles.VBO">
             <summary>
             Vertex buffer object index

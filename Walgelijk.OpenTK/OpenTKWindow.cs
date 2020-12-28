@@ -152,6 +152,8 @@ namespace Walgelijk.OpenTK
             time.SecondsSinceLoad = (float)stopwatch.Elapsed.TotalSeconds;
 
             Game.Scene?.RenderSystems();
+            if (Game.DevelopmentMode)
+                Game.DebugDraw.Render();
             Game.Profiling.Render();
             Game.Console.Render();
 

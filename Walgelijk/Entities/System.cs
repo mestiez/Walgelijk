@@ -31,6 +31,11 @@
         protected AudioRenderer Audio => Scene.Game.AudioRenderer;
 
         /// <summary>
+        /// Debug drawing utilities
+        /// </summary>
+        protected DebugDraw DebugDraw => Scene.Game.DebugDraw;
+
+        /// <summary>
         /// The active profiler
         /// </summary>
         protected Profiler Profiler => Scene.Game.Profiling;

@@ -14,11 +14,6 @@ namespace Walgelijk
         /// </summary>
         public Game Game { get; internal set; }
 
-        /// <summary>
-        /// When set to true, safety checks will be done at runtime. This will degrade performance and should be turned off in release. <b>True by default</b>
-        /// </summary>
-        public bool DevelopmentMode { get; set; } = true;
-
         private readonly Dictionary<int, Entity> entities = new Dictionary<int, Entity>();
         private readonly Dictionary<Entity, CollectionByType> components = new Dictionary<Entity, CollectionByType>();
         private readonly Dictionary<Entity, CollectionByType> creationBuffer = new Dictionary<Entity, CollectionByType>();
@@ -267,7 +262,7 @@ namespace Walgelijk
         /// </summary>
         public void AttachComponent<T>(Entity entity, T component) where T : class
         {
-            if (DevelopmentMode)
+            if (Game.DevelopmentMode)
                 AssertComponentRequirements(entity, component);
 
             if (creationBuffer.TryGetValue(entity, out var value))

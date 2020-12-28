@@ -38,7 +38,7 @@ namespace Test
         {
             Scene scene = new Scene(game);
 
-            RenderTexture gaming = new RenderTexture(512,512);
+            RenderTexture gaming = new RenderTexture(512, 512);
             game.Window.Graphics.CurrentTarget = gaming;
             game.Window.Graphics.Clear(Colors.Purple);
             game.Window.Graphics.Draw(PrimitiveMeshes.CenteredQuad, Material.DefaultTextured);
@@ -105,8 +105,6 @@ namespace Test
     {
         public override void Update()
         {
-            //Logger.Log(Input.WorldMousePosition);
-
             var components = Scene.GetAllComponentsOfType<WaveMovementComponent>();
             foreach (var item in components)
             {
@@ -115,6 +113,19 @@ namespace Test
 
                 transform.Position = new Vector2(MathF.Sin(Time.SecondsSinceLoad * wave.Frequency + wave.Phase) * wave.Amplitude, 0);
             }
+        }
+
+
+        public override void Render()
+        {
+            DebugDraw.Circle(Vector3.One, .4f, Colors.Green);
+
+            if (Utilities.RandomByte() != 200)
+                return;
+
+            float l = 10;
+            var end = new Vector3(MathF.Cos(Time.SecondsSinceLoad), MathF.Sin(Time.SecondsSinceLoad), 0) * l;
+            DebugDraw.Line(default, end, duration: 1);
         }
     }
 }

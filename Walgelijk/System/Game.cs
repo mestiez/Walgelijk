@@ -58,6 +58,11 @@ namespace Walgelijk
         public AudioRenderer AudioRenderer { get; }
 
         /// <summary>
+        /// Debug drawing utilities
+        /// </summary>
+        public DebugDraw DebugDraw { get; }
+
+        /// <summary>
         /// The game profiler
         /// </summary>
         public Profiler Profiling { get; }
@@ -66,6 +71,11 @@ namespace Walgelijk
         /// Returns the <see cref="Walgelijk.Time"/> information that belongs to <see cref="Window"/>
         /// </summary>
         public Time Time => Window.Time;
+
+        /// <summary>
+        /// When set to true, safety checks will be done at runtime. This will degrade performance and should be turned off in release. <b>True by default</b>
+        /// </summary>
+        public bool DevelopmentMode { get; set; } = true;
 
         /// <summary>
         /// Create a game with a window and an optional audio renderer. If the audio renderer is not set, the game won't be able to play any sounds
@@ -82,6 +92,7 @@ namespace Walgelijk
             AudioRenderer = audioRenderer ?? new EmptyAudioRenderer();
             Profiling = new Profiler(this);
             Console = new DebugConsole(this);
+            DebugDraw = new DebugDraw(this);
         }
 
         /// <summary>
