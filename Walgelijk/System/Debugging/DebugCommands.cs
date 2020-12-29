@@ -11,11 +11,11 @@ namespace Walgelijk
         private static Game Game => Game.Main;
 
         [Command]
-        private static void ShowStats(bool state)
+        private static string ShowStats(bool state)
         {
             var inst = Game.Profiling;
             inst.DrawQuickProfiler = state;
-            Logger.Log("Profiler " + (state ? "enabled" : "disabled"));
+            return "Profiler " + (state ? "enabled" : "disabled");
         }
 
         [Command]
@@ -37,47 +37,47 @@ namespace Walgelijk
         }
 
         [Command]
-        private static string FpsCap(int target = 0)
+        private static CommandResult FpsCap(int target = 0)
         {
             Game.Window.TargetFrameRate = target;
             return "Target frame render rate set to " + target;
         }
 
         [Command]
-        private static string UpsCap(int target = 0)
+        private static CommandResult UpsCap(int target = 0)
         {
             Game.Window.TargetUpdateRate = target;
             return "Target update rate set to " + target;
         }
 
         [Command]
-        public static string ListSystems()
+        private static string ListSystems()
         {
             var systems = Game.Scene.GetSystems();
             return string.Join("\n", systems.Select(s => ">" + s.GetType().Name));
         }
 
         [Command]
-        public static string RemoveSystem(string typeName)
+        private static CommandResult RemoveSystem(string typeName)
         {
             var system = Game.Scene.GetSystems().FirstOrDefault(s => s.GetType().Name == typeName);
             if (system == null)
-                return $"There is no system that matches \"{typeName}\"";
+                return CommandResult.Error($"There is no system that matches \"{typeName}\"");
             var type = system.GetType();
             var removeMethod = typeof(Scene).GetMethod(nameof(Game.Scene.RemoveSystem)).MakeGenericMethod(type);
             bool success = (bool)removeMethod.Invoke(Game.Scene, null);
-            return success ? type.Name + " removed" : "Could not remove " + type.Name;
+            return success ? type.Name + " removed" : CommandResult.Error("Could not remove " + type.Name);
         }
 
         [Command]
-        public static string ListEntities()
+        private static string ListEntities()
         {
             var systems = Game.Scene.GetAllEntities();
             return string.Join("\n", systems.Select(s => ">" + s));
         }
 
         [Command]
-        public static string ListComponents(int entityID)
+        private static string ListComponents(int entityID)
         {
             if (!Game.Scene.HasEntity(entityID))
                 return "No matching entity found";
@@ -87,40 +87,37 @@ namespace Walgelijk
         }
 
         [Command]
-        public static string RemoveComponent(int entityID, string componentType)
+        private static CommandResult RemoveComponent(int entityID, string componentType)
         {
             if (!Game.Scene.HasEntity(entityID))
-                return "No matching entity found";
+                return CommandResult.Error("No matching entity found");
 
             var component = Game.Scene.GetAllComponentsFrom(entityID).FirstOrDefault(s => s.GetType().Name == componentType);
             if (component == null)
-                return $"{entityID} has no component that matches \"{componentType}\"";
+                return CommandResult.Error($"{entityID} has no component that matches \"{componentType}\"");
             var type = component.GetType();
             var removeMethod = typeof(Scene).GetMethod(nameof(Game.Scene.DetachComponent)).MakeGenericMethod(type);
             bool success = (bool)removeMethod.Invoke(Game.Scene, new object[] { new Entity { Identity = entityID } });
-            return success ? type.Name + " removed" : "Could not remove " + type.Name;
+            return success ? type.Name + " removed" : CommandResult.Error("Could not remove " + type.Name);
         }
 
         [Command]
-        public static string RemoveEntity(int entityID)
+        private static CommandResult RemoveEntity(int entityID)
         {
             bool success = Game.Scene.RemoveEntity(entityID);
-            return success ? entityID + " removed" : "Could not remove " + entityID;
+            return success ? entityID + " removed" : CommandResult.Error("Could not remove Entity " + entityID);
         }
 
         [Command]
-        private static void List()
+        private static string List()
         {
             var builder = new StringBuilder();
-            builder.Append(Environment.NewLine);
-            builder.Append("All commands:");
-            builder.Append(Environment.NewLine);
             foreach (var item in CommandProcessor.GetAllCommands())
             {
                 builder.Append(item);
                 builder.Append(Environment.NewLine);
             }
-            Logger.Log(builder);
+            return builder.ToString();
         }
     }
 }

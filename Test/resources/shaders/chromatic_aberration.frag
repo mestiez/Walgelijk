@@ -9,12 +9,14 @@ uniform sampler2D mainTex;
 
 void main()
 {
-    const float intensity = 0.01;
+    const float intensity = 0.11;
 
     float i = 1 + intensity;
-    float r = texture(mainTex, uv).r;
-    float g = texture(mainTex, uv * i).g;
-    float b = texture(mainTex, uv * (1/i)).b;
+    vec2 cUv = uv - .5;
+
+    float r = texture(mainTex, cUv+ .5).r;
+    float g = texture(mainTex, cUv * i+ .5).g;
+    float b = texture(mainTex, cUv * (1/i) + .5).b;
 
     color = vertexColor * vec4(r,g,b,1);
 }

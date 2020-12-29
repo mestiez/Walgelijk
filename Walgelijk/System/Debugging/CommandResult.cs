@@ -40,5 +40,13 @@
             Message = message,
             Type = LogLevel.Error
         };
+
+        /// <summary>
+        /// Implicit string conversion
+        /// </summary>
+        public static implicit operator CommandResult(string value)
+        {
+            return Info(value);
+        }
     }
 }

@@ -2160,6 +2160,11 @@
             Create a <see cref="T:Walgelijk.CommandResult"/> of type Error
             </summary>
         </member>
+        <member name="M:Walgelijk.CommandResult.op_Implicit(System.String)~Walgelijk.CommandResult">
+            <summary>
+            Implicit string conversion
+            </summary>
+        </member>
         <member name="T:Walgelijk.DebugConsole">
             <summary>
             Class that renders and controls the debug console
