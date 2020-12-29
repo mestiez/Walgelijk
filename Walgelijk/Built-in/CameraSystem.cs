@@ -82,8 +82,10 @@ namespace Walgelijk
         {
             if (!mainCameraSet) return;
             SetRenderTask();
+
             if (DoClear)
                 RenderQueue.Add(clearTask, int.MinValue);
+
             RenderQueue.Add(renderTask, int.MinValue);
         }
 

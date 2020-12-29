@@ -39,5 +39,16 @@
         /// Set or get the currently active target
         /// </summary>
         public RenderTarget CurrentTarget { get; set; }
+
+        /// <summary>
+        /// Delete an object from the GPU by its CPU representation
+        /// </summary>
+        public void Delete(object obj);
+
+        /// <summary>
+        /// Blit a <see cref="RenderTexture"/> onto another
+        /// </summary>
+        public void Blit(RenderTexture source, RenderTexture destination);
+        //TODO position en alles
     }
 }

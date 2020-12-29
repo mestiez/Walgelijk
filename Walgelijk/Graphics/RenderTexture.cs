@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using System.Numerics;
 
 namespace Walgelijk
@@ -6,7 +7,7 @@ namespace Walgelijk
     /// <summary>
     /// A render target of an arbitrary size that can be used as a texture
     /// </summary>
-    public class RenderTexture : RenderTarget, IReadableTexture
+    public class RenderTexture : RenderTarget, IReadableTexture, IDisposable
     {
         private Vector2 size;
         private WrapMode wrapMode;
@@ -78,6 +79,15 @@ namespace Walgelijk
         public void ForceUpdate()
         {
             NeedsUpdate = true;
+        }
+
+        /// <summary>
+        /// Delete the texture and framebuffer from the GPU
+        /// </summary>
+        public void Dispose()
+        {
+            Game.Main.Window.Graphics.Delete(this);
+            GC.SuppressFinalize(this);
         }
     }
 }

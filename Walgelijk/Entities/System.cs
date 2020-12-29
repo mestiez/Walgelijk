@@ -1,10 +1,15 @@
-﻿namespace Walgelijk
+﻿using System.Collections.Generic;
+
+namespace Walgelijk
 {
     /// <summary>
     /// Holds game logic
     /// </summary>
     public abstract class System
     {
+        private int executionOrder;
+        internal bool ExecutionOrderChanged { get; set; }
+
         /// <summary>
         /// Containing scene
         /// </summary>
@@ -29,6 +34,25 @@
         /// Active audio renderer
         /// </summary>
         protected AudioRenderer Audio => Scene.Game.AudioRenderer;
+
+        /// <summary>
+        /// The order of execution relative to other systems
+        /// </summary>
+        public int ExecutionOrder
+        {
+            get => executionOrder;
+            set
+            {
+                if (executionOrder != value)
+                    ExecutionOrderChanged = true;
+                executionOrder = value;
+            }
+        }
+
+        /// <summary>
+        /// Is the game running in dev mode?
+        /// </summary>
+        protected bool DevelopmentMode => Scene.Game.DevelopmentMode;
 
         /// <summary>
         /// Debug drawing utilities

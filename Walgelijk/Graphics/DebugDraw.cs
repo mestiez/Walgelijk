@@ -89,6 +89,9 @@ void main()
         /// </summary>
         public void Line(Vector3 from, Vector3 to, Color? color = null, float? duration = null, int renderOrder = 0)
         {
+            if (!game.DevelopmentMode)
+                return;
+
             var delta = (to - from);
             var distance = delta.Length();
             var normalised = delta / distance;
@@ -110,11 +113,14 @@ void main()
         /// </summary>
         public void Cross(Vector3 center, float size = 0.5f, Color? color = null, float? duration = null, int renderOrder = 0)
         {
+            if (!game.DevelopmentMode)
+                return;
+
             var right = new Vector3(size, 0, 0);
             var up = new Vector3(0, size, 0);
 
             Line(center - right, center + right, color, duration, renderOrder);
-            Line(center - up,    center + up,    color, duration, renderOrder);
+            Line(center - up, center + up, color, duration, renderOrder);
         }
 
         /// <summary>
@@ -122,6 +128,9 @@ void main()
         /// </summary>
         public void Circle(Vector3 center, float radius = 1f, Color? color = null, float? duration = null, int renderOrder = 0)
         {
+            if (!game.DevelopmentMode)
+                return;
+
             var model = Matrix4x4.CreateScale(radius) * Matrix4x4.CreateTranslation(center);
             var task = new DebugDrawTask(circle, model, debugMaterial, GetColor(color));
             drawings.Add(new Drawing

@@ -113,7 +113,9 @@ namespace Walgelijk
             //TODO en dit... dit is langzaam. er moet een of andere index based bedoeling zijn hier waar de dictionary alleen ints opslaat die refereren naar een index in een lijst met components
             foreach (var item in objectCollectionByType)
             {
-                var set = item.Value as HashSet<T>;
+                if (item.Value is not HashSet<T> set)
+                    continue;
+
                 set.RemoveWhere(c => c is T);
                 objects.RemoveWhere(c => c is T);
             }

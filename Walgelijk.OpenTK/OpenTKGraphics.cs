@@ -6,10 +6,6 @@ namespace Walgelijk.OpenTK
 {
     public class OpenTKGraphics : IGraphics
     {
-        internal static readonly VertexBufferCache VertexBufferCache = new VertexBufferCache();
-        internal static readonly RenderTextureCache RenderTextureCache = new RenderTextureCache();
-        internal static readonly RenderTargetDictionary RenderTargetDictionary = new RenderTargetDictionary();
-
         private RenderTarget currentTarget;
         private DrawBounds drawBounds;
         private bool drawBoundEnabledCache;
@@ -39,15 +35,19 @@ namespace Walgelijk.OpenTK
 
                 if (currentTarget is RenderTexture rt)
                 {
-                    var handles = RenderTextureCache.Load(rt);
-                    RenderTargetDictionary.Set(rt, handles.FramebufferID);
+                    var handles = GPUObjects.RenderTextureCache.Load(rt);
+                    GPUObjects.RenderTargetDictionary.Set(rt, handles.FramebufferID);
                 }
 
-                var id = RenderTargetDictionary.Get(currentTarget);
+                var id = GPUObjects.RenderTargetDictionary.Get(currentTarget);
                 if (id == -1)
                     Logger.Error("Attempt to set non-existent render target");
                 else
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer,id);
+                {
+                    var size = value.Size;
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, id);
+                    GL.Viewport(0, 0, (int)size.X, (int)size.Y);
+                }
             }
         }
 
@@ -87,15 +87,15 @@ namespace Walgelijk.OpenTK
             if (material != null)
                 SetTransformationMatrixUniforms(material);
 
-            VertexBufferCacheHandles handles = VertexBufferCache.Load(vertexBuffer);
+            VertexBufferCacheHandles handles = GPUObjects.VertexBufferCache.Load(vertexBuffer);
 
             GL.BindVertexArray(handles.VAO);
 
             if (vertexBuffer.HasChanged)
-                VertexBufferCache.UpdateBuffer(vertexBuffer, handles);
+                GPUObjects.VertexBufferCache.UpdateBuffer(vertexBuffer, handles);
 
             if (vertexBuffer.ExtraDataHasChanged)
-                VertexBufferCache.UpdateExtraData(vertexBuffer, handles);
+                GPUObjects.VertexBufferCache.UpdateExtraData(vertexBuffer, handles);
         }
 
         private void SetTransformationMatrixUniforms(Material material)
@@ -137,6 +137,43 @@ namespace Walgelijk.OpenTK
                 GL.Enable(EnableCap.ScissorTest);
 
             drawBoundEnabledCache = true;
+        }
+
+        public void Delete(object obj)
+        {
+            switch (obj)
+            {
+                case RenderTexture rt:
+                    GPUObjects.RenderTextureCache.Unload(rt);
+                    break;
+                case IReadableTexture texture:
+                    GPUObjects.TextureCache.Unload(texture);
+                    break;
+                case VertexBuffer vb:
+                    GPUObjects.VertexBufferCache.Unload(vb);
+                    break;
+                case Material mat:
+                    GPUObjects.MaterialCache.Unload(mat);
+                    break;
+                default:
+                    Logger.Error("Attempt to delete unsupported object from GPU");
+                    break;
+            }
+        }
+
+        public void Blit(RenderTexture source, RenderTexture destination)
+        {
+            var sourceLoaded = GPUObjects.RenderTextureCache.Load(source);
+            var destinationLoaded = GPUObjects.RenderTextureCache.Load(destination);
+
+            GL.BlitNamedFramebuffer(
+                sourceLoaded.FramebufferID,
+                destinationLoaded.FramebufferID,
+                0, 0, source.Width, source.Height,
+                0, 0, destination.Width, destination.Height,
+                ClearBufferMask.ColorBufferBit,
+                BlitFramebufferFilter.Linear
+                );
         }
     }
 }

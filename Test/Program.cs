@@ -29,7 +29,19 @@ namespace Test
             Resources.SetBasePathForType<Texture>("textures");
             Resources.SetBasePathForType<Font>("fonts");
 
+            //game.Scene = SplashScreen.CreateScene(new[]{
+            //    new SplashScreen.Logo(Resources.Load<Texture>("walgelijk.png"), 0.5f),
+            //    },
+            //() =>
+            //{
+            //});
             game.Scene = LoadScene(game);
+
+#if DEBUG
+            game.DevelopmentMode = true;
+#else
+            game.DevelopmentMode = false;
+#endif
 
             game.Start();
         }
@@ -38,22 +50,35 @@ namespace Test
         {
             Scene scene = new Scene(game);
 
-            RenderTexture gaming = new RenderTexture(512, 512);
+            RenderTexture gaming = new RenderTexture(128, 128);
             game.Window.Graphics.CurrentTarget = gaming;
             game.Window.Graphics.Clear(Colors.Purple);
-            game.Window.Graphics.Draw(PrimitiveMeshes.CenteredQuad, Material.DefaultTextured);
-            //game.Window.Graphics.CurrentTarget = game.Window.RenderTarget;
+            game.Window.Graphics.Draw(PrimitiveMeshes.Circle, Material.DefaultTextured);
+            game.Window.Graphics.CurrentTarget = game.Window.RenderTarget;
 
             var camera = scene.CreateEntity();
             scene.AttachComponent(camera, new TransformComponent());
             scene.AttachComponent(camera, new CameraComponent { PixelsPerUnit = 1, OrthographicSize = 0.02f });
 
             scene.AddSystem(new TransformSystem());
-            scene.AddSystem(new CameraSystem());
+            scene.AddSystem(new CameraSystem() { ExecutionOrder = -1 });
             scene.AddSystem(new ShapeRendererSystem());
             scene.AddSystem(new WaveMovementSystem());
             scene.AddSystem(new DebugCameraSystem());
             scene.AddSystem(new ParticleSystem());
+            scene.AddSystem(new PostProcessingSystem() { ExecutionOrder = -2 });
+
+            var post = scene.CreateEntity();
+            scene.AttachComponent(post, new PostProcessingComponent
+            {
+                Effects = new List<IPostProcessingEffect>()
+                {
+                    new ShaderPostProcessor(new Material(new Shader(
+                        ShaderDefaults.WorldSpaceVertex,
+                        Resources.Load<string>("shaders\\inverted.frag")
+                        )))
+                }
+            });;
 
             var orgin = scene.CreateEntity();
             scene.AttachComponent(orgin, new TransformComponent { Position = new Vector2(0, 0) });

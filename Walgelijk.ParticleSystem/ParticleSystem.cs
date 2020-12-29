@@ -91,15 +91,7 @@ namespace Walgelijk.ParticleSystem
         private void RemoveParticle(ParticlesComponent particles, int index)
         {
             if (particles.CurrentParticleCount <= 0) return;
-
             particles.RawParticleArray[index].Active = false;
-
-            //int maxCount = Math.Min(particles.CurrentParticleCount, particles.MaxParticleCount - 1);
-            //for (int i = index; i < maxCount; i++)
-            //{
-            //    particles.RawParticleArray[i] = particles.RawParticleArray[i + 1];
-            //}
-
             particles.CurrentParticleCount--;
         }
 

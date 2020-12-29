@@ -189,7 +189,10 @@ namespace Walgelijk.OpenTK
 
         protected override void DisposeOf(VertexBufferCacheHandles loaded)
         {
-
+            GL.DeleteBuffer(loaded.VBO);
+            GL.DeleteBuffer(loaded.IBO);
+            GL.DeleteBuffers(loaded.ExtraVBO.Length, loaded.ExtraVBO);
+            GL.DeleteVertexArray(loaded.VAO);
         }
     }
 }

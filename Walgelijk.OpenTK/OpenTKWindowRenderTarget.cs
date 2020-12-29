@@ -28,7 +28,7 @@ namespace Walgelijk.OpenTK
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            OpenTKGraphics.RenderTargetDictionary.Set(this, 0);
+            GPUObjects.RenderTargetDictionary.Set(this, 0);
             Window.internalGraphics.CurrentTarget = this;
         }
     }

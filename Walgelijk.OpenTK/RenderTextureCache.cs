@@ -22,18 +22,18 @@ namespace Walgelijk.OpenTK
             if (result != FramebufferErrorCode.FramebufferComplete)
             {
                 Logger.Error($"Could not create RenderTexture: {result}");
-                return new RenderTextureHandles(0, 0);
+                return default;
             }
 
-            return new RenderTextureHandles(framebufferID, loadedTexture.Index);
+            return new RenderTextureHandles(framebufferID, loadedTexture.Index, raw);
         }
 
         protected override void DisposeOf(RenderTextureHandles loaded)
         {
             GL.DeleteFramebuffer(loaded.FramebufferID);
-            GL.DeleteTexture(loaded.TextureID);
 
-            //Unload rendertarget van rendertargetdictionary en texture van texturecache
+            GPUObjects.TextureCache.Unload(loaded.Raw);
+            GPUObjects.RenderTargetDictionary.Delete(loaded.Raw);
         }
     }
 }

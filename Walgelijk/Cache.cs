@@ -10,7 +10,7 @@ namespace Walgelijk
     /// <typeparam name="LoadedType">The loaded object. This object is usually heavy and expensive to create</typeparam>
     public abstract class Cache<UnloadedType, LoadedType>
     {
-        private readonly Dictionary<UnloadedType, LoadedType> loaded = new Dictionary<UnloadedType, LoadedType>();
+        protected readonly Dictionary<UnloadedType, LoadedType> loaded = new Dictionary<UnloadedType, LoadedType>();
 
         /// <summary>
         /// Load or create a <typeparamref name="LoadedType"/> from an <typeparamref name="UnloadedType"/>
@@ -45,7 +45,12 @@ namespace Walgelijk
         /// </summary>
         public void Unload(UnloadedType obj)
         {
-            if (!loaded.TryGetValue(obj, out var loadedObj)) throw new ArgumentException("Attempt to unload an entry that isn't loaded");
+            if (!loaded.TryGetValue(obj, out var loadedObj))
+            {
+                Logger.Error($"Attempt to unload a(n) {typeof(UnloadedType).Name} that isn't loaded");
+                return;
+            }
+
             DisposeOf(loadedObj);
             loaded.Remove(obj);
         }

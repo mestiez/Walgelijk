@@ -7,7 +7,10 @@
             return new TextureUnitLink(raw.Texture, raw.Material.GetNextTextureUnit());
         }
 
-        protected override void DisposeOf(TextureUnitLink loaded) { }
+        protected override void DisposeOf(TextureUnitLink loaded)
+        {
+            
+        }
 
         internal void ActivateTexturesFor(LoadedMaterial material)
         {
@@ -21,7 +24,7 @@
                 switch (pair.Value)
                 {
                     case IReadableTexture v:
-                        loadedTexture  = GPUObjects.TextureCache.Load(v);
+                        loadedTexture = GPUObjects.TextureCache.Load(v);
                         break;
                     default:
                         continue;

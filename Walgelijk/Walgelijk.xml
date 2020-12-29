@@ -122,6 +122,11 @@
             Amount of pixels per translation unit
             </summary>
         </member>
+        <member name="P:Walgelijk.CameraComponent.TaskOrder">
+            <summary>
+            The order of this camera's tasks. <see cref="F:System.Int32.MinValue"/> by default
+            </summary>
+        </member>
         <member name="T:Walgelijk.CameraSystem">
             <summary>
             System that manages the built in <see cref="T:Walgelijk.CameraComponent"/>
@@ -166,6 +171,52 @@
             <summary>
             Zoom speed
             </summary>
+        </member>
+        <member name="T:Walgelijk.IPostProcessingEffect">
+            <summary>
+            A post processing effect
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IPostProcessingEffect.Process(Walgelijk.RenderTexture,Walgelijk.RenderTexture,Walgelijk.IGraphics,Walgelijk.Scene)">
+            <summary>
+            Process the current graphics state
+            </summary>
+        </member>
+        <member name="T:Walgelijk.PostProcessingComponent">
+            <summary>
+            A post processing effect container
+            </summary>
+        </member>
+        <member name="P:Walgelijk.PostProcessingComponent.Effects">
+            <summary>
+            Ordered collection of effects
+            </summary>
+        </member>
+        <member name="T:Walgelijk.PostProcessingSystem">
+            <summary>
+            System that handles all built-in post processing
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ShaderPostProcessor">
+            <summary>
+            A basic shader post processor. It applies a material to the entire image
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ShaderPostProcessor.Material">
+            <summary>
+            The material to apply
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ShaderPostProcessor.TextureUniform">
+            <summary>
+            Name of the main texture uniform
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ShaderPostProcessor.#ctor(Walgelijk.Material)">
+            <summary>
+            Construct a post processor with the given material
+            </summary>
+            <param name="material"></param>
         </member>
         <member name="T:Walgelijk.QuadShapeComponent">
             <summary>
@@ -817,6 +868,16 @@
             Active audio renderer
             </summary>
         </member>
+        <member name="P:Walgelijk.System.ExecutionOrder">
+            <summary>
+            The order of execution relative to other systems
+            </summary>
+        </member>
+        <member name="P:Walgelijk.System.DevelopmentMode">
+            <summary>
+            Is the game running in dev mode?
+            </summary>
+        </member>
         <member name="P:Walgelijk.System.DebugDraw">
             <summary>
             Debug drawing utilities
@@ -1093,6 +1154,16 @@
             Linear pixel interpolation. Results in somewhat smooth images
             </summary>
         </member>
+        <member name="T:Walgelijk.GraphicsExtensions">
+            <summary>
+            Extension methods for all implementations of <see cref="T:Walgelijk.IGraphics"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.GraphicsExtensions.BlitFullscreenQuad(Walgelijk.IGraphics,Walgelijk.RenderTexture,Walgelijk.RenderTexture,Walgelijk.Material,System.String)">
+            <summary>
+            Blit the <paramref name="src"/> content to <paramref name="dst"/> using a fullscreen quad and the given material
+            </summary>
+        </member>
         <member name="T:Walgelijk.IGraphics">
             <summary>
             Graphics utility interface meant to be implemented by the rendering implementation
@@ -1131,6 +1202,16 @@
         <member name="P:Walgelijk.IGraphics.CurrentTarget">
             <summary>
             Set or get the currently active target
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IGraphics.Delete(System.Object)">
+            <summary>
+            Delete an object from the GPU by its CPU representation
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IGraphics.Blit(Walgelijk.RenderTexture,Walgelijk.RenderTexture)">
+            <summary>
+            Blit a <see cref="T:Walgelijk.RenderTexture"/> onto another
             </summary>
         </member>
         <member name="T:Walgelijk.IReadableTexture">
@@ -1482,6 +1563,11 @@
             Force an update
             </summary>
         </member>
+        <member name="M:Walgelijk.RenderTexture.Dispose">
+            <summary>
+            Delete the texture and framebuffer from the GPU
+            </summary>
+        </member>
         <member name="T:Walgelijk.Shader">
             <summary>
             Structure that holds the code for a full shader program
@@ -1632,6 +1718,11 @@
         <member name="M:Walgelijk.Texture.ForceUpdate">
             <summary>
             Force an update
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Texture.Dispose">
+            <summary>
+            Delete the texture from the GPU
             </summary>
         </member>
         <member name="P:Walgelijk.Texture.White">

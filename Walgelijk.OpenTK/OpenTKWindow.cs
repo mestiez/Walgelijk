@@ -154,6 +154,9 @@ namespace Walgelijk.OpenTK
             Game.Scene?.RenderSystems();
             if (Game.DevelopmentMode)
                 Game.DebugDraw.Render();
+
+            Graphics.CurrentTarget = RenderTarget;
+
             Game.Profiling.Render();
             Game.Console.Render();
 

@@ -13,7 +13,7 @@ namespace Walgelijk
     /// <summary>
     /// Represents a texture
     /// </summary>
-    public class Texture : IReadableTexture
+    public class Texture : IReadableTexture, IDisposable
     {
         /// <summary>
         /// Width of the texture in pixels
@@ -103,35 +103,6 @@ namespace Walgelijk
         public static Texture Load(string path, bool flipY = true, bool generateMipmaps = true)
         {
             return TextureLoader.FromFile(path, flipY, generateMipmaps);
-
-            //var bitmap = Image.FromFile(path) as Bitmap;
-
-            //Color[] pixels = new Color[bitmap.Height * bitmap.Width];
-
-            ////int bytes = Math.Abs(bmpData.Stride) * bitmap.Height;
-            ////byte[] rgbValues = new byte[bytes];
-
-            ////global::System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
-
-            ////for (int counter = 2; counter < rgbValues.Length; counter += 3)
-            ////    rgbValues[counter] = 255;
-
-            //int i = 0;
-            //for (int y = 0; y < bitmap.Height; y++)
-            //    for (int x = 0; x < bitmap.Width; x++)
-            //    {
-            //        var pixel = bitmap.GetPixel(x, flipY ? (bitmap.Height - 1 - y) : y);
-            //        //var r = rgbValues[i];
-            //        //var g = rgbValues[i + 1];
-            //        //var b = rgbValues[i + 2];
-            //        //var a = rgbValues[i + 4];
-
-            //        pixels[i] = new Color(pixel.R, pixel.G, pixel.B, pixel.A);
-
-            //        i++;
-            //    }
-
-            //return new Texture(bitmap.Width, bitmap.Height, pixels, generateMipmaps);
         }
 
         /// <summary>
@@ -193,6 +164,15 @@ namespace Walgelijk
         public void ForceUpdate()
         {
             NeedsUpdate = true;
+        }
+
+        /// <summary>
+        /// Delete the texture from the GPU
+        /// </summary>
+        public void Dispose()
+        {
+            Game.Main.Window.Graphics.Delete(this);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>

@@ -94,7 +94,7 @@ namespace Walgelijk
             if (!IsEatingInput) return;
 
             ScrollOffset += Input.MouseScrollDelta * 9;
-            ScrollOffset = Utilities.Clamp(ScrollOffset, 0, Math.Max(0, renderer.TextBounds.Height - DebugConsoleRenderer.LogHeight));
+            ScrollOffset = Utilities.Clamp(ScrollOffset, 0, Math.Max(0, renderer.TextBounds.Height - DebugConsoleRenderer.LogHeight + 10));
 
             foreach (var c in Input.TextEntered)
             {

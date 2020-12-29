@@ -14,10 +14,11 @@ namespace Walgelijk
         /// </summary>
         public Game Game { get; internal set; }
 
-        private readonly Dictionary<int, Entity> entities = new Dictionary<int, Entity>();
-        private readonly Dictionary<Entity, CollectionByType> components = new Dictionary<Entity, CollectionByType>();
-        private readonly Dictionary<Entity, CollectionByType> creationBuffer = new Dictionary<Entity, CollectionByType>();
-        private readonly Dictionary<Type, System> systems = new Dictionary<Type, System>();
+        private readonly Dictionary<int, Entity> entities = new();
+        private readonly Dictionary<Entity, CollectionByType> components = new();
+        private readonly Dictionary<Entity, CollectionByType> creationBuffer = new();
+        private readonly Dictionary<Type, System> systems = new();
+        private readonly List<System> orderedSystemCollection = new();
 
         private bool stepIsInLoop;
 
@@ -65,7 +66,50 @@ namespace Walgelijk
             system.Scene = this;
             OnAddSystem?.Invoke(system);
             systems.Add(system.GetType(), system);
+            ReverseSortAddSystem(system);
+            system.ExecutionOrderChanged = false;
             system.Initialise();
+        }
+
+        private void ReverseSortAddSystem(System system)
+        {
+            for (int i = orderedSystemCollection.Count - 1; i >= 0; i--)
+                if (orderedSystemCollection[i].ExecutionOrder <= system.ExecutionOrder)
+                {
+                    orderedSystemCollection.Insert(i + 1, system);
+                    return;
+                }
+
+            orderedSystemCollection.Insert(0, system);
+        }
+
+        private void ForceSortSystems()
+        {
+            while (true)
+            {
+                bool moved = false;
+                for (int i = 0; i < orderedSystemCollection.Count - 1; i++)
+                {
+                    var current = orderedSystemCollection[i];
+                    var next = orderedSystemCollection[i + 1];
+
+                    current.ExecutionOrderChanged = false;
+                    next.ExecutionOrderChanged = false;
+
+                    if (current.ExecutionOrder > next.ExecutionOrder)
+                    {
+                        orderedSystemCollection.Remove(next);
+                        orderedSystemCollection.Insert(i, next);
+                        moved = true;
+                    }
+                }
+
+                if (!moved)
+                {
+                    Logger.Log("System collection sorted");
+                    break;
+                }
+            }
         }
 
         /// <summary>
@@ -82,7 +126,10 @@ namespace Walgelijk
         /// <returns>if the operation was successful</returns>
         public bool RemoveSystem<T>()
         {
-            return systems.Remove(typeof(T));
+            if (systems.Remove(typeof(T), out var removed))
+                return orderedSystemCollection.Remove(removed);
+
+            return false;
         }
 
         /// <summary>
@@ -90,8 +137,8 @@ namespace Walgelijk
         /// </summary>
         public IEnumerable<System> GetSystems()
         {
-            foreach (var pair in systems)
-                yield return pair.Value;
+            foreach (var s in orderedSystemCollection)
+                yield return s;
         }
 
         /// <summary>
@@ -183,7 +230,7 @@ namespace Walgelijk
         {
             if (stepIsInLoop && creationBuffer.TryGetValue(entity, out var c))
                 return c.GetAll();
-            
+
             return components[entity].GetAll();
         }
 
@@ -262,7 +309,7 @@ namespace Walgelijk
         /// </summary>
         public void AttachComponent<T>(Entity entity, T component) where T : class
         {
-            if (Game.DevelopmentMode)
+            if (Game?.DevelopmentMode ?? false)
                 AssertComponentRequirements(entity, component);
 
             if (creationBuffer.TryGetValue(entity, out var value))
@@ -309,13 +356,20 @@ namespace Walgelijk
         /// </summary>
         public void UpdateSystems()
         {
+            for (int i = 0; i < orderedSystemCollection.Count; i++)
+                if (orderedSystemCollection[i].ExecutionOrderChanged)
+                {
+                    ForceSortSystems();
+                    break;
+                }
+
             foreach (var component in creationBuffer)
                 components.Add(component.Key, component.Value);
 
             creationBuffer.Clear();
 
             stepIsInLoop = true;
-            foreach (var system in systems.Values)
+            foreach (var system in orderedSystemCollection)
                 system.Update();
             stepIsInLoop = false;
         }
@@ -325,15 +379,13 @@ namespace Walgelijk
         /// </summary>
         public void RenderSystems()
         {
-            var s = systems.Values;
-
-            foreach (var system in s)
+            foreach (var system in orderedSystemCollection)
                 system.PreRender();
 
-            foreach (var system in s)
+            foreach (var system in orderedSystemCollection)
                 system.Render();
 
-            foreach (var system in s)
+            foreach (var system in orderedSystemCollection)
                 system.PostRender();
         }
 

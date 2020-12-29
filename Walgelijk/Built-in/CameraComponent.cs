@@ -17,5 +17,10 @@ namespace Walgelijk
         /// Amount of pixels per translation unit
         /// </summary>
         public float PixelsPerUnit { get; set; } = 100;
+
+        /// <summary>
+        /// The order of this camera's tasks. <see cref="int.MinValue"/> by default
+        /// </summary>
+        public int TaskOrder { get; set; } = int.MinValue;
     }
 }
