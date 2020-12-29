@@ -45,7 +45,7 @@
     <None Update="resources\shaders\sdf-font.frag" Pack="false">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\Studio Minus\Assets\Walgelijk\cirkel avatar.png">
+    <None Include="cirkel avatar.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
