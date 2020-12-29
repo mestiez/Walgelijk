@@ -24,3 +24,4 @@ scene.AddSystem(new CameraSystem());
 game.Scene = scene;
 game.Start();
 ```
+**De ['resources'](/Walgelijk/resources)** folder moet worden gekopieerd wanneer je een nieuw project maakt omdat daar de standaard shaders en fonts in zitten**
