@@ -105,8 +105,17 @@ namespace Walgelijk
                     effect.Process(a, b, graphics, Scene);
                     last = b;
 
-                    a = flipState ? rt1 : rt0;
-                    b = flipState ? rt0 : rt1;
+                    if (flipState)
+                    {
+                        a = rt0;
+                        b = rt1;
+                    }
+                    else
+                    {
+                        a = rt1;
+                        b = rt0;
+                    }
+
                     flipState = !flipState;
                 }
             }

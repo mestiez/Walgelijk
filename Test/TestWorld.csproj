@@ -47,7 +47,10 @@
     <None Update="resources\prefabs\camera.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="resources\shaders\inverted.frag">
+    <None Update="resources\shaders\wavey.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\shaders\chromatic_aberration.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="resources\shaders\shader.frag">

@@ -75,8 +75,12 @@ namespace Test
                 {
                     new ShaderPostProcessor(new Material(new Shader(
                         ShaderDefaults.WorldSpaceVertex,
-                        Resources.Load<string>("shaders\\inverted.frag")
-                        )))
+                        Resources.Load<string>("shaders\\chromatic_aberration.frag")
+                        ))),
+                    //new ShaderPostProcessor(new Material(new Shader(
+                    //    ShaderDefaults.WorldSpaceVertex,
+                    //    Resources.Load<string>("shaders\\wavey.frag")
+                    //    ))),
                 }
             });;
 

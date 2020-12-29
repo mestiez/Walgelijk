@@ -9,7 +9,7 @@ uniform sampler2D mainTex;
 
 void main()
 {
-    vec4 tex = texture(mainTex, uv);
-    tex.rgb = 1 - tex.rgb;
-    color = vertexColor * tex;
+    vec2 c = uv;
+    c.x += sin(c.y * 40) * 0.01f;
+    color = vertexColor * texture(mainTex, c);
 }
