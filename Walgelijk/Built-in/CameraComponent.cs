@@ -22,5 +22,15 @@ namespace Walgelijk
         /// The order of this camera's tasks. <see cref="int.MinValue"/> by default
         /// </summary>
         public int TaskOrder { get; set; } = int.MinValue;
+
+        /// <summary>
+        /// Colour to clear with
+        /// </summary>
+        public Color ClearColour { get; set; } = Colors.Black;
+
+        /// <summary>
+        /// Should this camera clear the target before rendering?
+        /// </summary>
+        public bool Clear { get; set; } = true;
     }
 }

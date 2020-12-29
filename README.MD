@@ -11,13 +11,12 @@ Game game = new Game(
 game.Window.TargetFrameRate = 120;
 game.Window.TargetUpdateRate = 60;
 game.Window.VSync = false;
-game.Window.RenderTarget.ClearColour = new Color("#000000");
 
 var scene = new Scene();
 
 var camera = scene.CreateEntity();
-scene.AttachComponent(camera, new CameraComponent());
 scene.AttachComponent(camera, new TransformComponent());
+scene.AttachComponent(camera, new CameraComponent());
 
 scene.AddSystem(new TransformSystem());
 scene.AddSystem(new CameraSystem());

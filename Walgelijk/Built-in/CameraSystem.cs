@@ -27,10 +27,6 @@ namespace Walgelijk
         /// </summary>
         public TransformComponent MainCameraTransform { get; private set; }
 
-        /// <summary>
-        /// Should the system clear the target as well
-        /// </summary>
-        public bool DoClear { get; set; } = true;
 
         private bool mainCameraSet;
 
@@ -83,8 +79,11 @@ namespace Walgelijk
             if (!mainCameraSet) return;
             SetRenderTask();
 
-            if (DoClear)
+            if (MainCameraComponent.Clear)
+            {
+                clearTask.ClearColor = MainCameraComponent.ClearColour;
                 RenderQueue.Add(clearTask, int.MinValue);
+            }
 
             RenderQueue.Add(renderTask, int.MinValue);
         }

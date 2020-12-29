@@ -54,7 +54,6 @@ namespace Test
             game.Window.Graphics.CurrentTarget = gaming;
             game.Window.Graphics.Clear(Colors.Purple);
             game.Window.Graphics.Draw(PrimitiveMeshes.Circle, Material.DefaultTextured);
-            game.Window.Graphics.CurrentTarget = game.Window.RenderTarget;
 
             var camera = scene.CreateEntity();
             scene.AttachComponent(camera, new TransformComponent());
@@ -68,8 +67,7 @@ namespace Test
             scene.AddSystem(new ParticleSystem());
             scene.AddSystem(new PostProcessingSystem() { ExecutionOrder = -2 });
 
-            var post = scene.CreateEntity();
-            scene.AttachComponent(post, new PostProcessingComponent
+            scene.AttachComponent(scene.CreateEntity(), new PostProcessingComponent
             {
                 Effects = new List<IPostProcessingEffect>()
                 {
@@ -82,7 +80,7 @@ namespace Test
                     //    Resources.Load<string>("shaders\\wavey.frag")
                     //    ))),
                 }
-            });;
+            });
 
             var orgin = scene.CreateEntity();
             scene.AttachComponent(orgin, new TransformComponent { Position = new Vector2(0, 0) });

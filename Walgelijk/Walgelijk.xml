@@ -127,6 +127,16 @@
             The order of this camera's tasks. <see cref="F:System.Int32.MinValue"/> by default
             </summary>
         </member>
+        <member name="P:Walgelijk.CameraComponent.ClearColour">
+            <summary>
+            Colour to clear with
+            </summary>
+        </member>
+        <member name="P:Walgelijk.CameraComponent.Clear">
+            <summary>
+            Should this camera clear the target before rendering?
+            </summary>
+        </member>
         <member name="T:Walgelijk.CameraSystem">
             <summary>
             System that manages the built in <see cref="T:Walgelijk.CameraComponent"/>
@@ -145,11 +155,6 @@
         <member name="P:Walgelijk.CameraSystem.MainCameraTransform">
             <summary>
             Main camera transform component
-            </summary>
-        </member>
-        <member name="P:Walgelijk.CameraSystem.DoClear">
-            <summary>
-            Should the system clear the target as well
             </summary>
         </member>
         <member name="M:Walgelijk.CameraSystem.SetMainCamera(Walgelijk.Entity)">

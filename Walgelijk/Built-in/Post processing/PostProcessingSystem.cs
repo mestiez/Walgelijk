@@ -91,14 +91,14 @@ namespace Walgelijk
             var containers = Scene.GetAllComponentsOfType<PostProcessingComponent>();
             RenderTexture last = null;
 
+            var a = rt0;
+            var b = rt1;
+            bool flipState = false;
+
             foreach (var item in containers)
             {
                 var entity = item.Entity;
                 var container = item.Component;
-
-                var a = rt0;
-                var b = rt1;
-                bool flipState = false;
 
                 foreach (var effect in container.Effects)
                 {
