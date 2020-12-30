@@ -71,15 +71,32 @@ namespace Test
             {
                 Effects = new List<IPostProcessingEffect>()
                 {
-                    new ShaderPostProcessor(new Material(new Shader(
-                        ShaderDefaults.WorldSpaceVertex,
-                        Resources.Load<string>("shaders\\chromatic_aberration.frag")
-                        ))),
+                    //new ShaderPostProcessor(new Material(new Shader(
+                    //    ShaderDefaults.WorldSpaceVertex,
+                    //    Resources.Load<string>("shaders\\chromatic_aberration.frag")
+                    //    ))),
                     new ShaderPostProcessor(new Material(new Shader(
                         ShaderDefaults.WorldSpaceVertex,
                         Resources.Load<string>("shaders\\wavey.frag")
                         ))),
-                }
+                },
+                End = new RenderOrder(100, 0)
+            });
+
+            scene.AttachComponent(scene.CreateEntity(), new PostProcessingComponent
+            {
+                Effects = new List<IPostProcessingEffect>()
+                {
+                    new ShaderPostProcessor(new Material(new Shader(
+                        ShaderDefaults.WorldSpaceVertex,
+                        Resources.Load<string>("shaders\\chromatic_aberration.frag")
+                        ))),
+                    //new ShaderPostProcessor(new Material(new Shader(
+                    //    ShaderDefaults.WorldSpaceVertex,
+                    //    Resources.Load<string>("shaders\\wavey.frag")
+                    //    ))),
+                },
+                Begin = new RenderOrder(100, 1),
             });
 
             var orgin = scene.CreateEntity();
@@ -145,14 +162,14 @@ namespace Test
 
         public override void Render()
         {
-            DebugDraw.Circle(Vector3.One, .4f, Colors.Green);
+            DebugDraw.Circle(Vector3.One, .4f, Colors.Green, renderOrder: new RenderOrder(101));
 
             if (Utilities.RandomByte() != 200)
                 return;
 
             float l = 10;
             var end = new Vector3(MathF.Cos(Time.SecondsSinceLoad), MathF.Sin(Time.SecondsSinceLoad), 0) * l;
-            DebugDraw.Line(default, end, duration: 1);
+            DebugDraw.Line(default, end, duration: 1, renderOrder: new RenderOrder(101));
         }
     }
 }

@@ -4,39 +4,26 @@ using System.Numerics;
 namespace Walgelijk
 {
     /// <summary>
-    /// System that handles all built-in post processing
+    /// System that handles post processing effects with <see cref="PostProcessingComponent"/> and <see cref="IPostProcessingEffect"/>
     /// </summary>
     public class PostProcessingSystem : System
     {
-        public RenderOrder RenderOrder { get; set; } = DefaultLayers.UI.WithOrder(-1);
-
         private bool needsNewRT = true;
 
         private RenderTexture rt0;
         private RenderTexture rt1;
 
-        private TargetRenderTask targetTask;
-        private TargetRenderTask windowTargetTask;
-
-        private ActionRenderTask postProcessingTask;
-        private ShapeRenderTask fullScreenQuadTask;
+        private ActionRenderTask rt0TargetTask;
 
         private Material fullscreenMaterial;
+        private Matrix4x4 fullscreenModel;
 
         public override void Initialise()
         {
             Scene.Game.Window.OnResize += OnResize;
 
-            windowTargetTask = new TargetRenderTask
-            {
-                Target = Scene.Game.Window.RenderTarget
-            };
-
-            targetTask = new TargetRenderTask();
-            postProcessingTask = new ActionRenderTask(ApplyEffects);
-
+            rt0TargetTask = new ActionRenderTask(PrepareTarget);
             fullscreenMaterial = new();
-            fullScreenQuadTask = new ShapeRenderTask(PrimitiveMeshes.Quad, material: fullscreenMaterial) { ScreenSpace = true };
         }
 
         private void CreateRenderTextures()
@@ -48,8 +35,6 @@ namespace Walgelijk
 
             rt0 = getNewTexture();
             rt1 = getNewTexture();
-
-            targetTask.Target = rt0;
 
             Logger.Log($"New post-processing RenderTextures created with size {rt0.Size}");
 
@@ -75,56 +60,87 @@ namespace Walgelijk
             if (needsNewRT)
                 CreateRenderTextures();
 
-            RenderQueue.Add(targetTask, DefaultLayers.CameraOperations);
+            var containers = Scene.GetAllComponentsOfType<PostProcessingComponent>();
+
+            foreach (var item in containers)
+                RenderQueue.Add(rt0TargetTask, item.Component.Begin);
         }
 
         public override void PostRender()
         {
             var size = Scene.Game.Window.Size;
-            fullScreenQuadTask.ModelMatrix = Matrix4x4.CreateTranslation(0, -1, 0) * Matrix4x4.CreateScale(size.X, -size.Y, 1);
-            //TODO elke post processing component moet dit zelf kunnen bepalen
-            RenderQueue.Add(postProcessingTask, RenderOrder);
-            RenderQueue.Add(windowTargetTask, RenderOrder);
-            RenderQueue.Add(fullScreenQuadTask, RenderOrder);
+            fullscreenModel = Matrix4x4.CreateTranslation(0, -1, 0) * Matrix4x4.CreateScale(size.X, -size.Y, 1);
+
+            var containers = Scene.GetAllComponentsOfType<PostProcessingComponent>();
+
+            foreach (var item in containers)
+            {
+                var container = item.Component;
+
+                if (container.EffectTask == null)
+                    container.EffectTask = new ActionRenderTask((g) => { ApplyEffects(container, g); });
+
+                RenderQueue.Add(container.EffectTask, container.End);
+            }
         }
 
-        private void ApplyEffects(IGraphics graphics)
+        private void PrepareTarget(IGraphics graphics)
         {
-            var containers = Scene.GetAllComponentsOfType<PostProcessingComponent>();
+            var windowTarget = Scene.Game.Window.RenderTarget;
+
+            graphics.CurrentTarget = rt1;
+            graphics.Clear(Colors.Transparent);
+            graphics.CurrentTarget = rt0;
+            graphics.Clear(Colors.Transparent);
+
+            rt0.ProjectionMatrix = windowTarget.ProjectionMatrix;
+            rt1.ProjectionMatrix = windowTarget.ProjectionMatrix;
+
+            rt0.ViewMatrix = windowTarget.ViewMatrix;
+            rt1.ViewMatrix = windowTarget.ViewMatrix;
+        }
+
+        private void ApplyEffects(PostProcessingComponent component, IGraphics graphics)
+        {
             RenderTexture last = null;
 
             var a = rt0;
             var b = rt1;
             bool flipState = false;
 
-            foreach (var item in containers)
+            foreach (var effect in component.Effects)
             {
-                var entity = item.Entity;
-                var container = item.Component;
+                effect.Process(a, b, graphics, Scene);
+                last = b;
 
-                foreach (var effect in container.Effects)
+                if (flipState)
                 {
-                    effect.Process(a, b, graphics, Scene);
-                    last = b;
-
-                    if (flipState)
-                    {
-                        a = rt0;
-                        b = rt1;
-                    }
-                    else
-                    {
-                        a = rt1;
-                        b = rt0;
-                    }
-
-                    flipState = !flipState;
+                    a = rt0;
+                    b = rt1;
                 }
+                else
+                {
+                    a = rt1;
+                    b = rt0;
+                }
+
+                flipState = !flipState;
             }
 
-            fullscreenMaterial.SetUniform(ShaderDefaults.MainTextureUniform, last ?? rt0);
+            if (last != rt0)
+                graphics.Blit(last, rt0);
+
+            fullscreenMaterial.SetUniform(ShaderDefaults.MainTextureUniform, rt0);
 
             var windowTarget = Scene.Game.Window.RenderTarget;
+
+            windowTarget.ProjectionMatrix = rt0.OrthographicMatrix;
+            windowTarget.ViewMatrix = Matrix4x4.Identity;
+
+            graphics.CurrentTarget = windowTarget;
+            windowTarget.ModelMatrix = fullscreenModel;
+            graphics.Draw(PrimitiveMeshes.Quad, fullscreenMaterial);
+
             windowTarget.ProjectionMatrix = rt0.ProjectionMatrix;
             windowTarget.ViewMatrix = rt0.ViewMatrix;
         }

@@ -24,6 +24,9 @@
             Material = material;
         }
 
+        /// <summary>
+        /// Blits the source texture to the destination texture using <see cref="Material"/>
+        /// </summary>
         public void Process(RenderTexture src, RenderTexture dst, IGraphics graphics, Scene scene)
         {
             graphics.BlitFullscreenQuad(src, dst, Material, TextureUniform);

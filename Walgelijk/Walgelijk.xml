@@ -192,14 +192,29 @@
             A post processing effect container
             </summary>
         </member>
+        <member name="P:Walgelijk.PostProcessingComponent.Begin">
+            <summary>
+            The render order at which to start applying effects
+            </summary>
+        </member>
+        <member name="P:Walgelijk.PostProcessingComponent.End">
+            <summary>
+            The render order at which to stop applying effects
+            </summary>
+        </member>
         <member name="P:Walgelijk.PostProcessingComponent.Effects">
             <summary>
             Ordered collection of effects
             </summary>
         </member>
+        <member name="P:Walgelijk.PostProcessingComponent.EffectTask">
+            <summary>
+            The task that applies the effects
+            </summary>
+        </member>
         <member name="T:Walgelijk.PostProcessingSystem">
             <summary>
-            System that handles all built-in post processing
+            System that handles post processing effects with <see cref="T:Walgelijk.PostProcessingComponent"/> and <see cref="T:Walgelijk.IPostProcessingEffect"/>
             </summary>
         </member>
         <member name="T:Walgelijk.ShaderPostProcessor">
@@ -222,6 +237,11 @@
             Construct a post processor with the given material
             </summary>
             <param name="material"></param>
+        </member>
+        <member name="M:Walgelijk.ShaderPostProcessor.Process(Walgelijk.RenderTexture,Walgelijk.RenderTexture,Walgelijk.IGraphics,Walgelijk.Scene)">
+            <summary>
+            Blits the source texture to the destination texture using <see cref="P:Walgelijk.ShaderPostProcessor.Material"/>
+            </summary>
         </member>
         <member name="T:Walgelijk.QuadShapeComponent">
             <summary>
@@ -1036,6 +1056,11 @@
         <member name="T:Walgelijk.Colors">
             <summary>
             Collection of predefined, commonly used colours
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Colors.Transparent">
+            <summary>
+            Transparent (0,0,0,0)
             </summary>
         </member>
         <member name="F:Walgelijk.Colors.Red">

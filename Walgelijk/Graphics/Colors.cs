@@ -6,6 +6,11 @@
     public struct Colors
     {
         /// <summary>
+        /// Transparent (0,0,0,0)
+        /// </summary>
+        public static readonly Color Transparent = new Color(0, 0, 0, 0);
+
+        /// <summary>
         /// Red (1,0,0)
         /// </summary>
         public static readonly Color Red = new Color(1f, 0, 0);
