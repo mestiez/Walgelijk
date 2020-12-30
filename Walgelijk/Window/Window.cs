@@ -64,6 +64,11 @@ namespace Walgelijk
         public abstract Time Time { get; }
 
         /// <summary>
+        /// The icon for the window
+        /// </summary>
+        public abstract global::System.Drawing.Icon Icon { get; set; }
+
+        /// <summary>
         /// The window render queue. It stores the render tasks and is emptied and executed every render frame.
         /// </summary>
         public RenderQueue RenderQueue { get; } = new RenderQueue();

@@ -2926,12 +2926,13 @@
             Line height multiplier
             </summary>
         </member>
-        <member name="M:Walgelijk.TextMeshGenerator.Generate(System.String,Walgelijk.Vertex[])">
+        <member name="M:Walgelijk.TextMeshGenerator.Generate(System.String,Walgelijk.Vertex[],System.UInt32[])">
             <summary>
             Generate 2D text mesh. Returns the local bounding box.
             </summary>
             <param name="displayString">Text to render</param>
-            <param name="vertices">Vertex array that will be populated. This need to be the length of displayString * 4</param>
+            <param name="vertices">Vertex array that will be populated. This needs to be the length of displayString * 4</param>
+            <param name="vertices">Index array that will be populated. This needs to be the length of displayString * 6</param>
         </member>
         <member name="F:Walgelijk.Utilities.RadToDeg">
             <summary>
@@ -3262,6 +3263,11 @@
         <member name="P:Walgelijk.Window.Time">
             <summary>
             Time information
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.Icon">
+            <summary>
+            The icon for the window
             </summary>
         </member>
         <member name="P:Walgelijk.Window.RenderQueue">

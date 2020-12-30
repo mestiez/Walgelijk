@@ -26,7 +26,7 @@ namespace Walgelijk
             this.font = font ?? Font.Default;
 
             VertexBuffer = new VertexBuffer();
-            VertexBuffer.PrimitiveType = Primitive.Quads;
+            VertexBuffer.PrimitiveType = Primitive.Triangles;
             RenderTask = new ShapeRenderTask(VertexBuffer, Matrix4x4.Identity, this.font.Material);
 
             meshGenerator = new TextMeshGenerator
@@ -141,10 +141,10 @@ namespace Walgelijk
         private void CreateVertices()
         {
             VertexBuffer.Vertices = new Vertex[displayString.Length * 4];
+            VertexBuffer.Indices = new uint[displayString.Length * 6];
 
-            LocalBoundingBox = meshGenerator.Generate(String, VertexBuffer.Vertices);
+            LocalBoundingBox = meshGenerator.Generate(String, VertexBuffer.Vertices, VertexBuffer.Indices);
 
-            VertexBuffer.GenerateIndices();
             VertexBuffer.HasChanged = true;
         }
     }

@@ -13,6 +13,8 @@ namespace Walgelijk
         private RenderTexture rt0;
         private RenderTexture rt1;
 
+        //TODO uitzoeken of rt1 wel nodig is en of je niet gewoon de target van de window kan gebruiken????????
+
         private ActionRenderTask rt0TargetTask;
 
         private Material fullscreenMaterial;

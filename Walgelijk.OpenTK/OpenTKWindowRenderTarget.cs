@@ -24,7 +24,6 @@ namespace Walgelijk.OpenTK
 
         internal void Initialise()
         {
-            GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 

@@ -38,8 +38,9 @@ namespace Walgelijk
         /// Generate 2D text mesh. Returns the local bounding box.
         /// </summary>
         /// <param name="displayString">Text to render</param>
-        /// <param name="vertices">Vertex array that will be populated. This need to be the length of displayString * 4</param>
-        public Rect Generate(string displayString, Vertex[] vertices)
+        /// <param name="vertices">Vertex array that will be populated. This needs to be the length of displayString * 4</param>
+        /// <param name="vertices">Index array that will be populated. This needs to be the length of displayString * 6</param>
+        public Rect Generate(string displayString, Vertex[] vertices, uint[] indices)
         {
             float cursor = 0;
             float width = Font.Width;
@@ -51,6 +52,7 @@ namespace Walgelijk
             float maxY = float.MinValue;
 
             uint vertexIndex = 0;
+            uint indexIndex = 0;
             char lastChar = default;
             int line = 0;
             for (int i = 0; i < displayString.Length; i++)
@@ -63,7 +65,7 @@ namespace Walgelijk
                         line++;
                         cursor = 0;
                         continue;
-                    //TODO andere escape character handlers
+                        //TODO andere escape character handlers
                 }
 
                 var glyph = Font.GetGlyph(c);
@@ -78,7 +80,16 @@ namespace Walgelijk
                 vertices[vertexIndex + 2] = appendVertex(pos, glyph, uvInfo, Color, 1, 1);
                 vertices[vertexIndex + 3] = appendVertex(pos, glyph, uvInfo, Color, 0, 1);
 
+                indices[indexIndex + 0] = vertexIndex + 0;
+                indices[indexIndex + 1] = vertexIndex + 1;
+                indices[indexIndex + 2] = vertexIndex + 2;
+
+                indices[indexIndex + 3] = vertexIndex + 0;
+                indices[indexIndex + 4] = vertexIndex + 3;
+                indices[indexIndex + 5] = vertexIndex + 2;
+
                 vertexIndex += 4;
+                indexIndex += 6;
                 cursor += (glyph.Advance + (pos.X - cursor)) * TrackingMultiplier;
 
                 lastChar = c;

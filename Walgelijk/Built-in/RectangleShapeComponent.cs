@@ -71,7 +71,7 @@ namespace Walgelijk
         {
             VertexBuffer = new VertexBuffer()
             {
-                PrimitiveType = Primitive.Quads,
+                PrimitiveType = Primitive.Triangles,
             };
 
             RenderTask = new ShapeRenderTask(VertexBuffer)
@@ -96,7 +96,17 @@ namespace Walgelijk
                 new Vertex(Size.X - offset.X,     Size.Y - offset.Y) { Color = Color, TexCoords = new Vector2(1,1) },
                 new Vertex(0 - offset.X,          Size.Y - offset.Y) { Color = Color, TexCoords = new Vector2(0,1) },
             };
-            VertexBuffer.GenerateIndices();
+
+            VertexBuffer.Indices = new[]
+            {
+                0u,
+                1u,
+                2u,
+
+                0u,
+                3u,
+                2u,
+            };
         }
     }
 }

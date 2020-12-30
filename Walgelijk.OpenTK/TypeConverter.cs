@@ -4,30 +4,24 @@ namespace Walgelijk.OpenTK
 {
     public struct TypeConverter
     {
-        public static PrimitiveType Convert(Primitive primitive)
+        public static PrimitiveType Convert(Primitive primitive) => primitive switch
         {
-            return primitive switch
-            {
-                Primitive.Points => PrimitiveType.Points,
-                Primitive.Lines => PrimitiveType.Lines,
-                Primitive.LineLoop => PrimitiveType.LineLoop,
-                Primitive.LineStrip => PrimitiveType.LineStrip,
-                Primitive.Triangles => PrimitiveType.Triangles,
-                Primitive.TriangleStrip => PrimitiveType.TriangleStrip,
-                Primitive.TriangleFan => PrimitiveType.TriangleFan,
-                Primitive.Quads => PrimitiveType.Quads,
-                Primitive.QuadStrip => PrimitiveType.QuadStrip,
-                Primitive.Polygon => PrimitiveType.Polygon,
-                _ => PrimitiveType.Triangles,
-            };
-        }
+            Primitive.Points => PrimitiveType.Points,
+            Primitive.Lines => PrimitiveType.Lines,
+            Primitive.LineLoop => PrimitiveType.LineLoop,
+            Primitive.LineStrip => PrimitiveType.LineStrip,
+            Primitive.Triangles => PrimitiveType.Triangles,
+            Primitive.TriangleStrip => PrimitiveType.TriangleStrip,
+            Primitive.TriangleFan => PrimitiveType.TriangleFan,
+            _ => PrimitiveType.Triangles,
+        };
 
-        public static Key Convert(global::OpenTK.Input.Key key)
+        public static Key Convert(global::OpenTK.Windowing.GraphicsLibraryFramework.Keys key)
         {
             return (Key)(int)key;
         }
 
-        public static Button Convert(global::OpenTK.Input.MouseButton button)
+        public static Button Convert(global::OpenTK.Windowing.GraphicsLibraryFramework.MouseButton button)
         {
             return (Button)(int)button;
         }
@@ -42,52 +36,27 @@ namespace Walgelijk.OpenTK
             return (TextureUnit)(textureUnit + (int)TextureUnit.Texture0);
         }
 
-        public static WrapMode Convert(TextureWrapMode mode)
+        public static WrapMode Convert(TextureWrapMode mode) => mode switch
         {
-            switch (mode)
-            {
-                case TextureWrapMode.Repeat:
-                    return WrapMode.Repeat;
+            TextureWrapMode.Repeat => WrapMode.Repeat,
+            TextureWrapMode.Clamp or TextureWrapMode.ClampToBorder or TextureWrapMode.ClampToEdge => WrapMode.Clamp,
+            TextureWrapMode.MirroredRepeat => WrapMode.Mirror,
+            _ => default,
+        };
 
-                case TextureWrapMode.Clamp:
-                case TextureWrapMode.ClampToBorder:
-                case TextureWrapMode.ClampToEdge:
-                    return WrapMode.Clamp;
-
-                case TextureWrapMode.MirroredRepeat:
-                    return WrapMode.Mirror;
-
-                default:
-                    return default;
-            }
-        }
-
-        public static TextureWrapMode Convert(WrapMode mode)
+        public static TextureWrapMode Convert(WrapMode mode) => mode switch
         {
-            switch (mode)
-            {
-                case WrapMode.Clamp:
-                    return TextureWrapMode.Clamp;
-                case WrapMode.Repeat:
-                    return TextureWrapMode.Repeat;
-                case WrapMode.Mirror:
-                    return TextureWrapMode.MirroredRepeat;
-                default:
-                    return default;
-            }
-        }
+            WrapMode.Clamp => TextureWrapMode.Clamp,
+            WrapMode.Repeat => TextureWrapMode.Repeat,
+            WrapMode.Mirror => TextureWrapMode.MirroredRepeat,
+            _ => default,
+        };
 
-        public static int Convert(FilterMode filter)
+        public static int Convert(FilterMode filter) => filter switch
         {
-            switch (filter)
-            {
-                case FilterMode.Nearest:
-                    return (int)TextureMinFilter.Nearest;
-                case FilterMode.Linear:
-                    return (int)TextureMinFilter.Linear;
-                default:
-                    return default;
-            }
-        }
+            FilterMode.Nearest => (int)TextureMinFilter.Nearest,
+            FilterMode.Linear => (int)TextureMinFilter.Linear,
+            _ => default,
+        };
     }
 }

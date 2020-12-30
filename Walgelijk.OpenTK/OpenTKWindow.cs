@@ -2,8 +2,11 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Numerics;
 using Vector2 = System.Numerics.Vector2;
 
@@ -22,10 +25,17 @@ namespace Walgelijk.OpenTK
 
         private Time time = new Time();
         private Stopwatch stopwatch;
+        private global::System.Drawing.Icon icon;
 
         public OpenTKWindow(string title, Vector2 position, Vector2 size)
         {
-            window = new GameWindow((int)size.X, (int)size.Y, GraphicsMode.Default, title, GameWindowFlags.Default, DisplayDevice.Default, 0, 0, GraphicsContextFlags.Default);
+            GameWindowSettings windowSettings = new();
+
+            window = new GameWindow(windowSettings, new NativeWindowSettings
+            {
+                Size = new global::OpenTK.Mathematics.Vector2i((int)size.X, (int)size.Y),
+                Title = title,
+            });
 
             if (position.X >= 0 && position.Y >= 0)
                 Position = position;
@@ -35,29 +45,40 @@ namespace Walgelijk.OpenTK
 
             inputHandler = new InputHandler(this);
             internalGraphics = new OpenTKGraphics();
+
+            Logger.Log(window.API);
         }
 
         public override string Title { get => window.Title; set => window.Title = value; }
-        public override Vector2 Position { get => new Vector2(window.Location.X, window.Location.Y); set => window.Location = new Point((int)value.X, (int)value.Y); }
-        public override int TargetFrameRate { get => (int)window.TargetRenderFrequency; set => window.TargetRenderFrequency = value; }
-        public override int TargetUpdateRate { get => (int)window.TargetUpdateFrequency; set => window.TargetUpdateFrequency = value; }
+        public override Vector2 Position { get => new Vector2(window.Location.X, window.Location.Y); set => window.Location = new global::OpenTK.Mathematics.Vector2i((int)value.X, (int)value.Y); }
+        public override int TargetFrameRate { get => (int)window.RenderFrequency; set => window.RenderFrequency = value; }
+        public override int TargetUpdateRate { get => (int)window.UpdateFrequency; set => window.UpdateFrequency = value; }
         public override bool VSync { get => window.VSync == VSyncMode.On; set => window.VSync = (value ? VSyncMode.On : VSyncMode.Off); }
         public override bool IsOpen => window.Exists && !window.IsExiting;
-        public override bool HasFocus => window.Focused;
+        public override bool HasFocus => window.IsFocused;
         public override Time Time => time;
-        public override bool IsVisible { get => window.Visible; set => window.Visible = value; }
+        public override bool IsVisible { get => window.IsVisible; set => window.IsVisible = value; }
         public override bool Resizable { get => window.WindowBorder == WindowBorder.Resizable; set => window.WindowBorder = value ? WindowBorder.Resizable : WindowBorder.Fixed; }
         public override InputState InputState => inputHandler?.InputState ?? default;
         public override RenderTarget RenderTarget => renderTarget;
         public override IGraphics Graphics => internalGraphics;
+        public override global::System.Drawing.Icon Icon
+        {
+            get => icon;
+
+            set
+            {
+                icon = value;
+                throw new NotImplementedException();
+            }
+        }
 
         public override Vector2 Size
         {
-            get => new Vector2(window.Width, window.Height);
+            get => new Vector2(window.Size.X, window.Size.Y);
             set
             {
-                window.Width = (int)value.X;
-                window.Height = (int)value.Y;
+                window.Size = new global::OpenTK.Mathematics.Vector2i((int)value.X, (int)value.Y);
             }
         }
 
@@ -68,13 +89,13 @@ namespace Walgelijk.OpenTK
 
         public override Vector2 ScreenToWindowPoint(Vector2 point)
         {
-            var pos = window.PointToClient(new Point((int)point.X, (int)point.Y));
+            var pos = window.PointToClient(new global::OpenTK.Mathematics.Vector2i((int)point.X, (int)point.Y));
             return new Vector2(pos.X, pos.Y);
         }
 
         public override Vector2 WindowToScreenPoint(Vector2 point)
         {
-            var pos = window.PointToScreen(new Point((int)point.X, (int)point.Y));
+            var pos = window.PointToScreen(new global::OpenTK.Mathematics.Vector2i((int)point.X, (int)point.Y));
             return new Vector2(pos.X, pos.Y);
         }
 
@@ -116,7 +137,7 @@ namespace Walgelijk.OpenTK
 
         private void HookIntoEvents()
         {
-            window.Closing += OnWindowClose;
+            window.Closed += OnWindowClose;
             window.Resize += OnWindowResize;
             window.Move += OnWindowMove;
             window.FileDrop += OnFileDropped;
@@ -127,7 +148,7 @@ namespace Walgelijk.OpenTK
             window.Load += OnWindowLoad;
         }
 
-        private void OnWindowLoad(object sender, EventArgs args)
+        private void OnWindowLoad()
         {
             window.MakeCurrent();
             RenderTarget.Size = Size;
@@ -138,7 +159,7 @@ namespace Walgelijk.OpenTK
             renderTarget.Initialise();
         }
 
-        private void OnRenderFrame(object sender, FrameEventArgs obj)
+        private void OnRenderFrame(FrameEventArgs obj)
         {
             while (true)
             {
@@ -167,7 +188,7 @@ namespace Walgelijk.OpenTK
             window.SwapBuffers();
         }
 
-        private void OnUpdateFrame(object sender, FrameEventArgs obj)
+        private void OnUpdateFrame(FrameEventArgs obj)
         {
             time.UpdateDeltaTime = (float)obj.Time;
 
@@ -179,23 +200,23 @@ namespace Walgelijk.OpenTK
             inputHandler.Reset();
         }
 
-        private void OnFileDropped(object sender, FileDropEventArgs obj)
+        private void OnFileDropped(FileDropEventArgs obj)
         {
-            InvokeFileDropEvent(new[] { obj.FileName });
+            InvokeFileDropEvent(obj.FileNames);
         }
 
-        private void OnWindowMove(object sender, EventArgs args)
+        private void OnWindowMove(WindowPositionEventArgs e)
         {
-            InvokeMoveEvent(Position);
+            InvokeMoveEvent(new Vector2(e.Position.X, e.Position.Y));
         }
 
-        private void OnWindowResize(object sender, EventArgs args)
+        private void OnWindowResize(ResizeEventArgs e)
         {
-            RenderTarget.Size = new Vector2(window.Width, window.Height);
+            RenderTarget.Size = new Vector2(e.Width, e.Height);
             InvokeResizeEvent(Size);
         }
 
-        private void OnWindowClose(object sender, global::System.ComponentModel.CancelEventArgs obj)
+        private void OnWindowClose()
         {
             InvokeCloseEvent();
         }

@@ -1,5 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Input;
+using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Desktop;
 using System.Collections.Generic;
 using Vector2 = System.Numerics.Vector2;
 
@@ -21,7 +23,7 @@ namespace Walgelijk.OpenTK
             inputState.KeysHeld = new HashSet<Key>();
             inputState.KeysUp = new HashSet<Key>();
 
-            GameWindow.KeyPress += TextEnter;
+            GameWindow.TextInput += TextEnter;
             GameWindow.KeyDown += KeyDown;
             GameWindow.KeyUp += KeyUp;
 
@@ -34,48 +36,48 @@ namespace Walgelijk.OpenTK
             inputState.TextEntered = "";
         }
 
-        private void MouseWheel(object sender, MouseWheelEventArgs e)
+        private void MouseWheel(MouseWheelEventArgs e)
         {
-            inputState.MouseScrollDelta = e.DeltaPrecise;
+            inputState.MouseScrollDelta = e.OffsetY;
         }
 
-        private void MouseMove(object sender, MouseMoveEventArgs e)
+        private void MouseMove(MouseMoveEventArgs e)
         {
             inputState.WindowMousePosition = new Vector2(e.X, e.Y);
-            inputState.WindowMouseDelta = new Vector2(e.XDelta, e.YDelta);
+            inputState.WindowMouseDelta = new Vector2(e.DeltaX, e.DeltaY);
         }
 
-        private void MouseUp(object sender, MouseButtonEventArgs e)
+        private void MouseUp(MouseButtonEventArgs e)
         {
             inputState.MouseButtonsUp.Add(TypeConverter.Convert(e.Button));
             inputState.MouseButtonsHeld.Remove(TypeConverter.Convert(e.Button));
         }
 
-        private void MouseDown(object sender, MouseButtonEventArgs e)
+        private void MouseDown(MouseButtonEventArgs e)
         {
             inputState.MouseButtonsDown.Add(TypeConverter.Convert(e.Button));
             inputState.MouseButtonsHeld.Add(TypeConverter.Convert(e.Button));
             inputState.AnyMouseButton = true;
         }
 
-        private void KeyUp(object sender, KeyboardKeyEventArgs e)
+        private void KeyUp(KeyboardKeyEventArgs e)
         {
             inputState.KeysUp.Add(TypeConverter.Convert(e.Key));
             inputState.KeysHeld.Remove(TypeConverter.Convert(e.Key));
         }
 
-        private void KeyDown(object sender, KeyboardKeyEventArgs e)
+        private void KeyDown(KeyboardKeyEventArgs e)
         {
             switch (e.Key)
             {
-                case global::OpenTK.Input.Key.BackSpace:
+                case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Backspace:
                     inputState.TextEntered += '\b';
                     break;
-                case global::OpenTK.Input.Key.Enter:
-                case global::OpenTK.Input.Key.KeypadEnter:
+                case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Enter:
+                case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.KeyPadEnter:
                     inputState.TextEntered += '\n';
                     break;
-                case global::OpenTK.Input.Key.Tab:
+                case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Tab:
                     inputState.TextEntered += '\t';
                     break;
             }
@@ -87,12 +89,9 @@ namespace Walgelijk.OpenTK
             inputState.AnyKey = true;
         }
 
-        private void TextEnter(object sender, KeyPressEventArgs e)
+        private void TextEnter(TextInputEventArgs e)
         {
-            //if (Keyboard.GetState().IsKeyDown(global::OpenTK.Input.Key.BackSpace))
-            //    inputState.TextEntered += '\b';
-            //else
-                inputState.TextEntered += e.KeyChar;
+            inputState.TextEntered += e.AsString;
         }
 
         public void Reset()

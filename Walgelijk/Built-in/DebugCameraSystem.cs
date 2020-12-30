@@ -45,7 +45,7 @@ namespace Walgelijk
                 transform.Position += Vector2.Normalize(delta) * zoom * Speed * Time.UpdateDeltaTime;
 
             float zoomFac = MathF.Pow(ZoomFactor, Time.UpdateDeltaTime);
-            if (Input.IsKeyHeld(Key.Plus))
+            if (Input.IsKeyHeld(Key.Equal))
                 system.MainCameraComponent.OrthographicSize /= zoomFac;
             if (Input.IsKeyHeld(Key.Minus))
                 system.MainCameraComponent.OrthographicSize *= zoomFac;
