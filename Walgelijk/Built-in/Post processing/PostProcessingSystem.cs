@@ -8,6 +8,8 @@ namespace Walgelijk
     /// </summary>
     public class PostProcessingSystem : System
     {
+        public RenderOrder RenderOrder { get; set; } = DefaultLayers.UI.WithOrder(-1);
+
         private bool needsNewRT = true;
 
         private RenderTexture rt0;
@@ -73,17 +75,17 @@ namespace Walgelijk
             if (needsNewRT)
                 CreateRenderTextures();
 
-            RenderQueue.Add(targetTask, int.MinValue);
+            RenderQueue.Add(targetTask, DefaultLayers.CameraOperations);
         }
 
         public override void PostRender()
         {
             var size = Scene.Game.Window.Size;
             fullScreenQuadTask.ModelMatrix = Matrix4x4.CreateTranslation(0, -1, 0) * Matrix4x4.CreateScale(size.X, -size.Y, 1);
-
-            RenderQueue.Add(postProcessingTask, int.MaxValue);
-            RenderQueue.Add(windowTargetTask, int.MaxValue);
-            RenderQueue.Add(fullScreenQuadTask, int.MaxValue);
+            //TODO elke post processing component moet dit zelf kunnen bepalen
+            RenderQueue.Add(postProcessingTask, RenderOrder);
+            RenderQueue.Add(windowTargetTask, RenderOrder);
+            RenderQueue.Add(fullScreenQuadTask, RenderOrder);
         }
 
         private void ApplyEffects(IGraphics graphics)
@@ -121,6 +123,10 @@ namespace Walgelijk
             }
 
             fullscreenMaterial.SetUniform(ShaderDefaults.MainTextureUniform, last ?? rt0);
+
+            var windowTarget = Scene.Game.Window.RenderTarget;
+            windowTarget.ProjectionMatrix = rt0.ProjectionMatrix;
+            windowTarget.ViewMatrix = rt0.ViewMatrix;
         }
     }
 }

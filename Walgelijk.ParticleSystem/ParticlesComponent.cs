@@ -50,7 +50,7 @@ namespace Walgelijk.ParticleSystem
 
         internal FixedIntervalDistributor EmissionDistributor = new FixedIntervalDistributor();
 
-        public int Depth = 0;
+        public RenderOrder Depth = default;
 
         public Particle GenerateParticleObject()
         {

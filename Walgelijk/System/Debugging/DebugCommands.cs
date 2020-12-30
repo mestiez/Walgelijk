@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace Walgelijk
 {
-    [global::System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "These are console commands, they are used and invoked via reflection")]
     internal struct DebugCommands
     {
         private static Game Game => Game.Main;

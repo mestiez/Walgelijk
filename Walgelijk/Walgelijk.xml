@@ -290,7 +290,7 @@
         </member>
         <member name="P:Walgelijk.ShapeComponent.RenderOrder">
             <summary>
-            Order of the rendering task. Lower values mean lower depth.
+            Order of the rendering task
             </summary>
         </member>
         <member name="P:Walgelijk.ShapeComponent.Visible">
@@ -1129,19 +1129,54 @@
             Update the debug drawer and remove expired drawings
             </summary>
         </member>
-        <member name="M:Walgelijk.DebugDraw.Line(System.Numerics.Vector3,System.Numerics.Vector3,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},System.Int32)">
+        <member name="M:Walgelijk.DebugDraw.Line(System.Numerics.Vector3,System.Numerics.Vector3,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},Walgelijk.RenderOrder)">
             <summary>
             Draw a line
             </summary>
         </member>
-        <member name="M:Walgelijk.DebugDraw.Cross(System.Numerics.Vector3,System.Single,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},System.Int32)">
+        <member name="M:Walgelijk.DebugDraw.Cross(System.Numerics.Vector3,System.Single,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},Walgelijk.RenderOrder)">
             <summary>
             Draw a cross
             </summary>
         </member>
-        <member name="M:Walgelijk.DebugDraw.Circle(System.Numerics.Vector3,System.Single,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},System.Int32)">
+        <member name="M:Walgelijk.DebugDraw.Circle(System.Numerics.Vector3,System.Single,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},Walgelijk.RenderOrder)">
             <summary>
             Draw a wire circle
+            </summary>
+        </member>
+        <member name="T:Walgelijk.DefaultLayers">
+            <summary>
+            Structure that holds some common <see cref="T:Walgelijk.RenderOrder"/>s
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultLayers.Zero">
+            <summary>
+            The default render order. (0, 0)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultLayers.CameraOperations">
+            <summary>
+            The render order where camera operations are executed (-10000, 0)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultLayers.UI">
+            <summary>
+            The render order where UI is drawn (10000, 0)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultLayers.DebugUI">
+            <summary>
+            The render order where debugging UI is drawn (10001, 0)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultLayers.Bottom">
+            <summary>
+            The minimum render order (<see cref="F:System.Int32.MinValue"/>, <see cref="F:System.Int32.MinValue"/>)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultLayers.Top">
+            <summary>
+            The maximum render order (<see cref="F:System.Int32.MaxValue"/>, <see cref="F:System.Int32.MaxValue"/>)
             </summary>
         </member>
         <member name="T:Walgelijk.FilterMode">
@@ -1497,6 +1532,33 @@
             The target to set
             </summary>
         </member>
+        <member name="T:Walgelijk.RenderOrder">
+            <summary>
+            Simple stucture that holds data for the layer system
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderOrder.Layer">
+            <summary>
+            The main layer to draw on
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderOrder.OrderInLayer">
+            <summary>
+            The order within <see cref="F:Walgelijk.RenderOrder.Layer"/> to draw on
+            </summary>
+        </member>
+        <member name="M:Walgelijk.RenderOrder.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Constructs a rendering order structure
+            </summary>
+        </member>
+        <member name="M:Walgelijk.RenderOrder.WithOrder(System.Int32)">
+            <summary>
+            Return a <see cref="T:Walgelijk.RenderOrder"/> on the same layer, but with the given order
+            </summary>
+            <param name="order"></param>
+            <returns></returns>
+        </member>
         <member name="T:Walgelijk.RenderQueue">
             <summary>
             This object manages a render queue of <see cref="T:Walgelijk.IRenderTask"/>
@@ -1506,9 +1568,8 @@
             <summary>
             Render the queue by dequeuing and executing each entry
             </summary>
-            <param name="target"></param>
         </member>
-        <member name="M:Walgelijk.RenderQueue.Add(Walgelijk.IRenderTask,System.Int32)">
+        <member name="M:Walgelijk.RenderQueue.Add(Walgelijk.IRenderTask,Walgelijk.RenderOrder)">
             <summary>
             Add a task to the queue. The optional order determines when it's going to be executed. Higher values mean later execution.
             </summary>

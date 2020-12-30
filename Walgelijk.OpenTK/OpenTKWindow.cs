@@ -119,7 +119,7 @@ namespace Walgelijk.OpenTK
             window.Closing += OnWindowClose;
             window.Resize += OnWindowResize;
             window.Move += OnWindowMove;
-            window.FileDrop += OnFileDrop;
+            window.FileDrop += OnFileDropped;
 
             window.UpdateFrame += OnUpdateFrame;
             window.RenderFrame += OnRenderFrame;
@@ -179,7 +179,7 @@ namespace Walgelijk.OpenTK
             inputHandler.Reset();
         }
 
-        private void OnFileDrop(object sender, FileDropEventArgs obj)
+        private void OnFileDropped(object sender, FileDropEventArgs obj)
         {
             InvokeFileDropEvent(new[] { obj.FileName });
         }

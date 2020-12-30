@@ -9,7 +9,7 @@ uniform sampler2D mainTex;
 
 void main()
 {
-    const float intensity = 0.11;
+    const float intensity = 0.01;
 
     float i = 1 + intensity;
     vec2 cUv = uv - .5;

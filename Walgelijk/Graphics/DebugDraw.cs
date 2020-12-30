@@ -87,7 +87,7 @@ void main()
         /// <summary>
         /// Draw a line
         /// </summary>
-        public void Line(Vector3 from, Vector3 to, Color? color = null, float? duration = null, int renderOrder = 0)
+        public void Line(Vector3 from, Vector3 to, Color? color = null, float? duration = null, RenderOrder renderOrder = default)
         {
             if (!game.DevelopmentMode)
                 return;
@@ -111,7 +111,7 @@ void main()
         /// <summary>
         /// Draw a cross
         /// </summary>
-        public void Cross(Vector3 center, float size = 0.5f, Color? color = null, float? duration = null, int renderOrder = 0)
+        public void Cross(Vector3 center, float size = 0.5f, Color? color = null, float? duration = null, RenderOrder renderOrder = default)
         {
             if (!game.DevelopmentMode)
                 return;
@@ -126,7 +126,7 @@ void main()
         /// <summary>
         /// Draw a wire circle
         /// </summary>
-        public void Circle(Vector3 center, float radius = 1f, Color? color = null, float? duration = null, int renderOrder = 0)
+        public void Circle(Vector3 center, float radius = 1f, Color? color = null, float? duration = null, RenderOrder renderOrder = default)
         {
             if (!game.DevelopmentMode)
                 return;
@@ -144,7 +144,7 @@ void main()
         private struct Drawing
         {
             public IRenderTask Task;
-            public int Order;
+            public RenderOrder Order;
             public float ExpirationTime;
         }
 

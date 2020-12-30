@@ -36,8 +36,8 @@ namespace Walgelijk
             Rect textBounds = text.LocalBoundingBox;
             background.RenderTask.ModelMatrix = Matrix4x4.CreateScale(new Vector3(textBounds.Width + (2 * Padding), -textBounds.Height - (2 * Padding), 1));
 
-            queue.Add(background.RenderTask, int.MaxValue);
-            queue.Add(text.RenderTask, int.MaxValue);
+            queue.Add(background.RenderTask, DefaultLayers.DebugUI);
+            queue.Add(text.RenderTask, DefaultLayers.DebugUI);
         }
 
         private string ConstructDisplayText(int queuelength)

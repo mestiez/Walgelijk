@@ -75,10 +75,10 @@ namespace Test
                         ShaderDefaults.WorldSpaceVertex,
                         Resources.Load<string>("shaders\\chromatic_aberration.frag")
                         ))),
-                    //new ShaderPostProcessor(new Material(new Shader(
-                    //    ShaderDefaults.WorldSpaceVertex,
-                    //    Resources.Load<string>("shaders\\wavey.frag")
-                    //    ))),
+                    new ShaderPostProcessor(new Material(new Shader(
+                        ShaderDefaults.WorldSpaceVertex,
+                        Resources.Load<string>("shaders\\wavey.frag")
+                        ))),
                 }
             });
 

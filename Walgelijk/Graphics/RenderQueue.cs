@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -15,7 +14,6 @@ namespace Walgelijk
         /// <summary>
         /// Render the queue by dequeuing and executing each entry
         /// </summary>
-        /// <param name="target"></param>
         public void RenderAndReset(IGraphics graphics)
         {
             for (int i = 0; i < commands.Count; i++)
@@ -28,7 +26,7 @@ namespace Walgelijk
         /// <summary>
         /// Add a task to the queue. The optional order determines when it's going to be executed. Higher values mean later execution.
         /// </summary>
-        public void Add(IRenderTask task, int order = 0)
+        public void Add(IRenderTask task, RenderOrder order = default)
         {
             var command = new Command { RenderTask = task, Order = order };
             command.Order = order;
@@ -65,7 +63,7 @@ namespace Walgelijk
         private struct Command
         {
             public IRenderTask RenderTask;
-            public int Order;
+            public RenderOrder Order;
         }
     }
 }

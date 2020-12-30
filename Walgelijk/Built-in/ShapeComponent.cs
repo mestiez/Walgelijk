@@ -19,9 +19,9 @@
         /// </summary>
         public bool ScreenSpace { get; set; }
         /// <summary>
-        /// Order of the rendering task. Lower values mean lower depth.
+        /// Order of the rendering task
         /// </summary>
-        public int RenderOrder { get; set; }
+        public RenderOrder RenderOrder { get; set; }
         /// <summary>
         /// Whether or not the component is rendered by the system
         /// </summary>
