@@ -12,6 +12,7 @@ namespace Walgelijk
         private Game game;
         private readonly Material debugMaterial;
         private readonly VertexBuffer circle = PrimitiveMeshes.GenerateCircle(12, 1);
+        private readonly VertexBuffer rect = new VertexBuffer(PrimitiveMeshes.Quad.Vertices, PrimitiveMeshes.Quad.Indices);
 
         private HashSet<Drawing> drawings = new();
 
@@ -24,6 +25,7 @@ namespace Walgelijk
             this.game = game;
 
             circle.PrimitiveType = Primitive.LineLoop;
+            rect.PrimitiveType = Primitive.LineLoop;
 
             debugMaterial = new Material(new Shader(
                 @"#version 460
@@ -87,7 +89,7 @@ void main()
         /// <summary>
         /// Draw a line
         /// </summary>
-        public void Line(Vector3 from, Vector3 to, Color? color = null, float? duration = null, RenderOrder renderOrder = default)
+        public void Line(Vector2 from, Vector2 to, Color? color = null, float? duration = null, RenderOrder renderOrder = default)
         {
             if (!game.DevelopmentMode)
                 return;
@@ -97,27 +99,22 @@ void main()
             var normalised = delta / distance;
 
             var rotation = MathF.Atan2(normalised.Y, normalised.X);
-            var model = Matrix4x4.CreateRotationZ(rotation) * Matrix4x4.CreateScale(distance) * Matrix4x4.CreateTranslation(from);
+            var model = Matrix4x4.CreateRotationZ(rotation) * Matrix4x4.CreateScale(distance) * Matrix4x4.CreateTranslation(new Vector3(from, 0));
 
             var task = new DebugDrawTask(PrimitiveMeshes.Line, model, debugMaterial, GetColor(color));
-            drawings.Add(new Drawing
-            {
-                ExpirationTime = game.Time.SecondsSinceLoad + GetDuration(duration),
-                Order = renderOrder,
-                Task = task
-            });
+            AddDrawing(duration, renderOrder, task);
         }
 
         /// <summary>
         /// Draw a cross
         /// </summary>
-        public void Cross(Vector3 center, float size = 0.5f, Color? color = null, float? duration = null, RenderOrder renderOrder = default)
+        public void Cross(Vector2 center, float size = 0.5f, Color? color = null, float? duration = null, RenderOrder renderOrder = default)
         {
             if (!game.DevelopmentMode)
                 return;
 
-            var right = new Vector3(size, 0, 0);
-            var up = new Vector3(0, size, 0);
+            var right = new Vector2(size, 0);
+            var up = new Vector2(0, size);
 
             Line(center - right, center + right, color, duration, renderOrder);
             Line(center - up, center + up, color, duration, renderOrder);
@@ -126,13 +123,28 @@ void main()
         /// <summary>
         /// Draw a wire circle
         /// </summary>
-        public void Circle(Vector3 center, float radius = 1f, Color? color = null, float? duration = null, RenderOrder renderOrder = default)
+        public void Circle(Vector2 center, float radius = 1f, Color? color = null, float? duration = null, RenderOrder renderOrder = default)
         {
             if (!game.DevelopmentMode)
                 return;
 
-            var model = Matrix4x4.CreateScale(radius) * Matrix4x4.CreateTranslation(center);
+            var model = Matrix4x4.CreateScale(radius) * Matrix4x4.CreateTranslation(new Vector3(center, 0));
             var task = new DebugDrawTask(circle, model, debugMaterial, GetColor(color));
+            AddDrawing(duration, renderOrder, task);
+        }
+
+        public void Rectangle(Vector2 topleft, Vector2 size, float rotationDegrees, Color? color = null, float? duration = null, RenderOrder renderOrder = default)
+        {
+            if (!game.DevelopmentMode)
+                return;
+
+            var model = Matrix4x4.CreateRotationZ(rotationDegrees * Utilities.DegToRad) * Matrix4x4.CreateScale(size.X, size.Y, 0) * Matrix4x4.CreateTranslation(new Vector3(topleft, 0));
+            var task = new DebugDrawTask(rect, model, debugMaterial, GetColor(color));
+            AddDrawing(duration, renderOrder, task);
+        }
+
+        private void AddDrawing(float? duration, RenderOrder renderOrder, DebugDrawTask task)
+        {
             drawings.Add(new Drawing
             {
                 ExpirationTime = game.Time.SecondsSinceLoad + GetDuration(duration),

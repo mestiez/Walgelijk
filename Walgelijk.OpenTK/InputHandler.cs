@@ -38,7 +38,7 @@ namespace Walgelijk.OpenTK
 
         private void MouseWheel(MouseWheelEventArgs e)
         {
-            inputState.MouseScrollDelta = e.OffsetY;
+            inputState.MouseScrollDelta = GameWindow.MouseState.ScrollDelta.Y;
         }
 
         private void MouseMove(MouseMoveEventArgs e)

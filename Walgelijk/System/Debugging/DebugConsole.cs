@@ -33,9 +33,6 @@ namespace Walgelijk
         /// Briefly draw the most recent console message to the screen even if the console is not open.
         /// </summary>
         public bool DrawConsoleNotification { get; set; }
-#if DEBUG
-        = true;
-#endif
 
         internal float ScrollOffset = 0;
 

@@ -1,12 +1,9 @@
 ﻿using OpenTK.Graphics.OpenGL;
-using System.Collections;
-using System.Numerics;
 using Vector2 = System.Numerics.Vector2;
-using System.Runtime.CompilerServices;
 
 namespace Walgelijk.OpenTK
 {
-    public class OpenTKWindowRenderTarget : Walgelijk.RenderTarget
+    public class OpenTKWindowRenderTarget : RenderTarget
     {
         internal OpenTKWindow Window { get; set; }
         private Vector2 size;
@@ -18,7 +15,8 @@ namespace Walgelijk.OpenTK
             set
             {
                 size = value;
-                GL.Viewport(0, 0, (int)size.X, (int)size.Y);
+                if (Window.Graphics.CurrentTarget == this)
+                    GL.Viewport(0, 0, (int)size.X, (int)size.Y);
             }
         }
 

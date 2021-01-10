@@ -1154,17 +1154,17 @@
             Update the debug drawer and remove expired drawings
             </summary>
         </member>
-        <member name="M:Walgelijk.DebugDraw.Line(System.Numerics.Vector3,System.Numerics.Vector3,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},Walgelijk.RenderOrder)">
+        <member name="M:Walgelijk.DebugDraw.Line(System.Numerics.Vector2,System.Numerics.Vector2,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},Walgelijk.RenderOrder)">
             <summary>
             Draw a line
             </summary>
         </member>
-        <member name="M:Walgelijk.DebugDraw.Cross(System.Numerics.Vector3,System.Single,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},Walgelijk.RenderOrder)">
+        <member name="M:Walgelijk.DebugDraw.Cross(System.Numerics.Vector2,System.Single,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},Walgelijk.RenderOrder)">
             <summary>
             Draw a cross
             </summary>
         </member>
-        <member name="M:Walgelijk.DebugDraw.Circle(System.Numerics.Vector3,System.Single,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},Walgelijk.RenderOrder)">
+        <member name="M:Walgelijk.DebugDraw.Circle(System.Numerics.Vector2,System.Single,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},Walgelijk.RenderOrder)">
             <summary>
             Draw a wire circle
             </summary>
@@ -2431,6 +2431,7 @@
             <summary>
             End the ongoing profiled task
             </summary>
+            <returns>The amount of time that has passed</returns>
         </member>
         <member name="M:Walgelijk.Profiler.GetProfiledTasks">
             <summary>

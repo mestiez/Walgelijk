@@ -129,10 +129,10 @@ namespace Walgelijk
                 flipState = !flipState;
             }
 
-            if (last != rt0)
-                graphics.Blit(last, rt0);
+            if (last == null)
+                return;
 
-            fullscreenMaterial.SetUniform(ShaderDefaults.MainTextureUniform, rt0);
+            fullscreenMaterial.SetUniform(ShaderDefaults.MainTextureUniform, last);
 
             var windowTarget = Scene.Game.Window.RenderTarget;
 

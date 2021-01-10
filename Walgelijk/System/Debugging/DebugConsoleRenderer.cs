@@ -126,9 +126,10 @@ namespace Walgelijk
 
             inputBox.String = InputString;
 
-            model = Matrix4x4.CreateTranslation(0, (1 - consoleSlideOffset) * -TotalHeight, 0);
+            float yPos = (1 - consoleSlideOffset) * -TotalHeight;
+            model = Matrix4x4.CreateTranslation(0, yPos, 0);
 
-            boundsTask.DrawBounds = new DrawBounds(new Vector2(debugConsole.Game.Window.Size.X, LogHeight), Vector2.Zero);
+            boundsTask.DrawBounds = new DrawBounds(new Vector2(debugConsole.Game.Window.Size.X, Utilities.Clamp(LogHeight + yPos, float.Epsilon, LogHeight)), default);
 
             text.RenderTask.ModelMatrix = textModel * Matrix4x4.CreateTranslation(5, -text.LocalBoundingBox.Height + LogHeight + debugConsole.ScrollOffset - 5, 0) * model;
 

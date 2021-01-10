@@ -149,18 +149,20 @@ namespace Test
 
                 transform.Position = new Vector2(MathF.Sin(Time.SecondsSinceLoad * wave.Frequency + wave.Phase) * wave.Amplitude, 0);
             }
-        }
 
+            if (Input.IsKeyReleased(Key.O))
+                Logger.Log("test the fucking hell");
+        }
 
         public override void Render()
         {
-            DebugDraw.Circle(Vector3.One, .4f, Colors.Green, renderOrder: new RenderOrder(101));
+            DebugDraw.Circle(Vector2.One, .4f, Colors.Green, renderOrder: new RenderOrder(101));
 
             if (Utilities.RandomByte() != 200)
                 return;
 
             float l = 10;
-            var end = new Vector3(MathF.Cos(Time.SecondsSinceLoad), MathF.Sin(Time.SecondsSinceLoad), 0) * l;
+            var end = new Vector2(MathF.Cos(Time.SecondsSinceLoad), MathF.Sin(Time.SecondsSinceLoad)) * l;
             DebugDraw.Line(default, end, duration: 1, renderOrder: new RenderOrder(101));
         }
     }

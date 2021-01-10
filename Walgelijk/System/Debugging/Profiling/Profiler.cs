@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 
 namespace Walgelijk
 {
-
     /// <summary>
     /// Provides performance information
     /// </summary>
@@ -80,11 +77,14 @@ namespace Walgelijk
         /// <summary>
         /// End the ongoing profiled task
         /// </summary>
-        public void EndTask()
+        /// <returns>The amount of time that has passed</returns>
+        public TimeSpan EndTask()
         {
-            if (!profiledTaskStack.TryPop(out var result)) return;
+            if (!profiledTaskStack.TryPop(out var result)) 
+                return default;
             result.EndTick = stopwatch.ElapsedTicks;
             profiledTasks.Add(result);
+            return result.Duration;
         }
 
         /// <summary>

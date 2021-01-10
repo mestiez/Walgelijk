@@ -12,4 +12,5 @@ void main()
     vec2 c = uv;
     c.x += sin(c.y * 40) * 0.01f;
     color = vertexColor * texture(mainTex, c);
+    color.rgb = vec3(1) - color.rgb;
 }
