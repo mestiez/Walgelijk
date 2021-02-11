@@ -10,6 +10,7 @@ namespace Walgelijk
         private Vector2 position;
         private float rotation;
         private Vector2 scale = Vector2.One;
+        private Vector3 pivot = Vector3.Zero;
         private Entity? parent;
 
         /// <summary>
@@ -68,6 +69,20 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// The local pivot point that is the center of all transformations.
+        /// </summary>
+        public Vector2 LocalPivot
+        {
+            get => new Vector2(pivot.X, pivot.Y);
+
+            set
+            {
+                pivot = new Vector3(value.X, value.Y, 0);
+                IsMatrixCached = false;
+            }
+        }
+
+        /// <summary>
         /// The generated model matrix
         /// </summary>
         public Matrix4x4 LocalToWorldMatrix;
@@ -87,11 +102,13 @@ namespace Walgelijk
         /// </summary>
         public void RecalculateModelMatrix(Matrix4x4 containingMatrix)
         {
-            var matrix = Matrix4x4.CreateRotationZ(rotation * Utilities.DegToRad);
+            var matrix = Matrix4x4.CreateTranslation(-pivot);
+            matrix *= Matrix4x4.CreateRotationZ(rotation * Utilities.DegToRad);
             matrix *= Matrix4x4.CreateScale(scale.X, scale.Y, 1);
             matrix *= Matrix4x4.CreateTranslation(position.X, position.Y, 0);
+            //matrix *= Matrix4x4.CreateTranslation(-pivot);
 
-           if (!containingMatrix.IsIdentity)
+            if (!containingMatrix.IsIdentity)
                 matrix *= containingMatrix;
 
             LocalToWorldMatrix = matrix;

@@ -9,7 +9,7 @@ using Vector4 = System.Numerics.Vector4;
 
 namespace Walgelijk.OpenTK
 {
-    public class ShaderManager 
+    public class ShaderManager
     {
         public static ShaderManager Instance { get; } = new ShaderManager();
 
@@ -112,7 +112,6 @@ namespace Walgelijk.OpenTK
         protected override float[] CreateNew(Matrix4x4[] raw)
         {
             var array = new float[MatrixLength * raw.Length];
-
             for (int i = 0; i < raw.Length; i++)
             {
                 var v = raw[i];

@@ -65,7 +65,7 @@ namespace Test
             scene.AddSystem(new WaveMovementSystem());
             scene.AddSystem(new DebugCameraSystem());
             scene.AddSystem(new ParticleSystem());
-            scene.AddSystem(new PostProcessingSystem() { ExecutionOrder = -2 });
+           // scene.AddSystem(new PostProcessingSystem() { ExecutionOrder = -2 });
 
             scene.AttachComponent(scene.CreateEntity(), new PostProcessingComponent
             {
@@ -94,36 +94,39 @@ namespace Test
             var orgin = scene.CreateEntity();
             scene.AttachComponent(orgin, new TransformComponent { Position = new Vector2(0, 0) });
             scene.AttachComponent(orgin, new RectangleShapeComponent { Color = Colors.Red });
+            scene.AttachComponent(orgin, new WaveMovementComponent());
 
             var x100 = scene.CreateEntity();
             scene.AttachComponent(x100, new TransformComponent { Position = new Vector2(100, 0) });
             scene.AttachComponent(x100, new RectangleShapeComponent { Color = Colors.GreenYellow });
+            scene.AttachComponent(x100, new WaveMovementComponent());
 
             var x50y50 = scene.CreateEntity();
             scene.AttachComponent(x50y50, new TransformComponent { Position = new Vector2(50, 50) });
             scene.AttachComponent(x50y50, new RectangleShapeComponent { Color = Colors.Blue });
+            scene.AttachComponent(x50y50, new WaveMovementComponent());
 
             var particles = scene.CreateEntity();
             scene.AttachComponent(particles, new TransformComponent());
             scene.AttachComponent(particles, new WaveMovementComponent());
 
-            var particleComponent = new ParticlesComponent(1000)
-            {
-                // Dampening = new FloatRange(0.9f),
-                RotationalDampening = new FloatRange(0.95f),
-                // Gravity = new Vec2Range(Vector2.Zero),
-                StartVelocity = new Vec2Range(Vector2.One * -15, Vector2.One * 15),
-                EmissionRate = 32,
-                StartColor = new ColorRange(Colors.White),
-                ColorOverLife = new ColorCurve(new Curve<Color>.Key(Color.White, 0), new Curve<Color>.Key(Color.Red, 1)),
-                SizeOverLife = new FloatCurve(new Curve<float>.Key(0, 0), new Curve<float>.Key(1, 0.1f), new Curve<float>.Key(0, 1)),
-                WorldSpace = false,
-                SimulationSpeed = 1f
-            };
-
-            scene.AttachComponent(particles, particleComponent);
-
-            particleComponent.Material.SetUniform(ShaderDefaults.MainTextureUniform, gaming);
+            //var particleComponent = new ParticlesComponent(1000)
+            //{
+            //    // Dampening = new FloatRange(0.9f),
+            //    RotationalDampening = new FloatRange(0.95f),
+            //    // Gravity = new Vec2Range(Vector2.Zero),
+            //    StartVelocity = new Vec2Range(Vector2.One * -15, Vector2.One * 15),
+            //    EmissionRate = 32,
+            //    StartColor = new ColorRange(Colors.White),
+            //    ColorOverLife = new ColorCurve(new Curve<Color>.Key(Color.White, 0), new Curve<Color>.Key(Color.Red, 1)),
+            //    SizeOverLife = new FloatCurve(new Curve<float>.Key(0, 0), new Curve<float>.Key(1, 0.1f), new Curve<float>.Key(0, 1)),
+            //    WorldSpace = false,
+            //    SimulationSpeed = 1f
+            //};
+            //
+            //scene.AttachComponent(particles, particleComponent);
+            //
+            //particleComponent.Material.SetUniform(ShaderDefaults.MainTextureUniform, gaming);
 
             return scene;
         }
@@ -147,7 +150,9 @@ namespace Test
                 var transform = Scene.GetComponentFrom<TransformComponent>(item.Entity);
                 var wave = item.Component;
 
-                transform.Position = new Vector2(MathF.Sin(Time.SecondsSinceLoad * wave.Frequency + wave.Phase) * wave.Amplitude, 0);
+                transform.Rotation += Time.UpdateDeltaTime * 64;
+                DebugDraw.Circle(transform.Position, .4f, Colors.Green);
+                //transform.Position = new Vector2(MathF.Sin(Time.SecondsSinceLoad * wave.Frequency + wave.Phase) * wave.Amplitude, 0);
             }
 
             if (Input.IsKeyReleased(Key.O))
@@ -156,14 +161,14 @@ namespace Test
 
         public override void Render()
         {
-            DebugDraw.Circle(Vector2.One, .4f, Colors.Green, renderOrder: new RenderOrder(101));
+            //DebugDraw.Circle(Vector2.One, .4f, Colors.Green, renderOrder: new RenderOrder(101));
 
-            if (Utilities.RandomByte() != 200)
-                return;
+            //if (Utilities.RandomByte() != 200)
+            //    return;
 
-            float l = 10;
-            var end = new Vector2(MathF.Cos(Time.SecondsSinceLoad), MathF.Sin(Time.SecondsSinceLoad)) * l;
-            DebugDraw.Line(default, end, duration: 1, renderOrder: new RenderOrder(101));
+            //float l = 10;
+            //var end = new Vector2(MathF.Cos(Time.SecondsSinceLoad), MathF.Sin(Time.SecondsSinceLoad)) * l;
+            //DebugDraw.Line(default, end, duration: 1, renderOrder: new RenderOrder(101));
         }
     }
 }

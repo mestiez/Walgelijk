@@ -24,7 +24,7 @@ namespace Walgelijk
         public Rect TextBounds => text.LocalBoundingBox;
 
         public const float ConsoleNotificationDuration = 5;
-        public const int TotalHeight = 150;
+        public const int TotalHeight = 350;
         public const int InputHeight = 20;
         public const int LogHeight = TotalHeight - InputHeight;
         public const float ConsoleSlideDuration = 0.3f;

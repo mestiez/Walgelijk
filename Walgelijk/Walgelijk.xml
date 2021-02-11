@@ -421,6 +421,11 @@
             Scale multiplier of the transform
             </summary>
         </member>
+        <member name="P:Walgelijk.TransformComponent.LocalPivot">
+            <summary>
+            The local pivot point that is the center of all transformations.
+            </summary>
+        </member>
         <member name="F:Walgelijk.TransformComponent.LocalToWorldMatrix">
             <summary>
             The generated model matrix

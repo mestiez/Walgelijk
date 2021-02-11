@@ -51,9 +51,7 @@ namespace Walgelijk
                 $"{queuelength} render tasks\n\n";
 
             foreach (var item in profiler.GetProfiledTasks())
-            {
                 t += $"{item.Name}: {Math.Round(item.Duration.TotalMilliseconds, 3)}ms\n";
-            }
 
             return t;
         }

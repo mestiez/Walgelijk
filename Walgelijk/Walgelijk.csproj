@@ -7,7 +7,7 @@
     <RepositoryUrl>https://github.com/mestiez/Walgelijk</RepositoryUrl>
     <Company>Studio Minus</Company>
     <Authors>mestiez</Authors>
-    <Version>0.1.5</Version>
+    <Version>0.1.8</Version>
     <Description>Studio Minus game engine</Description>
     <PackageIcon>cirkel avatar.png</PackageIcon>
   </PropertyGroup>

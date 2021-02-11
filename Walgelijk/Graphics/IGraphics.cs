@@ -28,7 +28,7 @@
         /// <summary>
         /// Set a shader program uniform
         /// </summary>
-        void SetUniform(Material material, string uniformName, object data);
+        public void SetUniform(Material material, string uniformName, object data);
 
         /// <summary>
         /// Drawing bounds settings 
