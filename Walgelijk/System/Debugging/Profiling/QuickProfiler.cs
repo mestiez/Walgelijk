@@ -15,7 +15,6 @@ namespace Walgelijk
         public QuickProfiler(Profiler profiler)
         {
             text = new TextComponent("?");
-            text.TrackingMultiplier = .91f;
             text.RenderTask.ScreenSpace = true;
 
             background = new RectangleShapeComponent();

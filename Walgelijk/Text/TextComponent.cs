@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
+using static Walgelijk.TextMeshGenerator;
 
 namespace Walgelijk
 {
@@ -11,9 +13,10 @@ namespace Walgelijk
         private string displayString;
         private Font font;
         private Color color = Color.White;
-        private float trackingMultiplier = .7f;
-        private float lineHeightMultiplier = .7f;
+        private float trackingMultiplier = 1;
+        private float lineHeightMultiplier = 1;
         private float kerningMultiplier = 1f;
+        private IList<ColourInstruction> colourInstructions = null;
 
         private readonly TextMeshGenerator meshGenerator;
 
@@ -69,6 +72,7 @@ namespace Walgelijk
                     return;
 
                 font = value;
+                RenderTask.Material = font.Material;
                 meshGenerator.Font = value;
                 CreateVertices();
             }
@@ -88,6 +92,18 @@ namespace Walgelijk
                 color = value;
                 meshGenerator.Color = value;
                 CreateVertices();
+            }
+        }
+
+        /// <summary>
+        /// Text colour instructions
+        /// </summary>
+        public IList<ColourInstruction> ColorInstructions
+        {
+            get => colourInstructions;
+            set
+            {
+                colourInstructions = value;
             }
         }
 
@@ -143,7 +159,7 @@ namespace Walgelijk
             VertexBuffer.Vertices = new Vertex[displayString.Length * 4];
             VertexBuffer.Indices = new uint[displayString.Length * 6];
 
-            LocalBoundingBox = meshGenerator.Generate(String, VertexBuffer.Vertices, VertexBuffer.Indices);
+            LocalBoundingBox = meshGenerator.Generate(String, VertexBuffer.Vertices, VertexBuffer.Indices, colourInstructions);
 
             VertexBuffer.HasChanged = true;
         }

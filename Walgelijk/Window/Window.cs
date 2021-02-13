@@ -64,11 +64,6 @@ namespace Walgelijk
         public abstract Time Time { get; }
 
         /// <summary>
-        /// The icon for the window
-        /// </summary>
-        public abstract global::System.Drawing.Icon Icon { get; set; }
-
-        /// <summary>
         /// The window render queue. It stores the render tasks and is emptied and executed every render frame.
         /// </summary>
         public RenderQueue RenderQueue { get; } = new RenderQueue();
@@ -158,5 +153,10 @@ namespace Walgelijk
         /// Manually reset the input state
         /// </summary>
         public abstract void ResetInputState();
+
+        /// <summary>
+        /// Set the window icon
+        /// </summary>
+        public abstract void SetIcon(IReadableTexture texture, bool flipY = true);
     }
 }

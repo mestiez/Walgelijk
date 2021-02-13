@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
+using static Walgelijk.TextMeshGenerator;
 
 namespace Walgelijk
 {
@@ -20,6 +22,8 @@ namespace Walgelijk
         private float overlayLife;
         private float consoleSlideOffset;
 
+        private List<ColourInstruction> textColors = new List<ColourInstruction>();
+
         public string InputString { get; set; }
         public Rect TextBounds => text.LocalBoundingBox;
 
@@ -29,33 +33,38 @@ namespace Walgelijk
         public const int LogHeight = TotalHeight - InputHeight;
         public const float ConsoleSlideDuration = 0.3f;
 
+        public struct LevelColours
+        {
+
+        }
+
         public DebugConsoleRenderer(DebugConsole debugConsole)
         {
             this.debugConsole = debugConsole;
 
+            textColors.Clear();
+            textColors.Add(new ColourInstruction { CharIndex = 0, Colour = Colors.White });
+
             text = new TextComponent();
-            text.TrackingMultiplier = .91f;
-            text.LineHeightMultiplier = .7f;
+            text.TrackingMultiplier = 1f;
+            //text.LineHeightMultiplier = .7f;
             text.RenderTask.ScreenSpace = true;
-            text.Color = new Color(222, 175, 213);
+            text.Color = Colors.White;
+            text.ColorInstructions = textColors;
 
             inputBox = new TextComponent();
-            inputBox.TrackingMultiplier = .91f;
-            inputBox.LineHeightMultiplier = .7f;
             inputBox.RenderTask.ScreenSpace = true;
 
             overlay = new TextComponent();
-            overlay.TrackingMultiplier = .91f;
-            overlay.LineHeightMultiplier = .7f;
             overlay.RenderTask.ScreenSpace = true;
 
             inputBackground = new RectangleShapeComponent();
-            inputBackground.Color = new Color(173, 85, 156, 230);
+            inputBackground.Color = new Color(173, 85, 156);
             inputBackground.Pivot = Vector2.Zero;
             inputBackground.RenderTask.ScreenSpace = true;
 
             background = new RectangleShapeComponent();
-            background.Color = (0.9f * inputBackground.Color).WithAlpha(0.9f); 
+            background.Color = (0.0f * inputBackground.Color).WithAlpha(1f); 
             background.Pivot = Vector2.Zero;
             background.RenderTask.ScreenSpace = true;
 
@@ -91,7 +100,9 @@ namespace Walgelijk
             if (dirtyLog && debugConsole.Log.Count > 0)
             {
                 overlayLife = 0;
-                overlay.String = debugConsole.Log[^1];
+                var e = debugConsole.Log[^1];
+                overlay.Color = e.color;
+                overlay.String = e.message;
                 dirtyLog = false;
             }
 
@@ -116,8 +127,19 @@ namespace Walgelijk
             if (dirtyLog)
             {
                 string s = "";
+                Color c = Color.White;
+                textColors.Clear();
+                textColors.Add(new ColourInstruction { CharIndex = 0, Colour = c });
+
                 foreach (var entry in debugConsole.Log)
-                    s += entry + '\n';
+                {
+                    if (entry.color != c)
+                    {
+                        c = entry.color;
+                        textColors.Add(new ColourInstruction { CharIndex = s.Length, Colour = entry.color });
+                    }
+                    s += entry.message + '\n';
+                }
 
                 text.String = s;
 

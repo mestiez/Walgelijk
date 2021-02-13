@@ -16,7 +16,7 @@ namespace Walgelijk
         /// </summary>
         public static void Execute(string command, DebugConsole console)
         {
-            console.Print(command);
+            console.Print(command, Color.White.WithAlpha(0.5f));
 
             if (string.IsNullOrWhiteSpace(command))
                 return;

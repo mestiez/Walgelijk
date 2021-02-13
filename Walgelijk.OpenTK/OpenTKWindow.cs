@@ -3,6 +3,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
 using System;
 using System.Diagnostics;
@@ -25,7 +26,6 @@ namespace Walgelijk.OpenTK
 
         private Time time = new Time();
         private Stopwatch stopwatch;
-        private global::System.Drawing.Icon icon;
 
         public OpenTKWindow(string title, Vector2 position, Vector2 size)
         {
@@ -35,6 +35,7 @@ namespace Walgelijk.OpenTK
             {
                 Size = new global::OpenTK.Mathematics.Vector2i((int)size.X, (int)size.Y),
                 Title = title,
+                StartVisible = false,
             });
 
             if (position.X >= 0 && position.Y >= 0)
@@ -62,16 +63,6 @@ namespace Walgelijk.OpenTK
         public override InputState InputState => inputHandler?.InputState ?? default;
         public override RenderTarget RenderTarget => renderTarget;
         public override IGraphics Graphics => internalGraphics;
-        public override global::System.Drawing.Icon Icon
-        {
-            get => icon;
-
-            set
-            {
-                icon = value;
-                throw new NotImplementedException();
-            }
-        }
 
         public override Vector2 Size
         {
@@ -85,6 +76,34 @@ namespace Walgelijk.OpenTK
         public override void Close()
         {
             window.Close();
+        }
+
+        public override void SetIcon(IReadableTexture texture, bool flipY = true)
+        {
+            if (texture.Width != texture.Height || texture.Width != 32)
+                throw new Exception("The window icon resolution has to be 32x32");
+
+            const int res = 32;
+            var icon = new byte[res * res * 4];
+
+            for (int i = 0; i < icon.Length; i += 4)
+            {
+                getCoords(i / 4, out int x, out int y);
+                var pixel = texture.GetPixel(x, flipY ? res - 1 - y : y);
+                var bytes = pixel.ToBytes();
+                icon[i + 0] = bytes.r;
+                icon[i + 1] = bytes.g;
+                icon[i + 2] = bytes.b;
+                icon[i + 3] = bytes.a;
+            }
+
+            void getCoords(int index, out int x, out int y)
+            {
+                x = index % res;
+                y = (int)MathF.Floor(index / res);
+            }
+
+            window.Icon = new WindowIcon(new global::OpenTK.Windowing.Common.Input.Image(res, res, icon));
         }
 
         public override Vector2 ScreenToWindowPoint(Vector2 point)
@@ -157,6 +176,8 @@ namespace Walgelijk.OpenTK
             stopwatch.Start();
 
             renderTarget.Initialise();
+
+            window.IsVisible = true;
         }
 
         private void OnRenderFrame(FrameEventArgs obj)

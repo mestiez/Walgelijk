@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
@@ -39,8 +40,9 @@ namespace Walgelijk
         /// </summary>
         /// <param name="displayString">Text to render</param>
         /// <param name="vertices">Vertex array that will be populated. This needs to be the length of displayString * 4</param>
-        /// <param name="vertices">Index array that will be populated. This needs to be the length of displayString * 6</param>
-        public Rect Generate(string displayString, Vertex[] vertices, uint[] indices)
+        /// <param name="indices">Index array that will be populated. This needs to be the length of displayString * 6</param>
+        /// <param name="colours">Colours to set at indices</param>
+        public Rect Generate(string displayString, Vertex[] vertices, uint[] indices, IList<ColourInstruction> colours = null)
         {
             float cursor = 0;
             float width = Font.Width;
@@ -55,6 +57,9 @@ namespace Walgelijk
             uint indexIndex = 0;
             char lastChar = default;
             int line = 0;
+
+            var colorToSet = Colors.White;
+
             for (int i = 0; i < displayString.Length; i++)
             {
                 var c = displayString[i];
@@ -70,15 +75,18 @@ namespace Walgelijk
 
                 var glyph = Font.GetGlyph(c);
                 Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
-
                 var pos = new Vector3(cursor + glyph.XOffset + kerning.Amount * KerningMultiplier, -glyph.YOffset - (line * Font.LineHeight * LineHeightMultiplier), 0);
-
                 GlyphUVInfo uvInfo = new GlyphUVInfo(glyph.X / width, glyph.Y / height, glyph.Width / width, glyph.Height / height);
 
-                vertices[vertexIndex + 0] = appendVertex(pos, glyph, uvInfo, Color, 0, 0);
-                vertices[vertexIndex + 1] = appendVertex(pos, glyph, uvInfo, Color, 1, 0);
-                vertices[vertexIndex + 2] = appendVertex(pos, glyph, uvInfo, Color, 1, 1);
-                vertices[vertexIndex + 3] = appendVertex(pos, glyph, uvInfo, Color, 0, 1);
+                if (colours != null)
+                    foreach (var ce in colours)
+                        if (ce.CharIndex == i)
+                            colorToSet = ce.Colour * Color;
+
+                vertices[vertexIndex + 0] = appendVertex(pos, glyph, uvInfo, colorToSet, 0, 0);
+                vertices[vertexIndex + 1] = appendVertex(pos, glyph, uvInfo, colorToSet, 1, 0);
+                vertices[vertexIndex + 2] = appendVertex(pos, glyph, uvInfo, colorToSet, 1, 1);
+                vertices[vertexIndex + 3] = appendVertex(pos, glyph, uvInfo, colorToSet, 0, 1);
 
                 indices[indexIndex + 0] = vertexIndex + 0;
                 indices[indexIndex + 1] = vertexIndex + 1;
@@ -125,6 +133,22 @@ namespace Walgelijk
 
                 return vertex;
             }
+        }
+
+        /// <summary>
+        /// Instruction that tells the generator when to set a colour
+        /// </summary>
+        public struct ColourInstruction
+        {
+            /// <summary>
+            /// Character index at which to set the colour
+            /// </summary>
+            public int CharIndex;
+
+            /// <summary>
+            /// Colour to set when we reach <see cref="CharIndex"/>
+            /// </summary>
+            public Color Colour;
         }
     }
 

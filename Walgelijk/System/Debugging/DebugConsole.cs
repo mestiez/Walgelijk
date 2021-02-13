@@ -36,9 +36,9 @@ namespace Walgelijk
 
         internal float ScrollOffset = 0;
 
-        private DebugConsoleRenderer renderer;
-        internal List<string> Log = new List<string>(64);
-        internal List<string> InputHistory = new List<string>();
+        private readonly DebugConsoleRenderer renderer;
+        internal List<(string message, Color color)> Log = new(64);
+        internal List<string> InputHistory = new();
         private int historyIndex = 0;
         private string currentInput = "";
 
@@ -51,7 +51,25 @@ namespace Walgelijk
 
             Logger.OnLog.AddListener((e) =>
             {
-                Print($"[{e.Level}] {e.Message}");
+                Color c;
+                string name;
+                switch (e.Level)
+                {
+                    default:
+                    case LogLevel.Info:
+                        c = Colors.White;
+                        name = "LOG";
+                        break;
+                    case LogLevel.Warn:
+                        c = Colors.Orange;
+                        name = "WRN";
+                        break;
+                    case LogLevel.Error:
+                        c = Colors.Red;
+                        name = "ERR";
+                        break;
+                }
+                Print($"[{name}] {e.Message}", c);
             });
         }
 
@@ -69,12 +87,20 @@ namespace Walgelijk
         /// <summary>
         /// Print text to the console
         /// </summary>
-        public void Print(string text)
+        public void Print(string text, Color color)
         {
             if (Log.Count == Log.Capacity - 1)
                 Log.RemoveAt(0);
-            Log.Add(text);
+            Log.Add((text, color));
             renderer.SetDirtyLog();
+        }      
+        
+        /// <summary>
+        /// Print text to the console
+        /// </summary>
+        public void Print(string text)
+        {
+            Print(text, Color.White);
         }
                 
         /// <summary>

@@ -82,8 +82,7 @@ namespace Walgelijk
         /// </summary>
         public Game(Window window, AudioRenderer audioRenderer = null)
         {
-            var assemblyName = Assembly.GetAssembly(typeof(Game)).GetName();
-            Logger.Log($"{assemblyName.Name} v{assemblyName.Version}\n");
+            Logger.Log(Version());
 
             Window = window;
             window.Game = this;
@@ -113,6 +112,13 @@ namespace Walgelijk
                 throw new InvalidOperationException("Window is null");
 
             Window.Close();
+        }
+
+        [Command]
+        private static string Version()
+        {
+            var assemblyName = Assembly.GetAssembly(typeof(Game)).GetName();
+            return $"{assemblyName.Name} v{assemblyName.Version}\n";
         }
     }
 }

@@ -43,6 +43,8 @@ namespace Test
             game.DevelopmentMode = false;
 #endif
 
+            game.Window.SetIcon(Resources.Load<Texture>("icon.png"));
+
             game.Start();
         }
 

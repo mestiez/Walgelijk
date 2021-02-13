@@ -89,7 +89,7 @@ namespace Walgelijk
         /// <summary>
         /// Returns a random byte
         /// </summary>
-        public static int RandomByte()
+        public static byte RandomByte()
         {
             return (byte)rand.Next(0, 256);
         }

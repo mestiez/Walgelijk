@@ -2286,6 +2286,11 @@
             Briefly draw the most recent console message to the screen even if the console is not open.
             </summary>
         </member>
+        <member name="M:Walgelijk.DebugConsole.Print(System.String,Walgelijk.Color)">
+            <summary>
+            Print text to the console
+            </summary>
+        </member>
         <member name="M:Walgelijk.DebugConsole.Print(System.String)">
             <summary>
             Print text to the console
@@ -2860,6 +2865,11 @@
             Text colour. Changing this forces a vertex array update.
             </summary>
         </member>
+        <member name="P:Walgelijk.TextComponent.ColorInstructions">
+            <summary>
+            Text colour instructions
+            </summary>
+        </member>
         <member name="P:Walgelijk.TextComponent.LocalBoundingBox">
             <summary>
             The bounding box of the text in local coordinates
@@ -2932,13 +2942,29 @@
             Line height multiplier
             </summary>
         </member>
-        <member name="M:Walgelijk.TextMeshGenerator.Generate(System.String,Walgelijk.Vertex[],System.UInt32[])">
+        <member name="M:Walgelijk.TextMeshGenerator.Generate(System.String,Walgelijk.Vertex[],System.UInt32[],System.Collections.Generic.IList{Walgelijk.TextMeshGenerator.ColourInstruction})">
             <summary>
             Generate 2D text mesh. Returns the local bounding box.
             </summary>
             <param name="displayString">Text to render</param>
             <param name="vertices">Vertex array that will be populated. This needs to be the length of displayString * 4</param>
-            <param name="vertices">Index array that will be populated. This needs to be the length of displayString * 6</param>
+            <param name="indices">Index array that will be populated. This needs to be the length of displayString * 6</param>
+            <param name="colours">Colours to set at indices</param>
+        </member>
+        <member name="T:Walgelijk.TextMeshGenerator.ColourInstruction">
+            <summary>
+            Instruction that tells the generator when to set a colour
+            </summary>
+        </member>
+        <member name="F:Walgelijk.TextMeshGenerator.ColourInstruction.CharIndex">
+            <summary>
+            Character index at which to set the colour
+            </summary>
+        </member>
+        <member name="F:Walgelijk.TextMeshGenerator.ColourInstruction.Colour">
+            <summary>
+            Colour to set when we reach <see cref="F:Walgelijk.TextMeshGenerator.ColourInstruction.CharIndex"/>
+            </summary>
         </member>
         <member name="F:Walgelijk.Utilities.RadToDeg">
             <summary>
@@ -3271,11 +3297,6 @@
             Time information
             </summary>
         </member>
-        <member name="P:Walgelijk.Window.Icon">
-            <summary>
-            The icon for the window
-            </summary>
-        </member>
         <member name="P:Walgelijk.Window.RenderQueue">
             <summary>
             The window render queue. It stores the render tasks and is emptied and executed every render frame.
@@ -3371,6 +3392,11 @@
         <member name="M:Walgelijk.Window.ResetInputState">
             <summary>
             Manually reset the input state
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Window.SetIcon(Walgelijk.IReadableTexture,System.Boolean)">
+            <summary>
+            Set the window icon
             </summary>
         </member>
     </members>

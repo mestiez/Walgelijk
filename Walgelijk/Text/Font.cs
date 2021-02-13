@@ -113,5 +113,22 @@ namespace Walgelijk
         /// Current character in the sequence
         /// </summary>
         public char CurrentChar;
+
+        public override bool Equals(object obj)
+        {
+            return obj is KerningPair pair &&
+                   PreviousChar == pair.PreviousChar &&
+                   CurrentChar == pair.CurrentChar;
+        }
+
+        public static bool operator ==(KerningPair left, KerningPair right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(KerningPair left, KerningPair right)
+        {
+            return !(left == right);
+        }
     }
 }

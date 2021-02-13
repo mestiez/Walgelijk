@@ -7,7 +7,7 @@
     <RepositoryUrl>https://github.com/mestiez/Walgelijk</RepositoryUrl>
     <Company>Studio Minus</Company>
     <Authors>mestiez</Authors>
-    <Version>0.1.8</Version>
+    <Version>0.1.9</Version>
     <Description>Studio Minus game engine</Description>
     <PackageIcon>cirkel avatar.png</PackageIcon>
   </PropertyGroup>
@@ -27,6 +27,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="resources\fonts\arial narrow bold.fnt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\fonts\arial narrow bold.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\fonts\inconsolata.fnt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\fonts\inconsolata.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="resources\fonts\roboto mono.fnt" Pack="false">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
