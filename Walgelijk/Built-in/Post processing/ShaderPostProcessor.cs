@@ -18,10 +18,17 @@
         /// <summary>
         /// Construct a post processor with the given material
         /// </summary>
-        /// <param name="material"></param>
         public ShaderPostProcessor(Material material)
         {
             Material = material;
+        }
+
+        /// <summary>
+        /// Construct a post processor with a new material and shader, generated from the given fragment shader code
+        /// </summary>
+        public ShaderPostProcessor(string fragmentShader)
+        {
+            Material = new Material(new Shader(ShaderDefaults.WorldSpaceVertex, fragmentShader));
         }
 
         /// <summary>

@@ -67,16 +67,13 @@ namespace Test
             scene.AddSystem(new WaveMovementSystem());
             scene.AddSystem(new DebugCameraSystem());
             scene.AddSystem(new ParticleSystem());
-           // scene.AddSystem(new PostProcessingSystem() { ExecutionOrder = -2 });
+            scene.AddSystem(new PostProcessingSystem() { ExecutionOrder = -2 });
 
             scene.AttachComponent(scene.CreateEntity(), new PostProcessingComponent
             {
                 Effects = new List<IPostProcessingEffect>()
                 {
-                    new ShaderPostProcessor(new Material(new Shader(
-                        ShaderDefaults.WorldSpaceVertex,
-                        Resources.Load<string>("shaders\\wavey.frag")
-                        ))),
+                    new ShaderPostProcessor(Resources.Load<string>("shaders\\noise.frag")),
                 },
                 End = new RenderOrder(100, 0)
             });
@@ -85,10 +82,7 @@ namespace Test
             {
                 Effects = new List<IPostProcessingEffect>()
                 {
-                    new ShaderPostProcessor(new Material(new Shader(
-                        ShaderDefaults.WorldSpaceVertex,
-                        Resources.Load<string>("shaders\\chromatic_aberration.frag")
-                        ))),
+                    new ShaderPostProcessor(Resources.Load<string>("shaders\\chromatic_aberration.frag")),
                 },
                 Begin = new RenderOrder(100, 1),
             });
@@ -112,23 +106,23 @@ namespace Test
             scene.AttachComponent(particles, new TransformComponent());
             scene.AttachComponent(particles, new WaveMovementComponent());
 
-            //var particleComponent = new ParticlesComponent(1000)
-            //{
-            //    // Dampening = new FloatRange(0.9f),
-            //    RotationalDampening = new FloatRange(0.95f),
-            //    // Gravity = new Vec2Range(Vector2.Zero),
-            //    StartVelocity = new Vec2Range(Vector2.One * -15, Vector2.One * 15),
-            //    EmissionRate = 32,
-            //    StartColor = new ColorRange(Colors.White),
-            //    ColorOverLife = new ColorCurve(new Curve<Color>.Key(Color.White, 0), new Curve<Color>.Key(Color.Red, 1)),
-            //    SizeOverLife = new FloatCurve(new Curve<float>.Key(0, 0), new Curve<float>.Key(1, 0.1f), new Curve<float>.Key(0, 1)),
-            //    WorldSpace = false,
-            //    SimulationSpeed = 1f
-            //};
-            //
-            //scene.AttachComponent(particles, particleComponent);
-            //
-            //particleComponent.Material.SetUniform(ShaderDefaults.MainTextureUniform, gaming);
+            var particleComponent = new ParticlesComponent(1000)
+            {
+                // Dampening = new FloatRange(0.9f),
+                RotationalDampening = new FloatRange(0.95f),
+                // Gravity = new Vec2Range(Vector2.Zero),
+                StartVelocity = new Vec2Range(Vector2.One * -15, Vector2.One * 15),
+                EmissionRate = 32,
+                StartColor = new ColorRange(Colors.White),
+                ColorOverLife = new ColorCurve(new Curve<Color>.Key(Color.White, 0), new Curve<Color>.Key(Color.Red, 1)),
+                SizeOverLife = new FloatCurve(new Curve<float>.Key(0, 0), new Curve<float>.Key(1, 0.1f), new Curve<float>.Key(0, 1)),
+                WorldSpace = false,
+                SimulationSpeed = 1f
+            };
+            
+            scene.AttachComponent(particles, particleComponent);
+            
+            particleComponent.Material.SetUniform(ShaderDefaults.MainTextureUniform, gaming);
 
             return scene;
         }
@@ -156,9 +150,6 @@ namespace Test
                 DebugDraw.Circle(transform.Position, .4f, Colors.Green);
                 //transform.Position = new Vector2(MathF.Sin(Time.SecondsSinceLoad * wave.Frequency + wave.Phase) * wave.Amplitude, 0);
             }
-
-            if (Input.IsKeyReleased(Key.O))
-                Logger.Log("test the fucking hell");
         }
 
         public override void Render()

@@ -31,7 +31,7 @@ namespace Walgelijk
 
             var action = commandCache.Load(cmd);
             if (action == null)
-                Logger.Warn($"There is no command that matches with \"{cmd}\"");
+                Logger.Error($"There is no command that matches \"{cmd}\"");
             else
                 InvokeMethod(action, arguments, console);
         }
@@ -46,8 +46,16 @@ namespace Walgelijk
 
             if (expectedArgs.Length < args.Length)
             {
-                Logger.Error($"{methodInfo.Name} expects {toPass.Length} {argumentNoun}, but {args.Length} {isAreWord} given");
-                return;
+                if (expectedArgs.Length == 1 && expectedArgs[0].ParameterType == typeof(string))
+                {
+                    args = new string[] { string.Join(' ', args) };
+                    isAreWord = "is";
+                }
+                else
+                {
+                    Logger.Error($"{methodInfo.Name} expects {toPass.Length} {argumentNoun}, but {args.Length} {isAreWord} given");
+                    return;
+                }
             }
 
             for (int i = 0; i < expectedArgs.Length; i++)

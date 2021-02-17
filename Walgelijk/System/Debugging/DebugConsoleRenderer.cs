@@ -33,6 +33,8 @@ namespace Walgelijk
         public const int LogHeight = TotalHeight - InputHeight;
         public const float ConsoleSlideDuration = 0.3f;
 
+        public static Color DefaultTextColour = new Color("#D42C5E");
+
         public struct LevelColours
         {
 
@@ -43,7 +45,7 @@ namespace Walgelijk
             this.debugConsole = debugConsole;
 
             textColors.Clear();
-            textColors.Add(new ColourInstruction { CharIndex = 0, Colour = Colors.White });
+            textColors.Add(new ColourInstruction { CharIndex = 0, Colour = DefaultTextColour });
 
             text = new TextComponent();
             text.TrackingMultiplier = 1f;
@@ -59,12 +61,12 @@ namespace Walgelijk
             overlay.RenderTask.ScreenSpace = true;
 
             inputBackground = new RectangleShapeComponent();
-            inputBackground.Color = new Color(173, 85, 156);
+            inputBackground.Color = new Color(15, 15, 15);
             inputBackground.Pivot = Vector2.Zero;
             inputBackground.RenderTask.ScreenSpace = true;
 
             background = new RectangleShapeComponent();
-            background.Color = (0.0f * inputBackground.Color).WithAlpha(1f); 
+            background.Color = new Color(25, 25, 25);
             background.Pivot = Vector2.Zero;
             background.RenderTask.ScreenSpace = true;
 
@@ -127,7 +129,7 @@ namespace Walgelijk
             if (dirtyLog)
             {
                 string s = "";
-                Color c = Color.White;
+                Color c = DefaultTextColour;
                 textColors.Clear();
                 textColors.Add(new ColourInstruction { CharIndex = 0, Colour = c });
 

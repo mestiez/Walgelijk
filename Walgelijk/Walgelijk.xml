@@ -236,7 +236,11 @@
             <summary>
             Construct a post processor with the given material
             </summary>
-            <param name="material"></param>
+        </member>
+        <member name="M:Walgelijk.ShaderPostProcessor.#ctor(System.String)">
+            <summary>
+            Construct a post processor with a new material and shader, generated from the given fragment shader code
+            </summary>
         </member>
         <member name="M:Walgelijk.ShaderPostProcessor.Process(Walgelijk.RenderTexture,Walgelijk.RenderTexture,Walgelijk.IGraphics,Walgelijk.Scene)">
             <summary>

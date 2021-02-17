@@ -47,6 +47,9 @@
     <None Update="resources\prefabs\camera.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="resources\shaders\noise.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="resources\shaders\wavey.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

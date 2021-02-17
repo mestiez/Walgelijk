@@ -57,7 +57,7 @@ namespace Walgelijk
                 {
                     default:
                     case LogLevel.Info:
-                        c = Colors.White;
+                        c = DebugConsoleRenderer.DefaultTextColour;
                         name = "LOG";
                         break;
                     case LogLevel.Warn:
@@ -100,7 +100,7 @@ namespace Walgelijk
         /// </summary>
         public void Print(string text)
         {
-            Print(text, Color.White);
+            Print(text, DebugConsoleRenderer.DefaultTextColour);
         }
                 
         /// <summary>

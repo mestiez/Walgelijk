@@ -99,7 +99,6 @@ namespace Walgelijk.ParticleSystem
         {
             var dt = Time.UpdateDeltaTime * particles.SimulationSpeed;
 
-            //Parallel.For(0, particles.MaxParticleCount, (i) =>
             for (int i = 0; i < particles.MaxParticleCount; i++)
             {
                 var particle = particles.RawParticleArray[i];
@@ -128,7 +127,7 @@ namespace Walgelijk.ParticleSystem
 
                     particles.RawParticleArray[i] = particle;
                 }
-            };//);
+            };
         }
 
         private void RenderParticleSystem(ParticlesComponent particles, TransformComponent transform)
