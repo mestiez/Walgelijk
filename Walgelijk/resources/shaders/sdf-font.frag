@@ -8,6 +8,7 @@ out vec4 color;
 uniform sampler2D mainTex;
 uniform float thickness;
 uniform float softness;
+uniform vec4 tint;
 
 void main()
 {
@@ -16,5 +17,5 @@ void main()
 
     float delta = fwidth(tex.a) / 2 + softness;
     tex.a = smoothstep(t - delta, t + delta , tex.a);
-    color = vec4(vertexColor.rgb, vertexColor.a * tex.a);
+    color = vec4(vertexColor.rgb, vertexColor.a * tex.a) * tint;
 }

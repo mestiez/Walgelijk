@@ -133,7 +133,6 @@ namespace Walgelijk
                         console.Print(returned.ToString());
                         break;
                 }
-
             }
 
             static bool tryParseArgument<T>(string given, int index, out T result, ParseFunc<T> parseFunction)

@@ -35,10 +35,18 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// New instance of an existing material. T
+        /// </summary>
+        public Material(Material toCopy)
+        {
+            Shader = toCopy.Shader;
+            foreach (var item in toCopy.uniforms)
+                SetUniform(item.Key, item.Value);
+        }
+
+        /// <summary>
         /// Set uniform data
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
         public void SetUniform(string name, object value)
         {
             if (Game.Main == null)

@@ -6,6 +6,7 @@ using Walgelijk;
 using Walgelijk.NAudio;
 using Walgelijk.OpenTK;
 using Walgelijk.ParticleSystem;
+using Walgelijk.UI;
 
 namespace Test
 {
@@ -61,12 +62,17 @@ namespace Test
             scene.AttachComponent(camera, new TransformComponent());
             scene.AttachComponent(camera, new CameraComponent { PixelsPerUnit = 1, OrthographicSize = 0.02f });
 
+            scene.AttachComponent(scene.CreateEntity(), new UiDataComponent());
+
             scene.AddSystem(new TransformSystem());
             scene.AddSystem(new CameraSystem() { ExecutionOrder = -1 });
             scene.AddSystem(new ShapeRendererSystem());
             scene.AddSystem(new WaveMovementSystem());
             scene.AddSystem(new DebugCameraSystem());
             scene.AddSystem(new ParticleSystem());
+            scene.AddSystem(new ElementTransformSystem());
+            scene.AddSystem(new ElementEventSystem());
+            scene.AddSystem(new ElementRenderingSystem());
             scene.AddSystem(new PostProcessingSystem() { ExecutionOrder = -2 });
 
             scene.AttachComponent(scene.CreateEntity(), new PostProcessingComponent
@@ -102,6 +108,23 @@ namespace Test
             scene.AttachComponent(x50y50, new RectangleShapeComponent { Color = Colors.Blue });
             scene.AttachComponent(x50y50, new WaveMovementComponent());
 
+            var agag = scene.CreateEntity();
+            scene.AttachComponent(agag, new TransformComponent());
+            scene.AttachComponent(agag, new ElementComponent
+            {
+                Anchors = new IAnchor[]
+                {
+                    new HorizontalCenterAnchor(),
+                    new TopAnchor{Offset = 15},
+                },
+                Size = new Vector2(128),
+                StyleOverride = new Style
+                {
+                    BackgroundColour = new Property<Color>(Colors.Red, Colors.Magenta, Colors.Magenta * 0.5f)
+                },
+                Overflow = OverflowBehaviour.Hide
+            }).SetTextString("hoe is het vandaag\nhawiudhauwdhawduawhdiauwhdaiuwhd");
+
             var particles = scene.CreateEntity();
             scene.AttachComponent(particles, new TransformComponent());
             scene.AttachComponent(particles, new WaveMovementComponent());
@@ -119,9 +142,9 @@ namespace Test
                 WorldSpace = false,
                 SimulationSpeed = 1f
             };
-            
+
             scene.AttachComponent(particles, particleComponent);
-            
+
             particleComponent.Material.SetUniform(ShaderDefaults.MainTextureUniform, gaming);
 
             return scene;

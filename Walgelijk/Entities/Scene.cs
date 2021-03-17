@@ -15,6 +15,7 @@ namespace Walgelijk
         public Game Game { get; internal set; }
 
         private readonly Dictionary<int, Entity> entities = new();
+
         private readonly Dictionary<Entity, CollectionByType> components = new();
         private readonly Dictionary<Entity, CollectionByType> creationBuffer = new();
         private readonly Dictionary<Type, System> systems = new();
@@ -61,7 +62,7 @@ namespace Walgelijk
         /// <summary>
         /// Add a system
         /// </summary>
-        public void AddSystem<T>(T system) where T : System
+        public T AddSystem<T>(T system) where T : System
         {
             system.Scene = this;
             OnAddSystem?.Invoke(system);
@@ -69,6 +70,7 @@ namespace Walgelijk
             ReverseSortAddSystem(system);
             system.ExecutionOrderChanged = false;
             system.Initialise();
+            return system;
         }
 
         private void ReverseSortAddSystem(System system)
@@ -255,6 +257,19 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Returns the first found instance of the given type.
+        /// </summary>
+        public bool FindAnyComponent<T>(out T anyInstance) where T : class
+        {
+            foreach (var item in components)
+                if (item.Value.TryGet<T>(out anyInstance))
+                    return true;
+
+            anyInstance = null;
+            return false;
+        }
+
+        /// <summary>
         /// Retrieve the first component of the specified type on the given entity
         /// </summary>
         public T GetComponentFrom<T>(Entity entity) where T : class
@@ -299,7 +314,7 @@ namespace Walgelijk
         /// <summary>
         /// Get if an entity has a component
         /// </summary>
-        public bool HasComponent<T>(Entity entity) where T : struct
+        public bool HasComponent<T>(Entity entity) where T : class
         {
             return components[entity].Has<T>() || (creationBuffer.TryGetValue(entity, out var value) && value.Has<T>());
         }
@@ -307,7 +322,7 @@ namespace Walgelijk
         /// <summary>
         /// Attach a component to an entity
         /// </summary>
-        public void AttachComponent<T>(Entity entity, T component) where T : class
+        public T AttachComponent<T>(Entity entity, T component) where T : class
         {
             if (Game?.DevelopmentMode ?? false)
                 AssertComponentRequirements(entity, component);
@@ -318,6 +333,7 @@ namespace Walgelijk
                 components[entity].TryAdd<T>(component);
 
             OnAttachComponent?.Invoke(entity, component);
+            return component;
         }
 
         private void AssertComponentRequirements<T>(Entity entity, T component) where T : class

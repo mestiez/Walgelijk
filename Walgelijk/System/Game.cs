@@ -82,16 +82,15 @@ namespace Walgelijk
         /// </summary>
         public Game(Window window, AudioRenderer audioRenderer = null)
         {
-            Logger.Log(Version());
-
             Window = window;
             window.Game = this;
             Main = this;
             Resources.Initialise();
+            Console = new DebugConsole(this);
             AudioRenderer = audioRenderer ?? new EmptyAudioRenderer();
             Profiling = new Profiler(this);
-            Console = new DebugConsole(this);
             DebugDraw = new DebugDraw(this);
+            Logger.Log(Version());
         }
 
         /// <summary>

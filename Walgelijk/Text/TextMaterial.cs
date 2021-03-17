@@ -34,6 +34,7 @@ namespace Walgelijk
 
             //TODO meer pages
             mat.SetUniform("mainTex", pages[0]);
+            mat.SetUniform("tint", Colors.White);
             return mat;
         }
 
@@ -50,6 +51,7 @@ namespace Walgelijk
             mat.SetUniform("mainTex", pages[0]);
             mat.SetUniform("thickness", 0.5f);
             mat.SetUniform("softness", 0);
+            mat.SetUniform("tint", Colors.White);
             return mat;
         }
     }
