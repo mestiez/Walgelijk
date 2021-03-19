@@ -11,8 +11,11 @@ namespace Walgelijk
     {
         private Game game;
         private readonly Material debugMaterial;
+        private readonly Material fontMaterial;
         private readonly VertexBuffer circle = PrimitiveMeshes.GenerateCircle(12, 1);
         private readonly VertexBuffer rect = new VertexBuffer(PrimitiveMeshes.Quad.Vertices, PrimitiveMeshes.Quad.Indices);
+        private readonly VertexBuffer text = new VertexBuffer(null, null);
+        private readonly TextMeshGenerator textGenerator = new TextMeshGenerator();
 
         private HashSet<Drawing> drawings = new();
 
@@ -27,6 +30,10 @@ namespace Walgelijk
             circle.PrimitiveType = Primitive.LineLoop;
             rect.PrimitiveType = Primitive.LineLoop;
 
+            textGenerator.Font = Font.Default;
+            textGenerator.Color = Colors.White;
+
+            fontMaterial = new Material(Font.Default.Material);
             debugMaterial = new Material(new Shader(
                 @"#version 460
 
@@ -133,6 +140,9 @@ void main()
             AddDrawing(duration, renderOrder, task);
         }
 
+        /// <summary>
+        /// Draw a rectangle
+        /// </summary>
         public void Rectangle(Vector2 topleft, Vector2 size, float rotationDegrees, Color? color = null, float? duration = null, RenderOrder renderOrder = default)
         {
             if (!game.DevelopmentMode)
@@ -140,6 +150,24 @@ void main()
 
             var model = Matrix4x4.CreateRotationZ(rotationDegrees * Utilities.DegToRad) * Matrix4x4.CreateScale(size.X, size.Y, 0) * Matrix4x4.CreateTranslation(new Vector3(topleft, 0));
             var task = new DebugDrawTask(rect, model, debugMaterial, GetColor(color));
+            AddDrawing(duration, renderOrder, task);
+        }
+
+        /// <summary>
+        /// Draw a rectangle
+        /// </summary>
+        public void Text(Vector2 topleft, string @string, float size = 1, Color? color = null, float? duration = null, RenderOrder renderOrder = default)
+        {
+            if (!game.DevelopmentMode)
+                return;
+
+            var model = Matrix4x4.CreateScale(size, size, 0) * Matrix4x4.CreateTranslation(new Vector3(topleft, 0));
+            var task = new DebugTextDrawTask(text, model, fontMaterial, GetColor(color))
+            {
+                Generator = textGenerator,
+                String = @string
+            };
+
             AddDrawing(duration, renderOrder, task);
         }
 
@@ -158,6 +186,33 @@ void main()
             public IRenderTask Task;
             public RenderOrder Order;
             public float ExpirationTime;
+        }
+
+        private class DebugTextDrawTask : DebugDrawTask
+        {
+            public string String;
+            public TextMeshGenerator Generator;
+
+            public DebugTextDrawTask(VertexBuffer vertexBuffer, Matrix4x4 modelMatrix, Material material, Color tint) : base(vertexBuffer, modelMatrix, material, tint)
+            {
+                Tint = tint;
+            }
+
+            protected override void Draw(IGraphics graphics)
+            {
+                int vertexCount = String.Length * 4;
+
+                if (VertexBuffer.Vertices == null || VertexBuffer.Vertices.Length != vertexCount)
+                {
+                    VertexBuffer.Vertices = new Vertex[vertexCount];
+                    VertexBuffer.Indices = new uint[String.Length * 6];
+                }
+
+                Generator.Generate(String, VertexBuffer.Vertices, VertexBuffer.Indices);
+                VertexBuffer.ForceUpdate();
+
+                base.Draw(graphics);
+            }
         }
 
         private class DebugDrawTask : ShapeRenderTask

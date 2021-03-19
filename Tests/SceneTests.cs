@@ -12,7 +12,6 @@ namespace Tests
         public void EntityDeleteMemoryTest()
         {
             const int entityCount = 50000;
-            const int componentCount = 100;
             const int diffThreshold = 3000;
 
             Scene scene = new Scene();
@@ -21,7 +20,7 @@ namespace Tests
 
             for (int i = 0; i < entityCount; i++)
             {
-                var e = createEntity(componentCount);
+                var e = createEntity();
                 scene.RemoveEntity(e);
             }
 
@@ -31,17 +30,16 @@ namespace Tests
 
             long diff = Math.Abs(afterMemory - initialMemory);
 
-            Assert.IsTrue(diff < diffThreshold, $"Difference is {diff}. Before is {initialMemory}, after is {afterMemory}");
+            string mess = $"Difference is {diff}. Before is {initialMemory}, after is {afterMemory}";
+            Assert.IsTrue(diff < diffThreshold, mess);
+            Console.WriteLine(mess);
 
-            Entity createEntity(int c)
+            Entity createEntity()
             {
                 var ent = scene.CreateEntity();
 
-                for (int i = 0; i < c; i++)
-                {
-                  //  scene.AttachComponent(ent, new TransformComponent());
-                  //  scene.AttachComponent(ent, new CameraComponent());
-                }
+                scene.AttachComponent(ent, new TransformComponent());
+                scene.AttachComponent(ent, new CameraComponent());
 
                 return ent;
             }

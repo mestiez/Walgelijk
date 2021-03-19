@@ -292,6 +292,36 @@
             Create a rectangle renderer component
             </summary>
         </member>
+        <member name="T:Walgelijk.SeparateTransformMatrices">
+            <summary>
+            All transform matrices separated by step
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SeparateTransformMatrices.AfterPivot">
+            <summary>
+            0: The initial model matrix. A translation matrix for the transform pivot.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SeparateTransformMatrices.AfterRotation">
+            <summary>
+            1: The matrix after rotating
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SeparateTransformMatrices.AfterScale">
+            <summary>
+            2: The matrix after scaling
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SeparateTransformMatrices.AfterTranslation">
+            <summary>
+            3: The matrix after translating
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SeparateTransformMatrices.FinalModel">
+            <summary>
+            4: The final model matrix
+            </summary>
+        </member>
         <member name="T:Walgelijk.ShapeComponent">
             <summary>
             Interface that provides a <see cref="P:Walgelijk.ShapeComponent.VertexBuffer"/> and <see cref="T:Walgelijk.ShapeRenderTask"/>
@@ -440,9 +470,14 @@
             The inverse model matrix
             </summary>
         </member>
+        <member name="F:Walgelijk.TransformComponent.SeparateMatrices">
+            <summary>
+            All transform matrices separated by step. Useful for transforming specific vectors to/from local space
+            </summary>
+        </member>
         <member name="F:Walgelijk.TransformComponent.IsMatrixCached">
             <summary>
-            Returns if the model matrix is aligned to transformation
+            Returns if the model matrix is aligned to the transformation
             </summary>
         </member>
         <member name="M:Walgelijk.TransformComponent.RecalculateModelMatrix(System.Numerics.Matrix4x4)">
@@ -570,49 +605,55 @@
             <see cref="T:System.Numerics.Vector3"/> curve
             </summary>
         </member>
-        <member name="T:Walgelijk.CollectionByType">
+        <member name="T:Walgelijk.ComponentCollection">
             <summary>
-            Collection that is able to quicky get objects by their type
+            A collection of components
             </summary>
         </member>
-        <member name="M:Walgelijk.CollectionByType.TryGet``1(``0@)">
+        <member name="M:Walgelijk.ComponentCollection.Add(System.Object,Walgelijk.Entity)">
             <summary>
-            Try to get a value by type
+            Add a component to the collection
             </summary>
         </member>
-        <member name="M:Walgelijk.CollectionByType.TryGetAll``1(System.Collections.Generic.IEnumerable{``0}@)">
+        <member name="M:Walgelijk.ComponentCollection.GetAllComponentsOfType``1">
             <summary>
-            Try to get values by type
+            Iterates over components by type
             </summary>
         </member>
-        <member name="M:Walgelijk.CollectionByType.Has``1">
+        <member name="M:Walgelijk.ComponentCollection.GetAllComponentsFrom(Walgelijk.Entity)">
             <summary>
-            Returns if the collection has an object of the given type
+            Iterate over all components attached to an entity
             </summary>
         </member>
-        <member name="M:Walgelijk.CollectionByType.HasObject(System.Object)">
+        <member name="M:Walgelijk.ComponentCollection.GetEntityFromComponent(System.Object,Walgelijk.Entity@)">
             <summary>
-            Returns if the collection has a specific object instance
+            Get the entity that the given component is attached to
             </summary>
         </member>
-        <member name="M:Walgelijk.CollectionByType.TryAdd``1(System.Object)">
+        <member name="M:Walgelijk.ComponentCollection.DeleteEntity(Walgelijk.Entity)">
             <summary>
-            Try to add a value to the collection
+            Delete all components belonging to the given entity
             </summary>
         </member>
-        <member name="M:Walgelijk.CollectionByType.GetAll">
+        <member name="M:Walgelijk.ComponentCollection.RemoveComponentOfType``1(Walgelijk.Entity)">
             <summary>
-            Get all objects regardless of type. Order is undefined.
+            Detach a component of a type from an entity
+            </summary>
+            <returns>True if anything was removed</returns>
+        </member>
+        <member name="T:Walgelijk.ComponentCollection.EntityWithAnything">
+            <summary>
+            Entity and object tuple
             </summary>
         </member>
-        <member name="M:Walgelijk.CollectionByType.Remove``1">
+        <member name="F:Walgelijk.ComponentCollection.EntityWithAnything.Component">
             <summary>
-            Remove all objects by type
+            Related component
             </summary>
         </member>
-        <member name="M:Walgelijk.CollectionByType.Dispose">
+        <member name="F:Walgelijk.ComponentCollection.EntityWithAnything.Entity">
             <summary>
-            Clear everything
+            Entity that the component is attached to
             </summary>
         </member>
         <member name="T:Walgelijk.ComponentRelationAttribute">
@@ -831,6 +872,11 @@
             Get all components and entities of a certain type
             </summary>
         </member>
+        <member name="M:Walgelijk.Scene.CopyAllComponentsOfType``1(Walgelijk.EntityWith{``0}[])">
+            <summary>
+            Get all components and entities and add them into the given array. It returns the amount of items that were inserted.
+            </summary>
+        </member>
         <member name="M:Walgelijk.Scene.FindAnyComponent``1(``0@)">
             <summary>
             Returns the first found instance of the given type.
@@ -838,7 +884,7 @@
         </member>
         <member name="M:Walgelijk.Scene.GetComponentFrom``1(Walgelijk.Entity)">
             <summary>
-            Retrieve the first component of the specified type on the given entity
+            Retrieve the first component of the specified type on the given entity, otherwise returns default
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.TryGetEntityWith(System.Object,Walgelijk.Entity@)">
@@ -1181,6 +1227,16 @@
         <member name="M:Walgelijk.DebugDraw.Circle(System.Numerics.Vector2,System.Single,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},Walgelijk.RenderOrder)">
             <summary>
             Draw a wire circle
+            </summary>
+        </member>
+        <member name="M:Walgelijk.DebugDraw.Rectangle(System.Numerics.Vector2,System.Numerics.Vector2,System.Single,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},Walgelijk.RenderOrder)">
+            <summary>
+            Draw a rectangle
+            </summary>
+        </member>
+        <member name="M:Walgelijk.DebugDraw.Text(System.Numerics.Vector2,System.String,System.Single,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},Walgelijk.RenderOrder)">
+            <summary>
+            Draw a rectangle
             </summary>
         </member>
         <member name="T:Walgelijk.DefaultLayers">

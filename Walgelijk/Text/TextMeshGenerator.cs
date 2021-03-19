@@ -44,6 +44,11 @@ namespace Walgelijk
         /// <param name="colours">Colours to set at indices</param>
         public Rect Generate(string displayString, Vertex[] vertices, uint[] indices, IList<ColourInstruction> colours = null)
         {
+            if (vertices.Length != displayString.Length * 4)
+                throw new Exception(string.Format("The vertex array is of length {0}, expected {1}", vertices.Length, displayString.Length * 4));
+            if (indices.Length != displayString.Length * 6)
+                throw new Exception(string.Format("The index array is of length {0}, expected {1}", indices.Length, displayString.Length * 6));
+
             float cursor = 0;
             float width = Font.Width;
             float height = Font.Height;

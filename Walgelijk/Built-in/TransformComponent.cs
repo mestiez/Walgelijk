@@ -93,7 +93,12 @@ namespace Walgelijk
         public Matrix4x4 WorldToLocalMatrix;
 
         /// <summary>
-        /// Returns if the model matrix is aligned to transformation
+        /// All transform matrices separated by step. Useful for transforming specific vectors to/from local space
+        /// </summary>
+        public SeparateTransformMatrices SeparateMatrices;
+
+        /// <summary>
+        /// Returns if the model matrix is aligned to the transformation
         /// </summary>
         public bool IsMatrixCached;
 
@@ -103,13 +108,23 @@ namespace Walgelijk
         public void RecalculateModelMatrix(Matrix4x4 containingMatrix)
         {
             var matrix = Matrix4x4.CreateTranslation(-pivot);
+            SeparateMatrices.AfterPivot = matrix;
+
             matrix *= Matrix4x4.CreateRotationZ(rotation * Utilities.DegToRad);
+            SeparateMatrices.AfterRotation = matrix;
+
             matrix *= Matrix4x4.CreateScale(scale.X, scale.Y, 1);
+            SeparateMatrices.AfterScale = matrix;
+
             matrix *= Matrix4x4.CreateTranslation(position.X, position.Y, 0);
+            SeparateMatrices.AfterTranslation = matrix;
+
             //matrix *= Matrix4x4.CreateTranslation(-pivot);
 
             if (!containingMatrix.IsIdentity)
                 matrix *= containingMatrix;
+
+            SeparateMatrices.FinalModel = matrix;
 
             LocalToWorldMatrix = matrix;
 

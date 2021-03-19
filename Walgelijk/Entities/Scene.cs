@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace Walgelijk
 {
+
     /// <summary>
     /// Stores and manages components and systems
     /// </summary>
@@ -15,13 +16,9 @@ namespace Walgelijk
         public Game Game { get; internal set; }
 
         private readonly Dictionary<int, Entity> entities = new();
-
-        private readonly Dictionary<Entity, CollectionByType> components = new();
-        private readonly Dictionary<Entity, CollectionByType> creationBuffer = new();
+        private readonly ComponentCollection components = new();
         private readonly Dictionary<Type, System> systems = new();
         private readonly List<System> orderedSystemCollection = new();
-
-        private bool stepIsInLoop;
 
         /// <summary>
         /// Create scene for a <see cref="Game"/> without setting it as the active scene
@@ -81,7 +78,6 @@ namespace Walgelijk
                     orderedSystemCollection.Insert(i + 1, system);
                     return;
                 }
-
             orderedSystemCollection.Insert(0, system);
         }
 
@@ -154,7 +150,6 @@ namespace Walgelijk
             };
 
             entities.Add(newEntity.Identity, newEntity);
-            InitialiseComponentCollection(newEntity);
             OnCreateEntity?.Invoke(newEntity);
 
             return newEntity;
@@ -169,15 +164,6 @@ namespace Walgelijk
                 throw new InvalidOperationException($"Prefab ID ({entity}) already exists in the scene");
 
             entities.Add(entity.Identity, entity);
-            InitialiseComponentCollection(entity);
-        }
-
-        private void InitialiseComponentCollection(Entity newEntity)
-        {
-            if (stepIsInLoop)
-                creationBuffer.Add(newEntity, new CollectionByType());
-            else
-                components.Add(newEntity, new CollectionByType());
         }
 
         /// <summary>
@@ -199,8 +185,7 @@ namespace Walgelijk
             if (!entityRemovalSuccess)
                 return false;
 
-            components[identity].Dispose();
-            components.Remove(identity);
+            components.DeleteEntity(identity);
             return true;
         }
 
@@ -230,10 +215,8 @@ namespace Walgelijk
         /// </summary>
         public IEnumerable<object> GetAllComponentsFrom(Entity entity)
         {
-            if (stepIsInLoop && creationBuffer.TryGetValue(entity, out var c))
-                return c.GetAll();
-
-            return components[entity].GetAll();
+            foreach (var component in components.GetAllComponentsFrom(entity))
+                yield return component;
         }
 
         /// <summary>
@@ -241,19 +224,25 @@ namespace Walgelijk
         /// </summary>
         public IEnumerable<EntityWith<T>> GetAllComponentsOfType<T>() where T : class
         {
-            stepIsInLoop = true;
-            foreach (var pair in components)
-            {
-                var componentDictionary = pair.Value;
-                var entity = pair.Key;
+            foreach (var item in components.GetAllComponentsOfType<T>())
+                yield return new EntityWith<T>(item.Component, item.Entity);
+        }
 
-                if (componentDictionary.TryGetAll(out IEnumerable<T> set))
-                {
-                    foreach (var component in set)
-                        yield return new EntityWith<T>(component, entity);
-                }
+        /// <summary>
+        /// Get all components and entities and add them into the given array. It returns the amount of items that were inserted.
+        /// </summary>
+        public int CopyAllComponentsOfType<T>(EntityWith<T>[] array) where T : class
+        {
+            int i = 0;
+            foreach (var item in components.GetAllComponentsOfType<T>())
+            {
+                if (i >= array.Length)
+                    break;
+
+                array[i] = item;
+                i++;
             }
-            stepIsInLoop = false;
+            return i;
         }
 
         /// <summary>
@@ -261,21 +250,25 @@ namespace Walgelijk
         /// </summary>
         public bool FindAnyComponent<T>(out T anyInstance) where T : class
         {
-            foreach (var item in components)
-                if (item.Value.TryGet<T>(out anyInstance))
-                    return true;
+            foreach (var item in components.GetAllComponentsOfType<T>())
+            {
+                anyInstance = item.Component;
+                return true;
+            }
 
             anyInstance = null;
             return false;
         }
 
         /// <summary>
-        /// Retrieve the first component of the specified type on the given entity
+        /// Retrieve the first component of the specified type on the given entity, otherwise returns default
         /// </summary>
         public T GetComponentFrom<T>(Entity entity) where T : class
         {
-            if (components[entity].TryGet<T>(out var component) || (creationBuffer.TryGetValue(entity, out var collection) && collection.TryGet<T>(out component)))
-                return component;
+            foreach (var item in components.GetAllComponentsOfType<T>())
+                if (item.Entity == entity)
+                    return item.Component;
+
             return default;
         }
 
@@ -284,15 +277,7 @@ namespace Walgelijk
         /// </summary>
         public bool TryGetEntityWith(object component, out Entity entity)
         {
-            foreach (var pair in components)
-                if (pair.Value.HasObject(component))
-                {
-                    entity = pair.Key;
-                    return true;
-                }
-
-            entity = default;
-            return false;
+            return components.GetEntityFromComponent(component, out entity);
         }
 
         /// <summary>
@@ -301,13 +286,14 @@ namespace Walgelijk
         public bool TryGetComponentFrom<T>(Entity entity, out T component) where T : class
         {
             component = default;
-            if (!components.TryGetValue(entity, out var collection) && !creationBuffer.TryGetValue(entity, out collection)) return false;
 
-            if (collection.TryGet(out T c))
-            {
-                component = c;
-                return true;
-            }
+            foreach (var item in components.GetAllComponentsFrom(entity))
+                if (item is T typed)
+                {
+                    component = typed;
+                    return true;
+                }
+
             return false;
         }
 
@@ -316,7 +302,10 @@ namespace Walgelijk
         /// </summary>
         public bool HasComponent<T>(Entity entity) where T : class
         {
-            return components[entity].Has<T>() || (creationBuffer.TryGetValue(entity, out var value) && value.Has<T>());
+            foreach (var a in components.GetAllComponentsFrom(entity))
+                if (a is T)
+                    return true;
+            return false;
         }
 
         /// <summary>
@@ -327,10 +316,7 @@ namespace Walgelijk
             if (Game?.DevelopmentMode ?? false)
                 AssertComponentRequirements(entity, component);
 
-            if (creationBuffer.TryGetValue(entity, out var value))
-                value.TryAdd<T>(component);
-            else
-                components[entity].TryAdd<T>(component);
+            components.Add(component, entity);
 
             OnAttachComponent?.Invoke(entity, component);
             return component;
@@ -354,12 +340,7 @@ namespace Walgelijk
         /// <returns>if the operation was successful</returns>
         public bool DetachComponent<T>(Entity entity)
         {
-            bool success;
-
-            if (creationBuffer.TryGetValue(entity, out var value))
-                success = value.Remove<T>();
-            else
-                success = components[entity].Remove<T>();
+            bool success = components.RemoveComponentOfType<T>(entity);
 
             if (success)
                 OnDetachComponent?.Invoke(entity);
@@ -379,15 +360,8 @@ namespace Walgelijk
                     break;
                 }
 
-            foreach (var component in creationBuffer)
-                components.Add(component.Key, component.Value);
-
-            creationBuffer.Clear();
-
-            stepIsInLoop = true;
             foreach (var system in orderedSystemCollection)
                 system.Update();
-            stepIsInLoop = false;
         }
 
         /// <summary>

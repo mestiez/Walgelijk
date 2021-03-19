@@ -23,6 +23,7 @@ namespace Test
 
             game.Window.TargetFrameRate = 0;
             game.Window.TargetUpdateRate = 0;
+            game.Console.DrawConsoleNotification = true;
             game.Window.VSync = false;
 
             Resources.SetBasePathForType<Sound>("audio");
@@ -129,23 +130,24 @@ namespace Test
             scene.AttachComponent(particles, new TransformComponent());
             scene.AttachComponent(particles, new WaveMovementComponent());
 
-            var particleComponent = new ParticlesComponent(1000)
+            var particleComponent = new ParticlesComponent(10000)
             {
                 // Dampening = new FloatRange(0.9f),
                 RotationalDampening = new FloatRange(0.95f),
                 // Gravity = new Vec2Range(Vector2.Zero),
                 StartVelocity = new Vec2Range(Vector2.One * -15, Vector2.One * 15),
-                EmissionRate = 32,
+                EmissionRate = 200,
                 StartColor = new ColorRange(Colors.White),
-                ColorOverLife = new ColorCurve(new Curve<Color>.Key(Color.White, 0), new Curve<Color>.Key(Color.Red, 1)),
+                ColorOverLife = new ColorCurve(new Curve<Color>.Key(Colors.Green, 0), new Curve<Color>.Key(Color.Red, 1f)),
                 SizeOverLife = new FloatCurve(new Curve<float>.Key(0, 0), new Curve<float>.Key(1, 0.1f), new Curve<float>.Key(0, 1)),
+                LifeRange = new FloatRange(0.3f, .5f),
                 WorldSpace = false,
-                SimulationSpeed = 1f
+                SimulationSpeed = 1
             };
 
             scene.AttachComponent(particles, particleComponent);
 
-            particleComponent.Material.SetUniform(ShaderDefaults.MainTextureUniform, gaming);
+            //particleComponent.Material.SetUniform(ShaderDefaults.MainTextureUniform, gaming);
 
             return scene;
         }
@@ -169,10 +171,13 @@ namespace Test
                 var transform = Scene.GetComponentFrom<TransformComponent>(item.Entity);
                 var wave = item.Component;
 
-                transform.Rotation += Time.UpdateDeltaTime * 64;
-                DebugDraw.Circle(transform.Position, .4f, Colors.Green);
+               // transform.Rotation += Time.UpdateDeltaTime * 64;
+                DebugDraw.Circle(transform.Position, 3.4f, Colors.Green);
                 //transform.Position = new Vector2(MathF.Sin(Time.SecondsSinceLoad * wave.Frequency + wave.Phase) * wave.Amplitude, 0);
+                DebugDraw.Text(transform.Position, transform.Position.ToString(), 0.1f);
             }
+
+
         }
 
         public override void Render()
