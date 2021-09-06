@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,11 @@ namespace Walgelijk
         /// The last instance that was created
         /// </summary>
         public static Game Main { get; private set; }
+
+        /// <summary>
+        /// Path to the directory where the executable is
+        /// </summary>
+        public readonly string ExecutableDirectory;
 
         private Scene scene;
 
@@ -82,6 +88,8 @@ namespace Walgelijk
         /// </summary>
         public Game(Window window, AudioRenderer audioRenderer = null)
         {
+            ExecutableDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
+            global::System.Console.WriteLine(ExecutableDirectory);
             Window = window;
             window.Game = this;
             Main = this;

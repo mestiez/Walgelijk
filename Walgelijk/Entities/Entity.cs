@@ -43,9 +43,6 @@ namespace Walgelijk
             return new Entity { Identity = identity };
         }
 
-        public override string ToString()
-        {
-            return $"Entity {Identity}";
-        }
+        public override string ToString() => $"Entity {Identity}";
     }
 }

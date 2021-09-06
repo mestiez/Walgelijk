@@ -65,7 +65,8 @@ namespace Walgelijk
             var containers = Scene.GetAllComponentsOfType<PostProcessingComponent>();
 
             foreach (var item in containers)
-                RenderQueue.Add(rt0TargetTask, item.Component.Begin);
+                if (item.Component.Enabled)
+                    RenderQueue.Add(rt0TargetTask, item.Component.Begin);
         }
 
         public override void PostRender()
@@ -77,6 +78,9 @@ namespace Walgelijk
 
             foreach (var item in containers)
             {
+                if (!item.Component.Enabled)
+                    continue ;
+
                 var container = item.Component;
 
                 if (container.EffectTask == null)

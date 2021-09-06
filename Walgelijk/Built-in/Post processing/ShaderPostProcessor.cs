@@ -36,7 +36,7 @@
         /// </summary>
         public void Process(RenderTexture src, RenderTexture dst, IGraphics graphics, Scene scene)
         {
-            graphics.BlitFullscreenQuad(src, dst, Material, TextureUniform);
+                graphics.BlitFullscreenQuad(src, dst, Material, TextureUniform);
         }
     }
 }

@@ -12,6 +12,8 @@ namespace Walgelijk
 
         public static Font LoadFromMetadata(string metadataPath)
         {
+            Logger.Log("Loading font from " + metadataPath);
+
             currentlyLoadingPath = metadataPath;
 
             string[] text = File.ReadAllLines(metadataPath);

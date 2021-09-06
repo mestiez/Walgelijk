@@ -4,7 +4,7 @@
     {
         protected override TextureUnitLink CreateNew(MaterialTexturePair raw)
         {
-            return new TextureUnitLink(raw.Texture, raw.Material.GetNextTextureUnit());
+            return new TextureUnitLink(raw.Texture, raw.Material.GetTextureUnitForUniform(raw.UniformLocation));
         }
 
         protected override void DisposeOf(TextureUnitLink loaded)
@@ -30,7 +30,7 @@
                         continue;
                 }
 
-                unitLink = Load(new MaterialTexturePair(material, loadedTexture));
+                unitLink = Load(new MaterialTexturePair(material, loadedTexture, material.GetUniformLocation(pair.Key)));
                 unitLink.Bind();
             }
         }

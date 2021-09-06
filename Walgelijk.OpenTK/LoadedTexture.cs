@@ -1,4 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL;
+using System;
+using System.Collections.Generic;
 
 namespace Walgelijk.OpenTK
 {
@@ -14,6 +16,29 @@ namespace Walgelijk.OpenTK
         public int Width { get; }
         public int Height { get; }
         public int Index { get; }
+
+        public override bool Equals(object obj)
+        {
+            return obj is LoadedTexture texture &&
+                   Width == texture.Width &&
+                   Height == texture.Height &&
+                   Index == texture.Index;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Width, Height, Index);
+        }
+
+        public static bool operator ==(LoadedTexture left, LoadedTexture right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(LoadedTexture left, LoadedTexture right)
+        {
+            return !(left == right);
+        }
 
         //public void Bind()
         //{
@@ -37,6 +62,28 @@ namespace Walgelijk.OpenTK
         {
             GL.ActiveTexture(Unit);
             GL.BindTexture(TextureTarget.Texture2D, Texture.Index);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is TextureUnitLink other &&
+                   Texture.Index == other.Texture.Index &&
+                   Unit == other.Unit;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Texture, Unit);
+        }
+
+        public static bool operator ==(TextureUnitLink left, TextureUnitLink right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(TextureUnitLink left, TextureUnitLink right)
+        {
+            return !(left == right);
         }
     }
 }

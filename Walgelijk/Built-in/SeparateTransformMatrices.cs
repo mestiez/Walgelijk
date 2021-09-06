@@ -13,14 +13,14 @@ namespace Walgelijk
         public Matrix4x4 AfterPivot;
 
         /// <summary>
-        /// 1: The matrix after rotating
-        /// </summary>
-        public Matrix4x4 AfterRotation;
-
-        /// <summary>
-        /// 2: The matrix after scaling
+        /// 1: The matrix after scaling
         /// </summary>
         public Matrix4x4 AfterScale;
+
+        /// <summary>
+        /// 2: The matrix after rotating
+        /// </summary>
+        public Matrix4x4 AfterRotation;
 
         /// <summary>
         /// 3: The matrix after translating

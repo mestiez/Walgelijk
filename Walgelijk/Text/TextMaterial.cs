@@ -29,7 +29,7 @@ namespace Walgelijk
         public static Material CreateClipMaterial(IReadableTexture[] pages)
         {
             string vert = ShaderDefaults.WorldSpaceVertex;
-            string frag = Resources.Load<string>("resources\\shaders\\legacy-font.frag", true);
+            string frag = Resources.Load<string>(Game.Main.ExecutableDirectory + "resources\\shaders\\legacy-font.frag", true);
             Material mat = new Material(new Shader(vert, frag));
 
             //TODO meer pages
@@ -44,13 +44,13 @@ namespace Walgelijk
         public static Material CreateSDFMaterial(IReadableTexture[] pages)
         {
             string vert = ShaderDefaults.WorldSpaceVertex;
-            string frag = Resources.Load<string>("resources\\shaders\\sdf-font.frag", true);
+            string frag = Resources.Load<string>(Game.Main.ExecutableDirectory + "resources\\shaders\\sdf-font.frag", true);
             Material mat = new Material(new Shader(vert, frag));
 
             //TODO meer pages
             mat.SetUniform("mainTex", pages[0]);
             mat.SetUniform("thickness", 0.5f);
-            mat.SetUniform("softness", 0);
+            mat.SetUniform("softness", 0.0f);
             mat.SetUniform("tint", Colors.White);
             return mat;
         }

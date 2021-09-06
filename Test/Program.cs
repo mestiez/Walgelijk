@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Walgelijk;
-using Walgelijk.NAudio;
 using Walgelijk.OpenTK;
 using Walgelijk.ParticleSystem;
 using Walgelijk.UI;
@@ -18,7 +17,7 @@ namespace Test
         {
             game = new Game(
                 new OpenTKWindow("hallo daar", new Vector2(-1, -1), new Vector2(800, 600)),
-                new NAudioRenderer()
+                null
                 );
 
             game.Window.TargetFrameRate = 0;
@@ -26,7 +25,7 @@ namespace Test
             game.Console.DrawConsoleNotification = true;
             game.Window.VSync = false;
 
-            Resources.SetBasePathForType<Sound>("audio");
+            //Resources.SetBasePathForType<Sound>("audio");
             Resources.SetBasePathForType<Prefab>("prefabs");
             Resources.SetBasePathForType<Texture>("textures");
             Resources.SetBasePathForType<Font>("fonts");
@@ -74,7 +73,9 @@ namespace Test
             scene.AddSystem(new ElementTransformSystem());
             scene.AddSystem(new ElementEventSystem());
             scene.AddSystem(new ElementRenderingSystem());
-            scene.AddSystem(new PostProcessingSystem() { ExecutionOrder = -2 });
+       //     scene.AddSystem(new PostProcessingSystem() { ExecutionOrder = -2 });
+
+            Background.CreateBackground(scene, gaming);
 
             scene.AttachComponent(scene.CreateEntity(), new PostProcessingComponent
             {
@@ -82,7 +83,7 @@ namespace Test
                 {
                     new ShaderPostProcessor(Resources.Load<string>("shaders\\noise.frag")),
                 },
-                End = new RenderOrder(100, 0)
+                //End = new RenderOrder(100, 0)
             });
 
             scene.AttachComponent(scene.CreateEntity(), new PostProcessingComponent
@@ -91,7 +92,7 @@ namespace Test
                 {
                     new ShaderPostProcessor(Resources.Load<string>("shaders\\chromatic_aberration.frag")),
                 },
-                Begin = new RenderOrder(100, 1),
+                //Begin = new RenderOrder(100, 1),
             });
 
             var orgin = scene.CreateEntity();
@@ -129,6 +130,9 @@ namespace Test
             var particles = scene.CreateEntity();
             scene.AttachComponent(particles, new TransformComponent());
             scene.AttachComponent(particles, new WaveMovementComponent());
+            //var explosionSound = Resources.Load<Sound>("walgelijk.wav");
+
+            //game.AudioRenderer.PlayOnce(explosionSound);
 
             var particleComponent = new ParticlesComponent(10000)
             {
@@ -171,7 +175,7 @@ namespace Test
                 var transform = Scene.GetComponentFrom<TransformComponent>(item.Entity);
                 var wave = item.Component;
 
-               // transform.Rotation += Time.UpdateDeltaTime * 64;
+                // transform.Rotation += Time.UpdateDeltaTime * 64;
                 DebugDraw.Circle(transform.Position, 3.4f, Colors.Green);
                 //transform.Position = new Vector2(MathF.Sin(Time.SecondsSinceLoad * wave.Frequency + wave.Phase) * wave.Amplitude, 0);
                 DebugDraw.Text(transform.Position, transform.Position.ToString(), 0.1f);

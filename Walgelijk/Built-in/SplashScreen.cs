@@ -4,6 +4,7 @@ using System.Numerics;
 
 namespace Walgelijk
 {
+
     /// <summary>
     /// Utility struct that provides splash screen creation functionality
     /// </summary>

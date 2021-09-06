@@ -16,7 +16,7 @@ vec3 hash32(vec2 p)
 
 void main()
 {
-    vec2 c = uv;
+    vec2 c = 1. - uv;
     color = vertexColor * texture(mainTex, c);
     color.rgb += hash32(c * 533.348);
 }

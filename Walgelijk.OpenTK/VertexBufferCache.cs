@@ -50,25 +50,25 @@ namespace Walgelijk.OpenTK
             switch (array.AttributeType)
             {
                 case AttributeType.Integer:
-                    GL.BufferData(BufferTarget.ArrayBuffer, size, (int[])array.Data, hint);
+                    GL.BufferData(BufferTarget.ArrayBuffer, size, array.GetData<int>(), hint);
                     break;
                 case AttributeType.Float:
-                    GL.BufferData(BufferTarget.ArrayBuffer, size, (float[])array.Data, hint);
+                    GL.BufferData(BufferTarget.ArrayBuffer, size, array.GetData<int>(), hint);
                     break;
                 case AttributeType.Double:
-                    GL.BufferData(BufferTarget.ArrayBuffer, size, (double[])array.Data, hint);
+                    GL.BufferData(BufferTarget.ArrayBuffer, size, array.GetData<int>(), hint);
                     break;
                 case AttributeType.Vector2:
-                    GL.BufferData(BufferTarget.ArrayBuffer, size, (Vector2[])array.Data, hint);
+                    GL.BufferData(BufferTarget.ArrayBuffer, size, array.GetData<Vector2>(), hint);
                     break;
                 case AttributeType.Vector3:
-                    GL.BufferData(BufferTarget.ArrayBuffer, size, (Vector3[])array.Data, hint);
+                    GL.BufferData(BufferTarget.ArrayBuffer, size, array.GetData<Vector3>(), hint);
                     break;
                 case AttributeType.Vector4:
-                    GL.BufferData(BufferTarget.ArrayBuffer, size, (Vector4[])array.Data, hint);
+                    GL.BufferData(BufferTarget.ArrayBuffer, size, array.GetData<Vector4>(), hint);
                     break;
                 case AttributeType.Matrix4x4:
-                    GL.BufferData(BufferTarget.ArrayBuffer, size, (Matrix4x4[])array.Data, hint);
+                    GL.BufferData(BufferTarget.ArrayBuffer, size, array.GetData<Matrix4x4>(), hint);
                     break;
             }
         }

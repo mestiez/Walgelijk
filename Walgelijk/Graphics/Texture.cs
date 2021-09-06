@@ -71,7 +71,7 @@ namespace Walgelijk
         /// </summary>
         public bool NeedsUpdate { get; protected set; }
 
-        private readonly Color[] pixels;
+        private Color[] pixels;
         private FilterMode filterMode = FilterMode.Nearest;
         private WrapMode wrapMode = WrapMode.Clamp;
 
@@ -118,11 +118,26 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Remove the pixels that are stored on CPU memory
+        /// </summary>
+        public void DisposeCPUCopy()
+        {
+            if (pixels != null)
+            {
+                pixels = null;
+                GC.Collect();
+            }
+        }
+
+        /// <summary>
         /// Get a pixel
         /// </summary>
         /// <returns></returns>
         public Color GetPixel(int x, int y)
         {
+            if (pixels == null)
+                throw new Exception("No CPU side pixel array available");
+
             int index = GetIndexFrom(x, y);
             return pixels[index];
         }
@@ -132,6 +147,9 @@ namespace Walgelijk
         /// </summary>
         public void SetPixel(int x, int y, Color color)
         {
+            if (pixels == null)
+                throw new Exception("No CPU side pixel array available");
+
             int index = GetIndexFrom(x, y);
             pixels[index] = color;
             //TODO deze doet nog niks met de GPU

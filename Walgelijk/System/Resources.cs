@@ -53,10 +53,7 @@ namespace Walgelijk
         public static T Load<T>(string path, bool ignoreBasePaths = false)
         {
             if (!ignoreBasePaths)
-            {
-                path = CombineTypeSpecificPath<T>(path);
-                path = CombineBasePath(path);
-            }
+                path = ParseFullPathForType<T>(path);
 
             OnStartLoad?.Invoke(typeof(T), path);
 
@@ -73,7 +70,32 @@ namespace Walgelijk
             throw new Exception($"The object at \"{path}\" is not of type {typeof(T).Name}");
         }
 
-        private static string CombineTypeSpecificPath<T>(string path)
+        /// <summary>
+        /// Load a resource at the given path, using the given function if it does not exist yet
+        /// </summary>
+        public static T Load<T>(string path, Func<string, T> loadFunction, bool ignoreBasePaths = false)
+        {
+            if (!ignoreBasePaths)
+            {
+                path = ParseFullPathForType<T>(path);
+            }
+
+            OnStartLoad?.Invoke(typeof(T), path);
+
+            if (resources.TryGetValue(path, out var obj) && obj is T typed)
+                return typed;
+
+            var newObject = loadFunction(path);
+            resources.Add(path, newObject);
+            return newObject;
+        }
+
+        /// <summary>
+        /// Get the full path for a path, considering its type and set base paths
+        /// </summary>
+        public static string ParseFullPathForType<T>(string path) => CombineBasePath(CombinePathForType<T>(path));
+
+        private static string CombinePathForType<T>(string path)
         {
             if (basePathByType.TryGetValue(typeof(T), out var typeSpecificBasePath))
                 path = Path.Combine(typeSpecificBasePath, path);
@@ -129,7 +151,7 @@ namespace Walgelijk
         {
             if (loadFunctions.TryGetValue(type, out var loadFromFile))
             {
-                var norm = path.Replace('/','\\');
+                var norm = path.Replace('/', '\\');
 
                 stopwatch.Restart();
                 var result = loadFromFile(norm);

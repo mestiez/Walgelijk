@@ -102,8 +102,8 @@ namespace Walgelijk
         [Command]
         private static CommandResult RemoveEntity(int entityID)
         {
-            bool success = Game.Scene.RemoveEntity(entityID);
-            return success ? entityID + " removed" : CommandResult.Error("Could not remove Entity " + entityID);
+            Game.Scene.RemoveEntity(entityID);
+            return entityID + " removed";
         }
 
         [Command]

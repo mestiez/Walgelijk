@@ -99,6 +99,7 @@ namespace Walgelijk.OpenTK
         protected override void DisposeOf(LoadedTexture loaded)
         {
             GL.DeleteTexture(loaded.Index);
+            Logger.Log($"Deleted texture {loaded.Index}");
         }
     }
 }

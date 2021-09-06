@@ -75,6 +75,10 @@ namespace Walgelijk
                         line++;
                         cursor = 0;
                         continue;
+                    case '\t':
+                        float tabSize = Font.Size * 5;
+                        cursor = MathF.Ceiling(cursor / tabSize) * tabSize;
+                        continue;
                         //TODO andere escape character handlers
                 }
 

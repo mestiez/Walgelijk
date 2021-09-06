@@ -26,5 +26,14 @@
         /// Whether or not the component is rendered by the system
         /// </summary>
         public bool Visible { get; set; } = true;
+
+        /// <summary>
+        /// Apply horizontal flip
+        /// </summary>
+        public bool HorizontalFlip { get; set; } = false;
+        /// <summary>
+        /// Apply vertical flip
+        /// </summary>
+        public bool VerticalFlip { get; set; } = false;
     }
 }

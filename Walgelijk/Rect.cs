@@ -1,4 +1,6 @@
-﻿namespace Walgelijk
+﻿using System.Numerics;
+
+namespace Walgelijk
 {
     /// <summary>
     /// Simple rectangle structure
@@ -43,6 +45,18 @@
         }
 
         /// <summary>
+        /// Returns the center of the rectangle. Calculated using (min + max) * 0.5
+        /// </summary>
+        /// <returns></returns>
+        public Vector2 GetCenter()
+        {
+            return new Vector2(
+                (MinX + MaxX) * 0.5f,
+                (MinY + MaxY) * 0.5f
+                );
+        }
+
+        /// <summary>
         /// Create a rectangle
         /// </summary>
         public Rect(float minX, float minY, float maxX, float maxY)
@@ -52,6 +66,19 @@
 
             MaxX = maxX;
             MaxY = maxY;
+        }
+
+        /// <summary>
+        /// Create a rectangle given the center and the size
+        /// </summary>
+        public Rect(Vector2 center, Vector2 size)
+        {
+            var halfSize = size / 2;
+            MinX = center.X - halfSize.X;
+            MinY = center.Y - halfSize.Y;
+
+            MaxX = center.X + halfSize.X;
+            MaxY = center.Y + halfSize.Y;
         }
     }
 }

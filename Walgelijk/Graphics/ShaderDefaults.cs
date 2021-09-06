@@ -8,11 +8,11 @@
         /// <summary>
         /// Default fragment shader code
         /// </summary>
-        public static readonly string TexturedFragment = Resources.Load<string>("resources\\shaders\\textured-fragment.frag", true);
+        public static readonly string TexturedFragment = Resources.Load<string>(Game.Main.ExecutableDirectory + "resources\\shaders\\textured-fragment.frag", true);
         /// <summary>
         /// Default vertex shader code
         /// </summary>
-        public static readonly string WorldSpaceVertex = Resources.Load<string>("resources\\shaders\\worldspace-vertex.vert", true);
+        public static readonly string WorldSpaceVertex = Resources.Load<string>(Game.Main.ExecutableDirectory + "resources\\shaders\\worldspace-vertex.vert", true);
 
         /// <summary>
         /// Projection matrix uniform name

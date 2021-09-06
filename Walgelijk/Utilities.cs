@@ -157,11 +157,11 @@ namespace Walgelijk
         /// <summary>
         /// Linearly map a value in a range onto another range
         /// </summary>
-        /// <param name="a1"></param>
-        /// <param name="a2"></param>
-        /// <param name="b1"></param>
-        /// <param name="b2"></param>
-        /// <param name="s"></param>
+        /// <param name="a1">Source lower bound</param>
+        /// <param name="a2">Source upper bound</param>
+        /// <param name="b1">Destination lower bound</param>
+        /// <param name="b2">Destination upper bound</param>
+        /// <param name="s">The value to remap</param>
         /// <returns>Remapped value <paramref name="s"/></returns>
         public static float MapRange(float a1, float a2, float b1, float b2, float s)
         {
@@ -204,6 +204,14 @@ namespace Walgelijk
             var newPos = 0.5f * acceleration * deltaTime * deltaTime + currentVelocity * deltaTime + currentPos;
 
             return (newPos, newVel);
+        }
+
+        /// <summary>
+        /// Returns the lerp factor adjusted for the given time step
+        /// </summary>
+        public static float GetLerpFactorDeltaTime(float lerpFactor, float deltaTime)
+        {
+            return 1 - MathF.Pow(1 - lerpFactor, deltaTime);
         }
     }
 }

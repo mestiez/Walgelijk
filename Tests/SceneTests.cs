@@ -22,6 +22,8 @@ namespace Tests
             {
                 var e = createEntity();
                 scene.RemoveEntity(e);
+
+                scene.UpdateSystems();
             }
 
             GC.Collect();

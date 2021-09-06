@@ -1,4 +1,6 @@
-﻿namespace Walgelijk
+﻿using System.Numerics;
+
+namespace Walgelijk
 {
     /// <summary>
     /// System that renders components that implement <see cref="ShapeComponent"/>
@@ -23,7 +25,19 @@
             {
                 var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
                 shape.RenderTask.ScreenSpace = shape.ScreenSpace;
-                shape.RenderTask.ModelMatrix = transform.LocalToWorldMatrix;
+                
+
+                if (shape.HorizontalFlip || shape.VerticalFlip)
+                {
+                    shape.RenderTask.ModelMatrix = Matrix4x4.Identity;
+                    float x = shape.HorizontalFlip ? -1 : 1;
+                    float y = shape.VerticalFlip ? -1 : 1;
+                    shape.RenderTask.ModelMatrix *= Matrix4x4.CreateScale(x, y, 1);
+                    shape.RenderTask.ModelMatrix *= transform.LocalToWorldMatrix;
+                }
+                else
+                    shape.RenderTask.ModelMatrix = transform.LocalToWorldMatrix;
+
                 RenderQueue.Add(shape.RenderTask, shape.RenderOrder);
             }
         }

@@ -20,6 +20,13 @@ namespace Walgelijk
         private readonly Dictionary<Type, System> systems = new();
         private readonly List<System> orderedSystemCollection = new();
 
+        private HashSet<ComponentCollection.EntityWithAnything> componentsToAdd = new();
+        private HashSet<(Type, Entity)> componentsToDestroy = new();
+        private HashSet<Entity> entitiesToDestroy = new();
+
+        private HashSet<System> systemsToAdd = new();
+        private HashSet<System> systemsToDestroy = new();
+
         /// <summary>
         /// Create scene for a <see cref="Game"/> without setting it as the active scene
         /// </summary>
@@ -62,11 +69,7 @@ namespace Walgelijk
         public T AddSystem<T>(T system) where T : System
         {
             system.Scene = this;
-            OnAddSystem?.Invoke(system);
-            systems.Add(system.GetType(), system);
-            ReverseSortAddSystem(system);
-            system.ExecutionOrderChanged = false;
-            system.Initialise();
+            systemsToAdd.Add(system);
             return system;
         }
 
@@ -119,14 +122,21 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Returns true if the system of the given type exists in the scene and returns false otherwise.
+        /// </summary>
+        public bool HasSystem<T>() => systems.ContainsKey(typeof(T));
+
+        /// <summary>
         /// Remove system from the list. Getting rid of any references to it is not handled, so the object might remain in memory.
         /// </summary>
         /// <returns>if the operation was successful</returns>
         public bool RemoveSystem<T>()
         {
-            if (systems.Remove(typeof(T), out var removed))
-                return orderedSystemCollection.Remove(removed);
-
+            if (systems.TryGetValue(typeof(T), out var s))
+            {
+                systemsToDestroy.Add(s);
+                return true;
+            }
             return false;
         }
 
@@ -167,26 +177,12 @@ namespace Walgelijk
         }
 
         /// <summary>
-        /// Get the entity struct from an entity ID. Generally not necessary
-        /// </summary>
-        public Entity GetEntity(int identity)
-        {
-            return entities[identity];
-        }
-
-        /// <summary>
         /// Removes the entity from the list. Also removes all attached components. Any references to the entity will become useless as they will point to nothing. References to any attached components are not handled, so they may remain in memory.
         /// </summary>
         /// <param name="identity"></param>
-        /// <returns>if the operation was successful</returns>
-        public bool RemoveEntity(int identity)
+        public void RemoveEntity(int identity)
         {
-            bool entityRemovalSuccess = entities.Remove(identity);
-            if (!entityRemovalSuccess)
-                return false;
-
-            components.DeleteEntity(identity);
-            return true;
+            entitiesToDestroy.Add(identity);
         }
 
         /// <summary>
@@ -215,6 +211,10 @@ namespace Walgelijk
         /// </summary>
         public IEnumerable<object> GetAllComponentsFrom(Entity entity)
         {
+            foreach (var item in componentsToAdd)
+                if (item.Entity == entity)
+                    yield return item.Component;
+
             foreach (var component in components.GetAllComponentsFrom(entity))
                 yield return component;
         }
@@ -224,6 +224,10 @@ namespace Walgelijk
         /// </summary>
         public IEnumerable<EntityWith<T>> GetAllComponentsOfType<T>() where T : class
         {
+            foreach (var item in componentsToAdd)
+                if (item.Component is T typed)
+                    yield return new EntityWith<T>(typed, item.Entity);
+
             foreach (var item in components.GetAllComponentsOfType<T>())
                 yield return new EntityWith<T>(item.Component, item.Entity);
         }
@@ -233,6 +237,7 @@ namespace Walgelijk
         /// </summary>
         public int CopyAllComponentsOfType<T>(EntityWith<T>[] array) where T : class
         {
+            //TODO include creation buffer
             int i = 0;
             foreach (var item in components.GetAllComponentsOfType<T>())
             {
@@ -248,14 +253,23 @@ namespace Walgelijk
         /// <summary>
         /// Returns the first found instance of the given type.
         /// </summary>
-        public bool FindAnyComponent<T>(out T anyInstance) where T : class
+        public bool FindAnyComponent<T>(out T anyInstance, out Entity entity) where T : class
         {
+            foreach (var item in componentsToAdd)
+                if (item.Component is T typed)
+                {
+                    anyInstance = typed;
+                    entity = item.Entity;
+                    return true;
+                }
+
             foreach (var item in components.GetAllComponentsOfType<T>())
             {
                 anyInstance = item.Component;
+                entity = item.Entity;
                 return true;
             }
-
+            entity = default;
             anyInstance = null;
             return false;
         }
@@ -265,6 +279,11 @@ namespace Walgelijk
         /// </summary>
         public T GetComponentFrom<T>(Entity entity) where T : class
         {
+            foreach (var item in componentsToAdd)
+                if (item.Entity == entity && item.Component is T typed)
+                    return typed;
+
+            //TODO dit werkt niet omdat die camera er nog niet is. die zit in de creation buffer. dus ja hier ga je weer
             foreach (var item in components.GetAllComponentsOfType<T>())
                 if (item.Entity == entity)
                     return item.Component;
@@ -287,6 +306,13 @@ namespace Walgelijk
         {
             component = default;
 
+            foreach (var item in componentsToAdd)
+                if (item.Entity == entity && item.Component is T typed)
+                {
+                    component = typed;
+                    return true;
+                }
+
             foreach (var item in components.GetAllComponentsFrom(entity))
                 if (item is T typed)
                 {
@@ -302,6 +328,10 @@ namespace Walgelijk
         /// </summary>
         public bool HasComponent<T>(Entity entity) where T : class
         {
+            foreach (var item in componentsToAdd)
+                if (item.Entity == entity && item.Component is T typed)
+                    return true;
+
             foreach (var a in components.GetAllComponentsFrom(entity))
                 if (a is T)
                     return true;
@@ -313,12 +343,8 @@ namespace Walgelijk
         /// </summary>
         public T AttachComponent<T>(Entity entity, T component) where T : class
         {
-            if (Game?.DevelopmentMode ?? false)
-                AssertComponentRequirements(entity, component);
+            componentsToAdd.Add(new ComponentCollection.EntityWithAnything(component, entity));
 
-            components.Add(component, entity);
-
-            OnAttachComponent?.Invoke(entity, component);
             return component;
         }
 
@@ -337,15 +363,9 @@ namespace Walgelijk
         /// <summary>
         /// Detach a component from an entity
         /// </summary>
-        /// <returns>if the operation was successful</returns>
-        public bool DetachComponent<T>(Entity entity)
+        public void DetachComponent<T>(Entity entity)
         {
-            bool success = components.RemoveComponentOfType<T>(entity);
-
-            if (success)
-                OnDetachComponent?.Invoke(entity);
-
-            return success;
+            componentsToDestroy.Add((typeof(T), entity));
         }
 
         /// <summary>
@@ -353,6 +373,7 @@ namespace Walgelijk
         /// </summary>
         public void UpdateSystems()
         {
+            ProcessAddDestroyBuffers();
             for (int i = 0; i < orderedSystemCollection.Count; i++)
                 if (orderedSystemCollection[i].ExecutionOrderChanged)
                 {
@@ -362,6 +383,53 @@ namespace Walgelijk
 
             foreach (var system in orderedSystemCollection)
                 system.Update();
+        }
+
+        private void ProcessAddDestroyBuffers()
+        {
+            foreach (var system in systemsToAdd)
+            {
+                OnAddSystem?.Invoke(system);
+                systems.Add(system.GetType(), system);
+                ReverseSortAddSystem(system);
+                system.ExecutionOrderChanged = false;
+                system.Initialise();
+            }
+            systemsToAdd.Clear();
+
+            foreach (var system in systemsToDestroy)
+            {
+                if (systems.Remove(system.GetType(), out var removed))
+                    orderedSystemCollection.Remove(removed);
+            }
+            systemsToDestroy.Clear();
+
+            foreach (var pair in componentsToAdd)
+            {
+                if (Game?.DevelopmentMode ?? false)
+                    AssertComponentRequirements(pair.Entity, pair.Component);
+
+                components.Add(pair.Component, pair.Entity);
+                OnAttachComponent?.Invoke(pair.Entity, pair.Component);
+            }
+            componentsToAdd.Clear();
+
+            foreach ((Type type, Entity entity) in componentsToDestroy)
+            {
+                bool success = components.RemoveComponentOfType(type, entity);
+
+                if (success)
+                    OnDetachComponent?.Invoke(entity);
+            }
+            componentsToDestroy.Clear();
+
+            foreach (var identity in entitiesToDestroy)
+            {
+                bool entityRemovalSuccess = entities.Remove(identity);
+                if (entityRemovalSuccess)
+                    components.DeleteEntity(identity);
+            }
+            entitiesToDestroy.Clear();
         }
 
         /// <summary>

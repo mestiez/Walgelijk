@@ -8,8 +8,8 @@ namespace Walgelijk
     {
         public static Texture FromFile(string path, bool flipY = true, bool generateMipMaps = false)
         {
-            var image = Image.Load<Rgba32>(path, out var format);
-
+            using var image = Image.Load<Rgba32>(path, out var format);
+            
             Color[] pixels = new Color[image.Height * image.Width];
             int i = 0;
             for (int yy = 0; yy < image.Height; yy++)

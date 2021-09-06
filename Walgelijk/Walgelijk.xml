@@ -107,6 +107,46 @@
             Create a sound from raw data
             </summary>
         </member>
+        <member name="T:Walgelijk.Background">
+            <summary>
+            Utility struct that provides background image creation functionality
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Background.CreateBackground(Walgelijk.Scene,Walgelijk.IReadableTexture)">
+            <summary>
+            Creates a background for the scene. Also creates the necessary systems if they are not already present. By default, backgrounds are rendered at render order (-1000, 0)
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Background.BackgroundSystem">
+            <summary>
+            Handles backgrounds created using <see cref="M:Walgelijk.Background.CreateBackground(Walgelijk.Scene,Walgelijk.IReadableTexture)"/>
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Background.BackgroundComponent">
+            <summary>
+            Contains the texture to render and what properties the background has
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Background.BackgroundComponent.Material">
+            <summary>
+            Material to draw with
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Background.BackgroundComponent.RenderOrder">
+            <summary>
+            The order at which to draw the backgound. 
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Background.BackgroundComponent.Visible">
+            <summary>
+            Whether to draw it at all
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Background.BackgroundComponent.RenderTask">
+            <summary>
+            Relevant render task
+            </summary>
+        </member>
         <member name="T:Walgelijk.CameraComponent">
             <summary>
             Component that holds camera data
@@ -190,6 +230,11 @@
         <member name="T:Walgelijk.PostProcessingComponent">
             <summary>
             A post processing effect container
+            </summary>
+        </member>
+        <member name="P:Walgelijk.PostProcessingComponent.Enabled">
+            <summary>
+            Should this post processing component be processed at all?
             </summary>
         </member>
         <member name="P:Walgelijk.PostProcessingComponent.Begin">
@@ -302,14 +347,14 @@
             0: The initial model matrix. A translation matrix for the transform pivot.
             </summary>
         </member>
-        <member name="F:Walgelijk.SeparateTransformMatrices.AfterRotation">
-            <summary>
-            1: The matrix after rotating
-            </summary>
-        </member>
         <member name="F:Walgelijk.SeparateTransformMatrices.AfterScale">
             <summary>
-            2: The matrix after scaling
+            1: The matrix after scaling
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SeparateTransformMatrices.AfterRotation">
+            <summary>
+            2: The matrix after rotating
             </summary>
         </member>
         <member name="F:Walgelijk.SeparateTransformMatrices.AfterTranslation">
@@ -350,6 +395,16 @@
         <member name="P:Walgelijk.ShapeComponent.Visible">
             <summary>
             Whether or not the component is rendered by the system
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ShapeComponent.HorizontalFlip">
+            <summary>
+            Apply horizontal flip
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ShapeComponent.VerticalFlip">
+            <summary>
+            Apply vertical flip
             </summary>
         </member>
         <member name="T:Walgelijk.ShapeRendererSystem">
@@ -488,6 +543,16 @@
         <member name="T:Walgelijk.TransformSystem">
             <summary>
             The system responsible for processing transforms
+            </summary>
+        </member>
+        <member name="F:Walgelijk.TransformSystem.Multithreading">
+            <summary>
+            Should the system use multithreading to calculate transform matrices?
+            </summary>
+        </member>
+        <member name="F:Walgelijk.TransformSystem.Parenting">
+            <summary>
+            Enable transform parenting?
             </summary>
         </member>
         <member name="T:Walgelijk.Cache`2">
@@ -636,6 +701,12 @@
             </summary>
         </member>
         <member name="M:Walgelijk.ComponentCollection.RemoveComponentOfType``1(Walgelijk.Entity)">
+            <summary>
+            Detach a component of a type from an entity
+            </summary>
+            <returns>True if anything was removed</returns>
+        </member>
+        <member name="M:Walgelijk.ComponentCollection.RemoveComponentOfType(System.Type,Walgelijk.Entity)">
             <summary>
             Detach a component of a type from an entity
             </summary>
@@ -814,6 +885,11 @@
             Retrieve a system
             </summary>
         </member>
+        <member name="M:Walgelijk.Scene.HasSystem``1">
+            <summary>
+            Returns true if the system of the given type exists in the scene and returns false otherwise.
+            </summary>
+        </member>
         <member name="M:Walgelijk.Scene.RemoveSystem``1">
             <summary>
             Remove system from the list. Getting rid of any references to it is not handled, so the object might remain in memory.
@@ -835,17 +911,11 @@
             Register an existing Entity ID to the scene. This should not be used if you are to create a new entity. Use <see cref="M:Walgelijk.Scene.CreateEntity"/> instead. <see cref="E:Walgelijk.Scene.OnCreateEntity"/> will not be invoked.
             </summary>
         </member>
-        <member name="M:Walgelijk.Scene.GetEntity(System.Int32)">
-            <summary>
-            Get the entity struct from an entity ID. Generally not necessary
-            </summary>
-        </member>
         <member name="M:Walgelijk.Scene.RemoveEntity(System.Int32)">
             <summary>
             Removes the entity from the list. Also removes all attached components. Any references to the entity will become useless as they will point to nothing. References to any attached components are not handled, so they may remain in memory.
             </summary>
             <param name="identity"></param>
-            <returns>if the operation was successful</returns>
         </member>
         <member name="M:Walgelijk.Scene.HasEntity(System.Int32)">
             <summary>
@@ -877,7 +947,7 @@
             Get all components and entities and add them into the given array. It returns the amount of items that were inserted.
             </summary>
         </member>
-        <member name="M:Walgelijk.Scene.FindAnyComponent``1(``0@)">
+        <member name="M:Walgelijk.Scene.FindAnyComponent``1(``0@,Walgelijk.Entity@)">
             <summary>
             Returns the first found instance of the given type.
             </summary>
@@ -911,7 +981,6 @@
             <summary>
             Detach a component from an entity
             </summary>
-            <returns>if the operation was successful</returns>
         </member>
         <member name="M:Walgelijk.Scene.UpdateSystems">
             <summary>
@@ -1868,6 +1937,11 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Walgelijk.Texture.DisposeCPUCopy">
+            <summary>
+            Remove the pixels that are stored on CPU memory
+            </summary>
+        </member>
         <member name="M:Walgelijk.Texture.GetPixel(System.Int32,System.Int32)">
             <summary>
             Get a pixel
@@ -1893,39 +1967,6 @@
             <summary>
             1x1 texture with a single white pixel
             </summary>
-        </member>
-        <member name="T:Walgelijk.TransformationStack">
-            <summary>
-            Basically just a stack of 4x4 matrices
-            </summary>
-        </member>
-        <member name="M:Walgelijk.TransformationStack.Pop">
-            <summary>
-            Pop a matrix off the stack
-            </summary>
-        </member>
-        <member name="M:Walgelijk.TransformationStack.Push(System.Numerics.Matrix4x4)">
-            <summary>
-            Push a matrix on the stack
-            </summary>
-        </member>
-        <member name="M:Walgelijk.TransformationStack.GetMatrices">
-            <summary>
-            Get an immutable array of all matrices in the stack
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Walgelijk.TransformationStack.GetMatrices(System.Numerics.Matrix4x4[])">
-            <summary>
-            Copies all matrices in the stack into the given buffer
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Walgelijk.TransformationStack.GetFinalMatrix">
-            <summary>
-            Get the final matrix. The result is cached.
-            </summary>
-            <returns></returns>
         </member>
         <member name="T:Walgelijk.Vertex">
             <summary>
@@ -1996,9 +2037,9 @@
             Amount of elements
             </summary>
         </member>
-        <member name="F:Walgelijk.VertexAttributeArray.Data">
+        <member name="M:Walgelijk.VertexAttributeArray.GetData``1">
             <summary>
-            Raw object data
+            The raw data arraw
             </summary>
         </member>
         <member name="T:Walgelijk.FloatAttributeArray">
@@ -2264,9 +2305,20 @@
             Height of rectangle
             </summary>
         </member>
+        <member name="M:Walgelijk.Rect.GetCenter">
+            <summary>
+            Returns the center of the rectangle. Calculated using (min + max) * 0.5
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Walgelijk.Rect.#ctor(System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Create a rectangle
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.#ctor(System.Numerics.Vector2,System.Numerics.Vector2)">
+            <summary>
+            Create a rectangle given the center and the size
             </summary>
         </member>
         <member name="T:Walgelijk.CommandAttribute">
@@ -2566,6 +2618,11 @@
             The last instance that was created
             </summary>
         </member>
+        <member name="F:Walgelijk.Game.ExecutableDirectory">
+            <summary>
+            Path to the directory where the executable is
+            </summary>
+        </member>
         <member name="P:Walgelijk.Game.Console">
             <summary>
             The developer console
@@ -2689,6 +2746,16 @@
             <typeparam name="T">The type of the object to load</typeparam>
             <param name="path">The path of the file</param>
             <param name="ignoreBasePaths">Whether or not to ignore any set base paths. Default is false</param>
+        </member>
+        <member name="M:Walgelijk.Resources.Load``1(System.String,System.Func{System.String,``0},System.Boolean)">
+            <summary>
+            Load a resource at the given path, using the given function if it does not exist yet
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Resources.ParseFullPathForType``1(System.String)">
+            <summary>
+            Get the full path for a path, considering its type and set base paths
+            </summary>
         </member>
         <member name="M:Walgelijk.Resources.SetBasePathForType(System.Type,System.String)">
             <summary>
@@ -3126,11 +3193,11 @@
             <summary>
             Linearly map a value in a range onto another range
             </summary>
-            <param name="a1"></param>
-            <param name="a2"></param>
-            <param name="b1"></param>
-            <param name="b2"></param>
-            <param name="s"></param>
+            <param name="a1">Source lower bound</param>
+            <param name="a2">Source upper bound</param>
+            <param name="b1">Destination lower bound</param>
+            <param name="b2">Destination upper bound</param>
+            <param name="s">The value to remap</param>
             <returns>Remapped value <paramref name="s"/></returns>
         </member>
         <member name="M:Walgelijk.Utilities.ApplyAcceleration(System.Numerics.Vector2,System.Numerics.Vector2,System.Numerics.Vector2,System.Single,System.Single)">
@@ -3154,6 +3221,11 @@
             <param name="deltaTime">The time step</param>
             <param name="dampening">Optional dampening parameter (0 - 1)</param>
             <returns>A struct with the new position and new velocity</returns>
+        </member>
+        <member name="M:Walgelijk.Utilities.GetLerpFactorDeltaTime(System.Single,System.Single)">
+            <summary>
+            Returns the lerp factor adjusted for the given time step
+            </summary>
         </member>
         <member name="T:Walgelijk.DrawBounds">
             <summary>

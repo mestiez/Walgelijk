@@ -8,6 +8,11 @@ namespace Walgelijk
     public class PostProcessingComponent
     {
         /// <summary>
+        /// Should this post processing component be processed at all?
+        /// </summary>
+        public bool Enabled { get; set; } = true;
+
+        /// <summary>
         /// The render order at which to start applying effects
         /// </summary>
         public RenderOrder Begin { get; set; } = DefaultLayers.CameraOperations.WithOrder(1);

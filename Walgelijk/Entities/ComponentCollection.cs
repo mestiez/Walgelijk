@@ -102,11 +102,20 @@ namespace Walgelijk
         /// <returns>True if anything was removed</returns>
         public bool RemoveComponentOfType<T>(Entity entity)
         {
-            TryCreateNewTypeList(typeof(T), out _);
+            return RemoveComponentOfType(typeof(T), entity);
+        }
 
-            allComponents.RemoveWhere(t => t.Component is T && t.Entity == entity);
+        /// <summary>
+        /// Detach a component of a type from an entity
+        /// </summary>
+        /// <returns>True if anything was removed</returns>
+        public bool RemoveComponentOfType(Type type, Entity entity)
+        {
+            TryCreateNewTypeList(type, out _);
 
-            if (!byType.TryGetValue(typeof(T), out var list))
+            allComponents.RemoveWhere(t => type.IsInstanceOfType(t.Component) && t.Entity == entity);
+
+            if (!byType.TryGetValue(type, out var list))
                 return false;
 
             return list.RemoveAll(a => a.Entity == entity) > 0;

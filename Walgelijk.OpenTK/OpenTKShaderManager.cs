@@ -23,6 +23,7 @@ namespace Walgelijk.OpenTK
             var loaded = GPUObjects.MaterialCache.Load(material);
             int prog = loaded.ProgramHandle;
             int loc = loaded.GetUniformLocation(uniformName);
+            GLUtilities.PrintGLErrors(true, "GetUniformLocation failed! ");
 
             // Ik haat dit. Ik haat deze hele class.
             LoadedTexture loadedTexture;
@@ -30,13 +31,16 @@ namespace Walgelijk.OpenTK
 
             switch (data)
             {
-                case IReadableTexture v:
-                    loadedTexture = GPUObjects.TextureCache.Load(v);
-                    unitLink = GPUObjects.MaterialTextureCache.Load(new MaterialTexturePair(loaded, loadedTexture));
-                    GL.ProgramUniform1(prog, loc, TypeConverter.Convert(unitLink.Unit));
-                    break;
                 case float v:
                     GL.ProgramUniform1(prog, loc, v);
+                    break;
+                case IReadableTexture v:
+                    loadedTexture = GPUObjects.TextureCache.Load(v);
+                    unitLink = GPUObjects.MaterialTextureCache.Load(new MaterialTexturePair(loaded, loadedTexture, loc));
+                    var textureUnit = TypeConverter.Convert(unitLink.Unit);
+                    GL.ProgramUniform1(prog, loc, 1, ref textureUnit);
+
+                    GLUtilities.PrintGLErrors(true, $"ProgramUniform1 failed! Prog {prog}, Loc {loc}, Count 1, TextureUnit {textureUnit}. ");
                     break;
                 case double v:
                     GL.ProgramUniform1(prog, loc, v);
@@ -78,6 +82,15 @@ namespace Walgelijk.OpenTK
                     GL.ProgramUniformMatrix4(prog, loc, v.Length, false, a);
                     break;
             }
+
+            GLUtilities.PrintGLErrors(true);
+
+            //switch (GL.GetError())
+            //{
+            //    case not ErrorCode.NoError:
+            //        Logger.Error("Failed to set uniform...");
+            //        break;
+            //}
         }
 
         private void SetMatrixBuffer(Matrix4x4 v)
@@ -102,6 +115,11 @@ namespace Walgelijk.OpenTK
             matrixBuffer[13] = v.M42;
             matrixBuffer[14] = v.M43;
             matrixBuffer[15] = v.M44;
+        }
+
+        public void ForceLoadTexture(IReadableTexture texture)
+        {
+            GPUObjects.TextureCache.Load(texture);
         }
     }
 

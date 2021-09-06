@@ -27,7 +27,6 @@ namespace Walgelijk
         /// </summary>
         public TransformComponent MainCameraTransform { get; private set; }
 
-
         private bool mainCameraSet;
 
         public override void Initialise()
@@ -41,9 +40,8 @@ namespace Walgelijk
 
         private void FallbackToFirstCamera()
         {
-            var cam = Scene.GetAllComponentsOfType<CameraComponent>();
-            if (!cam.Any()) return;
-            SetMainCamera(cam.First().Entity);
+            if (Scene.FindAnyComponent<CameraComponent>(out _, out var entity))
+                SetMainCamera(entity);
         }
 
         /// <summary>

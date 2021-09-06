@@ -110,11 +110,11 @@ namespace Walgelijk
             var matrix = Matrix4x4.CreateTranslation(-pivot);
             SeparateMatrices.AfterPivot = matrix;
 
-            matrix *= Matrix4x4.CreateRotationZ(rotation * Utilities.DegToRad);
-            SeparateMatrices.AfterRotation = matrix;
-
             matrix *= Matrix4x4.CreateScale(scale.X, scale.Y, 1);
             SeparateMatrices.AfterScale = matrix;
+
+            matrix *= Matrix4x4.CreateRotationZ(rotation * Utilities.DegToRad);
+            SeparateMatrices.AfterRotation = matrix;
 
             matrix *= Matrix4x4.CreateTranslation(position.X, position.Y, 0);
             SeparateMatrices.AfterTranslation = matrix;
