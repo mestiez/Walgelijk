@@ -23,6 +23,9 @@
     <None Update="resources\audio\kampvuurliedlied.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="resources\audio\kampvuurliedlied.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="resources\audio\opening.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

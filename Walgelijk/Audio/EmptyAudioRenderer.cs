@@ -12,20 +12,24 @@ namespace Walgelijk
         public override bool Muted { get; set; }
         public override Vector2 ListenerPosition { get; set; }
 
-        public override Sound LoadSound(string path) { return new Sound(Array.Empty<float>(), 1, 1); }
+        public override AudioData LoadSound(string path) { return new AudioData(Array.Empty<byte>(), 0, 0); }
 
-        public override void Pause(ref Sound sound) { }
+        public override void Pause(Sound sound) { }
 
-        public override void Play(ref Sound sound) { }
+        public override void Play(Sound sound) { }
 
-        public override void Play(ref Sound sound, Vector2 worldPosition) { }
+        public override void Play(Sound sound, Vector2 worldPosition) { }
 
         public override void PlayOnce(Sound sound, Vector2 worldPosition) { }
 
         public override void PlayOnce(Sound sound) { }
 
-        public override void Stop(ref Sound sound) { }
+        public override void Stop(Sound sound) { }
 
         public override void StopAll() { }
+
+        public override void Release() { }
+
+        public override void Process(Game game) { }
     }
 }

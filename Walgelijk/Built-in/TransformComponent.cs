@@ -10,7 +10,8 @@ namespace Walgelijk
         private Vector2 position;
         private float rotation;
         private Vector2 scale = Vector2.One;
-        private Vector3 pivot = Vector3.Zero;
+        private Vector2 pivot = Vector2.Zero;
+        private Vector2 rotationPivot = Vector2.Zero;
         private Entity? parent;
 
         /// <summary>
@@ -77,7 +78,21 @@ namespace Walgelijk
 
             set
             {
-                pivot = new Vector3(value.X, value.Y, 0);
+                pivot = new(value.X, value.Y);
+                IsMatrixCached = false;
+            }
+        }
+
+        /// <summary>
+        /// The local pivot point that is the center of all transformations.
+        /// </summary>
+        public Vector2 LocalRotationPivot
+        {
+            get => new(rotationPivot.X, rotationPivot.Y);
+
+            set
+            {
+                rotationPivot = new(value.X, value.Y);
                 IsMatrixCached = false;
             }
         }
@@ -107,13 +122,13 @@ namespace Walgelijk
         /// </summary>
         public void RecalculateModelMatrix(Matrix4x4 containingMatrix)
         {
-            var matrix = Matrix4x4.CreateTranslation(-pivot);
+            var matrix = Matrix4x4.CreateTranslation(-pivot.X, -pivot.Y, 0);
             SeparateMatrices.AfterPivot = matrix;
 
             matrix *= Matrix4x4.CreateScale(scale.X, scale.Y, 1);
             SeparateMatrices.AfterScale = matrix;
 
-            matrix *= Matrix4x4.CreateRotationZ(rotation * Utilities.DegToRad);
+            matrix *= Matrix4x4.CreateRotationZ(rotation * Utilities.DegToRad, new Vector3(rotationPivot.X * scale.X, rotationPivot.Y * scale.Y, 0));
             SeparateMatrices.AfterRotation = matrix;
 
             matrix *= Matrix4x4.CreateTranslation(position.X, position.Y, 0);

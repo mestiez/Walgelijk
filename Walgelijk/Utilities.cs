@@ -19,6 +19,14 @@ namespace Walgelijk
         public const float DegToRad = MathF.PI / 180f;
 
         /// <summary>
+        /// Linearly interpolate between two angles in degrees
+        /// </summary>
+        public static float LerpAngle(float a, float b, float t)
+        {
+            return a + DeltaAngle(a, b) * t;
+        }
+
+        /// <summary>
         /// Linearly interpolate between two floats
         /// </summary>
         public static float Lerp(float a, float b, float t)

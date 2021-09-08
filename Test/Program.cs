@@ -17,7 +17,7 @@ namespace Test
         {
             game = new Game(
                 new OpenTKWindow("hallo daar", new Vector2(-1, -1), new Vector2(800, 600)),
-                null
+                new OpenALAudioRenderer()
                 );
 
             game.Window.TargetFrameRate = 0;
@@ -25,7 +25,7 @@ namespace Test
             game.Console.DrawConsoleNotification = true;
             game.Window.VSync = false;
 
-            //Resources.SetBasePathForType<Sound>("audio");
+            Resources.SetBasePathForType<AudioData>("audio");
             Resources.SetBasePathForType<Prefab>("prefabs");
             Resources.SetBasePathForType<Texture>("textures");
             Resources.SetBasePathForType<Font>("fonts");
@@ -43,7 +43,6 @@ namespace Test
 #else
             game.DevelopmentMode = false;
 #endif
-
             game.Window.SetIcon(Resources.Load<Texture>("icon.png"));
 
             game.Start();
@@ -130,9 +129,9 @@ namespace Test
             var particles = scene.CreateEntity();
             scene.AttachComponent(particles, new TransformComponent());
             scene.AttachComponent(particles, new WaveMovementComponent());
-            //var explosionSound = Resources.Load<Sound>("walgelijk.wav");
 
-            //game.AudioRenderer.PlayOnce(explosionSound);
+            var opening = new Sound(Resources.Load<AudioData>("opening.wav"));
+            game.AudioRenderer.PlayOnce(opening);
 
             var particleComponent = new ParticlesComponent(10000)
             {
@@ -180,7 +179,11 @@ namespace Test
                 //transform.Position = new Vector2(MathF.Sin(Time.SecondsSinceLoad * wave.Frequency + wave.Phase) * wave.Amplitude, 0);
                 DebugDraw.Text(transform.Position, transform.Position.ToString(), 0.1f);
             }
-
+            if (Input.IsKeyPressed(Key.E))
+            {
+                var opening = new Sound(Resources.Load<AudioData>("walgelijk.wav"));
+                Audio.PlayOnce(opening);
+            }
 
         }
 

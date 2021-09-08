@@ -118,6 +118,7 @@ namespace Walgelijk
             if (Window == null) 
                 throw new InvalidOperationException("Window is null");
 
+            AudioRenderer?.Release();
             Window.Close();
         }
 

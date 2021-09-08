@@ -24,7 +24,7 @@ namespace Walgelijk
         /// <summary>
         /// Simply play a sound (or resumes, if paused)
         /// </summary>
-        public abstract void Play(ref Sound sound);
+        public abstract void Play(Sound sound);
 
         /// <summary>
         /// Play a sound once and let it overlap itself
@@ -34,7 +34,7 @@ namespace Walgelijk
         /// <summary>
         /// Play sound at a position in the world (or resumes, if paused)
         /// </summary>
-        public abstract void Play(ref Sound sound, Vector2 worldPosition);
+        public abstract void Play(Sound sound, Vector2 worldPosition);
 
         /// <summary>
         /// Play sound at a position in the world and let it overlap itself
@@ -45,13 +45,13 @@ namespace Walgelijk
         /// Stop a specific sound
         /// </summary>
         /// <param name="sound"></param>
-        public abstract void Stop(ref Sound sound);
+        public abstract void Stop(Sound sound);
 
         /// <summary>
         /// Pause a specific sound
         /// </summary>
         /// <param name="sound"></param>
-        public abstract void Pause(ref Sound sound);
+        public abstract void Pause(Sound sound);
 
         /// <summary>
         /// Stop all sounds
@@ -62,6 +62,16 @@ namespace Walgelijk
         /// Load a sound from file
         /// </summary>
         /// <returns></returns>
-        public abstract Sound LoadSound(string path);
+        public abstract AudioData LoadSound(string path);
+
+        /// <summary>
+        /// Release all resources used by the audio engine
+        /// </summary>
+        public abstract void Release();
+
+        /// <summary>
+        /// This is called every frame by the main loop and allows the renderer to process things that it needs to process
+        /// </summary>
+        public abstract void Process(Game game);
     }
 }

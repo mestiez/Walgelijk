@@ -1,53 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.IO;
-using System.Linq;
 using System.Security.Authentication.ExtendedProtection;
 using System.Text;
 
 namespace Walgelijk
 {
     /// <summary>
-    /// Object that contains sound data
+    /// A sound that can be played. It does not contain audio data, but is instead linked to an <see cref="AudioData"/>
     /// </summary>
     public class Sound
     {
         /// <summary>
-        /// Number of channels
+        /// Reference to the actual audio data that this sound plays. This is a shared object, so other sounds that share this data will also sound different
         /// </summary>
-        public int Channels { get; }
+        public AudioData Data;
 
         /// <summary>
-        /// Audio data
+        /// Determines if the sound should loop
         /// </summary>
-        public float[] Data { get; }
+        public bool Looping;
 
-        /// <summary>
-        /// Sample rate
-        /// </summary>
-        public int SampleRate { get; }
-
-        /// <summary>
-        /// Duration of the sound
-        /// </summary>
-        public TimeSpan Duration { get; }
-
-        /// <summary>
-        /// Determines if the sound is looping
-        /// </summary>
-        public bool Looping { get; set; }
-
-        /// <summary>
-        /// Create a sound from raw data
-        /// </summary>
-        public Sound(IEnumerable<float> data, int sampleRate, int channelCount)
+        public Sound(AudioData data, bool loops = false)
         {
-            Data = data?.ToArray() ?? Array.Empty<float>();
-            Channels = channelCount;
-            SampleRate = sampleRate;
-            Looping = false;
-            Duration = TimeSpan.FromSeconds(Data.Length / Channels / (double)sampleRate);
+            Data = data;
+            Looping = loops;
+        }
+
+        /// <summary>
+        /// Should the audio engine update this sound instance? Should be set to true after a property change.
+        /// </summary>
+        public bool RequiresUpdate = true;
+
+        /// <summary>
+        /// Sets <see cref="RequiresUpdate"/> to true, forcing the audio engine to synchronise the property change
+        /// </summary>
+        public void ForceUpdate()
+        {
+            RequiresUpdate = true;
         }
     }
 }

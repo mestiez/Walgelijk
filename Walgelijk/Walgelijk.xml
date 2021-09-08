@@ -4,6 +4,46 @@
         <name>Walgelijk</name>
     </assembly>
     <members>
+        <member name="T:Walgelijk.AudioData">
+            <summary>
+            Object that contains sound data
+            </summary>
+        </member>
+        <member name="P:Walgelijk.AudioData.ChannelCount">
+            <summary>
+            Number of channels
+            </summary>
+        </member>
+        <member name="P:Walgelijk.AudioData.Data">
+            <summary>
+            Audio data
+            </summary>
+        </member>
+        <member name="P:Walgelijk.AudioData.SampleRate">
+            <summary>
+            Sample rate
+            </summary>
+        </member>
+        <member name="P:Walgelijk.AudioData.Duration">
+            <summary>
+            Duration of the sound
+            </summary>
+        </member>
+        <member name="P:Walgelijk.AudioData.KeepInMemory">
+            <summary>
+            Should the data be cleared from memory and only remain in the audio engine?
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioData.#ctor(System.Byte[],System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Create a sound from raw data
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioData.ForceClearData">
+            <summary>
+            Remove the data from memory, indicating that the data copy in this structure is no longer needed. This will not affect the actual audio engine.
+            </summary>
+        </member>
         <member name="T:Walgelijk.AudioRenderer">
             <summary>
             The global audio renderer 
@@ -24,7 +64,7 @@
             Position of the listener in world space
             </summary>
         </member>
-        <member name="M:Walgelijk.AudioRenderer.Play(Walgelijk.Sound@)">
+        <member name="M:Walgelijk.AudioRenderer.Play(Walgelijk.Sound)">
             <summary>
             Simply play a sound (or resumes, if paused)
             </summary>
@@ -34,7 +74,7 @@
             Play a sound once and let it overlap itself
             </summary>
         </member>
-        <member name="M:Walgelijk.AudioRenderer.Play(Walgelijk.Sound@,System.Numerics.Vector2)">
+        <member name="M:Walgelijk.AudioRenderer.Play(Walgelijk.Sound,System.Numerics.Vector2)">
             <summary>
             Play sound at a position in the world (or resumes, if paused)
             </summary>
@@ -44,13 +84,13 @@
             Play sound at a position in the world and let it overlap itself
             </summary>
         </member>
-        <member name="M:Walgelijk.AudioRenderer.Stop(Walgelijk.Sound@)">
+        <member name="M:Walgelijk.AudioRenderer.Stop(Walgelijk.Sound)">
             <summary>
             Stop a specific sound
             </summary>
             <param name="sound"></param>
         </member>
-        <member name="M:Walgelijk.AudioRenderer.Pause(Walgelijk.Sound@)">
+        <member name="M:Walgelijk.AudioRenderer.Pause(Walgelijk.Sound)">
             <summary>
             Pause a specific sound
             </summary>
@@ -67,6 +107,16 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:Walgelijk.AudioRenderer.Release">
+            <summary>
+            Release all resources used by the audio engine
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioRenderer.Process(Walgelijk.Game)">
+            <summary>
+            This is called every frame by the main loop and allows the renderer to process things that it needs to process
+            </summary>
+        </member>
         <member name="T:Walgelijk.EmptyAudioRenderer">
             <summary>
             Placeholder audio renderer that is used when none is set
@@ -74,37 +124,27 @@
         </member>
         <member name="T:Walgelijk.Sound">
             <summary>
-            Object that contains sound data
+            A sound that can be played. It does not contain audio data, but is instead linked to an <see cref="T:Walgelijk.AudioData"/>
             </summary>
         </member>
-        <member name="P:Walgelijk.Sound.Channels">
+        <member name="F:Walgelijk.Sound.Data">
             <summary>
-            Number of channels
+            Reference to the actual audio data that this sound plays. This is a shared object, so other sounds that share this data will also sound different
             </summary>
         </member>
-        <member name="P:Walgelijk.Sound.Data">
+        <member name="F:Walgelijk.Sound.Looping">
             <summary>
-            Audio data
+            Determines if the sound should loop
             </summary>
         </member>
-        <member name="P:Walgelijk.Sound.SampleRate">
+        <member name="F:Walgelijk.Sound.RequiresUpdate">
             <summary>
-            Sample rate
+            Should the audio engine update this sound instance? Should be set to true after a property change.
             </summary>
         </member>
-        <member name="P:Walgelijk.Sound.Duration">
+        <member name="M:Walgelijk.Sound.ForceUpdate">
             <summary>
-            Duration of the sound
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Sound.Looping">
-            <summary>
-            Determines if the sound is looping
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Sound.#ctor(System.Collections.Generic.IEnumerable{System.Single},System.Int32,System.Int32)">
-            <summary>
-            Create a sound from raw data
+            Sets <see cref="F:Walgelijk.Sound.RequiresUpdate"/> to true, forcing the audio engine to synchronise the property change
             </summary>
         </member>
         <member name="T:Walgelijk.Background">
@@ -515,6 +555,11 @@
             The local pivot point that is the center of all transformations.
             </summary>
         </member>
+        <member name="P:Walgelijk.TransformComponent.LocalRotationPivot">
+            <summary>
+            The local pivot point that is the center of all transformations.
+            </summary>
+        </member>
         <member name="F:Walgelijk.TransformComponent.LocalToWorldMatrix">
             <summary>
             The generated model matrix
@@ -597,6 +642,16 @@
             Clear the cache
             </summary>
         </member>
+        <member name="M:Walgelijk.Cache`2.GetAllLoaded">
+            <summary>
+            Returns every loaded item in the cache
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Cache`2.GetAllUnloaded">
+            <summary>
+            Returns every unloaded item ever loaded
+            </summary>
+        </member>
         <member name="T:Walgelijk.Curve`1">
             <summary>
             Linear curve
@@ -617,8 +672,6 @@
             <summary>
             Get value at a position in the curve using linear interpolation
             </summary>
-            <param name="t"></param>
-            <returns></returns>
         </member>
         <member name="M:Walgelijk.Curve`1.Lerp(`0,`0,System.Single)">
             <summary>
@@ -3109,6 +3162,11 @@
         <member name="F:Walgelijk.Utilities.DegToRad">
             <summary>
             Degrees to radians constant ratio
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.LerpAngle(System.Single,System.Single,System.Single)">
+            <summary>
+            Linearly interpolate between two angles in degrees
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.Lerp(System.Single,System.Single,System.Single)">

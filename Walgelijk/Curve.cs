@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Walgelijk
 {
@@ -24,24 +25,34 @@ namespace Walgelijk
         /// <summary>
         /// Get value at a position in the curve using linear interpolation
         /// </summary>
-        /// <param name="t"></param>
-        /// <returns></returns>
         public T Evaluate(float t)
         {
-            if (Keys.Length == 0) return default;
+            if (Keys == null || Keys.Length == 0) return default;
             if (Keys.Length == 1) return Keys[0].Value;
 
             Key a = null;
             Key b = null;
 
+            float highest = float.MinValue;
             float lowest = float.MaxValue;
 
             for (int i = 0; i < Keys.Length; i++)
             {
                 Key key = Keys[i];
 
-                if (key.Position < t)
-                    a = key;
+                //Als t zo goed als gelijk is aan de positie van de key, stuur gewoon de key value terug.
+                if (MathF.Abs(t - key.Position) <= float.Epsilon)
+                    return key.Value;
+
+                //Kijk wat de hoogste positie is onder t, en de laagste boven t
+                if (key.Position <= t)
+                {
+                    if (key.Position > highest)
+                    {
+                        highest = key.Position;
+                        a = key;
+                    }
+                }
                 else if (key.Position < lowest)
                 {
                     lowest = key.Position;

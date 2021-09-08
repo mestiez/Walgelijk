@@ -69,5 +69,23 @@ namespace Walgelijk
                 DisposeOf(entry.Value);
             loaded.Clear();
         }
+
+        /// <summary>
+        /// Returns every loaded item in the cache
+        /// </summary>
+        public IEnumerable<LoadedType> GetAllLoaded()
+        {
+            foreach (var item in loaded)
+                yield return item.Value;
+        }
+
+        /// <summary>
+        /// Returns every unloaded item ever loaded
+        /// </summary>
+        public IEnumerable<UnloadedType> GetAllUnloaded()
+        {
+            foreach (var item in loaded)
+                yield return item.Key;
+        }
     }
 }
