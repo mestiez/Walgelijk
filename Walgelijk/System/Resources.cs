@@ -91,6 +91,17 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Return the path that a given resource was loaded with. Returns null if it could not be found.
+        /// </summary>
+        public static string GetPathAssociatedWith(object obj)
+        {
+            foreach (var item in resources)
+                if (item.Value == obj)
+                    return item.Key;
+            return null;
+        }
+
+        /// <summary>
         /// Get the full path for a path, considering its type and set base paths
         /// </summary>
         public static string ParseFullPathForType<T>(string path) => CombineBasePath(CombinePathForType<T>(path));

@@ -28,7 +28,7 @@ namespace Walgelijk
         }
 
         /// <summary>
-        /// Position of the transform in world space
+        /// Position of the transform in parent space (global if no parent)
         /// </summary>
         public Vector2 Position
         {
@@ -84,7 +84,7 @@ namespace Walgelijk
         }
 
         /// <summary>
-        /// The local pivot point that is the center of all transformations.
+        /// The local pivot point that is the center of rotation.
         /// </summary>
         public Vector2 LocalRotationPivot
         {

@@ -537,7 +537,7 @@
         </member>
         <member name="P:Walgelijk.TransformComponent.Position">
             <summary>
-            Position of the transform in world space
+            Position of the transform in parent space (global if no parent)
             </summary>
         </member>
         <member name="P:Walgelijk.TransformComponent.Rotation">
@@ -557,7 +557,7 @@
         </member>
         <member name="P:Walgelijk.TransformComponent.LocalRotationPivot">
             <summary>
-            The local pivot point that is the center of all transformations.
+            The local pivot point that is the center of rotation.
             </summary>
         </member>
         <member name="F:Walgelijk.TransformComponent.LocalToWorldMatrix">
@@ -2803,6 +2803,11 @@
         <member name="M:Walgelijk.Resources.Load``1(System.String,System.Func{System.String,``0},System.Boolean)">
             <summary>
             Load a resource at the given path, using the given function if it does not exist yet
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Resources.GetPathAssociatedWith(System.Object)">
+            <summary>
+            Return the path that a given resource was loaded with. Returns null if it could not be found.
             </summary>
         </member>
         <member name="M:Walgelijk.Resources.ParseFullPathForType``1(System.String)">

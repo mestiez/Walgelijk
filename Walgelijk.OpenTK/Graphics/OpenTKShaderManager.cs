@@ -16,7 +16,8 @@ namespace Walgelijk.OpenTK
         private readonly float[] matrixBuffer = new float[16];
 
         //TODO dit is geen goede oplossing
-        private readonly MatrixArrayCache matrixArrayCache = new MatrixArrayCache();
+        private readonly MatrixArrayCache matrixArrayCache = new();
+        private readonly Vector3ArrayCache v3ArrayCache = new();
 
         public void SetUniform(Material material, string uniformName, object data)
         {
@@ -72,6 +73,11 @@ namespace Walgelijk.OpenTK
                 case int[] v:
                     GL.ProgramUniform1(prog, loc, v.Length, v);
                     break;
+                case Vector3[] v:
+                    var arr = v3ArrayCache.GetOrUpdate(v);
+                    GL.ProgramUniform3(prog, loc, v.Length, arr);
+                    GLUtilities.PrintGLErrors(true, $"Cannot upload Vector3 array for some reason: Array is {(string.Join(", ", arr) ?? "NULL")}");
+                    break;
                 //TODO vector arrays
                 case Matrix4x4 v:
                     SetMatrixBuffer(v);
@@ -80,6 +86,9 @@ namespace Walgelijk.OpenTK
                 case Matrix4x4[] v:
                     var a = matrixArrayCache.Load(v);
                     GL.ProgramUniformMatrix4(prog, loc, v.Length, false, a);
+                    break;
+                default:
+                    Logger.Error("Invalid uniform datatype!");
                     break;
             }
 
@@ -120,6 +129,43 @@ namespace Walgelijk.OpenTK
         public void ForceLoadTexture(IReadableTexture texture)
         {
             GPUObjects.TextureCache.Load(texture);
+        }
+    }
+
+    internal class Vector3ArrayCache : Cache<Vector3[], float[]>
+    {
+        private const int length = 3;
+
+        protected override float[] CreateNew(Vector3[] raw)
+        {
+            var array = new float[length * raw.Length];
+            for (int i = 0; i < raw.Length; i++)
+            {
+                var e = raw[i];
+                int index = length * i;
+                array[index + 0] = e.X;
+                array[index + 1] = e.Y;
+                array[index + 2] = e.Z;
+            }
+            return array;
+        }
+
+        public float[] GetOrUpdate(Vector3[] raw)
+        {
+            var array = Load(raw);
+            for (int i = 0; i < raw.Length; i++)
+            {
+                var e = raw[i];
+                int index = length * i;
+                array[index + 0] = e.X;
+                array[index + 1] = e.Y;
+                array[index + 2] = e.Z;
+            }
+            return array;
+        }
+
+        protected override void DisposeOf(float[] loaded)
+        {
         }
     }
 
