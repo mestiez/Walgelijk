@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Walgelijk
@@ -21,6 +22,7 @@ namespace Walgelijk
         /// <summary>
         /// Linearly interpolate between two angles in degrees
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float LerpAngle(float a, float b, float t)
         {
             return a + DeltaAngle(a, b) * t;
@@ -29,6 +31,7 @@ namespace Walgelijk
         /// <summary>
         /// Linearly interpolate between two floats
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Lerp(float a, float b, float t)
         {
             return a * (1 - t) + b * t;
@@ -37,6 +40,7 @@ namespace Walgelijk
         /// <summary>
         /// Linearly interpolate between two colors or 4 dimensional vectors
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Lerp(Vector4 a, Vector4 b, float t)
         {
             return a * (1 - t) + b * t;
@@ -45,6 +49,7 @@ namespace Walgelijk
         /// <summary>
         /// Linearly interpolate between two vectors
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 Lerp(Vector2 a, Vector2 b, float t)
         {
             return new Vector2(
@@ -56,6 +61,7 @@ namespace Walgelijk
         /// <summary>
         /// Linearly interpolate between two vectors
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 Lerp(Vector3 a, Vector3 b, float t)
         {
             return new Vector3(
@@ -68,6 +74,7 @@ namespace Walgelijk
         /// <summary>
         /// Returns a random float in a range
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float RandomFloat(float min = 0, float max = 1)
         {
             return Lerp(min, max, (float)rand.NextDouble());
@@ -76,6 +83,7 @@ namespace Walgelijk
         /// <summary>
         /// Returns a random point in a circle
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 RandomPointInCircle(float minRadius = 0, float maxRadius = 1)
         {
             Vector2 pos = Vector2.Normalize(new Vector2(
@@ -89,6 +97,7 @@ namespace Walgelijk
         /// <summary>
         /// Returns a random int in a range
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int RandomInt(int min = 0, int max = 100)
         {
             return rand.Next(min, max);
@@ -97,6 +106,7 @@ namespace Walgelijk
         /// <summary>
         /// Returns a random byte
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte RandomByte()
         {
             return (byte)rand.Next(0, 256);
@@ -105,6 +115,7 @@ namespace Walgelijk
         /// <summary>
         /// Returns a colour where the RGB components are random
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color RandomColour(float alpha = 1)
         {
             return new Color(RandomFloat(), RandomFloat(), RandomFloat(), alpha);
@@ -114,6 +125,7 @@ namespace Walgelijk
         /// Clamp a value within a range
         /// </summary>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Clamp(float x, float min = 0, float max = 1)
         {
             return MathF.Max(min, MathF.Min(x, max));
@@ -123,6 +135,7 @@ namespace Walgelijk
         /// Clamp a value within a range
         /// </summary>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int Clamp(int x, int min = 0, int max = 1)
         {
             return Math.Max(min, Math.Min(x, max));
@@ -131,6 +144,7 @@ namespace Walgelijk
         /// <summary>
         /// Modulus
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Mod(float a, float b)
         {
             return a - MathF.Floor(a / b) * b;
@@ -139,6 +153,7 @@ namespace Walgelijk
         /// <summary>
         /// Smallest difference between two angles in degrees
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float DeltaAngle(float source, float target)
         {
             return Mod(target - source + 180, 360) - 180;
@@ -217,9 +232,22 @@ namespace Walgelijk
         /// <summary>
         /// Returns the lerp factor adjusted for the given time step
         /// </summary>
-        public static float GetLerpFactorDeltaTime(float lerpFactor, float deltaTime)
+        [global::System.Obsolete("use LerpDt instead")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float GetLerpFactorDeltaTime(float lerpFactor, float deltaTime) => LerpDt(lerpFactor, deltaTime);
+
+        /// <summary>
+        /// Returns the lerp factor adjusted for the given time step
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float LerpDt(float lerpFactor, float deltaTime)
         {
-            return 1 - MathF.Pow(1 - lerpFactor, deltaTime);
+            if (deltaTime <= float.Epsilon)
+                return 0;
+            if (float.IsNaN(deltaTime) || float.IsInfinity(deltaTime))
+                return 1;
+            var v = Clamp(1 - MathF.Pow(1 - lerpFactor, deltaTime), 0, 1);
+            return float.IsNaN(v) ? 0 : v;
         }
     }
 }

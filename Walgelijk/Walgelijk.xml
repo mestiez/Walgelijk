@@ -3290,6 +3290,11 @@
             Returns the lerp factor adjusted for the given time step
             </summary>
         </member>
+        <member name="M:Walgelijk.Utilities.LerpDt(System.Single,System.Single)">
+            <summary>
+            Returns the lerp factor adjusted for the given time step
+            </summary>
+        </member>
         <member name="T:Walgelijk.DrawBounds">
             <summary>
             Drawing bounds structure
