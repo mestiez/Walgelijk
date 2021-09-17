@@ -37,7 +37,7 @@ namespace Walgelijk
         internal float ScrollOffset = 0;
 
         private readonly DebugConsoleRenderer renderer;
-        internal List<(string message, Color color)> Log = new(64);
+        internal List<(string message, Color color)> Log = new(128);
         internal List<string> InputHistory = new();
         private int historyIndex = 0;
         private string currentInput = "";
@@ -116,7 +116,7 @@ namespace Walgelijk
         {
             if (!IsEatingInput) return;
 
-            ScrollOffset += Input.MouseScrollDelta * 9;
+            ScrollOffset += Input.MouseScrollDelta * 25;
             ScrollOffset = Utilities.Clamp(ScrollOffset, 0, Math.Max(0, renderer.TextBounds.Height - DebugConsoleRenderer.LogHeight + 10));
 
             foreach (var c in Input.TextEntered)

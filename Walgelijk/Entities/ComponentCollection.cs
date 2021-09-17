@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Walgelijk
@@ -14,15 +15,28 @@ namespace Walgelijk
         private readonly HashSet<EntityWithAnything> allComponents = new HashSet<EntityWithAnything>();
 
         private readonly Dictionary<Type, List<EntityWithAnything>> byType = new();
+        private readonly Dictionary<Entity, List<object>> byEntity = new();
 
         /// <summary>
         /// Add a component to the collection
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(object component, Entity entity)
         {
             var a = new EntityWithAnything(component, entity);
             var t = component.GetType();
             allComponents.Add(a);
+
+            if (byEntity.TryGetValue(entity, out var list))
+                list.Add(component);
+            else
+            {
+                var l = new List<object>
+                {
+                    component
+                };
+                byEntity.Add(entity, l);
+            }
 
             foreach (var item in byType)
             {
@@ -36,6 +50,7 @@ namespace Walgelijk
         /// <summary>
         /// Iterates over components by type
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<EntityWith<T>> GetAllComponentsOfType<T>() where T : class
         {
             var t = typeof(T);
@@ -50,16 +65,18 @@ namespace Walgelijk
         /// <summary>
         /// Iterate over all components attached to an entity
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable GetAllComponentsFrom(Entity entity)
         {
-            foreach (var a in allComponents)
-                if (a.Entity == entity)
-                    yield return a.Component;
+            if (byEntity.ContainsKey(entity))
+                foreach (var a in byEntity[entity])
+                        yield return a;
         }
 
         /// <summary>
         /// Get the entity that the given component is attached to
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool GetEntityFromComponent(object comp, out Entity entity)
         {
             entity = 0;
@@ -76,6 +93,7 @@ namespace Walgelijk
         /// <summary>
         /// Delete all components belonging to the given entity
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool DeleteEntity(Entity entity)
         {
             bool c = false;
@@ -93,6 +111,8 @@ namespace Walgelijk
                     }
             }
 
+            c &= byEntity.Remove(entity);
+
             return c;
         }
 
@@ -100,6 +120,7 @@ namespace Walgelijk
         /// Detach a component of a type from an entity
         /// </summary>
         /// <returns>True if anything was removed</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool RemoveComponentOfType<T>(Entity entity)
         {
             return RemoveComponentOfType(typeof(T), entity);
@@ -111,14 +132,18 @@ namespace Walgelijk
         /// <returns>True if anything was removed</returns>
         public bool RemoveComponentOfType(Type type, Entity entity)
         {
+            bool success = true;
             TryCreateNewTypeList(type, out _);
 
             allComponents.RemoveWhere(t => type.IsInstanceOfType(t.Component) && t.Entity == entity);
 
-            if (!byType.TryGetValue(type, out var list))
-                return false;
+            success &= !byType.TryGetValue(type, out var list);
+            success &= list.RemoveAll(a => a.Entity == entity) > 0;
 
-            return list.RemoveAll(a => a.Entity == entity) > 0;
+            success &= !byEntity.TryGetValue(entity, out var listb);
+            success &= listb.RemoveAll(a => type.IsAssignableTo(a.GetType())) > 0;
+
+            return success;
         }
 
         private bool TryCreateNewTypeList(Type type, out List<EntityWithAnything> list)

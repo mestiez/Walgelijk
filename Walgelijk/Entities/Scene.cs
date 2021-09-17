@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Walgelijk
 {
@@ -116,6 +117,7 @@ namespace Walgelijk
         /// <summary>
         /// Retrieve a system
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetSystem<T>() where T : System
         {
             return (T)systems[typeof(T)];
@@ -152,6 +154,7 @@ namespace Walgelijk
         /// <summary>
         /// Register a new entity to the scene
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Entity CreateEntity()
         {
             Entity newEntity = new Entity
@@ -180,6 +183,7 @@ namespace Walgelijk
         /// Removes the entity from the list. Also removes all attached components. Any references to the entity will become useless as they will point to nothing. References to any attached components are not handled, so they may remain in memory.
         /// </summary>
         /// <param name="identity"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RemoveEntity(int identity)
         {
             entitiesToDestroy.Add(identity);
@@ -188,6 +192,7 @@ namespace Walgelijk
         /// <summary>
         /// Get if an entity lives in the scene
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool HasEntity(int identity)
         {
             return entities.ContainsKey(identity);
@@ -209,6 +214,7 @@ namespace Walgelijk
         /// <summary>
         /// Get all components attached to the given entity
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<object> GetAllComponentsFrom(Entity entity)
         {
             foreach (var item in componentsToAdd)
@@ -222,6 +228,7 @@ namespace Walgelijk
         /// <summary>
         /// Get all components and entities of a certain type
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<EntityWith<T>> GetAllComponentsOfType<T>() where T : class
         {
             foreach (var item in componentsToAdd)
@@ -253,6 +260,7 @@ namespace Walgelijk
         /// <summary>
         /// Returns the first found instance of the given type.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool FindAnyComponent<T>(out T anyInstance, out Entity entity) where T : class
         {
             foreach (var item in componentsToAdd)
@@ -269,6 +277,7 @@ namespace Walgelijk
                 entity = item.Entity;
                 return true;
             }
+
             entity = default;
             anyInstance = null;
             return false;
@@ -277,11 +286,16 @@ namespace Walgelijk
         /// <summary>
         /// Retrieve the first component of the specified type on the given entity, otherwise returns default
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetComponentFrom<T>(Entity entity) where T : class
         {
             foreach (var item in componentsToAdd)
                 if (item.Entity == entity && item.Component is T typed)
                     return typed;
+
+            foreach (var item in components.GetAllComponentsFrom(entity))
+                if (item is T a)
+                    return a;
 
             //TODO dit werkt niet omdat die camera er nog niet is. die zit in de creation buffer. dus ja hier ga je weer
             foreach (var item in components.GetAllComponentsOfType<T>())
@@ -294,6 +308,7 @@ namespace Walgelijk
         /// <summary>
         /// Get the <see cref="Entity"/> connected to the given component
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryGetEntityWith(object component, out Entity entity)
         {
             return components.GetEntityFromComponent(component, out entity);
@@ -302,6 +317,7 @@ namespace Walgelijk
         /// <summary>
         /// Retrieve the first component of the specified type on the given entity
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryGetComponentFrom<T>(Entity entity, out T component) where T : class
         {
             component = default;
@@ -326,6 +342,7 @@ namespace Walgelijk
         /// <summary>
         /// Get if an entity has a component
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool HasComponent<T>(Entity entity) where T : class
         {
             foreach (var item in componentsToAdd)
@@ -341,6 +358,7 @@ namespace Walgelijk
         /// <summary>
         /// Attach a component to an entity
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T AttachComponent<T>(Entity entity, T component) where T : class
         {
             componentsToAdd.Add(new ComponentCollection.EntityWithAnything(component, entity));
@@ -363,6 +381,7 @@ namespace Walgelijk
         /// <summary>
         /// Detach a component from an entity
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void DetachComponent<T>(Entity entity)
         {
             componentsToDestroy.Add((typeof(T), entity));
@@ -371,6 +390,7 @@ namespace Walgelijk
         /// <summary>
         /// Executes all systems. This is typically handled by the window implementation
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void UpdateSystems()
         {
             ProcessAddDestroyBuffers();

@@ -11,8 +11,8 @@ namespace Tests
         [TestMethod]
         public void EntityDeleteMemoryTest()
         {
-            const int entityCount = 50000;
-            const int diffThreshold = 3000;
+            const int entityCount = 5000;
+            const float diffThreshold = 1;
 
             Scene scene = new Scene();
 
@@ -26,14 +26,15 @@ namespace Tests
                 scene.UpdateSystems();
             }
 
-            GC.Collect();
+            scene.UpdateSystems();
+            GC.Collect(100, GCCollectionMode.Forced, true);
 
             long afterMemory = GC.GetTotalMemory(true);
 
             long diff = Math.Abs(afterMemory - initialMemory);
 
             string mess = $"Difference is {diff}. Before is {initialMemory}, after is {afterMemory}";
-            Assert.IsTrue(diff < diffThreshold, mess);
+            Assert.IsTrue(diff / initialMemory < diffThreshold, mess);
             Console.WriteLine(mess);
 
             Entity createEntity()

@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
+using System.Collections.Generic;
 using System.Drawing.Text;
 using System.Numerics;
 using Vector2 = System.Numerics.Vector2;
@@ -72,9 +73,8 @@ namespace Walgelijk.OpenTK
                     GL.ProgramUniform1(prog, loc, v.Length, v);
                     break;
                 case Vector3[] v:
-                    var arr = v3ArrayCache.GetOrUpdate(v);
+                    var arr = v3ArrayCache.GetAndUpdate(v);
                     GL.ProgramUniform3(prog, loc, v.Length, arr);
-                    GLUtilities.PrintGLErrors(true, $"Cannot upload Vector3 array for some reason: Array is {(string.Join(", ", arr) ?? "NULL")}");
                     break;
                 //TODO vector arrays
                 case Matrix4x4 v:
@@ -130,40 +130,33 @@ namespace Walgelijk.OpenTK
         }
     }
 
-    internal class Vector3ArrayCache : Cache<Vector3[], float[]>
+    internal class Vector3ArrayCache
     {
         private const int length = 3;
+        private Dictionary<Vector3[], float[]> dict = new();
 
-        protected override float[] CreateNew(Vector3[] raw)
+        public float[] GetAndUpdate(Vector3[] raw)
         {
-            var array = new float[length * raw.Length];
-            for (int i = 0; i < raw.Length; i++)
+            if (!dict.TryGetValue(raw, out var floatArray))
             {
-                var e = raw[i];
-                int index = length * i;
-                array[index + 0] = e.X;
-                array[index + 1] = e.Y;
-                array[index + 2] = e.Z;
+                floatArray = new float[length * raw.Length];
+                dict.Add(raw, floatArray);
             }
-            return array;
+
+            Update(ref raw, ref floatArray);
+
+            return floatArray;
         }
 
-        public float[] GetOrUpdate(Vector3[] raw)
+        private void Update(ref Vector3[] source, ref float[] target)
         {
-            var array = Load(raw);
-            for (int i = 0; i < raw.Length; i++)
+            for (int i = 0; i < target.Length; i += length)
             {
-                var e = raw[i];
-                int index = length * i;
-                array[index + 0] = e.X;
-                array[index + 1] = e.Y;
-                array[index + 2] = e.Z;
+                var v = source[i / length];
+                target[i + 0] = v.X;
+                target[i + 1] = v.Y;
+                target[i + 2] = v.Z;
             }
-            return array;
-        }
-
-        protected override void DisposeOf(float[] loaded)
-        {
         }
     }
 

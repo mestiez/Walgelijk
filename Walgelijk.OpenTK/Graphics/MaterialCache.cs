@@ -16,7 +16,7 @@ namespace Walgelijk.OpenTK
             }
             catch (Exception e)
             {
-                Logger.Warn(e.Message, nameof(MaterialCache));
+                Logger.Error(e.Message, nameof(MaterialCache));
                 // TODO *DIT GAAT EEN ONEINDIGE LOOP WORDEN ALS DE DEFAULT MATERIAL KAPOT IS!*
                 loaded = Load(Material.DefaultTextured);
             }
