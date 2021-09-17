@@ -9,6 +9,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using Vector2 = System.Numerics.Vector2;
 
 namespace Walgelijk.OpenTK
@@ -166,6 +167,28 @@ namespace Walgelijk.OpenTK
             window.RenderFrame += OnRenderFrame;
 
             window.Load += OnWindowLoad;
+
+            GL.DebugMessageCallback(OnGLDebugMessage, IntPtr.Zero);
+        }
+
+        private void OnGLDebugMessage(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
+        {
+            var str = Marshal.PtrToStringAuto(message, length);
+            switch (severity)
+            {
+                case DebugSeverity.DebugSeverityHigh:
+                    Logger.Error(str, this);
+                    break;
+                case DebugSeverity.DebugSeverityMedium:
+                    Logger.Warn(str, this);
+                    break;
+                default:
+                case DebugSeverity.DontCare:
+                case DebugSeverity.DebugSeverityNotification:
+                case DebugSeverity.DebugSeverityLow:
+                    Logger.Log(str, this);
+                    break;
+            }
         }
 
         private void OnWindowLoad()

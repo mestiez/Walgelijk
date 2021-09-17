@@ -73,14 +73,11 @@ namespace Walgelijk.OpenTK
         {
             textureIndex = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, textureIndex);
-
             var wrap = (int)TypeConverter.Convert(raw.WrapMode);
             var maxFilter = (int)TypeConverter.Convert(raw.FilterMode);
             var mipmapFilter = (int)TextureMinFilter.LinearMipmapLinear;
-
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, wrap);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, wrap);
-
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, raw.GenerateMipmaps ? mipmapFilter : maxFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, maxFilter); ;
 

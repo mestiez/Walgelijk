@@ -40,8 +40,6 @@ namespace Walgelijk.OpenTK
                     unitLink = GPUObjects.MaterialTextureCache.Load(new MaterialTexturePair(loaded, loadedTexture, loc));
                     var textureUnit = TypeConverter.Convert(unitLink.Unit);
                     GL.ProgramUniform1(prog, loc, 1, ref textureUnit);
-
-                    GLUtilities.PrintGLErrors(true, $"ProgramUniform1 failed! Prog {prog}, Loc {loc}, Count 1, TextureUnit {textureUnit}. ");
                     break;
                 case double v:
                     GL.ProgramUniform1(prog, loc, v);

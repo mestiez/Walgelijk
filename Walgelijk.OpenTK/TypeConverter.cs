@@ -46,7 +46,7 @@ namespace Walgelijk.OpenTK
 
         public static TextureWrapMode Convert(WrapMode mode) => mode switch
         {
-            WrapMode.Clamp => TextureWrapMode.Clamp,
+            WrapMode.Clamp => TextureWrapMode.ClampToBorder,
             WrapMode.Repeat => TextureWrapMode.Repeat,
             WrapMode.Mirror => TextureWrapMode.MirroredRepeat,
             _ => default,

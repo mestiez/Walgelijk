@@ -50,11 +50,35 @@
     <None Update="resources\fonts\inter.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="resources\fonts\roboto mono.fnt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>false</Pack>
+    </None>
+    <None Update="resources\fonts\roboto mono.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>false</Pack>
+    </None>
     <None Update="resources\prefabs\camera.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="resources\shaders\legacy-font.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>false</Pack>
+    </None>
     <None Update="resources\shaders\noise.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\shaders\sdf-font.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>false</Pack>
+    </None>
+    <None Update="resources\shaders\textured-fragment.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>false</Pack>
+    </None>
+    <None Update="resources\shaders\worldspace-vertex.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>false</Pack>
     </None>
     <None Update="resources\textures\wavey.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
