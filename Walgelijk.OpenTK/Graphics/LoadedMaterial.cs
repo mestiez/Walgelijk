@@ -21,46 +21,32 @@ namespace Walgelijk.OpenTK
         private void SetFromMaterial(Material material)
         {
             var shader = material.Shader;
-            int vertexShaderIndex;
-            int fragmentShaderIndex;
-            int programIndex;
+            var loadedShader = GPUObjects.ShaderCache.Load(shader);
+            int programIndex = GL.CreateProgram();
 
-            try
-            {
-                CreateShaderProgram(
-                    shader,
-                    out vertexShaderIndex,
-                    out fragmentShaderIndex,
-                    out programIndex);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            LinkShaders(vertexShaderIndex, fragmentShaderIndex, programIndex);
+            LinkShaders(loadedShader, programIndex);
 
             GL.ValidateProgram(programIndex);
 
-            ReleaseShaders(vertexShaderIndex, fragmentShaderIndex, programIndex);
+            //ReleaseShaders(vertexShaderIndex, fragmentShaderIndex, programIndex);
 
             Material = material;
             ProgramHandle = programIndex;
         }
 
-        private static void ReleaseShaders(int vertexShaderIndex, int fragmentShaderIndex, int programIndex)
-        {
-            GL.DeleteShader(vertexShaderIndex);
-            GL.DeleteShader(fragmentShaderIndex);
+        //private static void ReleaseShaders(int vertexShaderIndex, int fragmentShaderIndex, int programIndex)
+        //{
+        //    GL.DeleteShader(vertexShaderIndex);
+        //    GL.DeleteShader(fragmentShaderIndex);
 
-            GL.DetachShader(programIndex, vertexShaderIndex);
-            GL.DetachShader(programIndex, fragmentShaderIndex);
-        }
+        //    GL.DetachShader(programIndex, vertexShaderIndex);
+        //    GL.DetachShader(programIndex, fragmentShaderIndex);
+        //}
 
-        private static void LinkShaders(int vertexShaderIndex, int fragmentShaderIndex, int programIndex)
+        private static void LinkShaders(LoadedShader shader, int programIndex)
         {
-            GL.AttachShader(programIndex, vertexShaderIndex);
-            GL.AttachShader(programIndex, fragmentShaderIndex);
+            GL.AttachShader(programIndex, shader.VertexShaderHandle);
+            GL.AttachShader(programIndex, shader.FragmentShaderHandle);
 
             GL.LinkProgram(programIndex);
             GL.GetProgram(programIndex, GetProgramParameterName.LinkStatus, out int linkStatus);
@@ -70,32 +56,7 @@ namespace Walgelijk.OpenTK
             if (linkingFailed)
             {
                 GL.DeleteProgram(programIndex);
-                GL.DeleteShader(vertexShaderIndex);
-                GL.DeleteShader(fragmentShaderIndex);
                 throw new Exception("Shader program failed to link");
-            }
-        }
-
-        private static void CreateShaderProgram(Shader shader, out int vert, out int frag, out int prog)
-        {
-            vert = GL.CreateShader(ShaderType.VertexShader);
-            frag = GL.CreateShader(ShaderType.FragmentShader);
-            prog = GL.CreateProgram();
-
-            if (!ShaderCompiler.TryCompileShader(vert, shader.VertexShader))
-            {
-                GL.DeleteShader(vert);
-                GL.DeleteShader(frag);
-                GL.DeleteProgram(prog);
-                throw new Exception("Vertex shader failed to compile");
-            }
-
-            if (!ShaderCompiler.TryCompileShader(frag, shader.FragmentShader))
-            {
-                GL.DeleteShader(vert);
-                GL.DeleteShader(frag);
-                GL.DeleteProgram(prog);
-                throw new Exception("Fragment shader failed to compile");
             }
         }
 
