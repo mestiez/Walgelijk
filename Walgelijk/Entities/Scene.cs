@@ -5,7 +5,6 @@ using System.Runtime.CompilerServices;
 
 namespace Walgelijk
 {
-
     /// <summary>
     /// Stores and manages components and systems
     /// </summary>
@@ -15,6 +14,11 @@ namespace Walgelijk
         /// Game this scene belongs to
         /// </summary>
         public Game Game { get; internal set; }
+
+        /// <summary>
+        /// Manages the disposal of components
+        /// </summary>
+        public ComponentDisposalManager ComponentDisposal => components.DisposalManager;
 
         private readonly Dictionary<int, Entity> entities = new();
         private readonly ComponentCollection components = new();
@@ -34,6 +38,7 @@ namespace Walgelijk
         public Scene(Game game)
         {
             Game = game;
+            ComponentDisposal.RegisterDisposer(new ShapeRendererDisposer());
         }
 
         /// <summary>
@@ -55,9 +60,10 @@ namespace Walgelijk
         public event Action<Entity, object> OnAttachComponent;
 
         /// <summary>
-        /// Fired when a component is detacged from an entity
+        /// Fired when a component is detached from an entity
         /// </summary>
         public event Action<Entity> OnDetachComponent;
+
 
         /// <summary>
         /// Fired when a system is added

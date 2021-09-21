@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>O:\Projects\Walgelijk\Walgelijk.OpenTK\Walgelijk.OpenTK.xml</DocumentationFile>
+    <DocumentationFile>Walgelijk.OpenTK.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

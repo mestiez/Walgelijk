@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Generic;using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace Walgelijk
 {
@@ -16,6 +14,11 @@ namespace Walgelijk
 
         private readonly Dictionary<Type, List<EntityWithAnything>> byType = new();
         private readonly Dictionary<Entity, List<object>> byEntity = new();
+
+        /// <summary>
+        /// Manages the disposal of components
+        /// </summary>
+        public readonly ComponentDisposalManager DisposalManager = new();
 
         /// <summary>
         /// Add a component to the collection
@@ -106,6 +109,7 @@ namespace Walgelijk
                 for (int i = l.Count - 1; i >= 0; i--)
                     if (l[i].Entity == entity)
                     {
+                        DisposalManager.DisposeOf(l[i].Component);
                         l.RemoveAt(i);
                         c = true;
                     }
@@ -126,6 +130,7 @@ namespace Walgelijk
             return RemoveComponentOfType(typeof(T), entity);
         }
 
+
         /// <summary>
         /// Detach a component of a type from an entity
         /// </summary>
@@ -135,13 +140,19 @@ namespace Walgelijk
             bool success = true;
             TryCreateNewTypeList(type, out _);
 
-            allComponents.RemoveWhere(t => type.IsInstanceOfType(t.Component) && t.Entity == entity);
+            foreach (var item in allComponents)
+                if (shouldRemove(item))
+                    DisposalManager.DisposeOf(item.Component);
+
+            allComponents.RemoveWhere(shouldRemove);
 
             success &= !byType.TryGetValue(type, out var list);
             success &= list.RemoveAll(a => a.Entity == entity) > 0;
 
             success &= !byEntity.TryGetValue(entity, out var listb);
             success &= listb.RemoveAll(a => type.IsAssignableTo(a.GetType())) > 0;
+
+            bool shouldRemove(EntityWithAnything t) => type.IsInstanceOfType(t.Component) && t.Entity == entity;
 
             return success;
         }

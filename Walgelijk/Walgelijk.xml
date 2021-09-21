@@ -728,6 +728,11 @@
             A collection of components
             </summary>
         </member>
+        <member name="F:Walgelijk.ComponentCollection.DisposalManager">
+            <summary>
+            Manages the disposal of components
+            </summary>
+        </member>
         <member name="M:Walgelijk.ComponentCollection.Add(System.Object,Walgelijk.Entity)">
             <summary>
             Add a component to the collection
@@ -898,6 +903,11 @@
             Game this scene belongs to
             </summary>
         </member>
+        <member name="P:Walgelijk.Scene.ComponentDisposal">
+            <summary>
+            Manages the disposal of components
+            </summary>
+        </member>
         <member name="M:Walgelijk.Scene.#ctor(Walgelijk.Game)">
             <summary>
             Create scene for a <see cref="P:Walgelijk.Scene.Game"/> without setting it as the active scene
@@ -920,7 +930,7 @@
         </member>
         <member name="E:Walgelijk.Scene.OnDetachComponent">
             <summary>
-            Fired when a component is detacged from an entity
+            Fired when a component is detached from an entity
             </summary>
         </member>
         <member name="E:Walgelijk.Scene.OnAddSystem">
@@ -1043,6 +1053,11 @@
         <member name="M:Walgelijk.Scene.RenderSystems">
             <summary>
             Renders all systems that implement rendering code. This is typically handled by the window implementation
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ShapeRendererDisposer">
+            <summary>
+            Disposes of the vertex buffers in shape components, excluding the Quad component because it uses a shared primitive
             </summary>
         </member>
         <member name="T:Walgelijk.System">
@@ -3605,6 +3620,37 @@
         <member name="M:Walgelijk.Window.SetIcon(Walgelijk.IReadableTexture,System.Boolean)">
             <summary>
             Set the window icon
+            </summary>
+        </member>
+        <member name="T:ComponentDisposalManager">
+            <summary>
+            A container for <see cref="T:IComponentDisposer"/>s. It deals with disposing specific resources used by components.
+            </summary>
+        </member>
+        <member name="M:ComponentDisposalManager.RegisterDisposer(IComponentDisposer)">
+            <summary>
+            Add a disposer instance to the disposer collection
+            </summary>
+            <param name="disposer"></param>
+        </member>
+        <member name="M:ComponentDisposalManager.DisposeOf(System.Object)">
+            <summary>
+            Dispose of the component object using all registered components
+            </summary>
+        </member>
+        <member name="T:IComponentDisposer">
+            <summary>
+            A disposer for a component. Contains a method that is meant to free all resources used up by the given component. Register a custom component disposer using <see cref="T:ComponentDisposalManager"/>
+            </summary>
+        </member>
+        <member name="M:IComponentDisposer.DisposeOf(System.Object)">
+            <summary>
+            Dispose of the given component
+            </summary>
+        </member>
+        <member name="M:IComponentDisposer.CanDisposeOf(System.Object)">
+            <summary>
+            Returns true if the disposer can deal with the given object
             </summary>
         </member>
     </members>
