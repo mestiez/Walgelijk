@@ -17,7 +17,7 @@ namespace Walgelijk.OpenTK
     /// <summary>
     /// OpenTK implementation of <see cref="Window"/>
     /// </summary>
-    public class c : Window
+    public class OpenTKWindow : Window
     {
         internal readonly GameWindow window;
         internal readonly OpenTKWindowRenderTarget renderTarget;
