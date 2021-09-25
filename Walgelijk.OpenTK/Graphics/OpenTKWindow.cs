@@ -17,7 +17,7 @@ namespace Walgelijk.OpenTK
     /// <summary>
     /// OpenTK implementation of <see cref="Window"/>
     /// </summary>
-    public class OpenTKWindow : Window
+    public class c : Window
     {
         internal readonly GameWindow window;
         internal readonly OpenTKWindowRenderTarget renderTarget;
@@ -232,7 +232,7 @@ namespace Walgelijk.OpenTK
             time.UpdateDeltaTime = (float)obj.Time;
 
             Game.Console.Update();
-            if (!Game.Console.IsEatingInput)
+            if (!Game.Console.IsActive)
                 Game.Scene?.UpdateSystems();
             Game.Profiling.Update();
             Game.AudioRenderer.Process(Game);
