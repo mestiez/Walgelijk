@@ -25,7 +25,7 @@ namespace Walgelijk.OpenTK
         private readonly InputHandler inputHandler;
         internal readonly OpenTKGraphics internalGraphics;
 
-        private Time time = new Time();
+        private readonly Time time = new();
         private Stopwatch stopwatch;
 
         public OpenTKWindow(string title, Vector2 position, Vector2 size)
@@ -68,7 +68,7 @@ namespace Walgelijk.OpenTK
 
         public override Vector2 Size
         {
-            get => new Vector2(window.Size.X, window.Size.Y);
+            get => new(window.Size.X, window.Size.Y);
             set
             {
                 window.Size = new global::OpenTK.Mathematics.Vector2i((int)value.X, (int)value.Y);
@@ -230,6 +230,7 @@ namespace Walgelijk.OpenTK
         private void OnUpdateFrame(FrameEventArgs obj)
         {
             time.UpdateDeltaTime = (float)obj.Time;
+            time.SecondsSinceSceneChange += time.UpdateDeltaTime;
 
             Game.Console.Update();
             if (!Game.Console.IsActive)

@@ -45,7 +45,7 @@ namespace Walgelijk
                         continue;
 
                     bg.RenderTask.Material = bg.Material;
-                    bg.RenderTask.ModelMatrix = stretch * Matrix4x4.CreateTranslation(bg.Offset.X, bg.Offset.Y, 0);
+                    bg.RenderTask.ModelMatrix = stretch * Matrix4x4.CreateTranslation(bg.Offset.X * windowSize.X, bg.Offset.Y * windowSize.Y, 0);
 
                     RenderQueue.Add(bg.RenderTask, bg.RenderOrder);
                 }

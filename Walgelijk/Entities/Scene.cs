@@ -8,12 +8,17 @@ namespace Walgelijk
     /// <summary>
     /// Stores and manages components and systems
     /// </summary>
-    public sealed class Scene
+    public sealed class Scene : IDisposable
     {
         /// <summary>
         /// Game this scene belongs to
         /// </summary>
         public Game Game { get; internal set; }
+
+        /// <summary>
+        /// Should the game dispose of this scene when it is made inactive by setting <see cref="Game.Scene"/> to something else?
+        /// </summary>
+        public bool ShouldBeDisposedOnSceneChange = false;
 
         /// <summary>
         /// Manages the disposal of components
@@ -25,12 +30,14 @@ namespace Walgelijk
         private readonly Dictionary<Type, System> systems = new();
         private readonly List<System> orderedSystemCollection = new();
 
-        private HashSet<ComponentCollection.EntityWithAnything> componentsToAdd = new();
-        private HashSet<(Type, Entity)> componentsToDestroy = new();
-        private HashSet<Entity> entitiesToDestroy = new();
+        private readonly HashSet<ComponentCollection.EntityWithAnything> componentsToAdd = new();
+        private readonly HashSet<(Type, Entity)> componentsToDestroy = new();
+        private readonly HashSet<Entity> entitiesToDestroy = new();
 
-        private HashSet<System> systemsToAdd = new();
-        private HashSet<System> systemsToDestroy = new();
+        private readonly HashSet<System> systemsToAdd = new();
+        private readonly HashSet<System> systemsToDestroy = new();
+
+        internal bool HasBeenLoadedAlready = false;
 
         /// <summary>
         /// Create scene for a <see cref="Game"/> without setting it as the active scene
@@ -63,7 +70,6 @@ namespace Walgelijk
         /// Fired when a component is detached from an entity
         /// </summary>
         public event Action<Entity> OnDetachComponent;
-
 
         /// <summary>
         /// Fired when a system is added
@@ -399,6 +405,9 @@ namespace Walgelijk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void UpdateSystems()
         {
+            if (!HasBeenLoadedAlready)
+                Initialise();
+
             ProcessAddDestroyBuffers();
             for (int i = 0; i < orderedSystemCollection.Count; i++)
                 if (orderedSystemCollection[i].ExecutionOrderChanged)
@@ -409,6 +418,15 @@ namespace Walgelijk
 
             foreach (var system in orderedSystemCollection)
                 system.Update();
+        }
+
+        /// <summary>
+        /// Prepares the scene for immediate activity. This is handled by the engine so there is no need to call this unless you know why you're calling it.
+        /// </summary>
+        public void Initialise()
+        {
+            Game.Time.RenderDeltaTime = 0;
+            Game.Time.UpdateDeltaTime = 0;
         }
 
         private void ProcessAddDestroyBuffers()
@@ -471,6 +489,18 @@ namespace Walgelijk
 
             foreach (var system in orderedSystemCollection)
                 system.PostRender();
+        }
+
+        /// <summary>
+        /// Unload all entities and components in the scene. You are responsible for registering custom <see cref="IComponentDisposer"/>s for your components.
+        /// </summary>
+        public void Dispose()
+        {
+            foreach (var item in entities)
+                RemoveEntity(item.Value);
+
+            ProcessAddDestroyBuffers();
+            entities.Clear();
         }
 
         //TODO voeg manier to om meerdere componenten te krijgen per keer

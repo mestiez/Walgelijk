@@ -908,6 +908,11 @@
             Game this scene belongs to
             </summary>
         </member>
+        <member name="F:Walgelijk.Scene.ShouldBeDisposedOnSceneChange">
+            <summary>
+            Should the game dispose of this scene when it is made inactive by setting <see cref="P:Walgelijk.Game.Scene"/> to something else?
+            </summary>
+        </member>
         <member name="P:Walgelijk.Scene.ComponentDisposal">
             <summary>
             Manages the disposal of components
@@ -1055,9 +1060,19 @@
             Executes all systems. This is typically handled by the window implementation
             </summary>
         </member>
+        <member name="M:Walgelijk.Scene.Initialise">
+            <summary>
+            Prepares the scene for immediate activity. This is handled by the engine so there is no need to call this unless you know why you're calling it.
+            </summary>
+        </member>
         <member name="M:Walgelijk.Scene.RenderSystems">
             <summary>
             Renders all systems that implement rendering code. This is typically handled by the window implementation
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.Dispose">
+            <summary>
+            Unload all entities and components in the scene. You are responsible for registering custom <see cref="T:IComponentDisposer"/>s for your components.
             </summary>
         </member>
         <member name="T:Walgelijk.ShapeRendererDisposer">
@@ -2971,6 +2986,12 @@
         <member name="P:Walgelijk.Time.SecondsSinceLoad">
             <summary>
             Returns the amount of seconds that have passed since the game was launched
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Time.SecondsSinceSceneChange">
+            <summary>
+            
+            Returns the amount of seconds that have passed since the last scene change
             </summary>
         </member>
         <member name="P:Walgelijk.Time.TimeScale">

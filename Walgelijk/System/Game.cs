@@ -43,10 +43,15 @@ namespace Walgelijk
 
             set
             {
+                if (scene != null && scene.ShouldBeDisposedOnSceneChange)
+                    scene.Dispose();
+
+                Time.SecondsSinceSceneChange = 0;
                 scene = value;
                 if (value != null)
                 {
                     scene.Game = this;
+                    scene.HasBeenLoadedAlready = true;
                     Logger.Log("Scene changed", nameof(Game));
                 }
                 else Logger.Log("Scene set to null", nameof(Game));
@@ -115,7 +120,7 @@ namespace Walgelijk
         /// </summary>
         public void Stop()
         {
-            if (Window == null) 
+            if (Window == null)
                 throw new InvalidOperationException("Window is null");
 
             AudioRenderer?.Release();

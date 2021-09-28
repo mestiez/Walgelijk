@@ -3,7 +3,7 @@
     /// <summary>
     /// Structure that holds frame specific time data
     /// </summary>
-    public struct Time
+    public class Time
     {
         /// <summary>
         /// Returns the amount of seconds that have passed since the last update frame
@@ -18,6 +18,11 @@
         /// Returns the amount of seconds that have passed since the game was launched
         /// </summary>
         public float SecondsSinceLoad { get; set; }
+        /// <summary>
+        /// 
+        /// Returns the amount of seconds that have passed since the last scene change
+        /// </summary>
+        public float SecondsSinceSceneChange { get; set; }
 
         /// <summary>
         /// Factor by which the time is multiplied
