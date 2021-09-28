@@ -9,5 +9,11 @@ namespace Walgelijk
     {
         //public string Alias = null;
         //TODO alias
+
+        /// <summary>
+        /// String that is displayed when the command is incorrectly used or when help is requested
+        /// </summary>
+        public string HelpString = string.Empty;
+
     }
 }

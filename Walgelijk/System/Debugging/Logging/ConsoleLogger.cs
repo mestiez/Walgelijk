@@ -7,6 +7,11 @@ namespace Walgelijk
     /// </summary>
     public sealed class ConsoleLogger : ILogger
     {
+        public void Debug(object message, object source)
+        {
+            Write("[DBG]", message.ToString(), source, ConsoleColor.Magenta);
+        }
+
         public void Log(object message, object source)
         {
             Write("[LOG]", message.ToString(), source);

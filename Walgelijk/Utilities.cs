@@ -249,5 +249,30 @@ namespace Walgelijk
             var v = Clamp(1 - MathF.Pow(1 - lerpFactor, deltaTime), 0, 1);
             return float.IsNaN(v) ? 0 : v;
         }
+
+        /// <summary>
+        /// Remaps a linear value from 0 to 1 to an ease-in ease-out cubic curve
+        /// </summary>
+        public static float EaseInOutCubic(float x)
+        {
+            float a = -2 * x + 2;
+            return x < 0.5f ? 4 * x * x * x : 1 - (a * a * a) / 2;
+        }
+
+        /// <summary>
+        /// Remaps a linear value from 0 to 1 to an ease-in ease-out quadractic curve
+        /// </summary>
+        public static float EaseInOutQuad(float x)
+        {
+            float a = -2 * x + 2;
+            return x < 0.5f ? 2 * x * x : 1 - (a * a) / 2;
+        }
+
+        /// <summary>
+        /// Returns the given fallback value (0 by default) if the given input value is NaN
+        /// </summary>
+        public static float NanFallback(float v, float fallback = 0) => float.IsNaN(v) ? fallback : v;
+
+
     }
 }

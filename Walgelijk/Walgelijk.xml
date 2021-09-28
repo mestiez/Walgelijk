@@ -182,6 +182,11 @@
             Whether to draw it at all
             </summary>
         </member>
+        <member name="F:Walgelijk.Background.BackgroundComponent.Offset">
+            <summary>
+            Translational offset
+            </summary>
+        </member>
         <member name="F:Walgelijk.Background.BackgroundComponent.RenderTask">
             <summary>
             Relevant render task
@@ -2235,6 +2240,81 @@
             Mirrors the UV
             </summary>
         </member>
+        <member name="T:Walgelijk.Perlin">
+            <summary>
+            Perlin noise utility struct
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Perlin.FractalNoise(System.Single,System.Single,System.Single,System.Int32,System.Single)">
+            <summary>
+            Get fractal perlin noise between 0 to 1
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Perlin.Get(System.Single,System.Single,System.Single)">
+            <summary>
+            Get perlin noise between 0 to 1
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Pool`2">
+            <summary>
+            Abstract class for object pooling
+            </summary>
+            <typeparam name="T">The type to pool</typeparam>
+            <typeparam name="InitialData">The type of object to pass around when initalising a new instance</typeparam>
+        </member>
+        <member name="F:Walgelijk.Pool`2.MaximumCapacity">
+            <summary>
+            The maximum amount of objects, active or inactive
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Pool`2.CreatedAmount">
+            <summary>
+            How many objects have been created
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`2.#ctor(System.Int32)">
+            <summary>
+            Create a pool with the given capacity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`2.RequestObject(`1)">
+            <summary>
+            Get an object from the pool. This will be ready for use or null, if the pool is at full capacity. 
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`2.ReturnToPool(`0)">
+            <summary>
+            Return an object to the pool when it's done, to allow it to be requested again
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="M:Walgelijk.Pool`2.Prefill">
+            <summary>
+            Create a new available object and add it to the pool, waiting to be used
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`2.GetExistingFromPool(`1)">
+            <summary>
+            Get an existing object from the pool guaranteeing never to create a new one. Can return null.
+            </summary>
+            <param name="initialiser"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Pool`2.CreateFresh">
+            <summary>
+            Return a completely new instance of the poolable object
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`2.ResetObjectForNextUse(`0,`1)">
+            <summary>
+            Reset the given object for its next use
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`2.GetOverCapacityFallback">
+            <summary>
+            What to return instead of null when the pool is at full capacity
+            </summary>
+        </member>
         <member name="T:Walgelijk.Range`1">
             <summary>
             Object with a minimum and maximum value
@@ -2394,6 +2474,11 @@
             Attribute that registers a command to the command processor registry
             </summary>
         </member>
+        <member name="F:Walgelijk.CommandAttribute.HelpString">
+            <summary>
+            String that is displayed when the command is incorrectly used or when help is requested
+            </summary>
+        </member>
         <member name="T:Walgelijk.CommandProcessor">
             <summary>
             Object responsible for command processing. Only has static methods.
@@ -2499,6 +2584,11 @@
             Interface for basic logging
             </summary>
         </member>
+        <member name="M:Walgelijk.ILogger.Debug(System.Object,System.Object)">
+            <summary>
+            Debug information
+            </summary>
+        </member>
         <member name="M:Walgelijk.ILogger.Log(System.Object,System.Object)">
             <summary>
             Log information
@@ -2524,6 +2614,11 @@
             The logging implementation used. Set to <see cref="T:Walgelijk.ConsoleLogger"/> by default
             </summary>
         </member>
+        <member name="M:Walgelijk.Logger.Debug(System.Object,System.Object)">
+            <summary>
+            Log information
+            </summary>
+        </member>
         <member name="M:Walgelijk.Logger.Log(System.Object,System.Object)">
             <summary>
             Log information
@@ -2547,6 +2642,11 @@
         <member name="T:Walgelijk.LogLevel">
             <summary>
             Levels of logging
+            </summary>
+        </member>
+        <member name="F:Walgelijk.LogLevel.Debug">
+            <summary>
+            Debug messages
             </summary>
         </member>
         <member name="F:Walgelijk.LogLevel.Info">
@@ -3308,6 +3408,21 @@
         <member name="M:Walgelijk.Utilities.LerpDt(System.Single,System.Single)">
             <summary>
             Returns the lerp factor adjusted for the given time step
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.EaseInOutCubic(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in ease-out cubic curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.EaseInOutQuad(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in ease-out quadractic curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.NanFallback(System.Single,System.Single)">
+            <summary>
+            Returns the given fallback value (0 by default) if the given input value is NaN
             </summary>
         </member>
         <member name="T:Walgelijk.DrawBounds">

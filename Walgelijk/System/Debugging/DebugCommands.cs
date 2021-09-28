@@ -8,7 +8,7 @@ namespace Walgelijk
     {
         private static Game Game => Game.Main;
 
-        [Command]
+        [Command(HelpString = "Shows some performance stats in the top left corner of the screen. Expects true or false")]
         private static string ShowStats(bool state)
         {
             var inst = Game.Profiling;
@@ -16,46 +16,46 @@ namespace Walgelijk
             return "Profiler " + (state ? "enabled" : "disabled");
         }
 
-        [Command]
+        [Command(HelpString = "Returns the input string")]
         private static string Echo(string input)
         {
             return input;
         }
 
-        [Command]
+        [Command(HelpString = "Clears the console")]
         private static void Cls()
         {
             Game.Console.Clear();
         }
 
-        [Command]
+        [Command(HelpString = "Quits the game")]
         private static void Quit()
         {
             Game.Stop();
         }
 
-        [Command]
+        [Command(HelpString = "Sets the render rate cap. Expects an integer")]
         private static CommandResult FpsCap(int target = 0)
         {
             Game.Window.TargetFrameRate = target;
             return "Target frame render rate set to " + target;
         }
 
-        [Command]
+        [Command(HelpString = "Sets the update rate cap. Expects an integer")]
         private static CommandResult UpsCap(int target = 0)
         {
             Game.Window.TargetUpdateRate = target;
             return "Target update rate set to " + target;
         }
 
-        [Command]
+        [Command(HelpString = "Lists all systems in the scene")]
         private static string ListSystems()
         {
             var systems = Game.Scene.GetSystems();
             return string.Join("\n", systems.Select(s => ">" + s.GetType().Name));
         }
 
-        [Command]
+        [Command(HelpString = "Remove the system with the given name")]
         private static CommandResult RemoveSystem(string typeName)
         {
             var system = Game.Scene.GetSystems().FirstOrDefault(s => s.GetType().Name == typeName);
@@ -67,14 +67,14 @@ namespace Walgelijk
             return success ? type.Name + " removed" : CommandResult.Error("Could not remove " + type.Name);
         }
 
-        [Command]
+        [Command(HelpString = "List all entities in the scene")]
         private static string ListEntities()
         {
             var systems = Game.Scene.GetAllEntities();
             return string.Join("\n", systems.Select(s => ">" + s));
         }
 
-        [Command]
+        [Command(HelpString = "List all components in an entity. Expects an integer")]
         private static string ListComponents(int entityID)
         {
             if (!Game.Scene.HasEntity(entityID))
@@ -84,7 +84,7 @@ namespace Walgelijk
             return string.Join("\n", components.Select(s => ">" + s.GetType().Name));
         }
 
-        [Command]
+        [Command(HelpString = "Remove a component from an entity. Expects an integer and a string")]
         private static CommandResult RemoveComponent(int entityID, string componentType)
         {
             if (!Game.Scene.HasEntity(entityID))
@@ -99,14 +99,14 @@ namespace Walgelijk
             return success ? type.Name + " removed" : CommandResult.Error("Could not remove " + type.Name);
         }
 
-        [Command]
+        [Command(HelpString = "Remove and entity. Expects an integer")]
         private static CommandResult RemoveEntity(int entityID)
         {
             Game.Scene.RemoveEntity(entityID);
             return entityID + " removed";
         }
 
-        [Command]
+        [Command(HelpString = "List all commands")]
         private static string List()
         {
             var builder = new StringBuilder();

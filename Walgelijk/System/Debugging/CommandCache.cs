@@ -4,26 +4,25 @@ using System.Reflection;
 
 namespace Walgelijk
 {
-    internal class CommandCache : Cache<string, MethodInfo>
+    internal class CommandCache : Cache<string, (MethodInfo method, CommandAttribute cmd)>
     {
-        private readonly HashSet<MethodInfo> methods = new HashSet<MethodInfo>();
+        private readonly HashSet<(MethodInfo method, CommandAttribute cmd)> methods = new();
         private bool initialised;
 
-        protected override MethodInfo CreateNew(string raw)
+        protected override (MethodInfo method, CommandAttribute cmd) CreateNew(string raw)
         {
             if (!initialised)
                 Initialise();
 
             raw = raw.ToLower();
 
-            foreach (var method in methods)
+            foreach (var (method, cmd) in methods)
             {
                 if (method.Name.ToLower() != raw) continue;
-
-                return method;
+                return (method, cmd);
             }
 
-            return null;
+            return default;
         }
 
         private void Initialise()
@@ -36,7 +35,7 @@ namespace Walgelijk
 
         public IEnumerable<string> GetAll()
         {
-            return methods.Select(m => m.Name);
+            return methods.Select(m => m.method.Name);
         }
 
         public void RegisterAssembly(Assembly ass)
@@ -61,7 +60,7 @@ namespace Walgelijk
                         continue;
                     }
 
-                    methods.Add(method);
+                    methods.Add((method, cmd));
                     Logger.Log("Command registered: (\"" + method.Name + "\")");
                 }
             }
@@ -69,12 +68,12 @@ namespace Walgelijk
             foreach (var a in methods)
                 foreach (var b in methods)
                 {
-                    if (a != b && a.Name.ToLower() == b.Name.ToLower())
-                        Logger.Warn($"Command \"{b.Name}\" has two entries. Only one of them will work. This behaviour is undefined.");
+                    if (a != b && a.method.Name.ToLower() == b.method.Name.ToLower())
+                        Logger.Warn($"Command \"{b.method.Name}\" has two entries. Only one of them will work. This behaviour is undefined.");
                 }
         }
 
-        protected override void DisposeOf(MethodInfo loaded)
+        protected override void DisposeOf((MethodInfo method, CommandAttribute cmd) _)
         {
             //hier hoeft niks te gebeuren
         }

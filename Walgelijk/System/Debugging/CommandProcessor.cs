@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace Walgelijk
 {
@@ -30,14 +31,52 @@ namespace Walgelijk
             string[] arguments = parts.Skip(1).ToArray(); //TODO linq langzaam deel 2 maar zoveel maakt dat niet uit, het is een debug command ¯\_(ツ)_/¯
 
             var action = commandCache.Load(cmd);
-            if (action == null)
-                Logger.Error($"There is no command that matches \"{cmd}\"");
+            if (action.method == null)
+                console.Print($"There is no command that matches \"{cmd}\"", Colors.Red);
             else
-                InvokeMethod(action, arguments, console);
+            {
+                bool success = InvokeMethod(action, arguments, console);
+                if (!success && !string.IsNullOrWhiteSpace(action.cmd.HelpString))
+                    console.Print(action.cmd.HelpString, Colors.Cyan);
+            }
         }
 
-        private static void InvokeMethod(MethodInfo methodInfo, string[] args, DebugConsole console)
+        private static string CreateSyntaxExampleString(MethodInfo method)
         {
+            var s = new StringBuilder();
+            s.Append(method.Name);
+            s.Append(' ');
+            var @params = method.GetParameters();
+            for (int i = 0; i < @params.Length; i++)
+            {
+                var item = @params[i];
+                s.AppendFormat("[{0} {1}] ", getTypeName(item.ParameterType), item.Name);
+            }
+            return s.ToString();
+
+            string getTypeName(global::System.Type type)
+            {
+                if (type == typeof(float))
+                    return "float";                
+                if (type == typeof(bool))
+                    return "bool";               
+                if (type == typeof(int))
+                    return "int";               
+                if (type == typeof(uint))
+                    return "uint";               
+                if (type == typeof(string))
+                    return "string";
+                return type.Name.ToLower();
+            }
+        }
+
+        private static bool InvokeMethod((MethodInfo method, CommandAttribute cmd) v, string[] args, DebugConsole console)
+        {
+            var (methodInfo, cmd) = v;
+
+            if (args.Length == 1 && args[0] == "?")
+                return false; //Return help string
+
             var expectedArgs = methodInfo.GetParameters();
             object[] toPass = new object[expectedArgs.Length];
 
@@ -53,8 +92,8 @@ namespace Walgelijk
                 }
                 else
                 {
-                    Logger.Error($"{methodInfo.Name} expects {toPass.Length} {argumentNoun}, but {args.Length} {isAreWord} given");
-                    return;
+                    console.Print($"{methodInfo.Name} expects {toPass.Length} {argumentNoun}, but {args.Length} {isAreWord} given\nSyntax: {CreateSyntaxExampleString(methodInfo)}", Colors.Red);
+                    return false;
                 }
             }
 
@@ -69,8 +108,8 @@ namespace Walgelijk
                     }
                     else
                     {
-                        Logger.Error($"{methodInfo.Name} expects {toPass.Length} {argumentNoun}, but {args.Length} {isAreWord} given");
-                        return;
+                        console.Print($"{methodInfo.Name} expects {toPass.Length} {argumentNoun}, but {args.Length} {isAreWord} given\nSyntax: {CreateSyntaxExampleString(methodInfo)}", Colors.Red);
+                        return false;
                     }
 
                 var type = expected.ParameterType;
@@ -81,7 +120,7 @@ namespace Walgelijk
                         toPass[i] = result;
                         continue;
                     }
-                    else return;
+                    else return true;
 
                 if (type == typeof(int))
                     if (tryParseArgument<int>(args[i], i, out var result, int.TryParse))
@@ -89,7 +128,7 @@ namespace Walgelijk
                         toPass[i] = result;
                         continue;
                     }
-                    else return;
+                    else return true;
 
                 if (type == typeof(bool))
                     if (tryParseArgument<bool>(args[i], i, out var result, bool.TryParse))
@@ -97,7 +136,7 @@ namespace Walgelijk
                         toPass[i] = result;
                         continue;
                     }
-                    else return;
+                    else return true;
 
                 if (type == typeof(string))
                 {
@@ -105,8 +144,8 @@ namespace Walgelijk
                     continue;
                 }
 
-                Logger.Error($"{methodInfo.Name} expects {toPass.Length} {argumentNoun}, but {args.Length} {isAreWord} given");
-                return;
+                console.Print($"{methodInfo.Name} expects {toPass.Length} {argumentNoun}, but {args.Length} {isAreWord} given\nSyntax: {CreateSyntaxExampleString(methodInfo)}", Colors.Red);
+                return false;
             }
 
             var returned = methodInfo.Invoke(null, toPass);
@@ -119,14 +158,14 @@ namespace Walgelijk
                         switch (commandResult.Type)
                         {
                             case LogLevel.Info:
-                                Logger.Log(commandResult.Message);
+                                console.Print(commandResult.Message);
                                 break;
                             case LogLevel.Warn:
-                                Logger.Warn(commandResult.Message);
+                                console.Print(commandResult.Message, Colors.Orange);
                                 break;
                             case LogLevel.Error:
-                                Logger.Error(commandResult.Message);
-                                break;
+                                console.Print(commandResult.Message, Colors.Red);
+                                return false;
                         }
                         break;
                     default:
@@ -135,16 +174,18 @@ namespace Walgelijk
                 }
             }
 
-            static bool tryParseArgument<T>(string given, int index, out T result, ParseFunc<T> parseFunction)
+            bool tryParseArgument<T>(string given, int index, out T result, ParseFunc<T> parseFunction)
             {
                 if (parseFunction(given, out result))
                     return true;
                 else
                 {
-                    Logger.Error($"Argument {index} is not a {typeof(T).Name}");
+                    console.Print($"Argument {index} is not a {typeof(T).Name}", Colors.Red);
                     return false;
                 }
             }
+
+            return true;
         }
 
         private delegate bool ParseFunc<T>(string a, out T result);

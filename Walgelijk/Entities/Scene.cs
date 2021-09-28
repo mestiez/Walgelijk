@@ -132,7 +132,7 @@ namespace Walgelijk
         /// <summary>
         /// Returns true if the system of the given type exists in the scene and returns false otherwise.
         /// </summary>
-        public bool HasSystem<T>() => systems.ContainsKey(typeof(T));
+        public bool HasSystem<T>() => systems.ContainsKey(typeof(T)) || systemsToAdd.Any(t => t is T);
 
         /// <summary>
         /// Remove system from the list. Getting rid of any references to it is not handled, so the object might remain in memory.

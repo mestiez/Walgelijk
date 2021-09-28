@@ -6,6 +6,10 @@
     public interface ILogger
     {
         /// <summary>
+        /// Debug information
+        /// </summary>
+        public void Debug(object message, object source = null);
+        /// <summary>
         /// Log information
         /// </summary>
         public void Log(object message, object source = null);

@@ -10,21 +10,22 @@ namespace Walgelijk
         /// <summary>
         /// Creates a background for the scene. Also creates the necessary systems if they are not already present. By default, backgrounds are rendered at render order (-1000, 0)
         /// </summary>
-        public static BackgroundComponent CreateBackground(Scene scene, IReadableTexture texture)
+        public static EntityWith<BackgroundComponent> CreateBackground(Scene scene, IReadableTexture texture)
         {
             if (!scene.HasSystem<BackgroundSystem>())
                 scene.AddSystem(new BackgroundSystem());
-
+            var ent = scene.CreateEntity();
             var mat = new Material(Material.DefaultTextured);
             mat.SetUniform(ShaderDefaults.MainTextureUniform, texture);
-
-            return scene.AttachComponent(scene.CreateEntity(), new BackgroundComponent
+            var bg = scene.AttachComponent(ent, new BackgroundComponent
             {
                 Visible = true,
                 Material = mat,
                 RenderOrder = new RenderOrder(-1000, 0),
                 RenderTask = new ShapeRenderTask(PrimitiveMeshes.Quad) { ScreenSpace = true }
             });
+
+            return new EntityWith<BackgroundComponent>(bg, ent);
         }
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace Walgelijk
                         continue;
 
                     bg.RenderTask.Material = bg.Material;
-                    bg.RenderTask.ModelMatrix = stretch;
+                    bg.RenderTask.ModelMatrix = stretch * Matrix4x4.CreateTranslation(bg.Offset.X, bg.Offset.Y, 0);
 
                     RenderQueue.Add(bg.RenderTask, bg.RenderOrder);
                 }
@@ -68,6 +69,10 @@ namespace Walgelijk
             /// Whether to draw it at all
             /// </summary>
             public bool Visible = true;
+            /// <summary>
+            /// Translational offset
+            /// </summary>
+            public Vector2 Offset;
 
             /// <summary>
             /// Relevant render task

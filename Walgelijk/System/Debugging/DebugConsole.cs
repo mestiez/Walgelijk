@@ -56,6 +56,10 @@ namespace Walgelijk
                 switch (e.Level)
                 {
                     default:
+                    case LogLevel.Debug:
+                        c = Colors.Purple;
+                        name = "DBG";
+                        break;                   
                     case LogLevel.Info:
                         c = DebugConsoleRenderer.DefaultTextColour;
                         name = "LOG";

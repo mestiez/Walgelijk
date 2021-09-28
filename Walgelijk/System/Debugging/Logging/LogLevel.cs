@@ -6,6 +6,10 @@
     public enum LogLevel
     {
         /// <summary>
+        /// Debug messages
+        /// </summary>
+        Debug,
+        /// <summary>
         /// Informational messages
         /// </summary>
         Info,

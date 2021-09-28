@@ -13,6 +13,15 @@
         /// <summary>
         /// Log information
         /// </summary>
+        public static void Debug(object message, object source = null)
+        {
+            Implementation.Debug(message, source);
+            OnLog.Dispatch((message, source, LogLevel.Debug));
+        }
+
+        /// <summary>
+        /// Log information
+        /// </summary>
         public static void Log(object message, object source = null)
         {
             Implementation.Log(message, source);

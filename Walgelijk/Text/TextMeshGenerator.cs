@@ -74,10 +74,12 @@ namespace Walgelijk
                     case '\n':
                         line++;
                         cursor = 0;
+                        lastChar = default;
                         continue;
                     case '\t':
                         float tabSize = Font.Size * 5;
                         cursor = MathF.Ceiling(cursor / tabSize) * tabSize;
+                        lastChar = default;
                         continue;
                         //TODO andere escape character handlers
                 }
@@ -85,7 +87,7 @@ namespace Walgelijk
                 var glyph = Font.GetGlyph(c);
                 Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
                 var pos = new Vector3(cursor + glyph.XOffset + kerning.Amount * KerningMultiplier, -glyph.YOffset - (line * Font.LineHeight * LineHeightMultiplier), 0);
-                GlyphUVInfo uvInfo = new GlyphUVInfo(glyph.X / width, glyph.Y / height, glyph.Width / width, glyph.Height / height);
+                GlyphUVInfo uvInfo = new(glyph.X / width, glyph.Y / height, glyph.Width / width, glyph.Height / height);
 
                 if (colours != null)
                     foreach (var ce in colours)
