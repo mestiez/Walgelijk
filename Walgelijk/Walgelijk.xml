@@ -3169,6 +3169,26 @@
             Offset amount
             </summary>
         </member>
+        <member name="T:Walgelijk.RichTextTags">
+            <summary>
+            Contains the rich text tags as string constants
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RichTextTags.Colour">
+            <summary>
+            &lt;color=&quot;#ff00ff&quot;&gt;Text goes here&lt;/color&gt;
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RichTextTags.Italic">
+            <summary>
+            &lt;color=&quot;#ff00ff&quot;&gt;Text goes here&lt;/color&gt;
+            </summary>
+        </member>
+        <member name="T:Walgelijk.TextAlign">
+            <summary>
+            Ways to align text vertically
+            </summary>
+        </member>
         <member name="T:Walgelijk.TextComponent">
             <summary>
             IShapeComponent that holds the information necessary to draw text
@@ -3239,26 +3259,6 @@
         <member name="M:Walgelijk.TextMaterial.CreateSDFMaterial(Walgelijk.IReadableTexture[])">
             <summary>
             Create a material for a set of SDF textures
-            </summary>
-        </member>
-        <member name="T:Walgelijk.TextAlign">
-            <summary>
-            Ways to align text vertically
-            </summary>
-        </member>
-        <member name="T:Walgelijk.RichTextTags">
-            <summary>
-            Contains the rich text tags as string constants
-            </summary>
-        </member>
-        <member name="F:Walgelijk.RichTextTags.Colour">
-            <summary>
-            &lt;color=&quot;#ff00ff&quot;&gt;Text goes here&lt;/color&gt;
-            </summary>
-        </member>
-        <member name="F:Walgelijk.RichTextTags.Italic">
-            <summary>
-            &lt;color=&quot;#ff00ff&quot;&gt;Text goes here&lt;/color&gt;
             </summary>
         </member>
         <member name="T:Walgelijk.TextMeshGenerator">

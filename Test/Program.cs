@@ -126,7 +126,7 @@ namespace Test
                 Overflow = OverflowBehaviour.Hide
             });
 
-            ccc.SetTextString("hoe <color=#ff0000>is het </color> <i>vandaag\nhawiudhauwdhawduawhdiauwhdaiuwhd");
+            ccc.SetTextString("hoe <color=#ff0000>is het </color><i>vandaag\nhawiudhauwdhawduawhdiauwhdaiuwhd");
             ccc.Text.Generator.ParseRichText = true;
             ccc.Text.Rebuild();
 

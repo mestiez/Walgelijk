@@ -154,8 +154,8 @@ namespace Walgelijk
             Vertex appendVertex(Vector3 pos, Glyph glyph, GlyphUVInfo uvInfo, Color color, float xFactor, float yFactor, float skew = 0)
             {
                 var vertex = new Vertex(
-                    pos + new Vector3(glyph.Width * xFactor + skew, -glyph.Height * yFactor, 0),
-                    new Vector2(uvInfo.X + uvInfo.Width * xFactor + skew, uvInfo.Y + uvInfo.Height * yFactor),
+                    pos + new Vector3(glyph.Width * xFactor - skew, -glyph.Height * yFactor, 0),
+                    new Vector2(uvInfo.X + uvInfo.Width * xFactor, uvInfo.Y + uvInfo.Height * yFactor),
                     color
                     );
 
@@ -185,7 +185,7 @@ namespace Walgelijk
 
                 if (tagContents.StartsWith(RichTextTags.Italic)) //Italics tag
                 {
-                    skew = isClosingTag ? 0 : Font.Size * /*SkewIntensity*/ 0.0003f;
+                    skew = isClosingTag ? 0 : Font.Size * /*SkewIntensity*/ 0.1f;
                     return;
                 }
             }
