@@ -72,7 +72,7 @@ namespace Test
             scene.AddSystem(new ElementTransformSystem());
             scene.AddSystem(new ElementEventSystem());
             scene.AddSystem(new ElementRenderingSystem());
-       //     scene.AddSystem(new PostProcessingSystem() { ExecutionOrder = -2 });
+            //     scene.AddSystem(new PostProcessingSystem() { ExecutionOrder = -2 });
 
             Background.CreateBackground(scene, gaming);
 
@@ -111,20 +111,24 @@ namespace Test
 
             var agag = scene.CreateEntity();
             scene.AttachComponent(agag, new TransformComponent());
-            scene.AttachComponent(agag, new ElementComponent
+            var ccc = scene.AttachComponent(agag, new ElementComponent
             {
                 Anchors = new IAnchor[]
-                {
+                 {
                     new HorizontalCenterAnchor(),
                     new TopAnchor{Offset = 15},
-                },
+                 },
                 Size = new Vector2(128),
                 StyleOverride = new Style
                 {
-                    BackgroundColour = new Property<Color>(Colors.Red, Colors.Magenta, Colors.Magenta * 0.5f)
+                    BackgroundColour = new Property<Color>(Colors.Gray, Colors.Magenta, Colors.Magenta * 0.5f)
                 },
                 Overflow = OverflowBehaviour.Hide
-            }).SetTextString("hoe is het vandaag\nhawiudhauwdhawduawhdiauwhdaiuwhd");
+            });
+
+            ccc.SetTextString("hoe <color=#ff0000>is het </color> <i>vandaag\nhawiudhauwdhawduawhdiauwhdaiuwhd");
+            ccc.Text.Generator.ParseRichText = true;
+            ccc.Text.Rebuild();
 
             var particles = scene.CreateEntity();
             scene.AttachComponent(particles, new TransformComponent());

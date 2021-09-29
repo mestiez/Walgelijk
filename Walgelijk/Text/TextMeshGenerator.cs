@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 
 namespace Walgelijk
@@ -35,6 +34,17 @@ namespace Walgelijk
         /// </summary>
         public float LineHeightMultiplier { get; set; } = 1;
 
+        ///// <summary>
+        ///// How to vertically align the text
+        ///// </summary>
+        //public TextAlign Align { get; set; } = TextAlign.Left;
+        //TODO align stuff
+
+        /// <summary>
+        /// Parse rich text tags
+        /// </summary>
+        public bool ParseRichText { get; set; } = false;
+
         /// <summary>
         /// Generate 2D text mesh. Returns the local bounding box.
         /// </summary>
@@ -58,6 +68,8 @@ namespace Walgelijk
             float maxX = float.MinValue;
             float maxY = float.MinValue;
 
+            float skew = 0;
+
             uint vertexIndex = 0;
             uint indexIndex = 0;
             char lastChar = default;
@@ -71,6 +83,17 @@ namespace Walgelijk
 
                 switch (c)
                 {
+                    case '<': //Possible tag
+                        if (!ParseRichText)
+                            break;
+                        if (i > 0 && displayString[i - 1] == '\\')//check for escape slash
+                            break;
+                        int closingArrowDistance = displayString.AsSpan()[i..].IndexOf('>');
+                        if (closingArrowDistance == -1)//invalid syntax
+                            break;
+                        executeTag(displayString.AsSpan()[(i+1)..(closingArrowDistance + i)]);
+                        i += closingArrowDistance;
+                        continue;
                     case '\n':
                         line++;
                         cursor = 0;
@@ -96,8 +119,8 @@ namespace Walgelijk
 
                 vertices[vertexIndex + 0] = appendVertex(pos, glyph, uvInfo, colorToSet, 0, 0);
                 vertices[vertexIndex + 1] = appendVertex(pos, glyph, uvInfo, colorToSet, 1, 0);
-                vertices[vertexIndex + 2] = appendVertex(pos, glyph, uvInfo, colorToSet, 1, 1);
-                vertices[vertexIndex + 3] = appendVertex(pos, glyph, uvInfo, colorToSet, 0, 1);
+                vertices[vertexIndex + 2] = appendVertex(pos, glyph, uvInfo, colorToSet, 1, 1, skew);
+                vertices[vertexIndex + 3] = appendVertex(pos, glyph, uvInfo, colorToSet, 0, 1, skew);
 
                 indices[indexIndex + 0] = vertexIndex + 0;
                 indices[indexIndex + 1] = vertexIndex + 1;
@@ -128,11 +151,11 @@ namespace Walgelijk
 
             return new Rect(minX, minY, maxX, maxY); ;
 
-            Vertex appendVertex(Vector3 pos, Glyph glyph, GlyphUVInfo uvInfo, Color color, float xFactor, float yFactor)
+            Vertex appendVertex(Vector3 pos, Glyph glyph, GlyphUVInfo uvInfo, Color color, float xFactor, float yFactor, float skew = 0)
             {
                 var vertex = new Vertex(
-                    pos + new Vector3(glyph.Width * xFactor, -glyph.Height * yFactor, 0),
-                    new Vector2(uvInfo.X + uvInfo.Width * xFactor, uvInfo.Y + uvInfo.Height * yFactor),
+                    pos + new Vector3(glyph.Width * xFactor + skew, -glyph.Height * yFactor, 0),
+                    new Vector2(uvInfo.X + uvInfo.Width * xFactor + skew, uvInfo.Y + uvInfo.Height * yFactor),
                     color
                     );
 
@@ -143,6 +166,28 @@ namespace Walgelijk
                 //minY = MathF.Min(vertex.Position.Y, minY);
 
                 return vertex;
+            }
+
+            void executeTag(ReadOnlySpan<char> tagContents)
+            {
+#if DEBUG
+                Logger.Debug("Executing tag " + tagContents.ToString());
+#endif
+                bool isClosingTag = tagContents[0] == '/';
+                if (isClosingTag)
+                    tagContents = tagContents[1..];
+
+                if (tagContents.StartsWith(RichTextTags.Colour)) //Colour tag
+                {
+                    colorToSet = isClosingTag ? Colors.White : new Color(tagContents[(RichTextTags.Colour.Length + 1)..]);//+1 to remove the equal sign
+                    return;
+                }
+
+                if (tagContents.StartsWith(RichTextTags.Italic)) //Italics tag
+                {
+                    skew = isClosingTag ? 0 : Font.Size * /*SkewIntensity*/ 0.0003f;
+                    return;
+                }
             }
         }
 
