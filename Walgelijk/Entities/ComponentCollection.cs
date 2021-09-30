@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;using System.Linq;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Walgelijk
@@ -14,6 +15,7 @@ namespace Walgelijk
 
         private readonly Dictionary<Type, List<EntityWithAnything>> byType = new();
         private readonly Dictionary<Entity, List<object>> byEntity = new();
+        private readonly Dictionary<Entity, Dictionary<Type, object>> byEntityByType = new();
 
         /// <summary>
         /// Manages the disposal of components
@@ -27,7 +29,7 @@ namespace Walgelijk
         public void Add(object component, Entity entity)
         {
             var a = new EntityWithAnything(component, entity);
-            var t = component.GetType();
+            var componentType = component.GetType();
             allComponents.Add(a);
 
             if (byEntity.TryGetValue(entity, out var list))
@@ -41,11 +43,20 @@ namespace Walgelijk
                 byEntity.Add(entity, l);
             }
 
+            if (byEntityByType.TryGetValue(entity, out var dict))
+                dict.Add(componentType, component);
+            else
+            {
+                byEntityByType.Add(entity, new Dictionary<Type, object>() {
+                    {componentType,  component}
+                });
+            }
+
             foreach (var item in byType)
             {
                 var target = item.Key;
 
-                if (t.IsAssignableTo(target))
+                if (componentType.IsAssignableTo(target))
                     item.Value.Add(a);
             }
         }
@@ -66,6 +77,30 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Get the component of the <b>exact</b> type that is given
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetComponentFrom<T>(Entity entity) where T : class
+        {
+            return byEntityByType[entity][typeof(T)] as T;
+        }
+
+        /// <summary>
+        /// Try to get the component of the <b>exact</b> type that is given
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool TryGetComponentFrom<T>(Entity entity, out T component) where T : class
+        {
+            if (byEntityByType.TryGetValue(entity, out var dict) && dict.TryGetValue(typeof(T), out var untyped))
+            {
+                component = untyped as T;
+                return true;
+            }
+            component = null;
+            return false;
+        }
+
+        /// <summary>
         /// Iterate over all components attached to an entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -73,7 +108,7 @@ namespace Walgelijk
         {
             if (byEntity.ContainsKey(entity))
                 foreach (var a in byEntity[entity])
-                        yield return a;
+                    yield return a;
         }
 
         /// <summary>
@@ -115,6 +150,7 @@ namespace Walgelijk
                     }
             }
 
+            c &= byEntityByType.Remove(entity);
             c &= byEntity.Remove(entity);
 
             return c;
@@ -146,11 +182,14 @@ namespace Walgelijk
 
             allComponents.RemoveWhere(shouldRemove);
 
-            success &= !byType.TryGetValue(type, out var list);
-            success &= list.RemoveAll(a => a.Entity == entity) > 0;
+            if (success &= !byType.TryGetValue(type, out var list))
+                success &= list.RemoveAll(a => a.Entity == entity) > 0;
 
-            success &= !byEntity.TryGetValue(entity, out var listb);
-            success &= listb.RemoveAll(a => type.IsAssignableTo(a.GetType())) > 0;
+            if (success &= !byEntity.TryGetValue(entity, out var listb))
+                success &= listb.RemoveAll(a => type.IsAssignableTo(a.GetType())) > 0;
+
+            if (success &= !byEntityByType.TryGetValue(entity, out var dict))
+                success &= dict.Remove(type);
 
             bool shouldRemove(EntityWithAnything t) => type.IsInstanceOfType(t.Component) && t.Entity == entity;
 

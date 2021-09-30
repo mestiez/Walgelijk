@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Walgelijk
 {
+    /// <summary>
+    /// Utility struct full of useful function
+    /// </summary>
     public struct Utilities
     {
-        private static readonly Random rand = new Random();
+        private static readonly Random rand = new();
 
         /// <summary>
         /// Radians to degrees constant ratio
@@ -43,7 +45,12 @@ namespace Walgelijk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 Lerp(Vector4 a, Vector4 b, float t)
         {
-            return a * (1 - t) + b * t;
+            return new(
+                Lerp(a.X, b.X, t),
+                Lerp(a.Y, b.Y, t),
+                Lerp(a.Z, b.Z, t),
+                Lerp(a.W, b.W, t)
+                );
         }
 
         /// <summary>
@@ -52,7 +59,7 @@ namespace Walgelijk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 Lerp(Vector2 a, Vector2 b, float t)
         {
-            return new Vector2(
+            return new(
                 Lerp(a.X, b.X, t),
                 Lerp(a.Y, b.Y, t)
                 );
@@ -272,7 +279,5 @@ namespace Walgelijk
         /// Returns the given fallback value (0 by default) if the given input value is NaN
         /// </summary>
         public static float NanFallback(float v, float fallback = 0) => float.IsNaN(v) ? fallback : v;
-
-
     }
 }

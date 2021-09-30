@@ -301,6 +301,9 @@ namespace Walgelijk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetComponentFrom<T>(Entity entity) where T : class
         {
+            if (components.TryGetComponentFrom<T>(entity, out var attemptResult))
+                return attemptResult;
+
             foreach (var item in componentsToAdd)
                 if (item.Entity == entity && item.Component is T typed)
                     return typed;
@@ -309,12 +312,24 @@ namespace Walgelijk
                 if (item is T a)
                     return a;
 
-            //TODO dit werkt niet omdat die camera er nog niet is. die zit in de creation buffer. dus ja hier ga je weer
             foreach (var item in components.GetAllComponentsOfType<T>())
                 if (item.Entity == entity)
                     return item.Component;
 
             return default;
+        }
+
+        /// <summary>
+        /// Gets the component of the <b>exact</b> given type from the given entity. Use this is you are absolutely sure that the entity has the component you're asking for and that it refers to a component of that exact type. Inheritance is supported here but it's discouraged as it can lead to ambiguity.
+        /// </summary>
+        public T GetComponentFast<T>(Entity entity) where T : class
+        {
+            //This has to happen :(
+            foreach (var item in componentsToAdd)
+                if (item.Entity == entity && item.Component is T typed)
+                    return typed;
+
+            return components.GetComponentFrom<T>(entity);
         }
 
         /// <summary>

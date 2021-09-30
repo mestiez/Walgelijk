@@ -175,7 +175,7 @@ namespace Test
             var components = Scene.GetAllComponentsOfType<WaveMovementComponent>();
             foreach (var item in components)
             {
-                var transform = Scene.GetComponentFrom<TransformComponent>(item.Entity);
+                var transform = Scene.GetComponentFast<TransformComponent>(item.Entity);
                 var wave = item.Component;
 
                 // transform.Rotation += Time.UpdateDeltaTime * 64;
