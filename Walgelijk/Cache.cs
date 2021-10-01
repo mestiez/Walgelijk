@@ -17,7 +17,7 @@ namespace Walgelijk
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public LoadedType Load(UnloadedType obj)
+        public virtual LoadedType Load(UnloadedType obj)
         {
             if (loaded.TryGetValue(obj, out var v))
                 return v;

@@ -1,17 +1,59 @@
 ﻿using OpenTK.Graphics.OpenGL;
+using System;
 using System.Collections.Immutable;
 
 namespace Walgelijk.OpenTK
 {
+    internal class FloatArrayCache : Cache<int, float[]>
+    {
+        protected override float[] CreateNew(int raw)
+        {
+            return new float[raw];
+        }
+
+        protected override void DisposeOf(float[] loaded) { }
+    }
+    
+    internal class ByteArrayCache : Cache<int, byte[]>
+    {
+        protected override byte[] CreateNew(int raw)
+        {
+            return new byte[raw];
+        }
+
+        protected override void DisposeOf(byte[] loaded) { }
+    }
+
     public class TextureCache : Cache<IReadableTexture, LoadedTexture>
     {
+        private static readonly FloatArrayCache floatsCache = new();
+        private static readonly ByteArrayCache bytesCache = new();
+        private const int componentCount = 4;
+
+        public override LoadedTexture Load(IReadableTexture raw)
+        {
+            var loaded = base.Load(raw);
+
+            if (raw.NeedsUpdate)
+                UploadTexture(raw, loaded.Index);
+
+            return loaded;
+        }
+
         protected override LoadedTexture CreateNew(IReadableTexture raw)
         {
-            const int componentCount = 4;
+            var textureIndex = GL.GenTexture();
+            UploadTexture(raw, textureIndex);
+            return new LoadedTexture(raw.Width, raw.Height, textureIndex);
+        }
 
-            GenerateGLTexture(raw, out var textureIndex);
+        private void UploadTexture(IReadableTexture raw, int index)
+        {
+            GL.BindTexture(TextureTarget.Texture2D, index);
 
-            var pixels = raw.GetPixels();
+            SetTextureParameters(raw);
+
+            var pixels = raw.ReadPixels();
 
             if (pixels.HasValue)
             {
@@ -32,12 +74,12 @@ namespace Walgelijk.OpenTK
             if (raw.GenerateMipmaps)
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-            return new LoadedTexture(raw.Width, raw.Height, textureIndex);
+            raw.NeedsUpdate = false;
         }
 
         private void WriteLDRData(IReadableTexture raw, int componentCount, ImmutableArray<Color>? pixels)
         {
-            var data = new byte[raw.Width * raw.Height * componentCount];
+            var data = bytesCache.Load(raw.Width * raw.Height * componentCount);
             int i = 0;
             foreach (var pixel in pixels)
             {
@@ -55,7 +97,7 @@ namespace Walgelijk.OpenTK
 
         private void WriteHDRData(IReadableTexture raw, int componentCount, ImmutableArray<Color>? pixels)
         {
-            var data = new float[raw.Width * raw.Height * componentCount];
+            var data = floatsCache.Load(raw.Width * raw.Height * componentCount);
             int i = 0;
             foreach (var pixel in pixels)
             {
@@ -69,10 +111,8 @@ namespace Walgelijk.OpenTK
             SetTextureData(data, raw);
         }
 
-        private void GenerateGLTexture(IReadableTexture raw, out int textureIndex)
+        private static void SetTextureParameters(IReadableTexture raw)
         {
-            textureIndex = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, textureIndex);
             var wrap = (int)TypeConverter.Convert(raw.WrapMode);
             var maxFilter = (int)TypeConverter.Convert(raw.FilterMode);
             var mipmapFilter = (int)TextureMinFilter.LinearMipmapLinear;
@@ -80,7 +120,6 @@ namespace Walgelijk.OpenTK
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, wrap);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, raw.GenerateMipmaps ? mipmapFilter : maxFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, maxFilter); ;
-
         }
 
         private void SetTextureData(byte[] data, IReadableTexture raw)

@@ -69,9 +69,12 @@ namespace Walgelijk
         /// <summary>
         /// Whether or not the renderer needs to send new information to the GPU
         /// </summary>
-        public bool NeedsUpdate { get; protected set; }
+        public bool NeedsUpdate { get; set; }
 
-        private Color[] pixels;
+        /// <summary>
+        /// Direct access to the pixel data. This may be null if <see cref="DisposeCPUCopy"/> was called.
+        /// </summary>
+        public Color[] RawData;
         private FilterMode filterMode = FilterMode.Nearest;
         private WrapMode wrapMode = WrapMode.Clamp;
 
@@ -82,7 +85,7 @@ namespace Walgelijk
         {
             Width = width;
             Height = height;
-            this.pixels = pixels;
+            this.RawData = pixels;
             this.GenerateMipmaps = generateMipmaps;
         }
 
@@ -93,7 +96,7 @@ namespace Walgelijk
         {
             Width = width;
             Height = height;
-            this.pixels = null;
+            this.RawData = null;
             this.GenerateMipmaps = generateMipmaps;
         }
 
@@ -109,12 +112,12 @@ namespace Walgelijk
         /// Get an immutable array of all pixels
         /// </summary>
         /// <returns></returns>
-        public ImmutableArray<Color>? GetPixels()
+        public ImmutableArray<Color>? ReadPixels()
         {
-            if (pixels == null)
+            if (RawData == null)
                 return null;
 
-            return pixels.ToImmutableArray();
+            return RawData.ToImmutableArray();
         }
 
         /// <summary>
@@ -122,9 +125,9 @@ namespace Walgelijk
         /// </summary>
         public void DisposeCPUCopy()
         {
-            if (pixels != null)
+            if (RawData != null)
             {
-                pixels = null;
+                RawData = null;
                 GC.Collect();
             }
         }
@@ -135,11 +138,11 @@ namespace Walgelijk
         /// <returns></returns>
         public Color GetPixel(int x, int y)
         {
-            if (pixels == null)
+            if (RawData == null)
                 throw new Exception("No CPU side pixel array available");
 
             int index = GetIndexFrom(x, y);
-            return pixels[index];
+            return RawData[index];
         }
 
         /// <summary>
@@ -147,11 +150,11 @@ namespace Walgelijk
         /// </summary>
         public void SetPixel(int x, int y, Color color)
         {
-            if (pixels == null)
+            if (RawData == null)
                 throw new Exception("No CPU side pixel array available");
 
             int index = GetIndexFrom(x, y);
-            pixels[index] = color;
+            RawData[index] = color;
             //TODO deze doet nog niks met de GPU
         }
 
@@ -197,5 +200,10 @@ namespace Walgelijk
         /// 1x1 texture with a single white pixel
         /// </summary>
         public static Texture White { get; } = new Texture(1, 1, new[] { Color.White });
+
+        /// <summary>
+        /// 2x2 magenta-black checkerboard texture, usually used to indicate something has gone wrong
+        /// </summary>
+        public static Texture ErrorTexture { get; } = new Texture(2, 2, new[] { Colors.Black, Colors.Magenta, Colors.Magenta, Colors.Black });
     }
 }

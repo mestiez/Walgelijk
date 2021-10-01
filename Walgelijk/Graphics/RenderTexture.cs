@@ -63,7 +63,7 @@ namespace Walgelijk
             }
         }
 
-        public bool NeedsUpdate { get; protected set; }
+        public bool NeedsUpdate { get; set; }
 
         public bool GenerateMipmaps { get; }
 
@@ -71,7 +71,7 @@ namespace Walgelijk
 
         public Color GetPixel(int x, int y) => throw new global::System.Exception("You can't get pixels from a RenderTexture");
 
-        public ImmutableArray<Color>? GetPixels() => null;
+        public ImmutableArray<Color>? ReadPixels() => null;
 
         /// <summary>
         /// Force an update

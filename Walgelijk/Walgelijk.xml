@@ -1697,7 +1697,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Walgelijk.IReadableTexture.GetPixels">
+        <member name="M:Walgelijk.IReadableTexture.ReadPixels">
             <summary>
             Get an immutable array of all pixels
             </summary>
@@ -2184,6 +2184,11 @@
             Whether or not the renderer needs to send new information to the GPU
             </summary>
         </member>
+        <member name="F:Walgelijk.Texture.RawData">
+            <summary>
+            Direct access to the pixel data. This may be null if <see cref="M:Walgelijk.Texture.DisposeCPUCopy"/> was called.
+            </summary>
+        </member>
         <member name="M:Walgelijk.Texture.#ctor(System.Int32,System.Int32,Walgelijk.Color[],System.Boolean)">
             <summary>
             Create a texture from a series of pixels
@@ -2199,7 +2204,7 @@
             Load an image from a path
             </summary>
         </member>
-        <member name="M:Walgelijk.Texture.GetPixels">
+        <member name="M:Walgelijk.Texture.ReadPixels">
             <summary>
             Get an immutable array of all pixels
             </summary>
@@ -2234,6 +2239,11 @@
         <member name="P:Walgelijk.Texture.White">
             <summary>
             1x1 texture with a single white pixel
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Texture.ErrorTexture">
+            <summary>
+            2x2 magenta-black checkerboard texture, usually used to indicate something has gone wrong
             </summary>
         </member>
         <member name="T:Walgelijk.Vertex">

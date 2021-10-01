@@ -18,7 +18,7 @@ namespace Walgelijk
         /// Get an immutable array of all pixels
         /// </summary>
         /// <returns></returns>
-        public ImmutableArray<Color>? GetPixels();
+        public ImmutableArray<Color>? ReadPixels();
 
         /// <summary>
         /// Width of the texture in pixels
@@ -58,6 +58,6 @@ namespace Walgelijk
         /// <summary>
         /// Whether or not the renderer needs to send new information to the GPU
         /// </summary>
-        public bool NeedsUpdate { get; }
+        public bool NeedsUpdate { get; set;  }
     }
 }

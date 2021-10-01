@@ -7,12 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Walgelijk.UI" Version="0.0.14" />
+    <PackageReference Include="Walgelijk.UI" Version="0.0.16" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />
     <ProjectReference Include="..\Walgelijk.ParticleSystem\Walgelijk.ParticleSystem.csproj" />
+    <ProjectReference Include="..\Walgelijk.Video\Walgelijk.Video.csproj" />
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
   </ItemGroup>
 
@@ -79,6 +80,12 @@
     <None Update="resources\shaders\worldspace-vertex.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Pack>false</Pack>
+    </None>
+    <None Update="resources\test.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\test.mp4">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="resources\textures\wavey.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -6,6 +6,7 @@ using Walgelijk;
 using Walgelijk.OpenTK;
 using Walgelijk.ParticleSystem;
 using Walgelijk.UI;
+using Walgelijk.Video;
 
 namespace Test
 {
@@ -72,9 +73,10 @@ namespace Test
             scene.AddSystem(new ElementTransformSystem());
             scene.AddSystem(new ElementEventSystem());
             scene.AddSystem(new ElementRenderingSystem());
+            scene.AddSystem(new VideoSystem());
             //     scene.AddSystem(new PostProcessingSystem() { ExecutionOrder = -2 });
 
-            Background.CreateBackground(scene, gaming);
+            //Background.CreateBackground(scene, gaming);
 
             scene.AttachComponent(scene.CreateEntity(), new PostProcessingComponent
             {
@@ -134,7 +136,7 @@ namespace Test
             scene.AttachComponent(particles, new TransformComponent());
             scene.AttachComponent(particles, new WaveMovementComponent());
 
-            var opening = new Sound(Resources.Load<AudioData>("opening.wav"));
+            var opening = new Sound(Resources.Load<AudioData>("cannot-build.wav"));
             game.AudioRenderer.PlayOnce(opening);
 
             var particleComponent = new ParticlesComponent(10000)
@@ -155,6 +157,24 @@ namespace Test
             scene.AttachComponent(particles, particleComponent);
 
             //particleComponent.Material.SetUniform(ShaderDefaults.MainTextureUniform, gaming);
+
+            {
+                var videoEntity = scene.CreateEntity();
+                scene.AttachComponent(videoEntity, new TransformComponent { Scale = new Vector2(9, 16) * 3 });
+                var renderer = scene.AttachComponent(videoEntity, new QuadShapeComponent(true));
+                var videoComponent = scene.AttachComponent(videoEntity, new GifComponent
+                {
+                    Gif = new Gif("resources\\test.gif"),
+                    IsPlaying = true
+                });
+
+                renderer.Material = new Material(Material.DefaultTextured);
+
+                videoComponent.OnTextureInitialised.AddListener(t =>
+                {
+                    renderer.Material.SetUniform(ShaderDefaults.MainTextureUniform, t);
+                });
+            }
 
             return scene;
         }
