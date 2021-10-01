@@ -4,11 +4,6 @@
     {
         internal static readonly GifImageCache Cache = new();
 
-        static GifManager()
-        {
-            Resources.RegisterType(typeof(Gif), path => new Gif(path));
-        }
-
         public static Texture InitialiseTextureFor(Gif video)
         {
             var data = Cache.Load(video);

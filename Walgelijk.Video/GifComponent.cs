@@ -3,7 +3,6 @@
     /// <summary>
     /// Component that contains a gif and some options
     /// </summary>
-    [RequiresComponents(typeof(ShapeComponent))]
     public class GifComponent
     {
         /// <summary>
@@ -11,7 +10,7 @@
         /// </summary>
         public Gif Gif;
 
-        public bool IsPlaying;
+        public bool IsPlaying = true;
         public float PlaybackTime;
         public float PlaybackSpeed = 1;
         public bool Loop = true;
