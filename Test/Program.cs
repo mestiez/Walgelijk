@@ -180,21 +180,7 @@ namespace Test
             }
 
             {
-                var videoEntity = scene.CreateEntity();
-                scene.AttachComponent(videoEntity, new TransformComponent { Scale = new Vector2(3, 3) * 4, Position = new Vector2(15, 0) });
-                var renderer = scene.AttachComponent(videoEntity, new QuadShapeComponent(true));
-                var videoComponent = scene.AttachComponent(videoEntity, new GifComponent
-                {
-                    Gif = Resources.Load<Gif>("break2.gif"),
-                    IsPlaying = true
-                });
-
-                renderer.Material = new Material(Material.DefaultTextured);
-
-                videoComponent.OnTextureInitialised.AddListener(t =>
-                {
-                    renderer.Material.SetUniform(ShaderDefaults.MainTextureUniform, t);
-                });
+                Video vid = new Video("resources\\test.mp4");
             }
 
             return scene;

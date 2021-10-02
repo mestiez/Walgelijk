@@ -62,6 +62,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Pack>false</Pack>
     </None>
+    <None Update="resources\new york.mp4">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\new york.webm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="resources\prefabs\camera.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

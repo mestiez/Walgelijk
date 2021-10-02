@@ -10,7 +10,13 @@
     <Description>Doet video dingen :)</Description>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <ItemGroup>
+    <PackageReference Include="FFmpeg.AutoGen" Version="4.4.1" />
+    <PackageReference Include="ImageSharp.AVCodecFormats.Native" Version="1.3.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
   </ItemGroup>
 
