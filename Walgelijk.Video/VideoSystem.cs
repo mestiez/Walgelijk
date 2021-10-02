@@ -29,8 +29,13 @@ namespace Walgelijk.Video
                         gifComponent.OnTextureInitialised?.Dispatch(gifComponent.OutputTexture);
                     }
 
-                    gifComponent.PlaybackTime += Time.UpdateDeltaTime;
-                    int frameToDisplay = (int)MathF.Floor(gifComponent.PlaybackTime * gif.FrameRate * gifComponent.PlaybackSpeed % gif.FrameCount);
+                    var dt = Time.UpdateDeltaTime * gifComponent.PlaybackSpeed;
+                    if (gifComponent.IgnoreTimeScale)
+                        dt /= Time.TimeScale;
+
+                    gifComponent.PlaybackTime += dt;
+                        
+                    int frameToDisplay = gif.GetFrameIndexAt(gifComponent.PlaybackTime);
 
                     if (!gifComponent.Loop && frameToDisplay >= gif.FrameCount - 1)
                         gifComponent.IsPlaying = false;

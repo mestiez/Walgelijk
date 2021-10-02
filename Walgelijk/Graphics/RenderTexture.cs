@@ -71,7 +71,7 @@ namespace Walgelijk
 
         public Color GetPixel(int x, int y) => throw new global::System.Exception("You can't get pixels from a RenderTexture");
 
-        public ImmutableArray<Color>? ReadPixels() => null;
+        public ReadOnlySpan<Color> ReadPixels() => ReadOnlySpan<Color>.Empty;
 
         /// <summary>
         /// Force an update

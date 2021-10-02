@@ -13,7 +13,7 @@ namespace Walgelijk.OpenTK
 
         protected override void DisposeOf(float[] loaded) { }
     }
-    
+
     internal class ByteArrayCache : Cache<int, byte[]>
     {
         protected override byte[] CreateNew(int raw)
@@ -55,7 +55,7 @@ namespace Walgelijk.OpenTK
 
             var pixels = raw.ReadPixels();
 
-            if (pixels.HasValue)
+            if (pixels.Length == raw.Width * raw.Height)
             {
                 //TODO dit is een beetje lelijke code
                 if (raw.HDR)
@@ -65,6 +65,9 @@ namespace Walgelijk.OpenTK
             }
             else
             {
+                if (raw is not RenderTexture)
+                    Logger.Warn($"Texture data length is not equal to width * height! Expected: {raw.Width * raw.Height}, actual: {pixels.Length}");
+
                 if (raw.HDR)
                     SetTextureData((float[])null, raw);
                 else
@@ -77,7 +80,7 @@ namespace Walgelijk.OpenTK
             raw.NeedsUpdate = false;
         }
 
-        private void WriteLDRData(IReadableTexture raw, int componentCount, ImmutableArray<Color>? pixels)
+        private void WriteLDRData(IReadableTexture raw, int componentCount, ReadOnlySpan<Color> pixels)
         {
             var data = bytesCache.Load(raw.Width * raw.Height * componentCount);
             int i = 0;
@@ -95,7 +98,7 @@ namespace Walgelijk.OpenTK
             SetTextureData(data, raw);
         }
 
-        private void WriteHDRData(IReadableTexture raw, int componentCount, ImmutableArray<Color>? pixels)
+        private void WriteHDRData(IReadableTexture raw, int componentCount, ReadOnlySpan<Color> pixels)
         {
             var data = floatsCache.Load(raw.Width * raw.Height * componentCount);
             int i = 0;
@@ -122,12 +125,12 @@ namespace Walgelijk.OpenTK
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, maxFilter); ;
         }
 
-        private void SetTextureData(byte[] data, IReadableTexture raw)
+        private static void SetTextureData(byte[] data, IReadableTexture raw)
         {
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, raw.Width, raw.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
         }
 
-        private void SetTextureData(float[] data, IReadableTexture raw)
+        private static void SetTextureData(float[] data, IReadableTexture raw)
         {
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba32f, raw.Width, raw.Height, 0, PixelFormat.Rgba, PixelType.Float, data);
         }

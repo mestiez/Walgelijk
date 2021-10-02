@@ -112,12 +112,12 @@ namespace Walgelijk
         /// Get an immutable array of all pixels
         /// </summary>
         /// <returns></returns>
-        public ImmutableArray<Color>? ReadPixels()
+        public ReadOnlySpan<Color> ReadPixels()
         {
             if (RawData == null)
-                return null;
+                return ReadOnlySpan<Color>.Empty;
 
-            return RawData.ToImmutableArray();
+            return RawData;
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using System.Numerics;
 
 namespace Walgelijk
@@ -18,7 +19,7 @@ namespace Walgelijk
         /// Get an immutable array of all pixels
         /// </summary>
         /// <returns></returns>
-        public ImmutableArray<Color>? ReadPixels();
+        public ReadOnlySpan<Color> ReadPixels();
 
         /// <summary>
         /// Width of the texture in pixels

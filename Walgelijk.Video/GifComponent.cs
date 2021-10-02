@@ -1,4 +1,6 @@
-﻿namespace Walgelijk.Video
+﻿using System;
+
+namespace Walgelijk.Video
 {
     /// <summary>
     /// Component that contains a gif and some options
@@ -12,6 +14,7 @@
 
         public bool IsPlaying = true;
         public float PlaybackTime;
+        public bool IgnoreTimeScale = false;
         public float PlaybackSpeed = 1;
         public bool Loop = true;
 

@@ -26,10 +26,13 @@ namespace Test
             game.Console.DrawConsoleNotification = true;
             game.Window.VSync = false;
 
+            Resources.RegisterType(typeof(Gif), path => Gif.Load(path));
+
             Resources.SetBasePathForType<AudioData>("audio");
             Resources.SetBasePathForType<Prefab>("prefabs");
             Resources.SetBasePathForType<Texture>("textures");
             Resources.SetBasePathForType<Font>("fonts");
+
 
             //game.Scene = SplashScreen.CreateScene(new[]{
             //    new SplashScreen.Logo(Resources.Load<Texture>("walgelijk.png"), 0.5f),
@@ -164,7 +167,25 @@ namespace Test
                 var renderer = scene.AttachComponent(videoEntity, new QuadShapeComponent(true));
                 var videoComponent = scene.AttachComponent(videoEntity, new GifComponent
                 {
-                    Gif = new Gif("resources\\test.gif"),
+                    Gif = Resources.Load<Gif>("test.gif"),
+                    IsPlaying = true
+                });
+
+                renderer.Material = new Material(Material.DefaultTextured);
+
+                videoComponent.OnTextureInitialised.AddListener(t =>
+                {
+                    renderer.Material.SetUniform(ShaderDefaults.MainTextureUniform, t);
+                });
+            }
+
+            {
+                var videoEntity = scene.CreateEntity();
+                scene.AttachComponent(videoEntity, new TransformComponent { Scale = new Vector2(3, 3) * 4, Position = new Vector2(15, 0) });
+                var renderer = scene.AttachComponent(videoEntity, new QuadShapeComponent(true));
+                var videoComponent = scene.AttachComponent(videoEntity, new GifComponent
+                {
+                    Gif = Resources.Load<Gif>("break2.gif"),
                     IsPlaying = true
                 });
 
