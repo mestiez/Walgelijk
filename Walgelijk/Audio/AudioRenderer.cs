@@ -22,6 +22,11 @@ namespace Walgelijk
         public abstract Vector2 ListenerPosition { get; set; }
 
         /// <summary>
+        /// Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="PlayOnce(Sound)"/>
+        /// </summary>
+        public abstract bool IsPlaying(Sound sound);
+
+        /// <summary>
         /// Simply play a sound (or resumes, if paused)
         /// </summary>
         public abstract void Play(Sound sound);

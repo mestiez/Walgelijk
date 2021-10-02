@@ -11,7 +11,7 @@ namespace Walgelijk.Video
         {
             Path = path;
 
-            VideoManager.OpenFile(path);
+            VideoManager.GetFrame(VideoManager.OpenFile(path));
         }
     }
 
@@ -110,24 +110,16 @@ namespace Walgelijk.Video
                 return;
             }
 
-            var byteCount = ffmpeg.av_image_get_buffer_size(AVPixelFormat.AV_PIX_FMT_RGBA, video.CodecContext->width, video.CodecContext->height, 1);
+            var byteCount = ffmpeg.avpicture_get_size(AVPixelFormat.AV_PIX_FMT_RGBA, video.CodecContext->width, video.CodecContext->height);
             if (byteCount == -1)
             {
                 Logger.Error($"Failed to allocate image buffer");
                 return;
             }
-
             var buffer = (byte*)ffmpeg.av_malloc((ulong)byteCount * sizeof(byte));
 
-            var dstData = new byte_ptrArray4();
-            var lineSize = new int_array4();
+            ffmpeg.avpicture_fill((AVPicture*)frame, buffer, AVPixelFormat.AV_PIX_FMT_RGBA, video.CodecContext->width, video.CodecContext->height);
 
-            int required = ffmpeg.av_image_fill_arrays(ref dstData, ref lineSize, buffer, AVPixelFormat.AV_PIX_FMT_RGBA, video.CodecContext->width, video.CodecContext->height, 1);
-            if (required == -1)
-            {
-                Logger.Error($"Failed to fill image array");
-                return;
-            }
 
         }
     }

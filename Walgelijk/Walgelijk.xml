@@ -64,6 +64,11 @@
             Position of the listener in world space
             </summary>
         </member>
+        <member name="M:Walgelijk.AudioRenderer.IsPlaying(Walgelijk.Sound)">
+            <summary>
+            Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound)"/>
+            </summary>
+        </member>
         <member name="M:Walgelijk.AudioRenderer.Play(Walgelijk.Sound)">
             <summary>
             Simply play a sound (or resumes, if paused)
@@ -119,7 +124,7 @@
         </member>
         <member name="T:Walgelijk.EmptyAudioRenderer">
             <summary>
-            Placeholder audio renderer that is used when none is set
+            Empty audio renderer that is used when none is set
             </summary>
         </member>
         <member name="T:Walgelijk.Sound">

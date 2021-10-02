@@ -5,20 +5,12 @@ using System.Numerics;
 
 namespace Walgelijk.OpenTK
 {
-    public class TemporarySource
-    {
-        public int Source;
-        public Sound Sound;
-        public float Duration;
-        public float CurrentLifetime;
-    }
-
     public class OpenALAudioRenderer : AudioRenderer
     {
         private ALDevice device;
         private ALContext context;
         private readonly bool canPlayAudio = false;
-        private List<TemporarySource> temporarySources = new List<TemporarySource>();
+        private readonly List<TemporarySource> temporarySources = new();
 
         public override float Volume
         {
@@ -206,6 +198,11 @@ namespace Walgelijk.OpenTK
             {
                 item.CurrentLifetime += game.Time.UpdateDeltaTime;
             }
+        }
+
+        public override bool IsPlaying(Sound sound)
+        {
+            return AL.GetSourceState(AudioObjects.Sources.Load(sound)) == ALSourceState.Playing;
         }
     }
 }

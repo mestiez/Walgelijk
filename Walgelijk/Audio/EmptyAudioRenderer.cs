@@ -4,7 +4,7 @@ using System.Numerics;
 namespace Walgelijk
 {
     /// <summary>
-    /// Placeholder audio renderer that is used when none is set
+    /// Empty audio renderer that is used when none is set
     /// </summary>
     internal sealed class EmptyAudioRenderer : AudioRenderer
     {
@@ -31,5 +31,7 @@ namespace Walgelijk
         public override void Release() { }
 
         public override void Process(Game game) { }
+
+        public override bool IsPlaying(Sound sound) => false;
     }
 }
