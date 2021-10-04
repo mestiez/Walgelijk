@@ -55,10 +55,18 @@ namespace Walgelijk
             if (!ignoreBasePaths)
                 path = ParseFullPathForType<T>(path);
 
+            if (!path.StartsWith(".\\"))
+                path.Insert(0, ".\\");
+
             OnStartLoad?.Invoke(typeof(T), path);
 
-            if (resources.TryGetValue(path, out var obj) && obj is T typed)
-                return typed;
+            if (resources.TryGetValue(path, out var obj))
+            {
+                if (obj is T typed)
+                    return typed;
+                else
+                    throw new Exception($"The object at \"{path}\" is not of type {typeof(T).Name}. It is {obj.GetType().Name}");
+            }
 
             var newObject = CreateNew(path, typeof(T));
             if (newObject is T result)
@@ -67,7 +75,7 @@ namespace Walgelijk
                 return result;
             }
 
-            throw new Exception($"The object at \"{path}\" is not of type {typeof(T).Name}");
+            throw new Exception($"The object at \"{path}\" is not of type {typeof(T).Name}. It is {newObject.GetType().Name}");
         }
 
         /// <summary>
@@ -82,8 +90,13 @@ namespace Walgelijk
 
             OnStartLoad?.Invoke(typeof(T), path);
 
-            if (resources.TryGetValue(path, out var obj) && obj is T typed)
-                return typed;
+            if (resources.TryGetValue(path, out var obj))
+            {
+                if (obj is T typed)
+                    return typed;
+                else
+                    throw new Exception($"The object at \"{path}\" is not of type {typeof(T).Name}. It is {obj.GetType().Name}");
+            }
 
             var newObject = loadFunction(path);
             resources.Add(path, newObject);
