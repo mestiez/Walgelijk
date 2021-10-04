@@ -3190,7 +3190,7 @@
         </member>
         <member name="P:Walgelijk.Time.RenderDeltaTime">
             <summary>
-            Returns the amount of seconds that have passed since the last rendered frame
+            Returns the amount of seconds that have passed since the last rendered frame, unaffected by <see cref="P:Walgelijk.Time.TimeScale"/>
             </summary>
         </member>
         <member name="P:Walgelijk.Time.SecondsSinceLoad">
@@ -3200,8 +3200,22 @@
         </member>
         <member name="P:Walgelijk.Time.SecondsSinceSceneChange">
             <summary>
-            
             Returns the amount of seconds that have passed since the last scene change
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Time.UpdateDeltaTimeUnscaled">
+            <summary>
+            Returns the amount of seconds that have passed since the last update frame, unaffected by <see cref="P:Walgelijk.Time.TimeScale"/>
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Time.SecondsSinceLoadUnscaled">
+            <summary>
+            Returns the amount of seconds that have passed since the game was launched, unaffected by <see cref="P:Walgelijk.Time.TimeScale"/>
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Time.SecondsSinceSceneChangeUnscaled">
+            <summary>
+            Returns the amount of seconds that have passed since the last scene change, unaffected by <see cref="P:Walgelijk.Time.TimeScale"/>
             </summary>
         </member>
         <member name="P:Walgelijk.Time.TimeScale">

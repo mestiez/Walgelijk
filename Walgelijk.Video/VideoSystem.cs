@@ -29,9 +29,11 @@ namespace Walgelijk.Video
                         gifComponent.OnTextureInitialised?.Dispatch(gifComponent.OutputTexture);
                     }
 
-                    var dt = Time.UpdateDeltaTime * gifComponent.PlaybackSpeed;
+                    float dt;
                     if (gifComponent.IgnoreTimeScale)
-                        dt /= Time.TimeScale;
+                        dt = Time.UpdateDeltaTimeUnscaled * gifComponent.PlaybackSpeed;
+                    else 
+                        dt = Time.UpdateDeltaTime * gifComponent.PlaybackSpeed;
 
                     gifComponent.PlaybackTime += dt;
                         

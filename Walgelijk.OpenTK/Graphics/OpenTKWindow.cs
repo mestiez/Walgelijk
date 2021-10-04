@@ -209,8 +209,7 @@ namespace Walgelijk.OpenTK
             GLUtilities.PrintGLErrors();
 
             time.RenderDeltaTime = (float)obj.Time;
-            time.SecondsSinceLoad = (float)stopwatch.Elapsed.TotalSeconds;
-
+            
             Game.Scene?.RenderSystems();
             if (Game.DevelopmentMode)
                 Game.DebugDraw.Render();
@@ -229,8 +228,14 @@ namespace Walgelijk.OpenTK
 
         private void OnUpdateFrame(FrameEventArgs obj)
         {
-            time.UpdateDeltaTime = (float)obj.Time;
+            time.UpdateDeltaTime = (float)obj.Time * Time.TimeScale;
+            time.UpdateDeltaTimeUnscaled = (float)obj.Time;
+
             time.SecondsSinceSceneChange += time.UpdateDeltaTime;
+            time.SecondsSinceSceneChangeUnscaled += time.UpdateDeltaTimeUnscaled;
+
+            time.SecondsSinceLoad += time.UpdateDeltaTime;
+            time.SecondsSinceLoadUnscaled = (float)stopwatch.Elapsed.TotalSeconds;
 
             Game.Console.Update();
             if (!Game.Console.IsActive)
