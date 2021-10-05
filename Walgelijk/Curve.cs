@@ -60,6 +60,12 @@ namespace Walgelijk
                 }
             }
 
+            if (a != null && b == null)
+                return a.Value;
+
+            if (a == null && b != null)
+                return b.Value;
+
             if (a == null || b == null)
                 return default;
 
