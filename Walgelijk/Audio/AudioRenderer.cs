@@ -29,28 +29,33 @@ namespace Walgelijk
         /// <summary>
         /// Simply play a sound (or resumes, if paused)
         /// </summary>
-        public abstract void Play(Sound sound);
+        public abstract void Play(Sound sound, float volume = 1);
 
         /// <summary>
         /// Play a sound once and let it overlap itself
         /// </summary>
-        public abstract void PlayOnce(Sound sound);
+        public abstract void PlayOnce(Sound sound, float volume = 1);
 
         /// <summary>
         /// Play sound at a position in the world (or resumes, if paused)
         /// </summary>
-        public abstract void Play(Sound sound, Vector2 worldPosition);
+        public abstract void Play(Sound sound, Vector2 worldPosition, float volume = 1);
 
         /// <summary>
         /// Play sound at a position in the world and let it overlap itself
         /// </summary>
-        public abstract void PlayOnce(Sound sound, Vector2 worldPosition);
+        public abstract void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1);
 
         /// <summary>
         /// Stop a specific sound
         /// </summary>
         /// <param name="sound"></param>
         public abstract void Stop(Sound sound);
+
+        /// <summary>
+        /// Set the volume of a specific sound. Does not affect sounds created using <see cref="PlayOnce(Sound, float)"/>
+        /// </summary>
+        public abstract void SetVolume(Sound sound, float volume);
 
         /// <summary>
         /// Pause a specific sound

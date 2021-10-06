@@ -16,14 +16,6 @@ namespace Walgelijk
 
         public override void Pause(Sound sound) { }
 
-        public override void Play(Sound sound) { }
-
-        public override void Play(Sound sound, Vector2 worldPosition) { }
-
-        public override void PlayOnce(Sound sound, Vector2 worldPosition) { }
-
-        public override void PlayOnce(Sound sound) { }
-
         public override void Stop(Sound sound) { }
 
         public override void StopAll() { }
@@ -33,5 +25,15 @@ namespace Walgelijk
         public override void Process(Game game) { }
 
         public override bool IsPlaying(Sound sound) => false;
+
+        public override void Play(Sound sound, float volume = 1) { }
+
+        public override void PlayOnce(Sound sound, float volume = 1) { }
+
+        public override void Play(Sound sound, Vector2 worldPosition, float volume = 1) { }
+
+        public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1) { }
+
+        public override void SetVolume(Sound sound, float volume) { }
     }
 }

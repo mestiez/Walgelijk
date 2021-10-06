@@ -55,8 +55,7 @@ namespace Walgelijk
             if (!ignoreBasePaths)
                 path = ParseFullPathForType<T>(path);
 
-            if (!path.StartsWith(".\\"))
-                path.Insert(0, ".\\");
+            path = Path.GetFullPath(path);
 
             OnStartLoad?.Invoke(typeof(T), path);
 
@@ -175,10 +174,9 @@ namespace Walgelijk
         {
             if (loadFunctions.TryGetValue(type, out var loadFromFile))
             {
-                var norm = path.Replace('/', '\\');
-
+                var norm = Path.GetFileName(path);
                 stopwatch.Restart();
-                var result = loadFromFile(norm);
+                var result = loadFromFile(path);
                 stopwatch.Stop();
                 Logger.Log($"{type.Name} resource loaded at \"{norm}\" ({Math.Round(stopwatch.Elapsed.TotalMilliseconds, 2)}ms)", nameof(Resources));
                 return result;

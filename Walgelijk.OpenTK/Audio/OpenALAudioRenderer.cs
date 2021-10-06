@@ -60,14 +60,15 @@ namespace Walgelijk.OpenTK
                 Logger.Error("Failed to initialise the audio renderer because of all of the above", this);
         }
 
-        private void UpdateIfRequired(Sound sound)
+        private void UpdateIfRequired(Sound sound, out int sourceID)
         {
+            sourceID = AudioObjects.Sources.Load(sound);
+
             if (!sound.RequiresUpdate)
                 return;
 
-            var source = AudioObjects.Sources.Load(sound);
             sound.RequiresUpdate = false;
-            AL.Source(source, ALSourceb.Looping, sound.Looping);
+            AL.Source(sourceID, ALSourceb.Looping, sound.Looping);
         }
 
         public override AudioData LoadSound(string path)
@@ -81,39 +82,37 @@ namespace Walgelijk.OpenTK
         {
             if (!canPlayAudio || sound.Data == null)
                 return;
-            UpdateIfRequired(sound);
 
-            AL.SourcePause(AudioObjects.Sources.Load(sound));
+            UpdateIfRequired(sound, out int id);
+            AL.SourcePause(id);
         }
 
-        public override void Play(Sound sound)
+        public override void Play(Sound sound, float volume = 1)
         {
             if (!canPlayAudio || sound.Data == null)
                 return;
-            UpdateIfRequired(sound);
 
-            AL.SourcePlay(AudioObjects.Sources.Load(sound));
+            UpdateIfRequired(sound, out int s);
+            SetVolume(sound, 1);
+            AL.SourcePlay(s);
         }
 
-        public override void Play(Sound sound, Vector2 worldPosition)
+        public override void Play(Sound sound, Vector2 worldPosition, float volume = 1)
         {
             if (!canPlayAudio || sound.Data == null)
                 return;
-            UpdateIfRequired(sound);
 
-            var s = AudioObjects.Sources.Load(sound);
+            UpdateIfRequired(sound, out int s);
+            SetVolume(sound, 1);
             AL.Source(s, ALSource3f.Position, worldPosition.X, worldPosition.Y, 0);
             AL.SourcePlay(s);
         }
 
-        public override void PlayOnce(Sound sound)
+        private int CreateTempSource(Sound sound, float volume)
         {
-            if (!canPlayAudio || sound.Data == null)
-                return;
-            UpdateIfRequired(sound);
-
             var source = SourceCache.CreateSourceFor(sound);
             AL.Source(source, ALSourceb.Looping, false);
+            AL.Source(source, ALSourcef.Gain, volume);
             AL.SourcePlay(source);
             temporarySources.Add(new TemporarySource
             {
@@ -122,34 +121,35 @@ namespace Walgelijk.OpenTK
                 Sound = sound,
                 Source = source
             });
+            return source;
         }
 
-        public override void PlayOnce(Sound sound, Vector2 worldPosition)
+        public override void PlayOnce(Sound sound, float volume = 1)
         {
             if (!canPlayAudio || sound.Data == null)
                 return;
-            UpdateIfRequired(sound);
 
-            var source = SourceCache.CreateSourceFor(sound);
-            AL.Source(source, ALSourceb.Looping, false);
+            UpdateIfRequired(sound, out _);
+            CreateTempSource(sound, volume);
+        }
+
+        public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1)
+        {
+            if (!canPlayAudio || sound.Data == null)
+                return;
+
+            UpdateIfRequired(sound, out _);
+            int source = CreateTempSource(sound, volume);
             AL.Source(source, ALSource3f.Position, worldPosition.X, worldPosition.Y, 0);
-            AL.SourcePlay(source);
-            temporarySources.Add(new TemporarySource
-            {
-                CurrentLifetime = 0,
-                Duration = (float)sound.Data.Duration.TotalSeconds,
-                Sound = sound,
-                Source = source
-            });
         }
 
         public override void Stop(Sound sound)
         {
             if (!canPlayAudio || sound.Data == null)
                 return;
-            UpdateIfRequired(sound);
 
-            AL.SourceStop(AudioObjects.Sources.Load(sound));
+            UpdateIfRequired(sound, out int s);
+            AL.SourceStop(s);
         }
 
         public override void StopAll()
@@ -203,6 +203,12 @@ namespace Walgelijk.OpenTK
         public override bool IsPlaying(Sound sound)
         {
             return AL.GetSourceState(AudioObjects.Sources.Load(sound)) == ALSourceState.Playing;
+        }
+
+        public override void SetVolume(Sound sound, float volume)
+        {
+            var s = AudioObjects.Sources.Load(sound);
+            AL.Source(s, ALSourcef.Gain, volume);
         }
     }
 }

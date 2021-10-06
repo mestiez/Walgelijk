@@ -66,25 +66,25 @@
         </member>
         <member name="M:Walgelijk.AudioRenderer.IsPlaying(Walgelijk.Sound)">
             <summary>
-            Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound)"/>
+            Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="!:PlayOnce(Sound)"/>
             </summary>
         </member>
-        <member name="M:Walgelijk.AudioRenderer.Play(Walgelijk.Sound)">
+        <member name="M:Walgelijk.AudioRenderer.Play(Walgelijk.Sound,System.Single)">
             <summary>
             Simply play a sound (or resumes, if paused)
             </summary>
         </member>
-        <member name="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound)">
+        <member name="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Single)">
             <summary>
             Play a sound once and let it overlap itself
             </summary>
         </member>
-        <member name="M:Walgelijk.AudioRenderer.Play(Walgelijk.Sound,System.Numerics.Vector2)">
+        <member name="M:Walgelijk.AudioRenderer.Play(Walgelijk.Sound,System.Numerics.Vector2,System.Single)">
             <summary>
             Play sound at a position in the world (or resumes, if paused)
             </summary>
         </member>
-        <member name="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Numerics.Vector2)">
+        <member name="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Numerics.Vector2,System.Single)">
             <summary>
             Play sound at a position in the world and let it overlap itself
             </summary>
@@ -94,6 +94,11 @@
             Stop a specific sound
             </summary>
             <param name="sound"></param>
+        </member>
+        <member name="M:Walgelijk.AudioRenderer.SetVolume(Walgelijk.Sound,System.Single)">
+            <summary>
+            Set the volume of a specific sound. Does not affect sounds created using <see cref="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Single)"/>
+            </summary>
         </member>
         <member name="M:Walgelijk.AudioRenderer.Pause(Walgelijk.Sound)">
             <summary>
