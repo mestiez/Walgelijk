@@ -36,7 +36,7 @@ namespace Walgelijk.OpenTK
 
             for (long i = 0; i < sampleCount; i++)
             {
-                var sample = (short)((short.MaxValue / 2) * floatData[i] + (short.MaxValue / 2));
+                var sample = (short)(floatData[i] * short.MaxValue);
                 data.Data[i * 2] = (byte)sample;
                 data.Data[i * 2 + 1] = (byte)(sample >> 8);
             }

@@ -199,7 +199,8 @@ namespace Test
 
     public class WaveMovementSystem : Walgelijk.System
     {
-        Sound opening = new Sound(Resources.Load<AudioData>("dexter.ogg"), true);
+        Sound ogg = new Sound(Resources.Load<AudioData>("dexter.ogg"), true);
+        Sound wav = new Sound(Resources.Load<AudioData>("dexter.wav"), true);
         //Sound opening = new Sound(Resources.Load<AudioData>("walgelijk.wav"));
         public override void Update()
         {
@@ -214,9 +215,17 @@ namespace Test
                 //transform.Position = new Vector2(MathF.Sin(Time.SecondsSinceLoad * wave.Frequency + wave.Phase) * wave.Amplitude, 0);
                 DebugDraw.Text(transform.Position, transform.Position.ToString(), 0.1f);
             }
+
+            if (Input.IsKeyPressed(Key.Q))
+            {
+                Audio.StopAll();
+                Audio.Play(ogg);
+            }
+
             if (Input.IsKeyPressed(Key.E))
             {
-                Audio.Play(opening);
+                Audio.StopAll();
+                Audio.Play(wav);
             }
 
         }

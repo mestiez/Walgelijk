@@ -27,6 +27,9 @@
     <None Update="resources\audio\dexter.ogg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="resources\audio\dexter.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="resources\audio\kampvuurliedlied.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
