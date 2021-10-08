@@ -139,8 +139,10 @@ namespace Test
             scene.AttachComponent(particles, new TransformComponent());
             scene.AttachComponent(particles, new WaveMovementComponent());
 
-            var opening = new Sound(Resources.Load<AudioData>("cannot-build.wav"));
-            game.AudioRenderer.PlayOnce(opening);
+            //var opening = new Sound(Resources.Load<AudioData>("cannot-build.wav"));
+            //game.AudioRenderer.PlayOnce(opening);
+
+           // game.AudioRenderer.Play(new Sound(Resources.Load<AudioData>("dexter.ogg"), true));
 
             var particleComponent = new ParticlesComponent(10000)
             {
@@ -197,6 +199,8 @@ namespace Test
 
     public class WaveMovementSystem : Walgelijk.System
     {
+        Sound opening = new Sound(Resources.Load<AudioData>("dexter.ogg"), true);
+        //Sound opening = new Sound(Resources.Load<AudioData>("walgelijk.wav"));
         public override void Update()
         {
             var components = Scene.GetAllComponentsOfType<WaveMovementComponent>();
@@ -212,8 +216,7 @@ namespace Test
             }
             if (Input.IsKeyPressed(Key.E))
             {
-                var opening = new Sound(Resources.Load<AudioData>("walgelijk.wav"));
-                Audio.PlayOnce(opening);
+                Audio.Play(opening);
             }
 
         }

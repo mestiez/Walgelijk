@@ -35,5 +35,12 @@ namespace Walgelijk
         public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1) { }
 
         public override void SetVolume(Sound sound, float volume) { }
+
+        public override void DisposeOf(AudioData audioData)
+        {
+            audioData.ForceClearData();
+        }
+
+        public override void DisposeOf(Sound sound) { }
     }
 }

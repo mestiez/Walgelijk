@@ -5,16 +5,9 @@ namespace Walgelijk.OpenTK
 {
     public struct WaveFileReader
     {
-        public struct WaveFile
+        public static AudioFileData Read(string path)
         {
-            public short NumChannels;
-            public int SampleRate;
-            public byte[] Data;
-        }
-
-        public static WaveFile Read(string path)
-        {
-            WaveFile result = new();
+            AudioFileData result = new();
             byte[] buffer = new byte[4];
             using var file = File.OpenRead(path);
 
@@ -41,7 +34,7 @@ namespace Walgelijk.OpenTK
                 throw new Exception("Input file is not a valid WAVE file: the number of channels could not be read");
             var numChannels = BitConverter.ToInt16(buffer, 0);
             if (numChannels <= 0 || numChannels > 2)
-                throw new Exception("Input WAVE file has an invalid channel count. The number of channels must be more than 0 and less than or equal to 2");
+                throw new Exception("Input WAVE file has an invalid channel count. The number of channels must be 1 or 2");
             result.NumChannels = numChannels;
 
             //SampleRate
@@ -78,7 +71,7 @@ namespace Walgelijk.OpenTK
 
             return result;
 
-            bool bytesMatchString(byte[] bytes, ReadOnlySpan<char> value)
+            static bool bytesMatchString(byte[] bytes, ReadOnlySpan<char> value)
             {
                 if (bytes.Length != value.Length)
                     return false;

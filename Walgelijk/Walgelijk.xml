@@ -127,6 +127,16 @@
             This is called every frame by the main loop and allows the renderer to process things that it needs to process
             </summary>
         </member>
+        <member name="M:Walgelijk.AudioRenderer.DisposeOf(Walgelijk.AudioData)">
+            <summary>
+            Release memory used by the given <see cref="T:Walgelijk.AudioData"/>. <see cref="T:Walgelijk.Sound"/>s using this data will become unusable.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioRenderer.DisposeOf(Walgelijk.Sound)">
+            <summary>
+            Release memory used by a sound. <b>This will not dispose of its <see cref="T:Walgelijk.AudioData"/>!</b>
+            </summary>
+        </member>
         <member name="T:Walgelijk.EmptyAudioRenderer">
             <summary>
             Empty audio renderer that is used when none is set
@@ -855,7 +865,6 @@
             <summary>
             Generate a new identity value
             </summary>
-            <returns></returns>
         </member>
         <member name="T:Walgelijk.Prefab">
             <summary>
@@ -976,6 +985,36 @@
         <member name="M:Walgelijk.Scene.GetSystem``1">
             <summary>
             Retrieve a system
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.SetTag(Walgelijk.Entity,Walgelijk.Tag)">
+            <summary>
+            Attaches a tag to an entity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.HasTag(Walgelijk.Entity,Walgelijk.Tag)">
+            <summary>
+            Returns true if the entity has the given tag
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.ClearTag(Walgelijk.Entity)">
+            <summary>
+            Detaches a tag from an entity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.TryGetTag(Walgelijk.Entity,Walgelijk.Tag@)">
+            <summary>
+            Returns true if the given entity has a tag attached. The tag is returned in the output parameter <paramref name="tag"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.GetEntitiesWithTag(Walgelijk.Tag)">
+            <summary>
+            Returns all entities with the given tag
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.TryGetEntityWithTag(Walgelijk.Tag,Walgelijk.Entity@)">
+            <summary>
+            Returns true if any entity with a given tag is found. The entity is returned in the output parameter <paramref name="entity"/>
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.HasSystem``1">
@@ -1178,6 +1217,16 @@
         <member name="M:Walgelijk.System.PostRender">
             <summary>
             Run post rendering code
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Tag">
+            <summary>
+            A tag that can be connected to an entity. Multiple objects can share the same tag.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Tag.Value">
+            <summary>
+            The tag value
             </summary>
         </member>
         <member name="M:Walgelijk.Auburn.FastNoiseLite.#ctor(System.Int32)">
@@ -3064,6 +3113,11 @@
         <member name="P:Walgelijk.Game.DevelopmentMode">
             <summary>
             When set to true, safety checks will be done at runtime. This will degrade performance and should be turned off in release. <b>True by default</b>
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Game.OnSceneChange">
+            <summary>
+            Event dispatched when the scene is changed. The new scene is passed to the receivers
             </summary>
         </member>
         <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window,Walgelijk.AudioRenderer)">

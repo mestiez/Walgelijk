@@ -30,6 +30,9 @@ namespace Walgelijk
         private readonly Dictionary<Type, System> systems = new();
         private readonly List<System> orderedSystemCollection = new();
 
+        private readonly Dictionary<Entity, Tag> tagByEntity = new();
+        private readonly Dictionary<Tag, HashSet<Entity>> entitiesByTag = new();
+
         private readonly HashSet<ComponentCollection.EntityWithAnything> componentsToAdd = new();
         private readonly HashSet<(Type, Entity)> componentsToDestroy = new();
         private readonly HashSet<Entity> entitiesToDestroy = new();
@@ -51,10 +54,7 @@ namespace Walgelijk
         /// <summary>
         /// Create scene without an attached game. This can cause issues when a <see cref="System"/> expects a game
         /// </summary>
-        public Scene()
-        {
-
-        }
+        public Scene() { }
 
         /// <summary>
         /// Fired when an entity is created and registered
@@ -133,6 +133,81 @@ namespace Walgelijk
         public T GetSystem<T>() where T : System
         {
             return (T)systems[typeof(T)];
+        }
+
+        /// <summary>
+        /// Attaches a tag to an entity
+        /// </summary>
+        public void SetTag(Entity entity, Tag tag)
+        {
+            if (tagByEntity.ContainsKey(entity))//does this entity already have a tag? 
+            {
+                if (entitiesByTag.TryGetValue(tag, out var existing))
+                    existing.Remove(entity);//remove entity from old tag collection
+
+                tagByEntity[entity] = tag;
+            }
+            else
+            {
+                //this entity never had a tag so we need to create everything
+                tagByEntity.Add(entity, tag);
+
+                if (entitiesByTag.TryGetValue(tag, out var coll))//does the tag already have a collection?
+                    coll.Add(entity);
+                else
+                    entitiesByTag.Add(tag, new HashSet<Entity> { entity });
+            }
+        }
+
+        /// <summary>
+        /// Returns true if the entity has the given tag
+        /// </summary>
+        public bool HasTag(Entity entity, Tag tag) => tagByEntity.TryGetValue(entity, out var t) && t == tag;
+
+        /// <summary>
+        /// Detaches a tag from an entity
+        /// </summary>
+        public bool ClearTag(Entity entity)
+        {
+            if (tagByEntity.Remove(entity, out var tag))
+            {
+                var coll = entitiesByTag[tag];
+                bool s = coll.Remove(entity);
+                if (coll.Count == 0)
+                    s &= entitiesByTag.Remove(tag);
+                return s;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Returns true if the given entity has a tag attached. The tag is returned in the output parameter <paramref name="tag"/>
+        /// </summary>
+        public bool TryGetTag(Entity entity, out Tag tag) => tagByEntity.TryGetValue(entity, out tag);
+
+        /// <summary>
+        /// Returns all entities with the given tag
+        /// </summary>
+        public IEnumerable<Entity> GetEntitiesWithTag(Tag tag)
+        {
+            if (entitiesByTag.TryGetValue(tag, out var coll))
+                foreach (var entity in coll)
+                    yield return entity;
+            yield break;
+        }
+
+        /// <summary>
+        /// Returns true if any entity with a given tag is found. The entity is returned in the output parameter <paramref name="entity"/>
+        /// </summary>
+        public bool TryGetEntityWithTag(Tag tag, out Entity entity)
+        {
+            if (entitiesByTag.TryGetValue(tag, out var coll) && coll.Count > 0)
+            {
+                entity = coll.First();
+                return true;
+            }
+            entity = default;
+            return false;
         }
 
         /// <summary>
@@ -486,7 +561,10 @@ namespace Walgelijk
             {
                 bool entityRemovalSuccess = entities.Remove(identity);
                 if (entityRemovalSuccess)
+                {
+                    ClearTag(identity);
                     components.DeleteEntity(identity);
+                }
             }
             entitiesToDestroy.Clear();
         }

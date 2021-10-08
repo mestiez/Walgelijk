@@ -53,6 +53,7 @@ namespace Walgelijk
                     scene.Game = this;
                     scene.HasBeenLoadedAlready = true;
                     Logger.Log("Scene changed", nameof(Game));
+                    OnSceneChange?.Dispatch(scene);
                 }
                 else Logger.Log("Scene set to null", nameof(Game));
             }
@@ -87,6 +88,11 @@ namespace Walgelijk
         /// When set to true, safety checks will be done at runtime. This will degrade performance and should be turned off in release. <b>True by default</b>
         /// </summary>
         public bool DevelopmentMode { get; set; } = true;
+
+        /// <summary>
+        /// Event dispatched when the scene is changed. The new scene is passed to the receivers
+        /// </summary>
+        public readonly Hook<Scene> OnSceneChange = new();
 
         /// <summary>
         /// Create a game with a window and an optional audio renderer. If the audio renderer is not set, the game won't be able to play any sounds

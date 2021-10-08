@@ -60,7 +60,7 @@ namespace Walgelijk.OpenTK
                 Logger.Error("Failed to initialise the audio renderer because of all of the above", this);
         }
 
-        private void UpdateIfRequired(Sound sound, out int sourceID)
+        private static void UpdateIfRequired(Sound sound, out int sourceID)
         {
             sourceID = AudioObjects.Sources.Load(sound);
 
@@ -73,7 +73,16 @@ namespace Walgelijk.OpenTK
 
         public override AudioData LoadSound(string path)
         {
-            var data = WaveFileReader.Read(path);
+            var ext = path.AsSpan()[(path.LastIndexOf('.'))..];
+            AudioFileData data;
+
+            if (ext.SequenceEqual(".wav"))
+                data = WaveFileReader.Read(path);
+            else if (ext.SequenceEqual(".ogg"))
+                data = VorbisFileReader.Read(path);
+            else
+                throw new Exception($"\"{path}\" is not a supported audio file. Only Microsoft WAV and Ogg Vorbis can be decoded.");
+
             var audio = new AudioData(data.Data, data.SampleRate, data.NumChannels);
             return audio;
         }
@@ -209,6 +218,17 @@ namespace Walgelijk.OpenTK
         {
             var s = AudioObjects.Sources.Load(sound);
             AL.Source(s, ALSourcef.Gain, volume);
+        }
+
+        public override void DisposeOf(AudioData audioData)
+        {
+            audioData.ForceClearData();
+            AudioObjects.Buffers.Unload(audioData);
+        }
+
+        public override void DisposeOf(Sound sound)
+        {
+            AudioObjects.Sources.Unload(sound);
         }
     }
 }
