@@ -689,9 +689,8 @@
         </member>
         <member name="M:Walgelijk.Curve`1.#ctor(Walgelijk.Curve{`0}.Key[])">
             <summary>
-            Construct a curve
+            Construct a curve and sort the given keys
             </summary>
-            <param name="keys"></param>
         </member>
         <member name="M:Walgelijk.Curve`1.Evaluate(System.Single)">
             <summary>

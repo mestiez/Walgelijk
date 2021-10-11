@@ -14,12 +14,12 @@ namespace Walgelijk
         public Key[] Keys { get; set; }
 
         /// <summary>
-        /// Construct a curve
+        /// Construct a curve and sort the given keys
         /// </summary>
-        /// <param name="keys"></param>
         protected Curve(params Key[] keys)
         {
             Keys = keys;
+            Array.Sort(Keys);
         }
 
         /// <summary>
@@ -30,8 +30,9 @@ namespace Walgelijk
             if (Keys == null || Keys.Length == 0) return default;
             if (Keys.Length == 1) return Keys[0].Value;
 
-            Key a = null;
-            Key b = null;
+            Key previous = null;
+            Key next = null;
+#if false //Ongesorteerd
 
             float highest = float.MinValue;
             float lowest = float.MaxValue;
@@ -50,28 +51,54 @@ namespace Walgelijk
                     if (key.Position > highest)
                     {
                         highest = key.Position;
-                        a = key;
+                        previous = key;
                     }
                 }
                 else if (key.Position < lowest)
                 {
                     lowest = key.Position;
-                    b = key;
+                    next = key;
                 }
             }
+#else //Al gesorteerd
+            if (Keys[0].Position > t)
+                return Keys[0].Value;
+            
+            if (Keys[^1].Position < t)
+                return Keys[^1].Value;
 
-            if (a != null && b == null)
-                return a.Value;
+            for (int i = 0; i < Keys.Length; i++)
+            {
+                var key = Keys[i];
 
-            if (a == null && b != null)
-                return b.Value;
+                if (MathF.Abs(t - key.Position) <= float.Epsilon)
+                    return key.Value;
 
-            if (a == null || b == null)
+                if (key.Position <= t)
+                {
+                    previous = key;
+                    next = key;
+                }
+                else if (key.Position >= t)
+                {
+                    next = key;
+                    break;
+                }
+            }
+#endif
+
+            if (previous != null && next == null)
+                return previous.Value;
+
+            if (previous == null && next != null)
+                return next.Value;
+
+            if (previous == null || next == null)
                 return default;
 
-            float mapped = Utilities.MapRange(a.Position, b.Position, 0, 1, t);
+            float mapped = Utilities.MapRange(previous.Position, next.Position, 0, 1, t);
 
-            return Lerp(a.Value, b.Value, mapped);
+            return Lerp(previous.Value, next.Value, mapped);
         }
 
         /// <summary>
@@ -82,7 +109,7 @@ namespace Walgelijk
         /// <summary>
         /// Key with a position and value of type <typeparamref name="T"/>
         /// </summary>
-        public class Key
+        public class Key : IComparable<Key>
         {
             /// <summary>
             /// Value
@@ -101,6 +128,8 @@ namespace Walgelijk
                 Value = value;
                 Position = position;
             }
+
+            public int CompareTo(Key other) => (int)(Position * 1000) - (int)(other.Position * 1000);
         }
     }
 
