@@ -23,17 +23,18 @@ namespace Walgelijk.OpenTK
             set => AL.Listener(ALListenerf.Gain, value);
         }
 
+
         public override bool Muted { get => Volume <= float.Epsilon; set => Volume = 0; }
 
-        public override Vector2 ListenerPosition
+        public override Vector3 ListenerPosition
         {
             get
             {
-                AL.GetListener(ALListener3f.Position, out float x, out float y, out _);
-                return new Vector2(x, y);
+                AL.GetListener(ALListener3f.Position, out float x, out float depth, out float z);
+                return new Vector3(x, z, depth);
             }
 
-            set => AL.Listener(ALListener3f.Position, value.X, value.Y, 0);
+            set => AL.Listener(ALListener3f.Position, value.X, value.Z, value.Y);
         }
 
         public OpenALAudioRenderer()
@@ -60,28 +61,38 @@ namespace Walgelijk.OpenTK
                 Logger.Error("Failed to initialise the audio renderer because of all of the above", this);
         }
 
-        private static void UpdateIfRequired(Sound sound, out int sourceID)
+        private static void UpdateIfRequired(Sound sound, out int source)
         {
-            sourceID = AudioObjects.Sources.Load(sound);
+            source = AudioObjects.Sources.Load(sound);
 
             if (!sound.RequiresUpdate)
                 return;
 
             sound.RequiresUpdate = false;
-            AL.Source(sourceID, ALSourceb.Looping, sound.Looping);
+            AL.Source(source, ALSourceb.SourceRelative, !sound.Spatial);
+            AL.Source(source, ALSourceb.Looping, sound.Looping);
+            AL.Source(source, ALSourcef.RolloffFactor, sound.RolloffFactor);
+            AL.Source(source, ALSourcef.Pitch, sound.Pitch);
         }
 
         public override AudioData LoadSound(string path)
         {
-            var ext = path.AsSpan()[(path.LastIndexOf('.'))..];
+            var ext = path.AsSpan()[path.LastIndexOf('.')..];
             AudioFileData data;
 
-            if (ext.SequenceEqual(".wav"))
-                data = WaveFileReader.Read(path);
-            else if (ext.SequenceEqual(".ogg"))
-                data = VorbisFileReader.Read(path);
-            else
-                throw new Exception($"\"{path}\" is not a supported audio file. Only Microsoft WAV and Ogg Vorbis can be decoded.");
+            try
+            {
+                if (ext.SequenceEqual(".wav"))
+                    data = WaveFileReader.Read(path);
+                else if (ext.SequenceEqual(".ogg"))
+                    data = VorbisFileReader.Read(path);
+                else
+                    throw new Exception($"This is not a supported audio file. Only Microsoft WAV and Ogg Vorbis can be decoded.");
+            }
+            catch (Exception e)
+            {
+                throw new AggregateException($"Failed to load WAVE file: {path}", e);
+            }
 
             var audio = new AudioData(data.Data, data.SampleRate, data.NumChannels);
             return audio;
@@ -113,15 +124,22 @@ namespace Walgelijk.OpenTK
 
             UpdateIfRequired(sound, out int s);
             SetVolume(sound, 1);
-            AL.Source(s, ALSource3f.Position, worldPosition.X, worldPosition.Y, 0);
+            if (sound.Spatial)
+                AL.Source(s, ALSource3f.Position, worldPosition.X, 0, worldPosition.Y);
+            else
+                Logger.Warn("Attempt to play a non-spatial sound in space!");
             AL.SourcePlay(s);
         }
 
-        private int CreateTempSource(Sound sound, float volume)
+        private int CreateTempSource(Sound sound, float volume, Vector2 worldPosition, float pitch)
         {
             var source = SourceCache.CreateSourceFor(sound);
+            AL.Source(source, ALSourceb.SourceRelative, !sound.Spatial);
             AL.Source(source, ALSourceb.Looping, false);
             AL.Source(source, ALSourcef.Gain, volume);
+            AL.Source(source, ALSourcef.Pitch, pitch);
+            if (sound.Spatial)
+                AL.Source(source, ALSource3f.Position, worldPosition.X, 0, worldPosition.Y);
             AL.SourcePlay(source);
             temporarySources.Add(new TemporarySource
             {
@@ -133,23 +151,24 @@ namespace Walgelijk.OpenTK
             return source;
         }
 
-        public override void PlayOnce(Sound sound, float volume = 1)
+        public override void PlayOnce(Sound sound, float volume = 1, float pitch = 1)
         {
             if (!canPlayAudio || sound.Data == null)
                 return;
 
             UpdateIfRequired(sound, out _);
-            CreateTempSource(sound, volume);
+            CreateTempSource(sound, volume, default, pitch);
         }
 
-        public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1)
+        public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1)
         {
             if (!canPlayAudio || sound.Data == null)
                 return;
 
             UpdateIfRequired(sound, out _);
-            int source = CreateTempSource(sound, volume);
-            AL.Source(source, ALSource3f.Position, worldPosition.X, worldPosition.Y, 0);
+            if (!sound.Spatial)
+                Logger.Warn("Attempt to play a non-spatial sound in space!");
+            CreateTempSource(sound, volume, worldPosition, pitch);
         }
 
         public override void Stop(Sound sound)

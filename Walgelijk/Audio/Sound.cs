@@ -20,10 +20,26 @@ namespace Walgelijk
         /// </summary>
         public bool Looping;
 
-        public Sound(AudioData data, bool loops = false)
+        /// <summary>
+        /// Rolloff factor if this sound is played in space
+        /// </summary>
+        public float RolloffFactor = 1;
+
+        /// <summary>
+        /// Pitch adjustment
+        /// </summary>
+        public float Pitch = 1;
+
+        /// <summary>
+        /// Is the sound affected by the listener position? True by default. Set to false for things like UI SFX.
+        /// </summary>
+        public bool Spatial = true;
+
+        public Sound(AudioData data, bool loops = false, bool spatial = true)
         {
             Data = data;
             Looping = loops;
+            Spatial = spatial;
         }
 
         /// <summary>

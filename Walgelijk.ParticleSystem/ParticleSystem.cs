@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Walgelijk.ParticleSystem
 {
@@ -49,7 +50,7 @@ namespace Walgelijk.ParticleSystem
 
         public void CreateParticle(ParticlesComponent particles, TransformComponent transform, Particle particleToAdd)
         {
-            if (particles.CurrentParticleCount >= particles.MaxParticleCount) 
+            if (particles.CurrentParticleCount >= particles.MaxParticleCount)
                 return;
 
             int targetIndex = GetFreeParticleIndex(particles);
@@ -110,6 +111,16 @@ namespace Walgelijk.ParticleSystem
                 else
                 {
                     var positionData = Utilities.ApplyAcceleration(particle.Gravity, particle.Position, particle.Velocity, dt, particle.Dampening);
+
+                    if (particles.FloorLevel.HasValue && particles.FloorLevel.Value > positionData.newPosition.Y)
+                    {
+                        positionData.newVelocity.Y *= -particles.FloorBounceFactor;
+                        positionData.newVelocity.X *= 1 - particles.FloorCollisionDampeningFactor;
+                        positionData.newPosition.Y = particles.FloorLevel.Value;
+                        if (MathF.Abs(particle.Position.Y  - particles.FloorLevel.Value) > 0.01f)
+                            particles.OnHitFloor.Dispatch(particle);
+                    }
+
                     particle.Position = positionData.newPosition;
                     particle.Velocity = positionData.newVelocity;
 

@@ -206,7 +206,7 @@ namespace Walgelijk.OpenTK
 
         private void OnRenderFrame(FrameEventArgs obj)
         {
-            GLUtilities.PrintGLErrors();
+            GLUtilities.PrintGLErrors(Game.Main.DevelopmentMode);
 
             time.RenderDeltaTime = (float)obj.Time;
             

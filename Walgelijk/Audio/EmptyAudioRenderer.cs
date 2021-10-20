@@ -10,7 +10,7 @@ namespace Walgelijk
     {
         public override float Volume { get; set; }
         public override bool Muted { get; set; }
-        public override Vector2 ListenerPosition { get; set; }
+        public override Vector3 ListenerPosition { get; set; }
 
         public override AudioData LoadSound(string path) { return new AudioData(Array.Empty<byte>(), 0, 0); }
 
@@ -28,11 +28,11 @@ namespace Walgelijk
 
         public override void Play(Sound sound, float volume = 1) { }
 
-        public override void PlayOnce(Sound sound, float volume = 1) { }
+        public override void PlayOnce(Sound sound, float volume = 1, float pitch = 1) { }
 
         public override void Play(Sound sound, Vector2 worldPosition, float volume = 1) { }
 
-        public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1) { }
+        public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1) { }
 
         public override void SetVolume(Sound sound, float volume) { }
 

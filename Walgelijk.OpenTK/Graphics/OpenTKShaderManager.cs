@@ -25,7 +25,7 @@ namespace Walgelijk.OpenTK
             var loaded = GPUObjects.MaterialCache.Load(material);
             int prog = loaded.ProgramHandle;
             int loc = loaded.GetUniformLocation(uniformName);
-            GLUtilities.PrintGLErrors(true, "GetUniformLocation failed! ");
+            GLUtilities.PrintGLErrors(Game.Main.DevelopmentMode, $"GetUniformLocation failed! Uniform {uniformName} did not accept value {data}");
 
             // Ik haat dit. Ik haat deze hele class.
             LoadedTexture loadedTexture;
@@ -90,7 +90,7 @@ namespace Walgelijk.OpenTK
                     break;
             }
 
-            GLUtilities.PrintGLErrors(true);
+            GLUtilities.PrintGLErrors(Game.Main.DevelopmentMode);
 
             //switch (GL.GetError())
             //{

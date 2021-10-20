@@ -40,6 +40,11 @@ namespace Walgelijk.ParticleSystem
         public FloatCurve SizeOverLife = new FloatCurve(new Curve<float>.Key(1, 1));
         public ColorCurve ColorOverLife = new ColorCurve(new Curve<Color>.Key(Colors.White, 1));
 
+        public float? FloorLevel = null;
+        public float FloorBounceFactor = 0.4f;
+        public float FloorCollisionDampeningFactor = 0.4f;
+        public Hook<Particle> OnHitFloor = new();
+
         public float SimulationSpeed = 1;
         public bool WorldSpace;
         public float EmissionRate = 150;

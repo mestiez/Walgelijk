@@ -150,14 +150,17 @@ namespace Test
                 RotationalDampening = new FloatRange(0.95f),
                 // Gravity = new Vec2Range(Vector2.Zero),
                 StartVelocity = new Vec2Range(Vector2.One * -15, Vector2.One * 15),
-                EmissionRate = 200,
+                EmissionRate = 15,
                 StartColor = new ColorRange(Colors.White),
                 ColorOverLife = new ColorCurve(new Curve<Color>.Key(Colors.Green, 0), new Curve<Color>.Key(Color.Red, 1f)),
                 SizeOverLife = new FloatCurve(new Curve<float>.Key(0, 0), new Curve<float>.Key(1, 0.1f), new Curve<float>.Key(0, 1)),
                 LifeRange = new FloatRange(0.3f, .5f),
                 WorldSpace = false,
-                SimulationSpeed = 1
+                SimulationSpeed = 1,
+                FloorLevel = -4
             };
+            Sound particleHitSound = new Sound(Resources.Load<AudioData>("bounce.ogg"));
+            particleComponent.OnHitFloor.AddListener(p => game.AudioRenderer.PlayOnce(particleHitSound, p.Velocity.Length() * 0.05f));
 
             scene.AttachComponent(particles, particleComponent);
 

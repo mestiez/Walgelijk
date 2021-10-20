@@ -67,7 +67,7 @@ namespace Walgelijk.OpenTK
 
             loc = GL.GetUniformLocation(ProgramHandle, name);
 
-            GLUtilities.PrintGLErrors(true);
+            GLUtilities.PrintGLErrors(Game.Main.DevelopmentMode);
 
             //switch (GL.GetError())
             //{

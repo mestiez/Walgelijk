@@ -19,7 +19,7 @@ namespace Walgelijk
         /// <summary>
         /// Position of the listener in world space
         /// </summary>
-        public abstract Vector2 ListenerPosition { get; set; }
+        public abstract Vector3 ListenerPosition { get; set; }
 
         /// <summary>
         /// Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="PlayOnce(Sound)"/>
@@ -34,7 +34,7 @@ namespace Walgelijk
         /// <summary>
         /// Play a sound once and let it overlap itself
         /// </summary>
-        public abstract void PlayOnce(Sound sound, float volume = 1);
+        public abstract void PlayOnce(Sound sound, float volume = 1, float pitch = 1);
 
         /// <summary>
         /// Play sound at a position in the world (or resumes, if paused)
@@ -44,7 +44,7 @@ namespace Walgelijk
         /// <summary>
         /// Play sound at a position in the world and let it overlap itself
         /// </summary>
-        public abstract void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1);
+        public abstract void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1);
 
         /// <summary>
         /// Stop a specific sound
