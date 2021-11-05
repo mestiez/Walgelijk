@@ -33,7 +33,6 @@ namespace Test
             Resources.SetBasePathForType<Texture>("textures");
             Resources.SetBasePathForType<Font>("fonts");
 
-
             //game.Scene = SplashScreen.CreateScene(new[]{
             //    new SplashScreen.Logo(Resources.Load<Texture>("walgelijk.png"), 0.5f),
             //    },
@@ -159,8 +158,8 @@ namespace Test
                 SimulationSpeed = 1,
                 FloorLevel = -4
             };
-            Sound particleHitSound = new Sound(Resources.Load<AudioData>("bounce.ogg"));
-            particleComponent.OnHitFloor.AddListener(p => game.AudioRenderer.PlayOnce(particleHitSound, p.Velocity.Length() * 0.05f));
+            //Sound particleHitSound = new Sound(Resources.Load<AudioData>("bounce.ogg"));
+           // particleComponent.OnHitFloor.AddListener(p => game.AudioRenderer.PlayOnce(particleHitSound, p.Velocity.Length() * 0.05f));
 
             scene.AttachComponent(particles, particleComponent);
 
@@ -231,6 +230,10 @@ namespace Test
                 Audio.Play(wav);
             }
 
+            Rect a = new Rect(0, 0, 100, 100);
+            DebugDraw.Rectangle(a, 0,Colors.Cyan);
+            DebugDraw.Circle(Input.WorldMousePosition, 10, Colors.Green);
+            DebugDraw.Circle(a.ClosestPoint(Input.WorldMousePosition), 20, a.ContainsPoint(Input.WorldMousePosition) ? Colors.White : Colors.Green);
         }
 
         public override void Render()

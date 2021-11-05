@@ -156,19 +156,23 @@ namespace Walgelijk.OpenTK
 
         public void UpdateBuffer(VertexBuffer buffer, VertexBufferCacheHandles handles)
         {
+            var hint = buffer.Dynamic ? BufferUsageHint.DynamicDraw : BufferUsageHint.StaticDraw;
+
             //upload vertices
             GL.BindBuffer(BufferTarget.ArrayBuffer, handles.VBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(buffer.Vertices.Length * Vertex.Stride), buffer.Vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(buffer.Vertices.Length * Vertex.Stride), buffer.Vertices, hint);
 
             //upload indices
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, handles.IBO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(buffer.IndexCount * sizeof(uint)), buffer.Indices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(buffer.IndexCount * sizeof(uint)), buffer.Indices, hint);
 
             buffer.HasChanged = false;
         }
 
         public void UpdateExtraData(VertexBuffer buffer, VertexBufferCacheHandles handles)
         {
+            var hint = buffer.Dynamic ? BufferUsageHint.DynamicDraw : BufferUsageHint.StaticDraw;
+
             //upload extra data
             for (int i = 0; i < buffer.ExtraAttributeCount; i++)
             {
@@ -179,8 +183,6 @@ namespace Walgelijk.OpenTK
 
                 var stride = AttributeTypeInfoLookup.GetStride(array.AttributeType);
                 IntPtr size = (IntPtr)(array.Count * stride);
-                const BufferUsageHint hint = BufferUsageHint.DynamicDraw;
-
                 UploadCustomDataArray(array, size, hint);
             }
 

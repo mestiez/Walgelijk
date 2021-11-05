@@ -1644,6 +1644,11 @@
             Draw a rectangle
             </summary>
         </member>
+        <member name="M:Walgelijk.DebugDraw.Rectangle(Walgelijk.Rect,System.Single,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},Walgelijk.RenderOrder)">
+            <summary>
+            Draw a rectangle
+            </summary>
+        </member>
         <member name="M:Walgelijk.DebugDraw.Text(System.Numerics.Vector2,System.String,System.Single,System.Nullable{Walgelijk.Color},System.Nullable{System.Single},Walgelijk.RenderOrder)">
             <summary>
             Draw a rectangle
@@ -1752,6 +1757,36 @@
         <member name="M:Walgelijk.IGraphics.Delete(System.Object)">
             <summary>
             Delete an object from the GPU by its CPU representation
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IGraphics.Upload(System.Object)">
+            <summary>
+            Forcibly upload an objec to the GPU if supported. Won't do anything if the object was already there.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IGraphics.TryGetId(Walgelijk.RenderTexture,System.Int32@,System.Int32@)">
+            <summary>
+            Try to get the ID of the given graphics object. 
+            Returns false if the given object could not be found, true otherwise.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IGraphics.TryGetId(Walgelijk.IReadableTexture,System.Int32@)">
+            <summary>
+            Try to get the ID of the given graphics object. 
+            Returns false if the given object could not be found, true otherwise.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IGraphics.TryGetId(Walgelijk.VertexBuffer,System.Int32@,System.Int32@,System.Int32@,System.Int32[]@)">
+            <summary>
+            Try to get the ID of the given graphics object. 
+            <paramref name="vertexAttributeIds"/> expects an array of integers. It will be filled with the extra attribute IDs if they exist.
+            Returns -1 if the given object could not be found, otherwise it returns the amount of extra vertex attribute IDs (clamped to the lenghth of the given array if applicable).
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IGraphics.TryGetId(Walgelijk.Material,System.Int32@)">
+            <summary>
+            Try to get the ID of the given graphics object. 
+            Returns false if the given object could not be found, true otherwise.
             </summary>
         </member>
         <member name="M:Walgelijk.IGraphics.Blit(Walgelijk.RenderTexture,Walgelijk.RenderTexture)">
@@ -2458,6 +2493,11 @@
             Whether the extra data needs to be uploaded to the GPU again
             </summary>
         </member>
+        <member name="P:Walgelijk.VertexBuffer.Dynamic">
+            <summary>
+            Does the vertex data change often?
+            </summary>
+        </member>
         <member name="P:Walgelijk.VertexBuffer.Vertices">
             <summary>
             Vertices to draw. <b>Do not forget to set the corresponding indices, or use <see cref="M:Walgelijk.VertexBuffer.GenerateIndices"/></b>
@@ -2746,6 +2786,26 @@
             Height of rectangle
             </summary>
         </member>
+        <member name="P:Walgelijk.Rect.TopRight">
+            <summary>
+            The top right of the rectangle
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Rect.BottomRight">
+            <summary>
+            The bottom right of the rectangle
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Rect.TopLeft">
+            <summary>
+            The top left of the rectangle
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Rect.BottomLeft">
+            <summary>
+            The bottom left of the rectangle
+            </summary>
+        </member>
         <member name="M:Walgelijk.Rect.GetCenter">
             <summary>
             Returns the center of the rectangle. Calculated using (min + max) * 0.5
@@ -2760,6 +2820,26 @@
         <member name="M:Walgelijk.Rect.#ctor(System.Numerics.Vector2,System.Numerics.Vector2)">
             <summary>
             Create a rectangle given the center and the size
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.ContainsPoint(System.Numerics.Vector2)">
+            <summary>
+            Does the rectangle contain the given point?
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.ContainsPoint(System.Numerics.Vector2,System.Single)">
+            <summary>
+            Does the rectangle, optionally expanded, contain the given point?
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.IntersectsRectangle(Walgelijk.Rect)">
+            <summary>
+            Does the rectangle overlap with the given rectangle?
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.ClosestPoint(System.Numerics.Vector2)">
+            <summary>
+            Returns the point on the rectangle that is closest to the given point
             </summary>
         </member>
         <member name="T:Walgelijk.CommandAttribute">

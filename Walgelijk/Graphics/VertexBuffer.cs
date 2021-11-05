@@ -57,6 +57,11 @@ namespace Walgelijk
         public bool ExtraDataHasChanged { get; set; } = false;
 
         /// <summary>
+        /// Does the vertex data change often?
+        /// </summary>
+        public bool Dynamic { get; set; }
+
+        /// <summary>
         /// Vertices to draw. <b>Do not forget to set the corresponding indices, or use <see cref="GenerateIndices"/></b>
         /// </summary>
         public Vertex[] Vertices

@@ -148,10 +148,16 @@ void main()
             if (!game.DevelopmentMode)
                 return;
 
-            var model = Matrix4x4.CreateRotationZ(rotationDegrees * Utilities.DegToRad) * Matrix4x4.CreateScale(size.X, size.Y, 0) * Matrix4x4.CreateTranslation(new Vector3(topleft, 0));
+            var model = Matrix4x4.CreateRotationZ(rotationDegrees * Utilities.DegToRad) * Matrix4x4.CreateScale(size.X, -size.Y, 0) * Matrix4x4.CreateTranslation(new Vector3(topleft, 0));
             var task = new DebugDrawTask(rect, model, debugMaterial, GetColor(color));
             AddDrawing(duration, renderOrder, task);
         }
+
+        /// <summary>
+        /// Draw a rectangle
+        /// </summary>
+        public void Rectangle(Rect rect, float rotationDegrees, Color? color = null, float? duration = null, RenderOrder renderOrder = default) => 
+            Rectangle(rect.TopLeft, new Vector2(rect.Width, rect.Height), rotationDegrees, color, duration, renderOrder);
 
         /// <summary>
         /// Draw a rectangle

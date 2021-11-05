@@ -46,6 +46,36 @@
         public void Delete(object obj);
 
         /// <summary>
+        /// Forcibly upload an objec to the GPU if supported. Won't do anything if the object was already there.
+        /// </summary>
+        public void Upload(object obj);
+
+        /// <summary>
+        /// Try to get the ID of the given graphics object. 
+        /// Returns false if the given object could not be found, true otherwise.
+        /// </summary>
+        public bool TryGetId(RenderTexture graphicsObject, out int frameBufferId, out int textureId);
+
+        /// <summary>
+        /// Try to get the ID of the given graphics object. 
+        /// Returns false if the given object could not be found, true otherwise.
+        /// </summary>
+        public bool TryGetId(IReadableTexture graphicsObject, out int textureId);
+
+        /// <summary>
+        /// Try to get the ID of the given graphics object. 
+        /// <paramref name="vertexAttributeIds"/> expects an array of integers. It will be filled with the extra attribute IDs if they exist.
+        /// Returns -1 if the given object could not be found, otherwise it returns the amount of extra vertex attribute IDs (clamped to the lenghth of the given array if applicable).
+        /// </summary>
+        public int TryGetId(VertexBuffer graphicsObject, out int vertexBufferId, out int indexBufferId, out int vertexArrayId, ref int[] vertexAttributeIds);
+
+        /// <summary>
+        /// Try to get the ID of the given graphics object. 
+        /// Returns false if the given object could not be found, true otherwise.
+        /// </summary>
+        public bool TryGetId(Material graphicsObject, out int id);
+
+        /// <summary>
         /// Blit a <see cref="RenderTexture"/> onto another
         /// </summary>
         public void Blit(RenderTexture source, RenderTexture destination);

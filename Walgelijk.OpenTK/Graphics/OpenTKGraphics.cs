@@ -156,6 +156,9 @@ namespace Walgelijk.OpenTK
                 case Material mat:
                     GPUObjects.MaterialCache.Unload(mat);
                     break;
+                case Shader shader:
+                    GPUObjects.ShaderCache.Unload(shader);
+                    break;
                 default:
                     Logger.Error("Attempt to delete unsupported object from GPU");
                     break;
@@ -175,6 +178,80 @@ namespace Walgelijk.OpenTK
                 ClearBufferMask.ColorBufferBit,
                 BlitFramebufferFilter.Linear
                 );
+        }
+
+        public bool TryGetId(RenderTexture rt, out int frameBufferId, out int textureId)
+        {
+            textureId = frameBufferId = -1;
+            if (GPUObjects.RenderTextureCache.Has(rt))
+            {
+                var l = GPUObjects.RenderTextureCache.Load(rt);
+                frameBufferId = l.FramebufferID;
+                textureId = l.TextureID;
+                return true;
+            }
+            return false;
+        }
+
+        public bool TryGetId(IReadableTexture texture, out int textureId)
+        {
+            textureId  = -1;
+            if (GPUObjects.TextureCache.Has(texture))
+            {
+                textureId = GPUObjects.TextureCache.Load(texture).Index;
+                return true;
+            }
+            return false;
+        }
+
+        public int TryGetId(VertexBuffer vb, out int vertexBufferId, out int indexBufferId, out int vertexArrayId, ref int[] vertexAttributeIds)
+        {
+            vertexArrayId = vertexBufferId = indexBufferId = -1;
+            if (GPUObjects.VertexBufferCache.Has(vb))
+            {
+                var l = GPUObjects.VertexBufferCache.Load(vb);
+                int extraVboLength = Math.Min(l.ExtraVBO.Length, vertexAttributeIds.Length);
+                for (int i = 0; i < extraVboLength; i++)
+                    vertexAttributeIds[i] = l.ExtraVBO[i];
+                indexBufferId = l.VAO;
+                vertexArrayId = l.VAO;
+                vertexBufferId = l.VBO;
+                return extraVboLength;
+            }
+            return -1;
+        }
+
+        public bool TryGetId(Material mat, out int id)
+        {
+            id = -1;
+            if (GPUObjects.MaterialCache.Has(mat))
+            {
+                id = GPUObjects.MaterialCache.Load(mat).ProgramHandle;
+                return true;
+            }
+            return false;
+        }
+
+        public void Upload(object obj)
+        {
+            switch (obj)
+            {
+                case RenderTexture rt:
+                    GPUObjects.RenderTextureCache.Load(rt);
+                    break;
+                case IReadableTexture texture:
+                    GPUObjects.TextureCache.Load(texture);
+                    break;
+                case VertexBuffer vb:
+                    GPUObjects.VertexBufferCache.Load(vb);
+                    break;
+                case Material mat:
+                    GPUObjects.MaterialCache.Load(mat);
+                    break;
+                default:
+                    Logger.Error("Attempt to upload unsupported object to GPU");
+                    break;
+            }
         }
     }
 }

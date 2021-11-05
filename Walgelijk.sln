@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.ParticleSystem", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{09F5F9AB-C0D9-4034-89D4-36CDE0697066}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Walgelijk.Video", "Walgelijk.Video\Walgelijk.Video.csproj", "{B7D36A10-26DC-4739-A05D-BF70CB32DE3D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.Video", "Walgelijk.Video\Walgelijk.Video.csproj", "{B7D36A10-26DC-4739-A05D-BF70CB32DE3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Walgelijk.DearImgui", "Walgelijk.DearImgui\Walgelijk.DearImgui.csproj", "{2EA4EEB3-33C1-412B-97F3-3B586F7B030A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{B7D36A10-26DC-4739-A05D-BF70CB32DE3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7D36A10-26DC-4739-A05D-BF70CB32DE3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7D36A10-26DC-4739-A05D-BF70CB32DE3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EA4EEB3-33C1-412B-97F3-3B586F7B030A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EA4EEB3-33C1-412B-97F3-3B586F7B030A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EA4EEB3-33C1-412B-97F3-3B586F7B030A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EA4EEB3-33C1-412B-97F3-3B586F7B030A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
