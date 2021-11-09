@@ -185,6 +185,15 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Returns an angle in degrees corresponding to the given normalised <see cref="Vector2"/>. 
+        /// (1, 0) gives 0°. (0, 1) gives 90° 
+        /// </summary>
+        public static float VectorToAngle(Vector2 vector)
+        {
+            return MathF.Atan2(vector.Y, vector.X) * RadToDeg;
+        }
+
+        /// <summary>
         /// Linearly map a value in a range onto another range
         /// </summary>
         /// <param name="a1">Source lower bound</param>
@@ -279,5 +288,25 @@ namespace Walgelijk
         /// Returns the given fallback value (0 by default) if the given input value is NaN
         /// </summary>
         public static float NanFallback(float v, float fallback = 0) => float.IsNaN(v) ? fallback : v;
+
+        /// <summary>
+        /// Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
+        /// </summary>
+        public static float Snap(float x, float snapSize) => MathF.Round(x / snapSize) * snapSize;
+
+        /// <summary>
+        /// Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
+        /// </summary>
+        public static int Snap(int x, int snapSize) => (int)(MathF.Round(x / snapSize) * snapSize);
+
+        /// <summary>
+        /// Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
+        /// </summary>
+        public static Vector2 Snap(Vector2 x, float snapSize) => new Vector2(Snap(x.X, snapSize), Snap(x.Y,snapSize));
+
+        /// <summary>
+        /// Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
+        /// </summary>
+        public static Vector3 Snap(Vector3 x, float snapSize) => new Vector3(Snap(x.X, snapSize), Snap(x.Y,snapSize), Snap(x.Z,snapSize));
     }
 }

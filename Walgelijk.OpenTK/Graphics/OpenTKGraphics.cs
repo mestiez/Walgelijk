@@ -64,7 +64,7 @@ namespace Walgelijk.OpenTK
                 return;
 
             PrepareVertexBuffer(vertexBuffer, material);
-            GL.DrawElements(TypeConverter.Convert(vertexBuffer.PrimitiveType), vertexBuffer.IndexCount, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(TypeConverter.Convert(vertexBuffer.PrimitiveType), vertexBuffer.AmountOfIndicesToRender ?? vertexBuffer.IndexCount, DrawElementsType.UnsignedInt, 0);
         }
 
         public void DrawInstanced(VertexBuffer vertexBuffer, int instanceCount, Material material = null)
@@ -73,7 +73,7 @@ namespace Walgelijk.OpenTK
                 return;
 
             PrepareVertexBuffer(vertexBuffer, material);
-            GL.DrawElementsInstanced(TypeConverter.Convert(vertexBuffer.PrimitiveType), vertexBuffer.IndexCount, DrawElementsType.UnsignedInt, IntPtr.Zero, instanceCount);
+            GL.DrawElementsInstanced(TypeConverter.Convert(vertexBuffer.PrimitiveType), vertexBuffer.AmountOfIndicesToRender ?? vertexBuffer.IndexCount, DrawElementsType.UnsignedInt, IntPtr.Zero, instanceCount);
         }
 
         public void SetUniform(Material material, string uniformName, object data)

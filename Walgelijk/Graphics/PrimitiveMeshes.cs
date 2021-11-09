@@ -48,6 +48,38 @@ namespace Walgelijk
             );
 
         /// <summary>
+        /// Right angled triangle where (0, 0) is the bottom left. Has a height of 1, a width of , and a hypotenuse of 1.414213562373095 or sqrt(2). 
+        /// </summary>
+        public static readonly VertexBuffer RightAngledTriangle = new VertexBuffer(
+                new Vertex[]
+                {
+                    new Vertex(0, 0) { TexCoords = new Vector2(0,0) } ,
+                    new Vertex(0, 1) { TexCoords = new Vector2(0,1) },
+                    new Vertex(1, 0) { TexCoords = new Vector2(1,0) },
+                },
+                new uint[]
+                {
+                    0, 1, 2
+                }
+            );
+
+        /// <summary>
+        /// Isosceles triangle where (0, 0) is the bottom left. Has a height of 1 and a width of 1. 
+        /// </summary>
+        public static readonly VertexBuffer IsoscelesTriangle = new VertexBuffer(
+                new Vertex[]
+                {
+                    new Vertex(0, 0) { TexCoords = new Vector2(0,0) } ,
+                    new Vertex(0.5f, 1) { TexCoords = new Vector2(0.5f,1) },
+                    new Vertex(1, 0) { TexCoords = new Vector2(1,0) },
+                },
+                new uint[]
+                {
+                    0, 1, 2
+                }
+            );
+
+        /// <summary>
         /// A line segment from (0, 0) to (1, 0)
         /// </summary>
         public static readonly VertexBuffer Line = new VertexBuffer(
@@ -68,6 +100,11 @@ namespace Walgelijk
         /// </summary>
         public static readonly VertexBuffer Circle = GenerateCircle(32, 1);
 
+        /// <summary>
+        /// A unit circle primitive with 65 vertices
+        /// </summary>
+        public static readonly VertexBuffer Circle64 = GenerateCircle(64, 1);
+
         //TODO dit is een rare plek hiervoor
         /// <summary>
         /// Generates a centered circle vertex buffer
@@ -81,7 +118,7 @@ namespace Walgelijk
             uint n = 0;
             for (uint i = 0; i < edges; i++)
             {
-                float p = i / (float)edges;
+                float p = i / ((float)edges - 1);
                 float r = p * MathF.Tau;
 
                 float x = MathF.Cos(r) * radius;

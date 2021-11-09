@@ -46,6 +46,11 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// If non-null, this determines the amount of indices to render. If null, the renderer will fall back to the amount of indices in the <see cref="Indices"/> array. <b>This should NOT exceed the amount of available indices</b>
+        /// </summary>
+        public int? AmountOfIndicesToRender = null;
+
+        /// <summary>
         /// Whether the data needs to be uploaded to the GPU again
         /// </summary>
         public bool HasChanged { get; set; } = false;

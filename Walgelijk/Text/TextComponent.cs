@@ -159,8 +159,9 @@ namespace Walgelijk
             VertexBuffer.Vertices = new Vertex[displayString.Length * 4];
             VertexBuffer.Indices = new uint[displayString.Length * 6];
 
-            LocalBoundingBox = meshGenerator.Generate(String, VertexBuffer.Vertices, VertexBuffer.Indices, colourInstructions);
-
+            var r = meshGenerator.Generate(String, VertexBuffer.Vertices, VertexBuffer.Indices, colourInstructions);
+            LocalBoundingBox = r.LocalBounds;
+            VertexBuffer.AmountOfIndicesToRender = r.IndexCount;
             VertexBuffer.HasChanged = true;
         }
     }

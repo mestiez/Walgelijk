@@ -5,6 +5,32 @@ using System.Numerics;
 namespace Walgelijk
 {
     /// <summary>
+    /// Contains information about the results of text mesh generation
+    /// </summary>
+    public struct TextMeshResult
+    {
+        /// <summary>
+        /// Amount of glyphs actually generated
+        /// </summary>
+        public int GlyphCount;
+
+        /// <summary>
+        /// Amount of vertices actually generated
+        /// </summary>
+        public int VertexCount;
+
+        /// <summary>
+        /// Amount of indices actually generated
+        /// </summary>
+        public int IndexCount;
+
+        /// <summary>
+        /// Resulting local bounding box of the text mesh
+        /// </summary>
+        public Rect LocalBounds;
+    }
+
+    /// <summary>
     /// Utility class that provides text mesh generation functions 
     /// </summary>
     public class TextMeshGenerator
@@ -39,6 +65,7 @@ namespace Walgelijk
         ///// </summary>
         //public TextAlign Align { get; set; } = TextAlign.Left;
         //TODO align stuff
+        //Textbox stuff
 
         /// <summary>
         /// Parse rich text tags
@@ -48,16 +75,22 @@ namespace Walgelijk
         /// <summary>
         /// Generate 2D text mesh. Returns the local bounding box.
         /// </summary>
+        public TextMeshResult Generate(string displayString, Vertex[] vertices, uint[] indices, IList<ColourInstruction> colours = null) =>
+            Generate(displayString.AsSpan(), vertices, indices, colours);
+
+        /// <summary>
+        /// Generate 2D text mesh.
+        /// </summary>
         /// <param name="displayString">Text to render</param>
         /// <param name="vertices">Vertex array that will be populated. This needs to be the length of displayString * 4</param>
         /// <param name="indices">Index array that will be populated. This needs to be the length of displayString * 6</param>
         /// <param name="colours">Colours to set at indices</param>
-        public Rect Generate(string displayString, Vertex[] vertices, uint[] indices, IList<ColourInstruction> colours = null)
+        public TextMeshResult Generate(ReadOnlySpan<char> displayString, Vertex[] vertices, uint[] indices, IList<ColourInstruction> colours = null)
         {
-            if (vertices.Length != displayString.Length * 4)
-                throw new Exception(string.Format("The vertex array is of length {0}, expected {1}", vertices.Length, displayString.Length * 4));
-            if (indices.Length != displayString.Length * 6)
-                throw new Exception(string.Format("The index array is of length {0}, expected {1}", indices.Length, displayString.Length * 6));
+            //if (vertices.Length < displayString.Length * 4)
+            //    throw new Exception(string.Format("The vertex array is of length {0}, expected {1}", vertices.Length, displayString.Length * 4));
+            //if (indices.Length < displayString.Length * 6)
+            //    throw new Exception(string.Format("The index array is of length {0}, expected {1}", indices.Length, displayString.Length * 6));
 
             float cursor = 0;
             float width = Font.Width;
@@ -75,7 +108,8 @@ namespace Walgelijk
             char lastChar = default;
             int line = 0;
 
-            var colorToSet = Colors.White;
+            var colorToSet = Color;
+            int glyphCountWithoutTags = 0;
 
             for (int i = 0; i < displayString.Length; i++)
             {
@@ -88,10 +122,10 @@ namespace Walgelijk
                             break;
                         if (i > 0 && displayString[i - 1] == '\\')//check for escape slash
                             break;
-                        int closingArrowDistance = displayString.AsSpan()[i..].IndexOf('>');
+                        int closingArrowDistance = displayString[i..].IndexOf('>');
                         if (closingArrowDistance == -1)//invalid syntax
                             break;
-                        executeTag(displayString.AsSpan()[(i+1)..(closingArrowDistance + i)]);
+                        executeTag(displayString[(i + 1)..(closingArrowDistance + i)]);
                         i += closingArrowDistance;
                         continue;
                     case '\n':
@@ -130,6 +164,8 @@ namespace Walgelijk
                 indices[indexIndex + 4] = vertexIndex + 3;
                 indices[indexIndex + 5] = vertexIndex + 2;
 
+                glyphCountWithoutTags++;
+
                 vertexIndex += 4;
                 indexIndex += 6;
                 cursor += (glyph.Advance + (pos.X - cursor)) * TrackingMultiplier;
@@ -139,7 +175,7 @@ namespace Walgelijk
 
             //TODO dit is niet goed
 
-            for (int i = 0; i < displayString.Length * 4; i++)
+            for (int i = 0; i < vertexIndex; i++)
             {
                 var pos = vertices[i].Position;
 
@@ -149,7 +185,13 @@ namespace Walgelijk
                 minY = MathF.Min(pos.Y, minY);
             }
 
-            return new Rect(minX, minY, maxX, maxY); ;
+            return new TextMeshResult
+            {
+                LocalBounds = new Rect(minX, minY, maxX, maxY),
+                GlyphCount = glyphCountWithoutTags,
+                VertexCount = glyphCountWithoutTags * 4,
+                IndexCount = glyphCountWithoutTags * 6,
+            };
 
             Vertex appendVertex(Vector3 pos, Glyph glyph, GlyphUVInfo uvInfo, Color color, float xFactor, float yFactor, float skew = 0)
             {
@@ -179,7 +221,7 @@ namespace Walgelijk
 
                 if (tagContents.StartsWith(RichTextTags.Colour)) //Colour tag
                 {
-                    colorToSet = isClosingTag ? Colors.White : new Color(tagContents[(RichTextTags.Colour.Length + 1)..]);//+1 to remove the equal sign
+                    colorToSet = isClosingTag ? Color : new Color(tagContents[(RichTextTags.Colour.Length + 1)..]);//+1 to remove the equal sign
                     return;
                 }
 
