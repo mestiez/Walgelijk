@@ -68,7 +68,12 @@ namespace Walgelijk
         /// <summary>
         /// How to vertically align the text
         /// </summary>
-        public TextAlign Align { get; set; } = TextAlign.Left;
+        public HorizontalTextAlign HorizontalAlign { get; set; } = HorizontalTextAlign.Left;
+
+        /// <summary>
+        /// How to vertically align the text
+        /// </summary>
+        public VerticalTextAlign VerticalAlign { get; set; } = VerticalTextAlign.Top;
 
         /// <summary>
         /// Parse rich text tags
@@ -235,7 +240,6 @@ namespace Walgelijk
                 startNewLine(displayString.Length, displayString);
 
             //TODO dit is niet goed
-
             for (int i = 0; i < vertexIndex; i++)
             {
                 var pos = vertices[i].Position;
@@ -244,6 +248,24 @@ namespace Walgelijk
                 maxY = MathF.Max(pos.Y, maxY);
                 minX = MathF.Min(pos.X, minX);
                 minY = MathF.Min(pos.Y, minY);
+            }
+
+            //TODO dit is niet goed
+            if (VerticalAlign != VerticalTextAlign.Top)
+            {
+                var totalHeight = (int)(maxY - minY);
+                var offset = VerticalAlign switch
+                {
+                    VerticalTextAlign.Middle => totalHeight / 2,
+                    VerticalTextAlign.Bottom => totalHeight,
+                    _ => 0
+                };
+
+                minY += offset;
+                maxY += offset;
+
+                for (int i = 0; i < vertexIndex; i++)
+                    vertices[i].Position.Y += offset;
             }
 
             return new TextMeshResult
@@ -286,7 +308,7 @@ namespace Walgelijk
 
             void startNewLine(int i, ReadOnlySpan<char> str)
             {
-                if (Align != TextAlign.Left) //no need to do alignment if its left aligned
+                if (HorizontalAlign != HorizontalTextAlign.Left) //no need to do alignment if its left aligned
                 {
                     int start = lastLineLetterStartIndex;
                     int end = i;
@@ -294,10 +316,10 @@ namespace Walgelijk
                     var lengthOfLastLine = (int)CalculateTextWidth(part);
                     var verticesInLine = vertices.AsSpan()[((int)vertexIndex - vertexCountSinceNewLine)..(int)vertexIndex];
 
-                    var offset = Align switch
+                    var offset = HorizontalAlign switch
                     {
-                        TextAlign.Right => lengthOfLastLine,
-                        TextAlign.Center => lengthOfLastLine / 2,
+                        HorizontalTextAlign.Right => lengthOfLastLine,
+                        HorizontalTextAlign.Center => lengthOfLastLine / 2,
                         _ => 0
                     };
 

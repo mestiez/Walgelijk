@@ -85,19 +85,35 @@ namespace Test
                     var pos = Scene.GetComponentFast<TransformComponent>(entity).Position.X;
                     var text = Scene.GetComponentFast<TextComponent>(entity);
                     text.WrappingWidth = MathF.Max(10, Input.WorldMousePosition.X - pos);
-
-                    if (Input.IsKeyPressed(Key.Space))
+                    DebugDraw.Rectangle(text.LocalBoundingBox, 0, Colors.Magenta);
+                    if (Input.IsKeyPressed(Key.D1))
                     {
-                        switch (text.Alignment)
+                        switch (text.HorizontalAlignment)
                         {
-                            case TextAlign.Left:
-                                text.Alignment = TextAlign.Center;
+                            case HorizontalTextAlign.Left:
+                                text.HorizontalAlignment = HorizontalTextAlign.Center;
                                 break;
-                            case TextAlign.Center:
-                                text.Alignment = TextAlign.Right;
+                            case HorizontalTextAlign.Center:
+                                text.HorizontalAlignment = HorizontalTextAlign.Right;
                                 break;
-                            case TextAlign.Right:
-                                text.Alignment = TextAlign.Left;
+                            case HorizontalTextAlign.Right:
+                                text.HorizontalAlignment = HorizontalTextAlign.Left;
+                                break;
+                        }
+                    }
+
+                    if (Input.IsKeyPressed(Key.D2))
+                    {
+                        switch (text.VerticalAlignment)
+                        {
+                            case VerticalTextAlign.Top:
+                                text.VerticalAlignment = VerticalTextAlign.Middle;
+                                break;
+                            case VerticalTextAlign.Middle:
+                                text.VerticalAlignment = VerticalTextAlign.Bottom;
+                                break;
+                            case VerticalTextAlign.Bottom:
+                                text.VerticalAlignment = VerticalTextAlign.Top;
                                 break;
                         }
                     }

@@ -1,9 +1,9 @@
 ﻿namespace Walgelijk
 {
     /// <summary>
-    /// Ways to align text vertically
+    /// Ways to align text horizontally
     /// </summary>
-    public enum TextAlign
+    public enum HorizontalTextAlign
     {
         Left,
         Center,

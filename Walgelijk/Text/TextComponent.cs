@@ -24,6 +24,11 @@ namespace Walgelijk
         public readonly TextMeshGenerator TextMeshGenerator;
 
         /// <summary>
+        /// The most recently created text mesh generation result.
+        /// </summary>
+        public TextMeshResult LastGenerationResult;
+
+        /// <summary>
         /// Create a text component
         /// </summary>
         public TextComponent(string displayString = null, Font font = null)
@@ -157,14 +162,27 @@ namespace Walgelijk
         }
 
         /// <summary>
-        /// The text alignment. Changing this forces a vertex array update.
+        /// The vertical text alignment. Changing this forces a vertex array update.
         /// </summary>
-        public TextAlign Alignment
+        public VerticalTextAlign VerticalAlignment
         {
-            get => TextMeshGenerator.Align;
+            get => TextMeshGenerator.VerticalAlign;
             set
             {
-                TextMeshGenerator.Align = value;
+                TextMeshGenerator.VerticalAlign = value;
+                CreateVertices();
+            }
+        }
+
+        /// <summary>
+        /// The horizontal text alignment. Changing this forces a vertex array update.
+        /// </summary>
+        public HorizontalTextAlign HorizontalAlignment
+        {
+            get => TextMeshGenerator.HorizontalAlign;
+            set
+            {
+                TextMeshGenerator.HorizontalAlign = value;
                 CreateVertices();
             }
         }
@@ -205,9 +223,9 @@ namespace Walgelijk
                 VertexBuffer.Indices = new uint[displayString.Length * 6];
             }
 
-            var r = TextMeshGenerator.Generate(String, VertexBuffer.Vertices, VertexBuffer.Indices, colourInstructions);
-            LocalBoundingBox = r.LocalBounds;
-            VertexBuffer.AmountOfIndicesToRender = r.IndexCount;
+            LastGenerationResult = TextMeshGenerator.Generate(String, VertexBuffer.Vertices, VertexBuffer.Indices, colourInstructions);
+            LocalBoundingBox = LastGenerationResult.LocalBounds;
+            VertexBuffer.AmountOfIndicesToRender = LastGenerationResult.IndexCount;
             VertexBuffer.HasChanged = true;
         }
     }

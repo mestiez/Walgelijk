@@ -3546,6 +3546,11 @@
             Page index of the glyph
             </summary>
         </member>
+        <member name="T:Walgelijk.HorizontalTextAlign">
+            <summary>
+            Ways to align text horizontally
+            </summary>
+        </member>
         <member name="T:Walgelijk.Kerning">
             <summary>
             Structure with kerning information
@@ -3581,11 +3586,6 @@
             &lt;color=&quot;#ff00ff&quot;&gt;Text goes here&lt;/color&gt;
             </summary>
         </member>
-        <member name="T:Walgelijk.TextAlign">
-            <summary>
-            Ways to align text vertically
-            </summary>
-        </member>
         <member name="T:Walgelijk.TextComponent">
             <summary>
             IShapeComponent that holds the information necessary to draw text
@@ -3594,6 +3594,11 @@
         <member name="F:Walgelijk.TextComponent.TextMeshGenerator">
             <summary>
             The raw text mesh generator. You can edit this all you want but it's safer to use the properties of the <see cref="T:Walgelijk.TextComponent"/>
+            </summary>
+        </member>
+        <member name="F:Walgelijk.TextComponent.LastGenerationResult">
+            <summary>
+            The most recently created text mesh generation result.
             </summary>
         </member>
         <member name="M:Walgelijk.TextComponent.#ctor(System.String,Walgelijk.Font)">
@@ -3641,9 +3646,14 @@
             The maximum text width before wrapping. Changing this forces a vertex array update.
             </summary>
         </member>
-        <member name="P:Walgelijk.TextComponent.Alignment">
+        <member name="P:Walgelijk.TextComponent.VerticalAlignment">
             <summary>
-            The text alignment. Changing this forces a vertex array update.
+            The vertical text alignment. Changing this forces a vertex array update.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TextComponent.HorizontalAlignment">
+            <summary>
+            The horizontal text alignment. Changing this forces a vertex array update.
             </summary>
         </member>
         <member name="P:Walgelijk.TextComponent.KerningMultiplier">
@@ -3738,7 +3748,12 @@
             The width at which the text needs to start wrapping. Infinity by default.
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.Align">
+        <member name="P:Walgelijk.TextMeshGenerator.HorizontalAlign">
+            <summary>
+            How to vertically align the text
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TextMeshGenerator.VerticalAlign">
             <summary>
             How to vertically align the text
             </summary>
@@ -3780,6 +3795,11 @@
         <member name="F:Walgelijk.TextMeshGenerator.ColourInstruction.Colour">
             <summary>
             Colour to set when we reach <see cref="F:Walgelijk.TextMeshGenerator.ColourInstruction.CharIndex"/>
+            </summary>
+        </member>
+        <member name="T:Walgelijk.VerticalTextAlign">
+            <summary>
+            Ways to align text vertically
             </summary>
         </member>
         <member name="T:Walgelijk.Utilities">
