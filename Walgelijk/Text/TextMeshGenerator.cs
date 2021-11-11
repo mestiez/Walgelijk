@@ -81,7 +81,7 @@ namespace Walgelijk
         {
             if (text.Length > 1)
                 for (int i = 1; i < text.Length; i++)
-                    if (char.IsWhiteSpace(text[i]))
+                    if (char.IsWhiteSpace(text[i]) || text[i] == '\n')
                         return text[..(i)];
             return text;
         }
@@ -98,9 +98,11 @@ namespace Walgelijk
             for (int i = 0; i < text.Length; i++)
             {
                 var c = text[i];
-                if (c == '<')
+                if (char.IsControl(c))
+                    continue;
+                if (c == '<' && !(i > 1 && text[i-1] != '\\')) //check for escape slash
                     tagStack++;
-                if (c == '>')
+                if (c == '>' && !(i > 1 && text[i - 1] != '\\'))
                     tagStack--;
                 tagStack = Math.Max(0, tagStack);
 
@@ -111,7 +113,7 @@ namespace Walgelijk
                 Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
                 lastChar = c;
 
-                pos += glyph.Advance * TrackingMultiplier + kerning.Amount * KerningMultiplier;
+                pos += (glyph.Advance + glyph.XOffset) * TrackingMultiplier + kerning.Amount * KerningMultiplier;
             }
             return pos;
         }
@@ -172,11 +174,11 @@ namespace Walgelijk
                         cursor = 0;
                         lastChar = default;
                         continue;
-                    case '\t':
-                        float tabSize = Font.Size * 5;
-                        cursor = MathF.Ceiling(cursor / tabSize) * tabSize;
-                        lastChar = default;
-                        continue;
+                        //case '\t':
+                        //    float tabSize = Font.Size * 5;
+                        //    cursor = MathF.Ceiling(cursor / tabSize) * tabSize;
+                        //    lastChar = default;
+                        //    continue;
                         //TODO andere escape character handlers
                 }
 

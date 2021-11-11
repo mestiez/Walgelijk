@@ -80,6 +80,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Pack>false</Pack>
     </None>
+    <None Update="resources\lorem ipsum.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="resources\new york.mp4">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

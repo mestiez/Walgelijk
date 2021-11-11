@@ -62,15 +62,13 @@ namespace Test
             var text = scene.CreateEntity();
             scene.SetTag(text, new Tag(234));
             scene.AttachComponent(text, new TransformComponent());
-            var generator = scene.AttachComponent(text, new TextComponent(
-                @"<color=#00abff>https://codepen.io/heff/pen/EarCt/left/?editors=010</color>
-hoe is het vandaag dit is een lange you set the max width to a number and the text generator does a bunch of maths to calculate where to put the next letters"
-                ));
+            var generator = scene.AttachComponent(text, new TextComponent(Resources.Load<string>("lorem ipsum.txt")));
 
             scene.AddSystem(new TransformSystem());
             scene.AddSystem(new CameraSystem() { ExecutionOrder = -1 });
             scene.AddSystem(new TextWrappingWidthSystem() { ExecutionOrder = -1 });
             scene.AddSystem(new ShapeRendererSystem());
+            scene.AddSystem(new DebugCameraSystem());
 
             return scene;
         }
