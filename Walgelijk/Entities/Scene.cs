@@ -515,10 +515,14 @@ namespace Walgelijk
         /// </summary>
         public void Initialise()
         {
-            Game.Time.RenderDeltaTime = 0;
-            Game.Time.UpdateDeltaTime = 0;
+            if (Game != null)
+            {
+                Game.Time.RenderDeltaTime = 0;
+                Game.Time.UpdateDeltaTime = 0;
+            }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ProcessAddDestroyBuffers()
         {
             foreach (var system in systemsToAdd)

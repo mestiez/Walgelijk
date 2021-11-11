@@ -12,6 +12,11 @@ namespace Walgelijk
         /// </summary>
         public int Value;
 
+        public Tag(int value)
+        {
+            Value = value;
+        }
+
         public override bool Equals(object obj)
         {
             return obj is Tag tag &&

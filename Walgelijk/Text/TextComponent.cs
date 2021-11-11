@@ -18,7 +18,10 @@ namespace Walgelijk
         private float kerningMultiplier = 1f;
         private IList<ColourInstruction> colourInstructions = null;
 
-        private readonly TextMeshGenerator meshGenerator;
+        /// <summary>
+        /// The raw text mesh generator. You can edit this all you want but it's safer to use the properties of the <see cref="TextComponent"/>
+        /// </summary>
+        public readonly TextMeshGenerator TextMeshGenerator;
 
         /// <summary>
         /// Create a text component
@@ -32,8 +35,9 @@ namespace Walgelijk
             VertexBuffer.PrimitiveType = Primitive.Triangles;
             RenderTask = new ShapeRenderTask(VertexBuffer, Matrix4x4.Identity, this.font.Material);
 
-            meshGenerator = new TextMeshGenerator
+            TextMeshGenerator = new TextMeshGenerator
             {
+                ParseRichText = true,
                 Color = Color,
                 Font = Font,
                 KerningMultiplier = KerningMultiplier,
@@ -52,10 +56,10 @@ namespace Walgelijk
             get => displayString;
             set
             {
-                if (value == displayString) 
-                    return; 
+                if (value == displayString)
+                    return;
 
-                displayString = value ?? ""; 
+                displayString = value ?? "";
                 CreateVertices();
             }
         }
@@ -73,7 +77,7 @@ namespace Walgelijk
 
                 font = value;
                 RenderTask.Material = font.Material;
-                meshGenerator.Font = value;
+                TextMeshGenerator.Font = value;
                 CreateVertices();
             }
         }
@@ -90,7 +94,7 @@ namespace Walgelijk
                     return;
 
                 color = value;
-                meshGenerator.Color = value;
+                TextMeshGenerator.Color = value;
                 CreateVertices();
             }
         }
@@ -120,8 +124,34 @@ namespace Walgelijk
             get => trackingMultiplier;
             set
             {
-                trackingMultiplier = value; 
-                meshGenerator.TrackingMultiplier = value;
+                trackingMultiplier = value;
+                TextMeshGenerator.TrackingMultiplier = value;
+                CreateVertices();
+            }
+        }
+
+        /// <summary>
+        /// Should the generator parse rich text? Changing this forces a vertex array update.
+        /// </summary>
+        public bool ParseRichText
+        {
+            get => TextMeshGenerator.ParseRichText;
+            set
+            {
+                TextMeshGenerator.ParseRichText = value;
+                CreateVertices();
+            }
+        }
+
+        /// <summary>
+        /// The maximum text width before wrapping. Changing this forces a vertex array update.
+        /// </summary>
+        public float WrappingWidth
+        {
+            get => TextMeshGenerator.WrappingWidth;
+            set
+            {
+                TextMeshGenerator.WrappingWidth = value;
                 CreateVertices();
             }
         }
@@ -135,7 +165,7 @@ namespace Walgelijk
             set
             {
                 kerningMultiplier = value;
-                meshGenerator.KerningMultiplier = value;
+                TextMeshGenerator.KerningMultiplier = value;
                 CreateVertices();
             }
         }
@@ -149,17 +179,20 @@ namespace Walgelijk
             set
             {
                 lineHeightMultiplier = value;
-                meshGenerator.LineHeightMultiplier = value;
+                TextMeshGenerator.LineHeightMultiplier = value;
                 CreateVertices();
             }
         }
 
         private void CreateVertices()
         {
-            VertexBuffer.Vertices = new Vertex[displayString.Length * 4];
-            VertexBuffer.Indices = new uint[displayString.Length * 6];
+            if (VertexBuffer.Vertices == null || VertexBuffer.Vertices.Length < displayString.Length * 4)
+            {
+                VertexBuffer.Vertices = new Vertex[displayString.Length * 4];
+                VertexBuffer.Indices = new uint[displayString.Length * 6];
+            }
 
-            var r = meshGenerator.Generate(String, VertexBuffer.Vertices, VertexBuffer.Indices, colourInstructions);
+            var r = TextMeshGenerator.Generate(String, VertexBuffer.Vertices, VertexBuffer.Indices, colourInstructions);
             LocalBoundingBox = r.LocalBounds;
             VertexBuffer.AmountOfIndicesToRender = r.IndexCount;
             VertexBuffer.HasChanged = true;

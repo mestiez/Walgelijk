@@ -134,9 +134,9 @@ namespace Walgelijk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool DeleteEntity(Entity entity)
         {
-            bool c = false;
+            bool c = true;
 
-            allComponents.RemoveWhere(t => t.Entity == entity);
+            c &= allComponents.RemoveWhere(t => t.Entity == entity) > 0;
 
             foreach (var listPair in byType)
             {
@@ -146,7 +146,6 @@ namespace Walgelijk
                     {
                         DisposalManager.DisposeOf(l[i].Component);
                         l.RemoveAt(i);
-                        c = true;
                     }
             }
 
@@ -174,26 +173,48 @@ namespace Walgelijk
         public bool RemoveComponentOfType(Type type, Entity entity)
         {
             bool success = true;
-            TryCreateNewTypeList(type, out _);
 
             foreach (var item in allComponents)
                 if (shouldRemove(item))
                     DisposalManager.DisposeOf(item.Component);
 
-            allComponents.RemoveWhere(shouldRemove);
+            success &= allComponents.RemoveWhere(shouldRemove) > 0;
 
-            if (success &= !byType.TryGetValue(type, out var list))
-                success &= list.RemoveAll(a => a.Entity == entity) > 0;
+            if (byType.ContainsKey(type))
+            {
+                if (byType.TryGetValue(type, out var allComponentsOfThisType))
+                {
+                    success &= allComponentsOfThisType.RemoveAll(a => a.Entity == entity) > 0;
+                    if (!allComponentsOfThisType.Any())
+                        byType.Remove(type);
+                }
+                else success = false;
+            }
 
-            if (success &= !byEntity.TryGetValue(entity, out var listb))
-                success &= listb.RemoveAll(a => type.IsAssignableTo(a.GetType())) > 0;
+            if (byEntity.TryGetValue(entity, out var allComponentsOnThisEntity))
+            {
+                success &= allComponentsOnThisEntity.RemoveAll(a => type.IsAssignableTo(a.GetType())) > 0;
+                if (!allComponentsOnThisEntity.Any())
+                    byEntity.Remove(entity);
+            }
+            else success = false;
 
-            if (success &= !byEntityByType.TryGetValue(entity, out var dict))
-                success &= dict.Remove(type);
+            if (byEntityByType.TryGetValue(entity, out var componentsByType))
+            {
+                success &= componentsByType.Remove(type);
+                if (!componentsByType.Any())
+                    byEntityByType.Remove(entity);
+            }
+            else success = false;
 
-            bool shouldRemove(EntityWithAnything t) => type.IsInstanceOfType(t.Component) && t.Entity == entity;
+            if (!success)
+                throw new Exception("FAILED TO REMOVE");
 
             return success;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            bool shouldRemove(EntityWithAnything t) =>
+                type.IsInstanceOfType(t.Component) && t.Entity == entity;
         }
 
         private bool TryCreateNewTypeList(Type type, out List<EntityWithAnything> list)

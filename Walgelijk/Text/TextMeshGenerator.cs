@@ -60,6 +60,11 @@ namespace Walgelijk
         /// </summary>
         public float LineHeightMultiplier { get; set; } = 1;
 
+        /// <summary>
+        /// The width at which the text needs to start wrapping. Infinity by default.
+        /// </summary>
+        public float WrappingWidth { get; set; } = float.PositiveInfinity;
+
         ///// <summary>
         ///// How to vertically align the text
         ///// </summary>
@@ -71,6 +76,45 @@ namespace Walgelijk
         /// Parse rich text tags
         /// </summary>
         public bool ParseRichText { get; set; } = false;
+
+        private static ReadOnlySpan<char> GetTextUntilWhitespace(ReadOnlySpan<char> text)
+        {
+            if (text.Length > 1)
+                for (int i = 1; i < text.Length; i++)
+                    if (char.IsWhiteSpace(text[i]))
+                        return text[..(i)];
+            return text;
+        }
+
+        /// <summary>
+        /// Return the total predicted width for a line of text ignoring all textbox and alignment settings
+        /// </summary>
+        public float CalculateTextWidth(ReadOnlySpan<char> text)
+        {
+            float pos = 0;
+            int tagStack = 0;
+            char lastChar = default;
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                var c = text[i];
+                if (c == '<')
+                    tagStack++;
+                if (c == '>')
+                    tagStack--;
+                tagStack = Math.Max(0, tagStack);
+
+                if (tagStack > 0)
+                    continue;
+
+                var glyph = Font.GetGlyph(c);
+                Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
+                lastChar = c;
+
+                pos += glyph.Advance * TrackingMultiplier + kerning.Amount * KerningMultiplier;
+            }
+            return pos;
+        }
 
         /// <summary>
         /// Generate 2D text mesh. Returns the local bounding box.
@@ -87,11 +131,6 @@ namespace Walgelijk
         /// <param name="colours">Colours to set at indices</param>
         public TextMeshResult Generate(ReadOnlySpan<char> displayString, Vertex[] vertices, uint[] indices, IList<ColourInstruction> colours = null)
         {
-            //if (vertices.Length < displayString.Length * 4)
-            //    throw new Exception(string.Format("The vertex array is of length {0}, expected {1}", vertices.Length, displayString.Length * 4));
-            //if (indices.Length < displayString.Length * 6)
-            //    throw new Exception(string.Format("The index array is of length {0}, expected {1}", indices.Length, displayString.Length * 6));
-
             float cursor = 0;
             float width = Font.Width;
             float height = Font.Height;
@@ -139,6 +178,25 @@ namespace Walgelijk
                         lastChar = default;
                         continue;
                         //TODO andere escape character handlers
+                }
+
+                if (char.IsWhiteSpace(c))
+                {
+                    var cursorPosUntilNextWord = cursor + CalculateTextWidth(GetTextUntilWhitespace(displayString[i..]));
+                    if (cursorPosUntilNextWord > WrappingWidth)
+                    {
+                        line++;
+                        cursor = 0;
+                        lastChar = default;
+                        continue;
+                    }
+                }
+                else if (cursor > WrappingWidth)
+                {
+                    line++;
+                    cursor = 0;
+                    lastChar = default;
+                    continue;
                 }
 
                 var glyph = Font.GetGlyph(c);
@@ -201,20 +259,11 @@ namespace Walgelijk
                     color
                     );
 
-                //TODO waarom kan dit niet?? er gaat iets mis maar ik snap niet waarom
-                //maxX = MathF.Max(vertex.Position.X, maxX);
-                //maxY = MathF.Max(vertex.Position.Y, maxY);
-                //minX = MathF.Min(vertex.Position.X, minX);
-                //minY = MathF.Min(vertex.Position.Y, minY);
-
                 return vertex;
             }
 
             void executeTag(ReadOnlySpan<char> tagContents)
             {
-#if DEBUG
-                Logger.Debug("Executing tag " + tagContents.ToString());
-#endif
                 bool isClosingTag = tagContents[0] == '/';
                 if (isClosingTag)
                     tagContents = tagContents[1..];

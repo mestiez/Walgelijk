@@ -3591,6 +3591,11 @@
             IShapeComponent that holds the information necessary to draw text
             </summary>
         </member>
+        <member name="F:Walgelijk.TextComponent.TextMeshGenerator">
+            <summary>
+            The raw text mesh generator. You can edit this all you want but it's safer to use the properties of the <see cref="T:Walgelijk.TextComponent"/>
+            </summary>
+        </member>
         <member name="M:Walgelijk.TextComponent.#ctor(System.String,Walgelijk.Font)">
             <summary>
             Create a text component
@@ -3624,6 +3629,16 @@
         <member name="P:Walgelijk.TextComponent.TrackingMultiplier">
             <summary>
             Distance between letters. Changing this forces a vertex array update.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TextComponent.ParseRichText">
+            <summary>
+            Should the generator parse rich text? Changing this forces a vertex array update.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TextComponent.WrappingWidth">
+            <summary>
+            The maximum text width before wrapping. Changing this forces a vertex array update.
             </summary>
         </member>
         <member name="P:Walgelijk.TextComponent.KerningMultiplier">
@@ -3713,9 +3728,19 @@
             Line height multiplier
             </summary>
         </member>
+        <member name="P:Walgelijk.TextMeshGenerator.WrappingWidth">
+            <summary>
+            The width at which the text needs to start wrapping. Infinity by default.
+            </summary>
+        </member>
         <member name="P:Walgelijk.TextMeshGenerator.ParseRichText">
             <summary>
             Parse rich text tags
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TextMeshGenerator.CalculateTextWidth(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Return the total predicted width for a line of text ignoring all textbox and alignment settings
             </summary>
         </member>
         <member name="M:Walgelijk.TextMeshGenerator.Generate(System.String,Walgelijk.Vertex[],System.UInt32[],System.Collections.Generic.IList{Walgelijk.TextMeshGenerator.ColourInstruction})">

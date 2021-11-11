@@ -39,7 +39,7 @@ namespace Test
             //() =>
             //{
             //});
-            game.Scene = LoadScene(game);
+            game.Scene = LoadScene2(game);
 
 #if DEBUG
             game.DevelopmentMode = true;
@@ -51,7 +51,43 @@ namespace Test
             game.Start();
         }
 
-        private static Scene LoadScene(Game game)
+        private static Scene LoadScene2(Game game)
+        {
+            Scene scene = new Scene(game);
+
+            var camera = scene.CreateEntity();
+            scene.AttachComponent(camera, new TransformComponent());
+            scene.AttachComponent(camera, new CameraComponent { PixelsPerUnit = 1, OrthographicSize = 1 });
+
+            var text = scene.CreateEntity();
+            scene.SetTag(text, new Tag(234));
+            scene.AttachComponent(text, new TransformComponent());
+            var generator = scene.AttachComponent(text, new TextComponent(
+                @"<color=#00abff>https://codepen.io/heff/pen/EarCt/left/?editors=010</color>
+hoe is het vandaag dit is een lange you set the max width to a number and the text generator does a bunch of maths to calculate where to put the next letters"
+                ));
+
+            scene.AddSystem(new TransformSystem());
+            scene.AddSystem(new CameraSystem() { ExecutionOrder = -1 });
+            scene.AddSystem(new TextWrappingWidthSystem() { ExecutionOrder = -1 });
+            scene.AddSystem(new ShapeRendererSystem());
+
+            return scene;
+        }
+
+        class TextWrappingWidthSystem : Walgelijk.System
+        {
+            public override void Update()
+            {
+                if (Scene.TryGetEntityWithTag(new Tag(234), out var entity))
+                {
+                    var pos = Scene.GetComponentFast<TransformComponent>(entity).Position.X;
+                    Scene.GetComponentFast<TextComponent>(entity).WrappingWidth = MathF.Max(10, Input.WorldMousePosition.X - pos);
+                }
+            }
+        }
+
+        private static Scene LoadScene1(Game game)
         {
             Scene scene = new Scene(game);
 
@@ -141,7 +177,7 @@ namespace Test
             //var opening = new Sound(Resources.Load<AudioData>("cannot-build.wav"));
             //game.AudioRenderer.PlayOnce(opening);
 
-           // game.AudioRenderer.Play(new Sound(Resources.Load<AudioData>("dexter.ogg"), true));
+            // game.AudioRenderer.Play(new Sound(Resources.Load<AudioData>("dexter.ogg"), true));
 
             var particleComponent = new ParticlesComponent(10000)
             {
@@ -159,7 +195,7 @@ namespace Test
                 FloorLevel = -4
             };
             //Sound particleHitSound = new Sound(Resources.Load<AudioData>("bounce.ogg"));
-           // particleComponent.OnHitFloor.AddListener(p => game.AudioRenderer.PlayOnce(particleHitSound, p.Velocity.Length() * 0.05f));
+            // particleComponent.OnHitFloor.AddListener(p => game.AudioRenderer.PlayOnce(particleHitSound, p.Velocity.Length() * 0.05f));
 
             scene.AttachComponent(particles, particleComponent);
 
@@ -231,7 +267,7 @@ namespace Test
             }
 
             Rect a = new Rect(0, 0, 100, 100);
-            DebugDraw.Rectangle(a, 0,Colors.Cyan);
+            DebugDraw.Rectangle(a, 0, Colors.Cyan);
             DebugDraw.Circle(Input.WorldMousePosition, 10, Colors.Green);
             DebugDraw.Circle(a.ClosestPoint(Input.WorldMousePosition), 20, a.ContainsPoint(Input.WorldMousePosition) ? Colors.White : Colors.Green);
         }
