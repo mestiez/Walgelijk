@@ -47,6 +47,7 @@ namespace Test
             game.DevelopmentMode = false;
 #endif
             game.Window.SetIcon(Resources.Load<Texture>("icon.png"));
+            game.Profiling.DrawQuickProfiler = false;
 
             game.Start();
         }
@@ -70,6 +71,8 @@ namespace Test
             scene.AddSystem(new ShapeRendererSystem());
             scene.AddSystem(new DebugCameraSystem());
 
+            game.Console.DrawConsoleNotification = false;
+
             return scene;
         }
 
@@ -80,7 +83,24 @@ namespace Test
                 if (Scene.TryGetEntityWithTag(new Tag(234), out var entity))
                 {
                     var pos = Scene.GetComponentFast<TransformComponent>(entity).Position.X;
-                    Scene.GetComponentFast<TextComponent>(entity).WrappingWidth = MathF.Max(10, Input.WorldMousePosition.X - pos);
+                    var text = Scene.GetComponentFast<TextComponent>(entity);
+                    text.WrappingWidth = MathF.Max(10, Input.WorldMousePosition.X - pos);
+
+                    if (Input.IsKeyPressed(Key.Space))
+                    {
+                        switch (text.Alignment)
+                        {
+                            case TextAlign.Left:
+                                text.Alignment = TextAlign.Center;
+                                break;
+                            case TextAlign.Center:
+                                text.Alignment = TextAlign.Right;
+                                break;
+                            case TextAlign.Right:
+                                text.Alignment = TextAlign.Left;
+                                break;
+                        }
+                    }
                 }
             }
         }

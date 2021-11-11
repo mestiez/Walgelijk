@@ -3641,6 +3641,11 @@
             The maximum text width before wrapping. Changing this forces a vertex array update.
             </summary>
         </member>
+        <member name="P:Walgelijk.TextComponent.Alignment">
+            <summary>
+            The text alignment. Changing this forces a vertex array update.
+            </summary>
+        </member>
         <member name="P:Walgelijk.TextComponent.KerningMultiplier">
             <summary>
             Kerning amount multiplier. Changing this forces a vertex array update.
@@ -3731,6 +3736,11 @@
         <member name="P:Walgelijk.TextMeshGenerator.WrappingWidth">
             <summary>
             The width at which the text needs to start wrapping. Infinity by default.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.TextMeshGenerator.Align">
+            <summary>
+            How to vertically align the text
             </summary>
         </member>
         <member name="P:Walgelijk.TextMeshGenerator.ParseRichText">

@@ -157,6 +157,19 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// The text alignment. Changing this forces a vertex array update.
+        /// </summary>
+        public TextAlign Alignment
+        {
+            get => TextMeshGenerator.Align;
+            set
+            {
+                TextMeshGenerator.Align = value;
+                CreateVertices();
+            }
+        }
+
+        /// <summary>
         /// Kerning amount multiplier. Changing this forces a vertex array update.
         /// </summary>
         public float KerningMultiplier

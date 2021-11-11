@@ -65,12 +65,10 @@ namespace Walgelijk
         /// </summary>
         public float WrappingWidth { get; set; } = float.PositiveInfinity;
 
-        ///// <summary>
-        ///// How to vertically align the text
-        ///// </summary>
-        //public TextAlign Align { get; set; } = TextAlign.Left;
-        //TODO align stuff
-        //Textbox stuff
+        /// <summary>
+        /// How to vertically align the text
+        /// </summary>
+        public TextAlign Align { get; set; } = TextAlign.Left;
 
         /// <summary>
         /// Parse rich text tags
@@ -81,7 +79,7 @@ namespace Walgelijk
         {
             if (text.Length > 1)
                 for (int i = 1; i < text.Length; i++)
-                    if (char.IsWhiteSpace(text[i]) || text[i] == '\n')
+                    if (char.IsWhiteSpace(text[i]) || text[i] == '\r' || text[i] == '\n')
                         return text[..(i)];
             return text;
         }
@@ -100,7 +98,7 @@ namespace Walgelijk
                 var c = text[i];
                 if (char.IsControl(c))
                     continue;
-                if (c == '<' && !(i > 1 && text[i-1] != '\\')) //check for escape slash
+                if (c == '<' && !(i > 1 && text[i - 1] != '\\')) //check for escape slash
                     tagStack++;
                 if (c == '>' && !(i > 1 && text[i - 1] != '\\'))
                     tagStack--;
@@ -152,6 +150,9 @@ namespace Walgelijk
             var colorToSet = Color;
             int glyphCountWithoutTags = 0;
 
+            int lastLineLetterStartIndex = 0;
+            int vertexCountSinceNewLine = 0;
+
             for (int i = 0; i < displayString.Length; i++)
             {
                 var c = displayString[i];
@@ -169,10 +170,10 @@ namespace Walgelijk
                         executeTag(displayString[(i + 1)..(closingArrowDistance + i)]);
                         i += closingArrowDistance;
                         continue;
+                    case '\r':
+                        continue;
                     case '\n':
-                        line++;
-                        cursor = 0;
-                        lastChar = default;
+                        startNewLine(i, displayString);
                         continue;
                         //case '\t':
                         //    float tabSize = Font.Size * 5;
@@ -187,17 +188,13 @@ namespace Walgelijk
                     var cursorPosUntilNextWord = cursor + CalculateTextWidth(GetTextUntilWhitespace(displayString[i..]));
                     if (cursorPosUntilNextWord > WrappingWidth)
                     {
-                        line++;
-                        cursor = 0;
-                        lastChar = default;
+                        startNewLine(i, displayString);
                         continue;
                     }
                 }
                 else if (cursor > WrappingWidth)
                 {
-                    line++;
-                    cursor = 0;
-                    lastChar = default;
+                    startNewLine(i, displayString);
                     continue;
                 }
 
@@ -224,6 +221,7 @@ namespace Walgelijk
                 indices[indexIndex + 4] = vertexIndex + 3;
                 indices[indexIndex + 5] = vertexIndex + 2;
 
+                vertexCountSinceNewLine += 4;
                 glyphCountWithoutTags++;
 
                 vertexIndex += 4;
@@ -232,6 +230,9 @@ namespace Walgelijk
 
                 lastChar = c;
             }
+
+            if (displayString.Length > 1)
+                startNewLine(displayString.Length, displayString);
 
             //TODO dit is niet goed
 
@@ -281,6 +282,36 @@ namespace Walgelijk
                     skew = isClosingTag ? 0 : Font.Size * /*SkewIntensity*/ 0.1f;
                     return;
                 }
+            }
+
+            void startNewLine(int i, ReadOnlySpan<char> str)
+            {
+                if (Align != TextAlign.Left) //no need to do alignment if its left aligned
+                {
+                    int start = lastLineLetterStartIndex;
+                    int end = i;
+                    var part = str[start..end];
+                    var lengthOfLastLine = (int)CalculateTextWidth(part);
+                    var verticesInLine = vertices.AsSpan()[((int)vertexIndex - vertexCountSinceNewLine)..(int)vertexIndex];
+
+                    var offset = Align switch
+                    {
+                        TextAlign.Right => lengthOfLastLine,
+                        TextAlign.Center => lengthOfLastLine / 2,
+                        _ => 0
+                    };
+
+                    for (int v = 0; v < verticesInLine.Length; v++)
+                    {
+                        verticesInLine[v].Position.X -= offset;
+                    }
+                }
+
+                line++;
+                cursor = 0;
+                lastLineLetterStartIndex = i + 1;
+                vertexCountSinceNewLine = 0;
+                lastChar = default;
             }
         }
 
