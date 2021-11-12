@@ -200,7 +200,7 @@ namespace Walgelijk
                 else if (cursor > WrappingWidth)
                 {
                     startNewLine(i, displayString);
-                    continue;
+                    //continue;
                 }
 
                 var glyph = Font.GetGlyph(c);
