@@ -76,7 +76,7 @@ namespace Walgelijk.OpenTK
             GL.DrawElementsInstanced(TypeConverter.Convert(vertexBuffer.PrimitiveType), vertexBuffer.AmountOfIndicesToRender ?? vertexBuffer.IndexCount, DrawElementsType.UnsignedInt, IntPtr.Zero, instanceCount);
         }
 
-        public void SetUniform(Material material, string uniformName, object data)
+        public void SetUniform<T>(Material material, string uniformName, T data)
         {
             ShaderManager.Instance.SetUniform(material, uniformName, data);
         }

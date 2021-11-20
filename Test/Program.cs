@@ -39,7 +39,7 @@ namespace Test
             //() =>
             //{
             //});
-            game.Scene = LoadScene2(game);
+            game.Scene = LoadScene1(game);
 
 #if DEBUG
             game.DevelopmentMode = true;

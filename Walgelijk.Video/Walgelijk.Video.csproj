@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.4</Version>
+    <Version>0.5</Version>
     <Company>Studio Minus</Company>
     <Authors>zooi</Authors>
     <Description>Doet video dingen :)</Description>

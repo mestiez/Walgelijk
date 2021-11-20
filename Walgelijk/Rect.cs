@@ -65,11 +65,14 @@ namespace Walgelijk
         /// <summary>
         /// Returns the center of the rectangle. Calculated using (min + max) * 0.5
         /// </summary>
-        /// <returns></returns>
         public readonly Vector2 GetCenter() => new(
                 (MinX + MaxX) * 0.5f,
                 (MinY + MaxY) * 0.5f
                 );
+        /// <summary>
+        /// Returns the size of the rectangle. Calculated using (max - min)
+        /// </summary>
+        public readonly Vector2 GetSize() => new(MaxX - MinX, MaxY - MinY);
 
         /// <summary>
         /// Create a rectangle

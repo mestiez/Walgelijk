@@ -14,22 +14,12 @@
 
         internal void ActivateTexturesFor(LoadedMaterial material)
         {
-            var allUniforms = material.Material.GetAllUniforms();
-
             LoadedTexture loadedTexture;
             TextureUnitLink unitLink;
 
-            foreach (var pair in allUniforms)
+            foreach (var pair in material.Material.InternalUniforms.Textures)
             {
-                switch (pair.Value)
-                {
-                    case IReadableTexture v:
-                        loadedTexture = GPUObjects.TextureCache.Load(v);
-                        break;
-                    default:
-                        continue;
-                }
-
+                loadedTexture = GPUObjects.TextureCache.Load(pair.Value);
                 unitLink = Load(new MaterialTexturePair(material, loadedTexture, material.GetUniformLocation(pair.Key)));
                 unitLink.Bind();
             }

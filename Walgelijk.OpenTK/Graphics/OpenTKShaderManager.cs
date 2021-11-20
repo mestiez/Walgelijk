@@ -20,7 +20,7 @@ namespace Walgelijk.OpenTK
         private readonly MatrixArrayCache matrixArrayCache = new();
         private readonly Vector3ArrayCache v3ArrayCache = new();
 
-        public void SetUniform(Material material, string uniformName, object data)
+        public void SetUniform<T>(Material material, string uniformName, T data)
         {
             var loaded = GPUObjects.MaterialCache.Load(material);
             int prog = loaded.ProgramHandle;
