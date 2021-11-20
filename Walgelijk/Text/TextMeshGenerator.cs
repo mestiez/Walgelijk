@@ -5,32 +5,6 @@ using System.Numerics;
 namespace Walgelijk
 {
     /// <summary>
-    /// Contains information about the results of text mesh generation
-    /// </summary>
-    public struct TextMeshResult
-    {
-        /// <summary>
-        /// Amount of glyphs actually generated
-        /// </summary>
-        public int GlyphCount;
-
-        /// <summary>
-        /// Amount of vertices actually generated
-        /// </summary>
-        public int VertexCount;
-
-        /// <summary>
-        /// Amount of indices actually generated
-        /// </summary>
-        public int IndexCount;
-
-        /// <summary>
-        /// Resulting local bounding box of the text mesh
-        /// </summary>
-        public Rect LocalBounds;
-    }
-
-    /// <summary>
     /// Utility class that provides text mesh generation functions 
     /// </summary>
     public class TextMeshGenerator
@@ -175,6 +149,7 @@ namespace Walgelijk
                         executeTag(displayString[(i + 1)..(closingArrowDistance + i)]);
                         i += closingArrowDistance;
                         continue;
+                    case '\0':
                     case '\r':
                         continue;
                     case '\n':
@@ -187,6 +162,9 @@ namespace Walgelijk
                         //    continue;
                         //TODO andere escape character handlers
                 }
+
+                if (char.IsControl(c)) //if its a control character that hasnt already been handled then skip it completely
+                    continue;
 
                 if (char.IsWhiteSpace(c))
                 {

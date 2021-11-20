@@ -3974,31 +3974,6 @@
             Create a material for a set of SDF textures
             </summary>
         </member>
-        <member name="T:Walgelijk.TextMeshResult">
-            <summary>
-            Contains information about the results of text mesh generation
-            </summary>
-        </member>
-        <member name="F:Walgelijk.TextMeshResult.GlyphCount">
-            <summary>
-            Amount of glyphs actually generated
-            </summary>
-        </member>
-        <member name="F:Walgelijk.TextMeshResult.VertexCount">
-            <summary>
-            Amount of vertices actually generated
-            </summary>
-        </member>
-        <member name="F:Walgelijk.TextMeshResult.IndexCount">
-            <summary>
-            Amount of indices actually generated
-            </summary>
-        </member>
-        <member name="F:Walgelijk.TextMeshResult.LocalBounds">
-            <summary>
-            Resulting local bounding box of the text mesh
-            </summary>
-        </member>
         <member name="T:Walgelijk.TextMeshGenerator">
             <summary>
             Utility class that provides text mesh generation functions 
@@ -4081,6 +4056,31 @@
         <member name="F:Walgelijk.TextMeshGenerator.ColourInstruction.Colour">
             <summary>
             Colour to set when we reach <see cref="F:Walgelijk.TextMeshGenerator.ColourInstruction.CharIndex"/>
+            </summary>
+        </member>
+        <member name="T:Walgelijk.TextMeshResult">
+            <summary>
+            Contains information about the results of text mesh generation
+            </summary>
+        </member>
+        <member name="F:Walgelijk.TextMeshResult.GlyphCount">
+            <summary>
+            Amount of glyphs actually generated
+            </summary>
+        </member>
+        <member name="F:Walgelijk.TextMeshResult.VertexCount">
+            <summary>
+            Amount of vertices actually generated
+            </summary>
+        </member>
+        <member name="F:Walgelijk.TextMeshResult.IndexCount">
+            <summary>
+            Amount of indices actually generated
+            </summary>
+        </member>
+        <member name="F:Walgelijk.TextMeshResult.LocalBounds">
+            <summary>
+            Resulting local bounding box of the text mesh
             </summary>
         </member>
         <member name="T:Walgelijk.VerticalTextAlign">
