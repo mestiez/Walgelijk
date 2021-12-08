@@ -93,10 +93,10 @@ namespace Walgelijk
                 pos += (glyph.Advance + glyph.XOffset) * TrackingMultiplier + kerning.Amount * KerningMultiplier;
             }
             return pos;
-        }
+        }        
 
         /// <summary>
-        /// Generate 2D text mesh. Returns the local bounding box.
+        /// Generate 2D text mesh. Returns a structure containing some results
         /// </summary>
         public TextMeshResult Generate(string displayString, Vertex[] vertices, uint[] indices, IList<ColourInstruction> colours = null) =>
             Generate(displayString.AsSpan(), vertices, indices, colours);

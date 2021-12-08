@@ -4,6 +4,7 @@
     {
         public short NumChannels;
         public int SampleRate;
+        public long SampleCount;
         public byte[] Data;
     }
 }

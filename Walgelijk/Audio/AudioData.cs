@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Walgelijk
 {
@@ -15,7 +13,7 @@ namespace Walgelijk
         public int ChannelCount { get; }
 
         /// <summary>
-        /// Audio data
+        /// Audio data. This is null if <see cref="Streaming"/>
         /// </summary>
         public byte[] Data { get; private set; }
 
@@ -23,6 +21,11 @@ namespace Walgelijk
         /// Sample rate
         /// </summary>
         public int SampleRate { get; }
+
+        /// <summary>
+        /// Total sample count
+        /// </summary>
+        public long SampleCount { get; }
 
         /// <summary>
         /// Duration of the sound
@@ -35,19 +38,27 @@ namespace Walgelijk
         public bool KeepInMemory { get; }
 
         /// <summary>
+        /// Was this audio data configured to be streamed?
+        /// </summary>
+        public bool Streaming { get; }
+
+        /// <summary>
         /// Create a sound from raw data
         /// </summary>
-        public AudioData(byte[] data, int sampleRate, int channelCount, bool keepInMemory = false)
+        public AudioData(byte[] data, int sampleRate, int channelCount, long sampleCount, bool keepInMemory = false, bool stream = false)
         {
+            Streaming = stream;
             Data = data ?? Array.Empty<byte>();
             ChannelCount = channelCount;
             KeepInMemory = keepInMemory;
             SampleRate = sampleRate;
+            SampleCount = sampleCount;
 
-            if (data?.Length == 0 || sampleRate == 0 || channelCount == 0)
+            if ((data?.Length == 0 && !stream) || sampleRate == 0 || channelCount == 0 || sampleCount == 0)
                 Duration = TimeSpan.Zero;
             else
-                Duration = TimeSpan.FromSeconds(Data.Length / ChannelCount / (double)sampleRate);
+                Duration = TimeSpan.FromSeconds(sampleCount / ChannelCount / (double)sampleRate);
+
         }
 
         /// <summary>

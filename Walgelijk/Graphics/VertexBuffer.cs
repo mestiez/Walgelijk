@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace Walgelijk
@@ -6,7 +7,7 @@ namespace Walgelijk
     /// <summary>
     /// Holds all the data needed to draw vertices to the screen
     /// </summary>
-    public class VertexBuffer
+    public class VertexBuffer : IDisposable
     {
         private Vertex[] vertices;
         private uint[] indices;
@@ -150,6 +151,11 @@ namespace Walgelijk
                 return null;
 
             return extraAttributes[location];
+        }
+
+        public void Dispose()
+        {
+            Game.Main?.Window?.Graphics?.Delete(this);
         }
 
         /// <summary>

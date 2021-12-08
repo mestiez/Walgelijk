@@ -1,15 +1,21 @@
 ﻿using OpenTK.Audio.OpenAL;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Walgelijk.OpenTK
 {
     public class OpenALAudioRenderer : AudioRenderer
     {
+        internal const int StreamingBufferSize = 1024;
+
         private ALDevice device;
         private ALContext context;
-        private readonly bool canPlayAudio = false;
+        private bool canPlayAudio = false;
+        private bool canEnumerateDevices = false;
         private readonly List<TemporarySource> temporarySources = new();
 
         public override float Volume
@@ -22,10 +28,7 @@ namespace Walgelijk.OpenTK
 
             set => AL.Listener(ALListenerf.Gain, value);
         }
-
-
         public override bool Muted { get => Volume <= float.Epsilon; set => Volume = 0; }
-
         public override Vector3 ListenerPosition
         {
             get
@@ -39,12 +42,21 @@ namespace Walgelijk.OpenTK
 
         public OpenALAudioRenderer()
         {
-            Resources.RegisterType(typeof(AudioData), LoadSound);
+            Resources.RegisterType(typeof(AudioData), d => LoadSound(d));
 
-            device = ALC.OpenDevice(null);
+            canEnumerateDevices = AL.IsExtensionPresent("ALC_ENUMERATION_EXT");
+
+            Initialise();
+        }
+
+        private void Initialise(string? deviceName = null)
+        {
+            canPlayAudio = false;
+
+            device = ALC.OpenDevice(deviceName);
 
             if (device == ALDevice.Null)
-                Logger.Warn("No audio device could be found", this);
+                Logger.Warn(deviceName == null ? "No audio device could be found" : "The requested audio device could not be found", this);
 
             context = ALC.CreateContext(device, new ALContextAttributes());
             if (context == ALContext.Null)
@@ -58,7 +70,7 @@ namespace Walgelijk.OpenTK
                 Logger.Warn("The audio context could not be set", this);
 
             if (!canPlayAudio)
-                Logger.Error("Failed to initialise the audio renderer because of all of the above", this);
+                Logger.Error("Failed to initialise the audio renderer", this);
         }
 
         private static void UpdateIfRequired(Sound sound, out int source)
@@ -75,26 +87,28 @@ namespace Walgelijk.OpenTK
             AL.Source(source, ALSourcef.Pitch, sound.Pitch);
         }
 
-        public override AudioData LoadSound(string path)
+        public override AudioData LoadSound(string path, bool streaming = false)
         {
             var ext = path.AsSpan()[path.LastIndexOf('.')..];
             AudioFileData data;
 
+            if (streaming)
+                throw new NotImplementedException("This audio renderer can not stream yet.");
+
             try
             {
-                if (ext.SequenceEqual(".wav"))
+                if (Utilities.TextEqualsCaseInsensitive(ext, ".wav"))
                     data = WaveFileReader.Read(path);
-                else if (ext.SequenceEqual(".ogg"))
+                else if (Utilities.TextEqualsCaseInsensitive(ext, ".ogg"))
                     data = VorbisFileReader.Read(path);
                 else
                     throw new Exception($"This is not a supported audio file. Only Microsoft WAV and Ogg Vorbis can be decoded.");
             }
             catch (Exception e)
             {
-                throw new AggregateException($"Failed to load WAVE file: {path}", e);
+                throw new AggregateException($"Failed to load audio file: {path}", e);
             }
-
-            var audio = new AudioData(data.Data, data.SampleRate, data.NumChannels);
+            var audio = new AudioData(data.Data, data.SampleRate, data.NumChannels, data.SampleCount);
             return audio;
         }
 
@@ -197,6 +211,8 @@ namespace Walgelijk.OpenTK
 
         public override void Release()
         {
+            canPlayAudio = false;
+
             if (device != ALDevice.Null)
                 ALC.CloseDevice(device);
 
@@ -205,6 +221,15 @@ namespace Walgelijk.OpenTK
                 ALC.MakeContextCurrent(ALContext.Null);
                 ALC.DestroyContext(context);
             }
+
+            foreach (var item in AudioObjects.Buffers.GetAllUnloaded())
+                DisposeOf(item);
+
+            foreach (var item in AudioObjects.Sources.GetAllUnloaded())
+                DisposeOf(item);
+
+            AudioObjects.Buffers.UnloadAll();
+            AudioObjects.Sources.UnloadAll();
         }
 
         public override void Process(Game game)
@@ -243,11 +268,42 @@ namespace Walgelijk.OpenTK
         {
             audioData.ForceClearData();
             AudioObjects.Buffers.Unload(audioData);
+            Resources.Unload(audioData);
+            //TODO dispose of vorbis reader if applicable
+            //if (AudioObjects.VorbisReaderCache.Has())
+            //AudioObjects.VorbisReaderCache.Unload(audioData);
         }
 
         public override void DisposeOf(Sound sound)
         {
             AudioObjects.Sources.Unload(sound);
+            Resources.Unload(sound);
+        }
+
+        public override void SetAudioDevice(string device)
+        {
+            Release();
+            Initialise(device);
+        }
+
+        public override string GetCurrentAudioDevice()
+        {
+            if (device == ALDevice.Null)
+                return null;
+
+            return ALC.GetString(device, AlcGetString.AllDevicesSpecifier);
+        }
+
+        public override IEnumerable<string> EnumerateAvailableAudioDevices()
+        {
+            if (!canEnumerateDevices)
+            {
+                Logger.Warn("ALC_ENUMERATION_EXT is not present");
+                yield break;
+            }
+
+            foreach (var deviceName in ALC.GetString(AlcGetStringList.AllDevicesSpecifier))
+                yield return deviceName ;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 
 namespace Walgelijk
 {
@@ -6,15 +7,31 @@ namespace Walgelijk
     /// The global audio renderer 
     /// </summary>
     public abstract class AudioRenderer
-    { 
+    {
         /// <summary>
         /// Master volume. Ranges from 0.0 to 1.0
         /// </summary>
         public abstract float Volume { get; set; }
+
         /// <summary>
         /// Mute all audio
         /// </summary>
         public abstract bool Muted { get; set; }
+
+        /// <summary>
+        /// Set the audio device. This may reset the audio context. NULL to fallback to the default audio device.
+        /// </summary>
+        public abstract void SetAudioDevice(string device);
+
+        /// <summary>
+        /// Returns the audio device that's currently being used
+        /// </summary>
+        public abstract string GetCurrentAudioDevice();
+
+        /// <summary>
+        /// Enumerate through the available audio devices
+        /// </summary>
+        public abstract IEnumerable<string> EnumerateAvailableAudioDevices();
 
         /// <summary>
         /// Position of the listener in world space
@@ -72,7 +89,7 @@ namespace Walgelijk
         /// Load a sound from file
         /// </summary>
         /// <returns></returns>
-        public abstract AudioData LoadSound(string path);
+        public abstract AudioData LoadSound(string path, bool streaming = false);
 
         /// <summary>
         /// Release all resources used by the audio engine

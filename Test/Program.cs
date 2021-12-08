@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Walgelijk;
+using Walgelijk.Imgui;
 using Walgelijk.OpenTK;
 using Walgelijk.ParticleSystem;
 using Walgelijk.UI;
@@ -39,7 +40,7 @@ namespace Test
             //() =>
             //{
             //});
-            game.Scene = LoadScene1(game);
+            game.Scene = LoadScene2(game);
 
 #if DEBUG
             game.DevelopmentMode = true;
@@ -65,15 +66,56 @@ namespace Test
             scene.AttachComponent(text, new TransformComponent());
             var generator = scene.AttachComponent(text, new TextComponent(Resources.Load<string>("lorem ipsum.txt")));
 
+            scene.AddSystem(new Walgelijk.Imgui.GuiSystem());
             scene.AddSystem(new TransformSystem());
             scene.AddSystem(new CameraSystem() { ExecutionOrder = -1 });
             scene.AddSystem(new TextWrappingWidthSystem() { ExecutionOrder = -1 });
             scene.AddSystem(new ShapeRendererSystem());
             scene.AddSystem(new DebugCameraSystem());
+            scene.AddSystem(new Scene2System());
+
+           // AudioData costolotData = game.AudioRenderer.LoadSound("resources\\audio\\Costolot.ogg");
+           // var music = new Sound(costolotData, true, false);
+           // game.AudioRenderer.Play(music);
 
             game.Console.DrawConsoleNotification = false;
 
             return scene;
+        }
+
+        public class Scene2System : Walgelijk.System
+        {
+            private string[] audioDevices = null;
+
+            public override void Initialise()
+            {
+                audioDevices = game.AudioRenderer.EnumerateAvailableAudioDevices().ToArray();
+            }
+
+            public override void Render()
+            {
+                if (Gui.ClickButton("R", new Vector2(100 + 256 + 5, 100), new Vector2(32)))
+                    Initialise();
+
+                if (Gui.ClickButton("P", new Vector2(100 + 256 + 5 + 32 + 5, 100), new Vector2(32)))
+                {
+                    AudioData costolotData = Resources.Load<AudioData>("Costolot.ogg");
+                    var music = new Sound(costolotData, true, false);
+                    game.AudioRenderer.Play(music);
+                }
+
+
+                Gui.Label(game.AudioRenderer.GetCurrentAudioDevice(), new Vector2(256));
+
+                int i = 0;
+                foreach (var item in audioDevices)
+                {
+                    if (Gui.ClickButton(item, new Vector2(100, 100 + i * (32 + 5)), 
+                        new Vector2(256, 32), optionalId: i))
+                        game.AudioRenderer.SetAudioDevice(item);
+                    i++;
+                }
+            }
         }
 
         class TextWrappingWidthSystem : Walgelijk.System
@@ -193,7 +235,7 @@ namespace Test
                     new TopAnchor{Offset = 15},
                  },
                 Size = new Vector2(128),
-                StyleOverride = new Style
+                StyleOverride = new Walgelijk.UI.Style
                 {
                     BackgroundColour = new Property<Color>(Colors.Gray, Colors.Magenta, Colors.Magenta * 0.5f)
                 },

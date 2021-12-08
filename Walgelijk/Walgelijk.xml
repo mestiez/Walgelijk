@@ -16,12 +16,17 @@
         </member>
         <member name="P:Walgelijk.AudioData.Data">
             <summary>
-            Audio data
+            Audio data. This is null if <see cref="P:Walgelijk.AudioData.Streaming"/>
             </summary>
         </member>
         <member name="P:Walgelijk.AudioData.SampleRate">
             <summary>
             Sample rate
+            </summary>
+        </member>
+        <member name="P:Walgelijk.AudioData.SampleCount">
+            <summary>
+            Total sample count
             </summary>
         </member>
         <member name="P:Walgelijk.AudioData.Duration">
@@ -34,7 +39,12 @@
             Should the data be cleared from memory and only remain in the audio engine?
             </summary>
         </member>
-        <member name="M:Walgelijk.AudioData.#ctor(System.Byte[],System.Int32,System.Int32,System.Boolean)">
+        <member name="P:Walgelijk.AudioData.Streaming">
+            <summary>
+            Was this audio data configured to be streamed?
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioData.#ctor(System.Byte[],System.Int32,System.Int32,System.Int64,System.Boolean,System.Boolean)">
             <summary>
             Create a sound from raw data
             </summary>
@@ -57,6 +67,21 @@
         <member name="P:Walgelijk.AudioRenderer.Muted">
             <summary>
             Mute all audio
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioRenderer.SetAudioDevice(System.String)">
+            <summary>
+            Set the audio device. This may reset the audio context. NULL to fallback to the default audio device.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioRenderer.GetCurrentAudioDevice">
+            <summary>
+            Returns the audio device that's currently being used
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioRenderer.EnumerateAvailableAudioDevices">
+            <summary>
+            Enumerate through the available audio devices
             </summary>
         </member>
         <member name="P:Walgelijk.AudioRenderer.ListenerPosition">
@@ -111,7 +136,7 @@
             Stop all sounds
             </summary>
         </member>
-        <member name="M:Walgelijk.AudioRenderer.LoadSound(System.String)">
+        <member name="M:Walgelijk.AudioRenderer.LoadSound(System.String,System.Boolean)">
             <summary>
             Load a sound from file
             </summary>
@@ -3637,6 +3662,16 @@
             <param name="loadFunction">The function that returns the object given a path</param>
             <returns>Whether the registration succeeded</returns>
         </member>
+        <member name="M:Walgelijk.Resources.Unload(System.String)">
+            <summary>
+            Unloads an asset. Removes it from the cache and also disposes of it if it implements <see cref="T:System.IDisposable"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Resources.Unload``1(``0)">
+            <summary>
+            Unloads an asset. Removes it from the cache and also disposes of it if it implements <see cref="T:System.IDisposable"/>
+            </summary>
+        </member>
         <member name="T:Walgelijk.Time">
             <summary>
             Structure that holds frame specific time data
@@ -4031,7 +4066,7 @@
         </member>
         <member name="M:Walgelijk.TextMeshGenerator.Generate(System.String,Walgelijk.Vertex[],System.UInt32[],System.Collections.Generic.IList{Walgelijk.TextMeshGenerator.ColourInstruction})">
             <summary>
-            Generate 2D text mesh. Returns the local bounding box.
+            Generate 2D text mesh. Returns a structure containing some results
             </summary>
         </member>
         <member name="M:Walgelijk.TextMeshGenerator.Generate(System.ReadOnlySpan{System.Char},Walgelijk.Vertex[],System.UInt32[],System.Collections.Generic.IList{Walgelijk.TextMeshGenerator.ColourInstruction})">
@@ -4268,6 +4303,11 @@
         <member name="M:Walgelijk.Utilities.Snap(System.Numerics.Vector3,System.Single)">
             <summary>
             Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.TextEqualsCaseInsensitive(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char})">
+            <summary>
+            Are the two given character spans the same, regardless of casing? 
             </summary>
         </member>
         <member name="T:Walgelijk.DrawBounds">

@@ -197,7 +197,7 @@ namespace Walgelijk
     /// Object that holds unique information specific to a shader
     /// </summary>
     [Serializable]
-    public sealed class Material
+    public sealed class Material : IDisposable
     {
         private const string NoGameExceptionText = "There is no main instance of Game. Setting uniforms can only be done once a game is running";
 
@@ -476,6 +476,11 @@ namespace Walgelijk
         public bool HasUniform(string name)
         {
             return InternalUniforms.ContainsKey(name);
+        }
+
+        public void Dispose()
+        {
+            Game.Main?.Window?.Graphics?.Delete(this);
         }
 
         /// <summary>

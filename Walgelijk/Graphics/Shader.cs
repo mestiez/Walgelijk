@@ -9,7 +9,7 @@ namespace Walgelijk
     /// Structure that holds the code for a full shader program
     /// </summary>
     [Serializable]
-    public struct Shader
+    public struct Shader : IDisposable
     {
         /// <summary>
         /// Create a shader from vertex and fragment shader code
@@ -43,6 +43,11 @@ namespace Walgelijk
             string vert = File.ReadAllText(vertPath);
             string frag = File.ReadAllText(fragPath);
             return new Shader(vert, frag);
+        }
+
+        public void Dispose()
+        {
+            Game.Main?.Window?.Graphics?.Delete(this);
         }
 
         /// <summary>

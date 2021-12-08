@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace Walgelijk
@@ -12,7 +13,7 @@ namespace Walgelijk
         public override bool Muted { get; set; }
         public override Vector3 ListenerPosition { get; set; }
 
-        public override AudioData LoadSound(string path) { return new AudioData(Array.Empty<byte>(), 0, 0); }
+        public override AudioData LoadSound(string path, bool streaming = false) { return new AudioData(Array.Empty<byte>(), 0, 0, 0); }
 
         public override void Pause(Sound sound) { }
 
@@ -42,5 +43,14 @@ namespace Walgelijk
         }
 
         public override void DisposeOf(Sound sound) { }
+
+        public override void SetAudioDevice(string device) { }
+
+        public override string GetCurrentAudioDevice() => null;
+
+        public override IEnumerable<string> EnumerateAvailableAudioDevices()
+        {
+            yield break;
+        }
     }
 }

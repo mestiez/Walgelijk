@@ -7,7 +7,7 @@ namespace Walgelijk
     /// <summary>
     /// A texture that can be written to
     /// </summary>
-    public interface IReadableTexture
+    public interface IReadableTexture : IDisposable
     {
         /// <summary>
         /// Get a pixel

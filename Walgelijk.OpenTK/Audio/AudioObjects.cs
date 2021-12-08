@@ -1,4 +1,7 @@
-﻿namespace Walgelijk.OpenTK
+﻿using global::OpenTK.Audio.OpenAL;
+using NVorbis;
+
+namespace Walgelijk.OpenTK
 {
     internal struct AudioObjects
     {

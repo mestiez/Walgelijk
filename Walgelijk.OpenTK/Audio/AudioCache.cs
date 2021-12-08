@@ -1,4 +1,5 @@
 ﻿using OpenTK.Audio.OpenAL;
+using System.Collections.Generic;
 
 namespace Walgelijk.OpenTK
 {
@@ -8,7 +9,7 @@ namespace Walgelijk.OpenTK
         {
             var buffer = AL.GenBuffer();
 
-            //channel count can only be 1 or 2, as guaranteed by the wave file reader
+            //channel count can only be 1 or 2, as guaranteed by the file reader
             //bits per sample can only be 16 s guaranteed by the same lad
             ALFormat format = raw.ChannelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16;
 

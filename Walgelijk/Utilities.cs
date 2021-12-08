@@ -308,5 +308,20 @@ namespace Walgelijk
         /// Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
         /// </summary>
         public static Vector3 Snap(Vector3 x, float snapSize) => new Vector3(Snap(x.X, snapSize), Snap(x.Y,snapSize), Snap(x.Z,snapSize));
+
+        /// <summary>
+        /// Are the two given character spans the same, regardless of casing? 
+        /// </summary>
+        public static bool TextEqualsCaseInsensitive(ReadOnlySpan<char> a, ReadOnlySpan<char> b)
+        {
+            if (a.Length != b.Length)
+                return false;
+
+            for (int i = 0; i < a.Length; i++)
+                if (char.ToLowerInvariant(a[i]) != char.ToLowerInvariant(b[i]))
+                    return false;
+
+            return true;
+        }
     }
 }

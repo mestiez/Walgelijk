@@ -11,12 +11,10 @@ namespace Walgelijk
     public static class Resources
     {
         private static bool initialised;
-        private static readonly Stopwatch stopwatch = new Stopwatch();
-
-        private static readonly Dictionary<Type, Func<string, object>> loadFunctions = new Dictionary<Type, Func<string, object>>();
-        private static readonly Dictionary<string, object> resources = new Dictionary<string, object>();
-
-        private static readonly Dictionary<Type, string> basePathByType = new Dictionary<Type, string>();
+        private static readonly Stopwatch stopwatch = new();
+        private static readonly Dictionary<Type, Func<string, object>> loadFunctions = new();
+        private static readonly Dictionary<string, object> resources = new();
+        private static readonly Dictionary<Type, string> basePathByType = new();
 
         /// <summary>
         /// Event invoked when a resource has been requested
@@ -168,6 +166,35 @@ namespace Walgelijk
         public static bool RegisterType(Type type, Func<string, object> loadFunction)
         {
             return loadFunctions.TryAdd(type, loadFunction);
+        }
+
+        /// <summary>
+        /// Unloads an asset. Removes it from the cache and also disposes of it if it implements <see cref="IDisposable"/>
+        /// </summary>
+        public static void Unload(string key)
+        {
+            if (resources.TryGetValue(key, out var obj))
+            {
+                if (obj is IDisposable disp)
+                    disp.Dispose();
+
+                resources.Remove(key);
+            }
+        }
+
+        /// <summary>
+        /// Unloads an asset. Removes it from the cache and also disposes of it if it implements <see cref="IDisposable"/>
+        /// </summary>
+        public static void Unload<T>(T resource)
+        {
+            foreach (var item in resources)
+            {
+                if (item.Value is T typed && typed.Equals(resource))
+                {
+                    Unload(item.Key);
+                    return;
+                }
+            }
         }
 
         private static object CreateNew(string path, Type type)
