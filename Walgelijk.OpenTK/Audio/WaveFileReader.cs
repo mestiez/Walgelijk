@@ -67,6 +67,7 @@ namespace Walgelijk.OpenTK
                 throw new Exception("Input file is not a valid WAVE file: the reported data chunk size does not match the actually read data size");
 
             result.Data = data;
+            result.SampleCount = data.Length;
             file.Dispose();
 
             return result;
