@@ -77,10 +77,13 @@ namespace Walgelijk
                 var c = text[i];
                 if (char.IsControl(c))
                     continue;
-                if (c == '<' && !(i > 1 && text[i - 1] != '\\')) //check for escape slash
+                if (c == '<' && !(i > 1 && text[i - 1] == '\\')) //check for escape slash
                     tagStack++;
-                if (c == '>' && !(i > 1 && text[i - 1] != '\\'))
+                if (c == '>' && !(i > 1 && text[i - 1] == '\\'))
+                {
                     tagStack--;
+                    continue;
+                }
                 tagStack = Math.Max(0, tagStack);
 
                 if (tagStack > 0)
