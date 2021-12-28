@@ -80,7 +80,7 @@ namespace Walgelijk.OpenTK
             raw.NeedsUpdate = false;
 
             if (raw.DisposeLocalCopyAfterUpload)
-                raw.DiposeLocalCopy();
+                raw.DisposeLocalCopy();
         }
 
         private void WriteLDRData(IReadableTexture raw, int componentCount, ReadOnlySpan<Color> pixels)

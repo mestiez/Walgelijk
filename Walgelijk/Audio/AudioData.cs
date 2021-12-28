@@ -5,17 +5,14 @@ namespace Walgelijk
     /// <summary>
     /// Object that contains sound data
     /// </summary>
-    public class AudioData
+    public class AudioData : IExternal<byte>
     {
+        private byte[] data;
+
         /// <summary>
         /// Number of channels
         /// </summary>
         public int ChannelCount { get; }
-
-        /// <summary>
-        /// Audio data. This is null if <see cref="Streaming"/>
-        /// </summary>
-        public byte[] Data { get; private set; }
 
         /// <summary>
         /// Sample rate
@@ -33,9 +30,10 @@ namespace Walgelijk
         public TimeSpan Duration { get; }
 
         /// <summary>
-        /// Should the data be cleared from memory and only remain in the audio engine?
+        /// Use <see cref="DisposeLocalCopyAfterUpload"/> instead
         /// </summary>
-        public bool KeepInMemory { get; }
+        [Obsolete("Use DisposeLocalCopyAfterUpload instead")]
+        public bool KeepInMemory => DisposeLocalCopyAfterUpload;
 
         /// <summary>
         /// Was this audio data configured to be streamed?
@@ -43,14 +41,19 @@ namespace Walgelijk
         public bool Streaming { get; }
 
         /// <summary>
+        /// Should the data be cleared from memory and only remain in the audio engine?
+        /// </summary>
+        public bool DisposeLocalCopyAfterUpload { get; }
+
+        /// <summary>
         /// Create a sound from raw data
         /// </summary>
         public AudioData(byte[] data, int sampleRate, int channelCount, long sampleCount, bool keepInMemory = false, bool stream = false)
         {
             Streaming = stream;
-            Data = data ?? Array.Empty<byte>();
+            this.data = data ?? Array.Empty<byte>();
             ChannelCount = channelCount;
-            KeepInMemory = keepInMemory;
+            DisposeLocalCopyAfterUpload = keepInMemory;
             SampleRate = sampleRate;
             SampleCount = sampleCount;
 
@@ -62,11 +65,22 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Use <see cref="DisposeLocalCopy()"/> instead
+        /// </summary>
+        [Obsolete("Use DisposeLocalCopy instead")]
+        public void ForceClearData() => DisposeLocalCopy();
+
+        /// <summary>
         /// Remove the data from memory, indicating that the data copy in this structure is no longer needed. This will not affect the actual audio engine.
         /// </summary>
-        public void ForceClearData()
+        public void DisposeLocalCopy()
         {
-            Data = null;
+            data = null;
         }
+
+        /// <summary>
+        /// Get a readonly collection of the raw audio data. This can be null if it has been disposed.
+        /// </summary>
+        public ReadOnlyMemory<byte>? GetData() => data;
     }
 }

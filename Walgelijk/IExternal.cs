@@ -11,7 +11,7 @@ namespace Walgelijk
         /// <summary>
         /// Remove the copy of the data that is stored locally, usually because it's already been uploaded
         /// </summary>
-        public void DiposeLocalCopy();
+        public void DisposeLocalCopy();
 
         /// <summary>
         /// Get the data. This can be null if it's been disposed.

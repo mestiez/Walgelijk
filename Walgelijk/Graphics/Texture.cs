@@ -72,7 +72,7 @@ namespace Walgelijk
         public bool NeedsUpdate { get; set; }
 
         /// <summary>
-        /// Direct access to the pixel data. This may be null if <see cref="DiposeLocalCopy"/> was called.
+        /// Direct access to the pixel data. This may be null if <see cref="DisposeLocalCopy"/> was called.
         /// </summary>
         public Color[] RawData;
 
@@ -114,7 +114,7 @@ namespace Walgelijk
         /// <summary>
         /// Remove the pixels that are stored on CPU memory
         /// </summary>
-        public void DiposeLocalCopy()
+        public void DisposeLocalCopy()
         {
             if (RawData != null)
             {

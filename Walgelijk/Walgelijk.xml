@@ -14,11 +14,6 @@
             Number of channels
             </summary>
         </member>
-        <member name="P:Walgelijk.AudioData.Data">
-            <summary>
-            Audio data. This is null if <see cref="P:Walgelijk.AudioData.Streaming"/>
-            </summary>
-        </member>
         <member name="P:Walgelijk.AudioData.SampleRate">
             <summary>
             Sample rate
@@ -36,12 +31,17 @@
         </member>
         <member name="P:Walgelijk.AudioData.KeepInMemory">
             <summary>
-            Should the data be cleared from memory and only remain in the audio engine?
+            Use <see cref="P:Walgelijk.AudioData.DisposeLocalCopyAfterUpload"/> instead
             </summary>
         </member>
         <member name="P:Walgelijk.AudioData.Streaming">
             <summary>
             Was this audio data configured to be streamed?
+            </summary>
+        </member>
+        <member name="P:Walgelijk.AudioData.DisposeLocalCopyAfterUpload">
+            <summary>
+            Should the data be cleared from memory and only remain in the audio engine?
             </summary>
         </member>
         <member name="M:Walgelijk.AudioData.#ctor(System.Byte[],System.Int32,System.Int32,System.Int64,System.Boolean,System.Boolean)">
@@ -51,7 +51,17 @@
         </member>
         <member name="M:Walgelijk.AudioData.ForceClearData">
             <summary>
+            Use <see cref="M:Walgelijk.AudioData.DisposeLocalCopy"/> instead
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioData.DisposeLocalCopy">
+            <summary>
             Remove the data from memory, indicating that the data copy in this structure is no longer needed. This will not affect the actual audio engine.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioData.GetData">
+            <summary>
+            Get a readonly collection of the raw audio data. This can be null if it has been disposed.
             </summary>
         </member>
         <member name="T:Walgelijk.AudioRenderer">
@@ -1819,27 +1829,6 @@
             Blit a <see cref="T:Walgelijk.RenderTexture"/> onto another
             </summary>
         </member>
-        <member name="T:Walgelijk.IGPUObject`1">
-            <summary>
-            Objects that have data on the CPU side that is eventually uploaded to the GPU side
-            </summary>
-            <typeparam name="T"></typeparam>
-        </member>
-        <member name="M:Walgelijk.IGPUObject`1.DisposeCPUCopy">
-            <summary>
-            Remove the copy of the data that is stored on the CPU, usually because it's already been uploaded to the GPU
-            </summary>
-        </member>
-        <member name="M:Walgelijk.IGPUObject`1.GetData">
-            <summary>
-            Get the data. This can be null if it's been disposed.
-            </summary>
-        </member>
-        <member name="P:Walgelijk.IGPUObject`1.DisposeCPUCopyAfterUpload">
-            <summary>
-            Should the cpu copy of this object be disposed after it's been uploaded? 
-            </summary>
-        </member>
         <member name="T:Walgelijk.IReadableTexture">
             <summary>
             A texture that can be written to
@@ -2510,7 +2499,7 @@
             Construct a <see cref="T:Walgelijk.RenderTexture"/>
             </summary>
         </member>
-        <member name="P:Walgelijk.RenderTexture.DisposeCPUCopyAfterUpload">
+        <member name="P:Walgelijk.RenderTexture.DisposeLocalCopyAfterUpload">
             <summary>
             There is no local copy so this will do nothing.
             </summary>
@@ -2535,7 +2524,7 @@
             Delete the texture and framebuffer from the GPU
             </summary>
         </member>
-        <member name="M:Walgelijk.RenderTexture.DisposeCPUCopy">
+        <member name="M:Walgelijk.RenderTexture.DisposeLocalCopy">
             <summary>
             There is no local copy so this will do nothing.
             </summary>
@@ -2662,7 +2651,7 @@
         </member>
         <member name="F:Walgelijk.Texture.RawData">
             <summary>
-            Direct access to the pixel data. This may be null if <see cref="M:Walgelijk.Texture.DisposeCPUCopy"/> was called.
+            Direct access to the pixel data. This may be null if <see cref="M:Walgelijk.Texture.DisposeLocalCopy"/> was called.
             </summary>
         </member>
         <member name="M:Walgelijk.Texture.#ctor(System.Int32,System.Int32,Walgelijk.Color[],System.Boolean,System.Boolean)">
@@ -2680,7 +2669,7 @@
             Load an image from a path using <see cref="T:Walgelijk.TextureLoader"/>
             </summary>
         </member>
-        <member name="M:Walgelijk.Texture.DisposeCPUCopy">
+        <member name="M:Walgelijk.Texture.DisposeLocalCopy">
             <summary>
             Remove the pixels that are stored on CPU memory
             </summary>
@@ -2711,7 +2700,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="P:Walgelijk.Texture.DisposeCPUCopyAfterUpload">
+        <member name="P:Walgelijk.Texture.DisposeLocalCopyAfterUpload">
             <summary>
             Should all pixels be discarded after this object has been uploaded to the GPU?
             </summary>
@@ -2933,6 +2922,27 @@
         <member name="F:Walgelijk.WrapMode.Mirror">
             <summary>
             Mirrors the UV
+            </summary>
+        </member>
+        <member name="T:Walgelijk.IExternal`1">
+            <summary>
+            Objects that have data on the local side that is eventually uploaded somewhere else (usually the GPU)
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Walgelijk.IExternal`1.DisposeLocalCopy">
+            <summary>
+            Remove the copy of the data that is stored locally, usually because it's already been uploaded
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IExternal`1.GetData">
+            <summary>
+            Get the data. This can be null if it's been disposed.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IExternal`1.DisposeLocalCopyAfterUpload">
+            <summary>
+            Should the local copy of this object be disposed after it's been uploaded? 
             </summary>
         </member>
         <member name="T:Walgelijk.Noise">

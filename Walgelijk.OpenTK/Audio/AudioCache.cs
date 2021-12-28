@@ -13,9 +13,16 @@ namespace Walgelijk.OpenTK
             //bits per sample can only be 16 s guaranteed by the same lad
             ALFormat format = raw.ChannelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16;
 
-            AL.BufferData(buffer, format, raw.Data, raw.SampleRate);
-            if (!raw.KeepInMemory)
-                raw.ForceClearData();
+            unsafe
+            {
+                var data = raw.GetData() ?? global::System.ReadOnlyMemory<byte>.Empty;
+                using var coll = data.Pin();
+                AL.BufferData(buffer, format, coll.Pointer, data.Length, raw.SampleRate);
+                coll.Dispose();
+            }
+
+            if (raw.DisposeLocalCopyAfterUpload)
+                raw.DisposeLocalCopy();
 
             return buffer;
         }

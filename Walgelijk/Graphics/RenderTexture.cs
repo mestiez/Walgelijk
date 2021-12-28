@@ -104,7 +104,7 @@ namespace Walgelijk
         /// <summary>
         /// There is no local copy so this will do nothing.
         /// </summary>
-        public void DiposeLocalCopy() { }
+        public void DisposeLocalCopy() { }
 
         /// <summary>
         /// You can't get pixels from a RenderTexture. This will return a region of zero length.

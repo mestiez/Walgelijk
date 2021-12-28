@@ -266,7 +266,7 @@ namespace Walgelijk.OpenTK
 
         public override void DisposeOf(AudioData audioData)
         {
-            audioData.ForceClearData();
+            audioData.DisposeLocalCopy();
             AudioObjects.Buffers.Unload(audioData);
             Resources.Unload(audioData);
             //TODO dispose of vorbis reader if applicable
