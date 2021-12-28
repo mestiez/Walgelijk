@@ -78,6 +78,9 @@ namespace Walgelijk.OpenTK
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             raw.NeedsUpdate = false;
+
+            if (raw.DisposeCPUCopyAfterUpload)
+                raw.DisposeCPUCopy();
         }
 
         private void WriteLDRData(IReadableTexture raw, int componentCount, ReadOnlySpan<Color> pixels)

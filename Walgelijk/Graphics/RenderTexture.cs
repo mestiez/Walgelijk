@@ -69,8 +69,19 @@ namespace Walgelijk
 
         public bool HDR { get; }
 
+        /// <summary>
+        /// There is no local copy so this will do nothing.
+        /// </summary>
+        public bool DisposeCPUCopyAfterUpload => false;
+
+        /// <summary>
+        /// You can't get pixels from a RenderTexture
+        /// </summary>
         public Color GetPixel(int x, int y) => throw new global::System.Exception("You can't get pixels from a RenderTexture");
 
+        /// <summary>
+        /// You can't get pixels from a RenderTexture. This will return an empty span.
+        /// </summary>
         public ReadOnlySpan<Color> ReadPixels() => ReadOnlySpan<Color>.Empty;
 
         /// <summary>
@@ -89,5 +100,15 @@ namespace Walgelijk
             Game.Main.Window.Graphics.Delete(this);
             GC.SuppressFinalize(this);
         }
+
+        /// <summary>
+        /// There is no local copy so this will do nothing.
+        /// </summary>
+        public void DisposeCPUCopy() { }
+
+        /// <summary>
+        /// You can't get pixels from a RenderTexture. This will return a region of zero length.
+        /// </summary>
+        public ReadOnlyMemory<Color>? GetData() => ReadOnlyMemory<Color>.Empty;
     }
 }

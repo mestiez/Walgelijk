@@ -1819,6 +1819,27 @@
             Blit a <see cref="T:Walgelijk.RenderTexture"/> onto another
             </summary>
         </member>
+        <member name="T:Walgelijk.IGPUObject`1">
+            <summary>
+            Objects that have data on the CPU side that is eventually uploaded to the GPU side
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Walgelijk.IGPUObject`1.DisposeCPUCopy">
+            <summary>
+            Remove the copy of the data that is stored on the CPU, usually because it's already been uploaded to the GPU
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IGPUObject`1.GetData">
+            <summary>
+            Get the data. This can be null if it's been disposed.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IGPUObject`1.DisposeCPUCopyAfterUpload">
+            <summary>
+            Should the cpu copy of this object be disposed after it's been uploaded? 
+            </summary>
+        </member>
         <member name="T:Walgelijk.IReadableTexture">
             <summary>
             A texture that can be written to
@@ -2489,6 +2510,21 @@
             Construct a <see cref="T:Walgelijk.RenderTexture"/>
             </summary>
         </member>
+        <member name="P:Walgelijk.RenderTexture.DisposeCPUCopyAfterUpload">
+            <summary>
+            There is no local copy so this will do nothing.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.RenderTexture.GetPixel(System.Int32,System.Int32)">
+            <summary>
+            You can't get pixels from a RenderTexture
+            </summary>
+        </member>
+        <member name="M:Walgelijk.RenderTexture.ReadPixels">
+            <summary>
+            You can't get pixels from a RenderTexture. This will return an empty span.
+            </summary>
+        </member>
         <member name="M:Walgelijk.RenderTexture.ForceUpdate">
             <summary>
             Force an update
@@ -2497,6 +2533,16 @@
         <member name="M:Walgelijk.RenderTexture.Dispose">
             <summary>
             Delete the texture and framebuffer from the GPU
+            </summary>
+        </member>
+        <member name="M:Walgelijk.RenderTexture.DisposeCPUCopy">
+            <summary>
+            There is no local copy so this will do nothing.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.RenderTexture.GetData">
+            <summary>
+            You can't get pixels from a RenderTexture. This will return a region of zero length.
             </summary>
         </member>
         <member name="T:Walgelijk.Shader">
@@ -2619,26 +2665,20 @@
             Direct access to the pixel data. This may be null if <see cref="M:Walgelijk.Texture.DisposeCPUCopy"/> was called.
             </summary>
         </member>
-        <member name="M:Walgelijk.Texture.#ctor(System.Int32,System.Int32,Walgelijk.Color[],System.Boolean)">
+        <member name="M:Walgelijk.Texture.#ctor(System.Int32,System.Int32,Walgelijk.Color[],System.Boolean,System.Boolean)">
             <summary>
             Create a texture from a series of pixels
             </summary>
         </member>
-        <member name="M:Walgelijk.Texture.#ctor(System.Int32,System.Int32,System.Boolean)">
+        <member name="M:Walgelijk.Texture.#ctor(System.Int32,System.Int32,System.Boolean,System.Boolean)">
             <summary>
             Create an empty texture
             </summary>
         </member>
         <member name="M:Walgelijk.Texture.Load(System.String,System.Boolean,System.Boolean)">
             <summary>
-            Load an image from a path
+            Load an image from a path using <see cref="T:Walgelijk.TextureLoader"/>
             </summary>
-        </member>
-        <member name="M:Walgelijk.Texture.ReadPixels">
-            <summary>
-            Get an immutable array of all pixels
-            </summary>
-            <returns></returns>
         </member>
         <member name="M:Walgelijk.Texture.DisposeCPUCopy">
             <summary>
@@ -2649,7 +2689,6 @@
             <summary>
             Get a pixel
             </summary>
-            <returns></returns>
         </member>
         <member name="M:Walgelijk.Texture.SetPixel(System.Int32,System.Int32,Walgelijk.Color)">
             <summary>
@@ -2664,6 +2703,17 @@
         <member name="M:Walgelijk.Texture.Dispose">
             <summary>
             Delete the texture from the GPU
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Texture.GetData">
+            <summary>
+            Get an immutable collection of all pixels
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Walgelijk.Texture.DisposeCPUCopyAfterUpload">
+            <summary>
+            Should all pixels be discarded after this object has been uploaded to the GPU?
             </summary>
         </member>
         <member name="P:Walgelijk.Texture.White">
@@ -3670,6 +3720,51 @@
         <member name="M:Walgelijk.Resources.Unload``1(``0)">
             <summary>
             Unloads an asset. Removes it from the cache and also disposes of it if it implements <see cref="T:System.IDisposable"/>
+            </summary>
+        </member>
+        <member name="T:Walgelijk.TextureLoader">
+            <summary>
+            Utility struct responsible for decoding and loading image files
+            </summary>
+        </member>
+        <member name="F:Walgelijk.TextureLoader.Settings">
+            <summary>
+            Default import settings
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TextureLoader.FromFile(System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Loads texture from file
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TextureLoader.FromImageSharpImage(SixLabors.ImageSharp.Image{SixLabors.ImageSharp.PixelFormats.Rgba32},System.Boolean,System.Boolean)">
+            <summary>
+            Loads texture from <see cref="T:SixLabors.ImageSharp.Image"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TextureLoader.CopyPixels(SixLabors.ImageSharp.ImageFrame{SixLabors.ImageSharp.PixelFormats.Rgba32},Walgelijk.Color[]@,System.Boolean)">
+            <summary>
+            Copies pixels from <see cref="T:SixLabors.ImageSharp.Image"/> to an array
+            </summary>
+        </member>
+        <member name="T:Walgelijk.TextureLoader.ImportSettings">
+            <summary>
+            Import settings options
+            </summary>
+        </member>
+        <member name="F:Walgelijk.TextureLoader.ImportSettings.FilterMode">
+            <summary>
+            The filter mode to set by default
+            </summary>
+        </member>
+        <member name="F:Walgelijk.TextureLoader.ImportSettings.WrapMode">
+            <summary>
+            The wrap mode to set by default
+            </summary>
+        </member>
+        <member name="F:Walgelijk.TextureLoader.ImportSettings.HDR">
+            <summary>
+            The HDR flag value by default. <b>This is not applicable currently because the decoder can't read HDRIs yet</b>
             </summary>
         </member>
         <member name="T:Walgelijk.Time">

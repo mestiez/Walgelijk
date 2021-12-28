@@ -75,16 +75,18 @@ namespace Walgelijk
         /// Direct access to the pixel data. This may be null if <see cref="DisposeCPUCopy"/> was called.
         /// </summary>
         public Color[] RawData;
+
         private FilterMode filterMode = FilterMode.Nearest;
         private WrapMode wrapMode = WrapMode.Clamp;
 
         /// <summary>
         /// Create a texture from a series of pixels
         /// </summary>
-        public Texture(int width, int height, Color[] pixels, bool generateMipmaps = true)
+        public Texture(int width, int height, Color[] pixels, bool generateMipmaps = true, bool HDR = false)
         {
             Width = width;
             Height = height;
+            this.HDR = HDR;
             this.RawData = pixels;
             this.GenerateMipmaps = generateMipmaps;
         }
@@ -92,32 +94,21 @@ namespace Walgelijk
         /// <summary>
         /// Create an empty texture
         /// </summary>
-        public Texture(int width, int height, bool generateMipmaps = true)
+        public Texture(int width, int height, bool generateMipmaps = true, bool HDR = false)
         {
             Width = width;
             Height = height;
+            this.HDR = HDR;
             this.RawData = null;
             this.GenerateMipmaps = generateMipmaps;
         }
 
         /// <summary>
-        /// Load an image from a path
+        /// Load an image from a path using <see cref="TextureLoader"/>
         /// </summary>
         public static Texture Load(string path, bool flipY = true, bool generateMipmaps = true)
         {
             return TextureLoader.FromFile(path, flipY, generateMipmaps);
-        }
-
-        /// <summary>
-        /// Get an immutable array of all pixels
-        /// </summary>
-        /// <returns></returns>
-        public ReadOnlySpan<Color> ReadPixels()
-        {
-            if (RawData == null)
-                return ReadOnlySpan<Color>.Empty;
-
-            return RawData;
         }
 
         /// <summary>
@@ -135,7 +126,6 @@ namespace Walgelijk
         /// <summary>
         /// Get a pixel
         /// </summary>
-        /// <returns></returns>
         public Color GetPixel(int x, int y)
         {
             if (RawData == null)
@@ -195,6 +185,23 @@ namespace Walgelijk
             Game.Main.Window.Graphics.Delete(this);
             GC.SuppressFinalize(this);
         }
+
+        /// <summary>
+        /// Get an immutable collection of all pixels
+        /// </summary>
+        /// <returns></returns>
+        public ReadOnlyMemory<Color>? GetData()
+        {
+            if (RawData == null)
+                return ReadOnlyMemory<Color>.Empty;
+
+            return RawData;
+        }
+
+        /// <summary>
+        /// Should all pixels be discarded after this object has been uploaded to the GPU?
+        /// </summary>
+        public bool DisposeCPUCopyAfterUpload { get; set; } = true;
 
         /// <summary>
         /// 1x1 texture with a single white pixel
