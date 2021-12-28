@@ -72,7 +72,7 @@ namespace Walgelijk
         public bool NeedsUpdate { get; set; }
 
         /// <summary>
-        /// Direct access to the pixel data. This may be null if <see cref="DisposeCPUCopy"/> was called.
+        /// Direct access to the pixel data. This may be null if <see cref="DiposeLocalCopy"/> was called.
         /// </summary>
         public Color[] RawData;
 
@@ -114,7 +114,7 @@ namespace Walgelijk
         /// <summary>
         /// Remove the pixels that are stored on CPU memory
         /// </summary>
-        public void DisposeCPUCopy()
+        public void DiposeLocalCopy()
         {
             if (RawData != null)
             {
@@ -201,7 +201,7 @@ namespace Walgelijk
         /// <summary>
         /// Should all pixels be discarded after this object has been uploaded to the GPU?
         /// </summary>
-        public bool DisposeCPUCopyAfterUpload { get; set; } = true;
+        public bool DisposeLocalCopyAfterUpload { get; set; } = true;
 
         /// <summary>
         /// 1x1 texture with a single white pixel

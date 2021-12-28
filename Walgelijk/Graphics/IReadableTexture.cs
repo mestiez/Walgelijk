@@ -3,32 +3,11 @@ using System.Numerics;
 
 namespace Walgelijk
 {
-    /// <summary>
-    /// Objects that have data on the CPU side that is eventually uploaded to the GPU side
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public interface IGPUObject<T>
-    {
-        /// <summary>
-        /// Remove the copy of the data that is stored on the CPU, usually because it's already been uploaded to the GPU
-        /// </summary>
-        public void DisposeCPUCopy();
-
-        /// <summary>
-        /// Get the data. This can be null if it's been disposed.
-        /// </summary>
-        public ReadOnlyMemory<T>? GetData();
-
-        /// <summary>
-        /// Should the cpu copy of this object be disposed after it's been uploaded? 
-        /// </summary>
-        public bool DisposeCPUCopyAfterUpload { get; }
-    }
 
     /// <summary>
     /// A texture that can be written to
     /// </summary>
-    public interface IReadableTexture : IDisposable, IGPUObject<Color>
+    public interface IReadableTexture : IDisposable, IExternal<Color>
     {
         /// <summary>
         /// Get a pixel

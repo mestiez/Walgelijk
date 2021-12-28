@@ -72,7 +72,7 @@ namespace Walgelijk
         /// <summary>
         /// There is no local copy so this will do nothing.
         /// </summary>
-        public bool DisposeCPUCopyAfterUpload => false;
+        public bool DisposeLocalCopyAfterUpload => false;
 
         /// <summary>
         /// You can't get pixels from a RenderTexture
@@ -104,7 +104,7 @@ namespace Walgelijk
         /// <summary>
         /// There is no local copy so this will do nothing.
         /// </summary>
-        public void DisposeCPUCopy() { }
+        public void DiposeLocalCopy() { }
 
         /// <summary>
         /// You can't get pixels from a RenderTexture. This will return a region of zero length.
