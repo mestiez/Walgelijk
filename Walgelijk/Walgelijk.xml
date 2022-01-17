@@ -4684,13 +4684,13 @@
         </member>
         <member name="M:Walgelijk.Window.WorldToWindowPoint(System.Numerics.Vector2)">
             <summary>
-            Turn window coordinates into world coordinates
+            Turn world coordinates into window coordinates
             </summary>
             <returns></returns>
         </member>
         <member name="M:Walgelijk.Window.WindowToWorldPoint(System.Numerics.Vector2)">
             <summary>
-            Turn world coordinates into window coordinates
+            Turn window coordinates into world coordinates
             </summary>
             <returns></returns>
         </member>

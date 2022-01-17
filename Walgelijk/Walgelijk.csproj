@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RepositoryUrl>https://github.com/mestiez/Walgelijk</RepositoryUrl>
     <Company>Studio Minus</Company>
     <Authors>mestiez</Authors>
-    <Version>0.2.73</Version>
+    <Version>0.2.75</Version>
     <Description>Studio Minus game engine</Description>
     <PackageIcon>cirkel avatar.png</PackageIcon>
   </PropertyGroup>

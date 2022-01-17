@@ -116,12 +116,12 @@ namespace Walgelijk
         /// <returns></returns>
         public abstract Vector2 WindowToScreenPoint(Vector2 window);
         /// <summary>
-        /// Turn window coordinates into world coordinates
+        /// Turn world coordinates into window coordinates
         /// </summary>
         /// <returns></returns>
         public abstract Vector2 WorldToWindowPoint(Vector2 world);
         /// <summary>
-        /// Turn world coordinates into window coordinates
+        /// Turn window coordinates into world coordinates
         /// </summary>
         /// <returns></returns>
         public abstract Vector2 WindowToWorldPoint(Vector2 window);

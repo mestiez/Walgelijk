@@ -266,9 +266,12 @@ namespace Walgelijk.OpenTK
 
         public override void DisposeOf(AudioData audioData)
         {
-            audioData.DisposeLocalCopy();
-            AudioObjects.Buffers.Unload(audioData);
-            Resources.Unload(audioData);
+            if (audioData != null)
+            {
+                audioData.DisposeLocalCopy();
+                AudioObjects.Buffers.Unload(audioData);
+                Resources.Unload(audioData);
+            }
             //TODO dispose of vorbis reader if applicable
             //if (AudioObjects.VorbisReaderCache.Has())
             //AudioObjects.VorbisReaderCache.Unload(audioData);
@@ -276,8 +279,11 @@ namespace Walgelijk.OpenTK
 
         public override void DisposeOf(Sound sound)
         {
-            AudioObjects.Sources.Unload(sound);
-            Resources.Unload(sound);
+            if (sound != null)
+            {
+                AudioObjects.Sources.Unload(sound);
+                Resources.Unload(sound);
+            }
         }
 
         public override void SetAudioDevice(string device)
@@ -303,7 +309,7 @@ namespace Walgelijk.OpenTK
             }
 
             foreach (var deviceName in ALC.GetString(AlcGetStringList.AllDevicesSpecifier))
-                yield return deviceName ;
+                yield return deviceName;
         }
     }
 }

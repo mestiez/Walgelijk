@@ -12,10 +12,10 @@ namespace Walgelijk.OpenTK
             var loadedTexture = GPUObjects.TextureCache.Load(raw);
 
             GL.FramebufferTexture2D(
-                FramebufferTarget.Framebuffer, 
-                FramebufferAttachment.ColorAttachment0, 
-                TextureTarget.Texture2D, 
-                loadedTexture.Index, 
+                FramebufferTarget.Framebuffer,
+                FramebufferAttachment.ColorAttachment0,
+                TextureTarget.Texture2D,
+                loadedTexture.Index,
                 0);
 
             var result = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
@@ -30,10 +30,12 @@ namespace Walgelijk.OpenTK
 
         protected override void DisposeOf(RenderTextureHandles loaded)
         {
-            GL.DeleteFramebuffer(loaded.FramebufferID);
-
-            GPUObjects.TextureCache.Unload(loaded.Raw);
-            GPUObjects.RenderTargetDictionary.Delete(loaded.Raw);
+            if (loaded.Raw != null)
+            {
+                GL.DeleteFramebuffer(loaded.FramebufferID);
+                GPUObjects.TextureCache.Unload(loaded.Raw);
+                GPUObjects.RenderTargetDictionary.Delete(loaded.Raw);
+            }
         }
     }
 }

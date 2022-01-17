@@ -121,12 +121,17 @@ namespace Walgelijk.OpenTK
         }
 
         //TODO dit is eigenlijk iets van de rendertarget
-        public override Vector2 WorldToWindowPoint(Vector2 point)
+        public override Vector2 WorldToWindowPoint(Vector2 world)
         {
-            var result = Vector2.Transform(new Vector2(point.X, point.Y), renderTarget.ProjectionMatrix * renderTarget.ViewMatrix);
-            result.X *= renderTarget.Size.X;
-            result.Y *= renderTarget.Size.Y;
-            return result;
+            var p = Vector2.Transform(world, renderTarget.ViewMatrix * renderTarget.ProjectionMatrix);
+
+            p /= 2;
+            p.Y = 1 - p.Y;
+            p.Y -= 0.5f;
+            p.X += 0.5f;
+            p *= renderTarget.Size;
+
+            return p;
         }
 
         //TODO dit is eigenlijk iets van de rendertarget

@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.12</Version>
+    <Version>0.0.13</Version>
     <Description>Simpele particlesystem voor Walgelijk</Description>
   </PropertyGroup>
 

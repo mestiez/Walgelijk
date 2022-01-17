@@ -142,6 +142,9 @@ namespace Walgelijk.OpenTK
 
         public void Delete(object obj)
         {
+            if (obj == null)
+                return;
+
             switch (obj)
             {
                 case RenderTexture rt:

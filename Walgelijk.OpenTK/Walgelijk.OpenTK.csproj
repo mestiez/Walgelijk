@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>mestiez</Authors>
     <Company>Studio Minus</Company>
     <RepositoryType>https://github.com/mestiez/Walgelijk</RepositoryType>
-    <Version>0.1.53</Version>
+    <Version>0.1.55</Version>
     <Description>OpenTK rendering implementatie</Description>
   </PropertyGroup>
 

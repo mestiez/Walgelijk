@@ -77,7 +77,7 @@ namespace Walgelijk
                 var c = text[i];
                 if (char.IsControl(c))
                     continue;
-                if (c == '<' && !(i > 1 && text[i - 1] == '\\')) //check for escape slash
+                if (c == '<' && !(i > 1 && text[i - 1] == '\\')) //check for escape slash //TODO niet alle dingen in een <..> moeten weg zijn. een vector string is bv <x, y> en die wordt dus niet gerendered
                     tagStack++;
                 if (c == '>' && !(i > 1 && text[i - 1] == '\\'))
                 {
