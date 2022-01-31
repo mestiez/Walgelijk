@@ -47,6 +47,16 @@ namespace Walgelijk
             return HashCode.Combine(Layer, OrderInLayer);
         }
 
+        public static RenderOrder operator +(RenderOrder left, RenderOrder right)
+        {
+            return new RenderOrder(left.Layer + right.Layer, left.OrderInLayer + right.OrderInLayer);
+        }
+
+        public static RenderOrder operator -(RenderOrder left, RenderOrder right)
+        {
+            return new RenderOrder(left.Layer - right.Layer, left.OrderInLayer - right.OrderInLayer);
+        }
+
         public static bool operator ==(RenderOrder left, RenderOrder right)
         {
             return left.Equals(right);

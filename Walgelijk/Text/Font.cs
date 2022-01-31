@@ -121,6 +121,11 @@ namespace Walgelijk
                    CurrentChar == pair.CurrentChar;
         }
 
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(PreviousChar, CurrentChar);
+        }
+
         public static bool operator ==(KerningPair left, KerningPair right)
         {
             return left.Equals(right);

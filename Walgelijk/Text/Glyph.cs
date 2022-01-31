@@ -1,4 +1,6 @@
-﻿namespace Walgelijk
+﻿using System;
+
+namespace Walgelijk
 {
     /// <summary>
     /// Structure with font glyph information
@@ -46,5 +48,44 @@
         /// Page index of the glyph
         /// </summary>
         public int Page;
+
+        public override bool Equals(object obj)
+        {
+            return obj is Glyph glyph &&
+                   Identity == glyph.Identity &&
+                   X == glyph.X &&
+                   Y == glyph.Y &&
+                   Width == glyph.Width &&
+                   Height == glyph.Height &&
+                   XOffset == glyph.XOffset &&
+                   YOffset == glyph.YOffset &&
+                   Advance == glyph.Advance &&
+                   Page == glyph.Page;
+        }
+
+        public override int GetHashCode()
+        {
+            HashCode hash = new HashCode();
+            hash.Add(Identity);
+            hash.Add(X);
+            hash.Add(Y);
+            hash.Add(Width);
+            hash.Add(Height);
+            hash.Add(XOffset);
+            hash.Add(YOffset);
+            hash.Add(Advance);
+            hash.Add(Page);
+            return hash.ToHashCode();
+        }
+
+        public static bool operator ==(Glyph left, Glyph right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Glyph left, Glyph right)
+        {
+            return !(left == right);
+        }
     }
 }
