@@ -53,6 +53,7 @@ namespace Walgelijk
             text.RenderTask.ScreenSpace = true;
             text.Color = Colors.White;
             text.ColorInstructions = textColors;
+            text.ParseRichText = false;
 
             inputBox = new TextComponent();
             inputBox.RenderTask.ScreenSpace = true;

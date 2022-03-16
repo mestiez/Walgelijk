@@ -1,7 +1,7 @@
 ﻿namespace Walgelijk
 {
     /// <summary>
-    /// Interface that provides a <see cref="VertexBuffer"/> and <see cref="ShapeRenderTask"/>
+    /// Provides a <see cref="VertexBuffer"/> and <see cref="ShapeRenderTask"/>
     /// </summary>
     [RequiresComponents(typeof(TransformComponent))]
     public abstract class ShapeComponent

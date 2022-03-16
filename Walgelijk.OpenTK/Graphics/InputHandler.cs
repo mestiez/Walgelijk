@@ -1,6 +1,4 @@
-﻿using OpenTK;
-using OpenTK.Input;
-using OpenTK.Windowing.Common;
+﻿using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using System.Collections.Generic;
 using Vector2 = System.Numerics.Vector2;
@@ -38,13 +36,14 @@ namespace Walgelijk.OpenTK
 
         private void MouseWheel(MouseWheelEventArgs e)
         {
-            inputState.MouseScrollDelta = GameWindow.MouseState.ScrollDelta.Y;
+            inputState.MouseScrollDelta = /*GameWindow.MouseState.ScrollDelta.Y */e.OffsetY;
         }
 
         private void MouseMove(MouseMoveEventArgs e)
         {
-            inputState.WindowMousePosition = new Vector2(e.X, e.Y);
-            inputState.WindowMouseDelta = new Vector2(e.DeltaX, e.DeltaY);
+            var n = new Vector2(e.X, e.Y);
+            inputState.WindowMouseDelta = n - inputState.WindowMousePosition;
+            inputState.WindowMousePosition = n;
         }
 
         private void MouseUp(MouseButtonEventArgs e)
@@ -97,7 +96,11 @@ namespace Walgelijk.OpenTK
         public void Reset()
         {
             InputState.Reset(ref inputState);
-            inputState.WorldMousePosition = Window.WindowToWorldPoint(inputState.WindowMousePosition);
+            inputState.MouseScrollDelta = GameWindow.MouseState.ScrollDelta.Y;
+
+            var n = Window.WindowToWorldPoint(inputState.WindowMousePosition);
+            inputState.WorldMouseDelta = n - inputState.WorldMousePosition;
+            inputState.WorldMousePosition = n;
         }
 
         public OpenTKWindow Window { get; }

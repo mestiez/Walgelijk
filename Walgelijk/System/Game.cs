@@ -50,6 +50,7 @@ namespace Walgelijk
                 scene = value;
                 if (value != null)
                 {
+                    Time.UpdateDeltaTime = 0;
                     scene.Game = this;
                     scene.HasBeenLoadedAlready = true;
                     Logger.Log("Scene changed", nameof(Game));

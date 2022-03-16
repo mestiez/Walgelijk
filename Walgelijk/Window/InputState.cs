@@ -108,10 +108,8 @@ namespace Walgelijk
             inputState.TextEntered = "";
             inputState.AnyMouseButton = false;
             inputState.AnyKey = false;
-            inputState.MouseScrollDelta = 0;
-            inputState.WindowMouseDelta = Vector2.Zero;
 
-            inputState.WorldMousePosition = Vector2.Zero;
+            inputState.WindowMouseDelta = Vector2.Zero;
         }
     }
 }

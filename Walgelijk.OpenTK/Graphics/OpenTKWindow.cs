@@ -212,8 +212,6 @@ namespace Walgelijk.OpenTK
         private void OnRenderFrame(FrameEventArgs obj)
         {
             GLUtilities.PrintGLErrors(Game.Main.DevelopmentMode);
-
-            time.RenderDeltaTime = (float)obj.Time;
             
             Game.Scene?.RenderSystems();
             if (Game.DevelopmentMode)
@@ -229,19 +227,12 @@ namespace Walgelijk.OpenTK
             //GL.Flush();
             //GL.Finish();
             window.SwapBuffers();
+
+            time.RenderDeltaTime = (float)obj.Time;
         }
 
         private void OnUpdateFrame(FrameEventArgs obj)
         {
-            time.UpdateDeltaTime = (float)obj.Time * Time.TimeScale;
-            time.UpdateDeltaTimeUnscaled = (float)obj.Time;
-
-            time.SecondsSinceSceneChange += time.UpdateDeltaTime;
-            time.SecondsSinceSceneChangeUnscaled += time.UpdateDeltaTimeUnscaled;
-
-            time.SecondsSinceLoad += time.UpdateDeltaTime;
-            time.SecondsSinceLoadUnscaled = (float)stopwatch.Elapsed.TotalSeconds;
-
             Game.Console.Update();
             if (!Game.Console.IsActive)
                 Game.Scene?.UpdateSystems();
@@ -249,6 +240,17 @@ namespace Walgelijk.OpenTK
             Game.AudioRenderer.Process(Game);
 
             inputHandler.Reset();
+
+            var now = stopwatch.Elapsed.TotalSeconds;
+
+            time.UpdateDeltaTimeUnscaled = (float)(now - time.SecondsSinceLoadUnscaled);
+            time.UpdateDeltaTime = time.UpdateDeltaTimeUnscaled * Time.TimeScale;
+
+            time.SecondsSinceSceneChange += time.UpdateDeltaTime;
+            time.SecondsSinceSceneChangeUnscaled += time.UpdateDeltaTimeUnscaled;
+
+            time.SecondsSinceLoad += time.UpdateDeltaTime;
+            time.SecondsSinceLoadUnscaled = (float)now;
         }
 
         private void OnFileDropped(FileDropEventArgs obj)
