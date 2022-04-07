@@ -9,8 +9,8 @@ namespace Walgelijk
     /// </summary>
     public class CameraSystem : System
     {
-        private CameraRenderTask renderTask;
-        private ClearRenderTask clearTask;
+        private CameraRenderTask renderTask = new CameraRenderTask();
+        private ClearRenderTask clearTask = new ClearRenderTask();
 
         /// <summary>
         /// Main camera entity
@@ -20,20 +20,17 @@ namespace Walgelijk
         /// <summary>
         /// Main camera component
         /// </summary>
-        public CameraComponent MainCameraComponent { get; private set; }
+        public CameraComponent? MainCameraComponent { get; private set; }
 
         /// <summary>
         /// Main camera transform component
         /// </summary>
-        public TransformComponent MainCameraTransform { get; private set; }
+        public TransformComponent? MainCameraTransform { get; private set; }
 
         private bool mainCameraSet;
 
         public override void Initialise()
         {
-            renderTask = new CameraRenderTask();
-            clearTask = new ClearRenderTask();
-
             if (MainCameraTransform == null)
                 FallbackToFirstCamera();
         }
@@ -69,12 +66,13 @@ namespace Walgelijk
             if (!Scene.TryGetComponentFrom<CameraComponent>(cameraEntity, out var camera))
                 throw new ArgumentException($"{cameraEntity} has no {nameof(CameraComponent)}");
 
-            return camera;
+            return camera ?? throw new Exception("Camera is null");
         }
 
         public override void PreRender()
         {
-            if (!mainCameraSet) return;
+            if (!mainCameraSet || MainCameraComponent == null) 
+                return;
             SetRenderTask();
 
             if (MainCameraComponent.Clear)
@@ -88,6 +86,9 @@ namespace Walgelijk
 
         private void SetRenderTask()
         {
+            if (MainCameraTransform == null || MainCameraComponent == null) 
+                return;
+
             var renderTarget = Scene.Game.Window.RenderTarget;
 
             renderTask.View = MainCameraTransform.WorldToLocalMatrix;

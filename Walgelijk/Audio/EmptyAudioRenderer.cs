@@ -39,14 +39,14 @@ namespace Walgelijk
 
         public override void DisposeOf(AudioData audioData)
         {
-            audioData.ForceClearData();
+            audioData.DisposeLocalCopy();
         }
 
         public override void DisposeOf(Sound sound) { }
 
         public override void SetAudioDevice(string device) { }
 
-        public override string GetCurrentAudioDevice() => null;
+        public override string GetCurrentAudioDevice() => string.Empty;
 
         public override IEnumerable<string> EnumerateAvailableAudioDevices()
         {

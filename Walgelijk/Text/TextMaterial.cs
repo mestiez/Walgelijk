@@ -14,7 +14,7 @@ namespace Walgelijk
         /// <returns></returns>
         public static Material CreateFor(Font font)
         {
-            if (font.Pages.Length == 0 || font.Pages.Any(p => p == null))
+            if (font.Pages == null || font.Pages.Length == 0 || font.Pages.Any(p => p == null))
                 return Material.DefaultTextured;
 
             if (font.Smooth)

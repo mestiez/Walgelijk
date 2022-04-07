@@ -5,13 +5,12 @@
     /// </summary>
     public struct ShapeRendererDisposer : IComponentDisposer
     {
-        public bool CanDisposeOf(object obj) => obj is ShapeComponent and not QuadShapeComponent;
+        public bool CanDisposeOf(object? obj) => obj is ShapeComponent and not QuadShapeComponent;
 
-        public bool DisposeOf(object obj)
+        public bool DisposeOf(object? obj)
         {
-            var o = obj as ShapeComponent;
-
-            Game.Main.Window.Graphics.Delete(o.VertexBuffer);
+            if (obj is ShapeComponent o && o.VertexBuffer != null)
+                Game.Main.Window.Graphics.Delete(o.VertexBuffer);
 
             return true;
         }

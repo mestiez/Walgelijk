@@ -51,7 +51,7 @@ namespace Walgelijk
             font.Pages = new IReadableTexture[info.PageCount];
             for (int i = 0; i < info.PageCount; i++)
             {
-                string path = Path.Combine(Path.GetDirectoryName(metadataPath), info.PagePaths[i]);
+                string path = Path.Combine(Path.GetDirectoryName(metadataPath) ?? string.Empty, info.PagePaths[i]);
                 var tex = Texture.Load(path, false);
                 tex.FilterMode = filterMode;
                 font.Pages[i] = tex;
@@ -104,7 +104,7 @@ namespace Walgelijk
             return text.Where(s => s.StartsWith(name)).ToArray();
         }
 
-        private static string GetStringFrom(string name, string line)
+        private static string? GetStringFrom(string name, string line)
         {
             string target = name + "=";
 
@@ -149,7 +149,7 @@ namespace Walgelijk
             string common = GetLine("common");
 
 
-            data.Name = GetStringFrom("face", info);
+            data.Name = GetStringFrom("face", info) ?? "Untitled";
             data.Size = GetIntFrom("size", info);
             data.Bold = GetBoolFrom("bold", info);
             data.Italic = GetBoolFrom("italic", info);
@@ -175,7 +175,7 @@ namespace Walgelijk
                 {
                     var line = pageLines[i];
                     int id = GetIntFrom("id", line);
-                    data.PagePaths[id] = GetStringFrom("file", line);
+                    data.PagePaths[id] = GetStringFrom("file", line) ?? throw new global::System.Exception("\"file\" property in font page is null");
                 }
             }
             catch (Exception)

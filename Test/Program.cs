@@ -22,7 +22,6 @@ namespace Test
                 new OpenALAudioRenderer()
                 );
 
-            game.Window.TargetFrameRate = 0;
             game.Window.TargetUpdateRate = 0;
             game.Console.DrawConsoleNotification = true;
             game.Window.VSync = false;

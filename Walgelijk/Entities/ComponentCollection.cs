@@ -72,8 +72,10 @@ namespace Walgelijk
             if (!byType.TryGetValue(t, out var list))
                 TryCreateNewTypeList(t, out list);
 
-            foreach (var item in list)
-                yield return new EntityWith<T>(item.Component as T, item.Entity);
+            if (list != null)
+                foreach (var item in list)
+                    if (item.Component is T typed)
+                    yield return new EntityWith<T>(typed, item.Entity);
         }
 
         /// <summary>
@@ -82,18 +84,18 @@ namespace Walgelijk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T GetComponentFrom<T>(Entity entity) where T : class
         {
-            return byEntityByType[entity][typeof(T)] as T;
+            return byEntityByType[entity][typeof(T)] as T ?? throw new Exception("Component is not of the expected type");
         }
 
         /// <summary>
         /// Try to get the component of the <b>exact</b> type that is given
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryGetComponentFrom<T>(Entity entity, out T component) where T : class
+        public bool TryGetComponentFrom<T>(Entity entity, out T? component) where T : class
         {
-            if (byEntityByType.TryGetValue(entity, out var dict) && dict.TryGetValue(typeof(T), out var untyped))
+            if (byEntityByType.TryGetValue(entity, out var dict) && dict.TryGetValue(typeof(T), out var untyped) && untyped is T typed)
             {
-                component = untyped as T;
+                component = typed;
                 return true;
             }
             component = null;
@@ -217,7 +219,7 @@ namespace Walgelijk
                 type.IsInstanceOfType(t.Component) && t.Entity == entity;
         }
 
-        private bool TryCreateNewTypeList(Type type, out List<EntityWithAnything> list)
+        private bool TryCreateNewTypeList(Type type, out List<EntityWithAnything>? list)
         {
             list = null;
 

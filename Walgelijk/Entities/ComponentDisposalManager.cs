@@ -23,5 +23,8 @@ public class ComponentDisposalManager
         foreach (var item in disposers)
             if (item.CanDisposeOf(obj))
                 item.DisposeOf(obj);
+
+        if (obj is System.IDisposable disposable)
+            disposable.Dispose();
     }
 }

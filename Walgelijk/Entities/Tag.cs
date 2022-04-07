@@ -17,7 +17,7 @@ namespace Walgelijk
             Value = value;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Tag tag &&
                    Value == tag.Value;
@@ -30,7 +30,7 @@ namespace Walgelijk
 
         public static bool operator ==(Tag left, Tag right)
         {
-            return left.Equals(right);
+            return left.Value == right.Value;
         }
 
         public static bool operator !=(Tag left, Tag right)

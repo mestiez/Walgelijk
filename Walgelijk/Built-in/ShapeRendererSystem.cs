@@ -23,9 +23,8 @@ namespace Walgelijk
 
             if (shape.Visible && shape.RenderTask.VertexBuffer != null)
             {
-                var transform = Scene.GetComponentFrom<TransformComponent>(pair.Entity);
+                var transform = Scene.GetComponentFast<TransformComponent>(pair.Entity);
                 shape.RenderTask.ScreenSpace = shape.ScreenSpace;
-                
 
                 if (shape.HorizontalFlip || shape.VerticalFlip)
                 {

@@ -19,7 +19,7 @@ namespace Walgelijk
         /// <summary>
         /// Event invoked when a resource has been requested
         /// </summary>
-        public static event Action<Type, string> OnStartLoad;
+        public static event Action<Type, string>? OnStartLoad;
 
         /// <summary>
         /// Base path of all resource requests
@@ -96,6 +96,9 @@ namespace Walgelijk
             }
 
             var newObject = loadFunction(path);
+            if (newObject == null)
+                throw new Exception($"The object at \"{path}\" is null");
+
             resources.Add(path, newObject);
             return newObject;
         }
@@ -103,7 +106,7 @@ namespace Walgelijk
         /// <summary>
         /// Return the path that a given resource was loaded with. Returns null if it could not be found.
         /// </summary>
-        public static string GetPathAssociatedWith(object obj)
+        public static string? GetPathAssociatedWith(object obj)
         {
             foreach (var item in resources)
                 if (item.Value == obj)

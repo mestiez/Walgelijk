@@ -6,7 +6,7 @@ namespace Walgelijk
     /// <summary>
     /// Linear curve
     /// </summary>
-    public abstract class Curve<T>
+    public abstract class Curve<T> where T : notnull
     {
         /// <summary>
         /// Value keys
@@ -27,11 +27,14 @@ namespace Walgelijk
         /// </summary>
         public T Evaluate(float t)
         {
-            if (Keys == null || Keys.Length == 0) return default;
-            if (Keys.Length == 1) return Keys[0].Value;
+            if (Keys == null || Keys.Length == 0)
+                return default; //null?? niet waar sukkel
 
-            Key previous = null;
-            Key next = null;
+            if (Keys.Length == 1)
+                return Keys[0].Value;
+
+            Key? previous = null;
+            Key? next = null;
 #if false //Ongesorteerd
 
             float highest = float.MinValue;
@@ -63,7 +66,7 @@ namespace Walgelijk
 #else //Al gesorteerd
             if (Keys[0].Position > t)
                 return Keys[0].Value;
-            
+
             if (Keys[^1].Position < t)
                 return Keys[^1].Value;
 
@@ -129,7 +132,7 @@ namespace Walgelijk
                 Position = position;
             }
 
-            public int CompareTo(Key other) => (int)(Position * 1000) - (int)(other.Position * 1000);
+            public int CompareTo(Key? other) => (int)(Position * 1000) - (int)((other?.Position ?? 0) * 1000);
         }
     }
 

@@ -49,13 +49,22 @@ namespace Walgelijk.OpenTK
             inputHandler = new InputHandler(this);
             internalGraphics = new OpenTKGraphics();
 
-            Logger.Log(window.API);
+            Logger.Log("Graphics API: " + window.API.ToString());
         }
 
         public override string Title { get => window.Title; set => window.Title = value; }
         public override Vector2 Position { get => new Vector2(window.Location.X, window.Location.Y); set => window.Location = new global::OpenTK.Mathematics.Vector2i((int)value.X, (int)value.Y); }
-        public override int TargetFrameRate { get => (int)window.RenderFrequency; set => window.RenderFrequency = value; }
-        public override int TargetUpdateRate { get => (int)window.UpdateFrequency; set => window.UpdateFrequency = value; }
+        public override int TargetUpdateRate
+        {
+            get
+            {
+                return (int)window.UpdateFrequency;
+            }
+            set
+            {
+                window.RenderFrequency = window.UpdateFrequency = value;
+            }
+        }
         public override bool VSync { get => window.VSync == VSyncMode.On; set => window.VSync = (value ? VSyncMode.On : VSyncMode.Off); }
         public override bool IsOpen => window.Exists && !window.IsExiting;
         public override bool HasFocus => window.IsFocused;
@@ -182,16 +191,16 @@ namespace Walgelijk.OpenTK
             switch (severity)
             {
                 case DebugSeverity.DebugSeverityHigh:
-                    Logger.Error(str, this);
+                    Logger.Error(str, nameof(OpenTKWindow));
                     break;
                 case DebugSeverity.DebugSeverityMedium:
-                    Logger.Warn(str, this);
+                    Logger.Warn(str, nameof(OpenTKWindow));
                     break;
                 default:
                 case DebugSeverity.DontCare:
                 case DebugSeverity.DebugSeverityNotification:
                 case DebugSeverity.DebugSeverityLow:
-                    Logger.Log(str, this);
+                    Logger.Log(str, nameof(OpenTKWindow));
                     break;
             }
         }
@@ -212,7 +221,7 @@ namespace Walgelijk.OpenTK
         private void OnRenderFrame(FrameEventArgs obj)
         {
             GLUtilities.PrintGLErrors(Game.Main.DevelopmentMode);
-            
+
             Game.Scene?.RenderSystems();
             if (Game.DevelopmentMode)
                 Game.DebugDraw.Render();
@@ -227,8 +236,6 @@ namespace Walgelijk.OpenTK
             //GL.Flush();
             //GL.Finish();
             window.SwapBuffers();
-
-            time.RenderDeltaTime = (float)obj.Time;
         }
 
         private void OnUpdateFrame(FrameEventArgs obj)
@@ -243,13 +250,13 @@ namespace Walgelijk.OpenTK
 
             var now = stopwatch.Elapsed.TotalSeconds;
 
-            time.UpdateDeltaTimeUnscaled = (float)(now - time.SecondsSinceLoadUnscaled);
-            time.UpdateDeltaTime = time.UpdateDeltaTimeUnscaled * Time.TimeScale;
+            time.DeltaTimeUnscaled = (float)(now - time.SecondsSinceLoadUnscaled);
+            time.DeltaTime = time.DeltaTimeUnscaled * Time.TimeScale;
 
-            time.SecondsSinceSceneChange += time.UpdateDeltaTime;
-            time.SecondsSinceSceneChangeUnscaled += time.UpdateDeltaTimeUnscaled;
+            time.SecondsSinceSceneChange += time.DeltaTime;
+            time.SecondsSinceSceneChangeUnscaled += time.DeltaTimeUnscaled;
 
-            time.SecondsSinceLoad += time.UpdateDeltaTime;
+            time.SecondsSinceLoad += time.DeltaTime;
             time.SecondsSinceLoadUnscaled = (float)now;
         }
 

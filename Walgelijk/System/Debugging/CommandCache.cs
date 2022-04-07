@@ -38,9 +38,15 @@ namespace Walgelijk
             return methods.Select(m => m.method.Name);
         }
 
-        public void RegisterAssembly(Assembly ass)
+        public void RegisterAssembly(Assembly? ass)
         {
-            Logger.Log("Registering commands in assembly " + ass.FullName);
+            if (ass == null)
+            {
+                Logger.Warn("Attempt to register null assembly to command cache");
+                return;
+            }
+            else
+                Logger.Log("Registering commands in assembly " + ass.FullName);
 
             foreach (var type in ass.GetTypes())
             {

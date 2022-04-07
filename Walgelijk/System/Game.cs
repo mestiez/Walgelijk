@@ -22,7 +22,7 @@ namespace Walgelijk
         /// </summary>
         public readonly string ExecutableDirectory;
 
-        private Scene scene;
+        private Scene? scene;
 
         /// <summary>
         /// The developer console
@@ -37,7 +37,7 @@ namespace Walgelijk
         /// <summary>
         /// Currently active scene
         /// </summary>
-        public Scene Scene
+        public Scene? Scene
         {
             get => scene;
 
@@ -48,9 +48,9 @@ namespace Walgelijk
 
                 Time.SecondsSinceSceneChange = 0;
                 scene = value;
-                if (value != null)
+                if (scene != null)
                 {
-                    Time.UpdateDeltaTime = 0;
+                    Time.DeltaTime = 0;
                     scene.Game = this;
                     scene.HasBeenLoadedAlready = true;
                     Logger.Log("Scene changed", nameof(Game));
@@ -98,9 +98,12 @@ namespace Walgelijk
         /// <summary>
         /// Create a game with a window and an optional audio renderer. If the audio renderer is not set, the game won't be able to play any sounds
         /// </summary>
-        public Game(Window window, AudioRenderer audioRenderer = null)
+        public Game(Window window, AudioRenderer? audioRenderer = null)
         {
-            ExecutableDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + Path.DirectorySeparatorChar;
+            var entryAssembly = Assembly.GetEntryAssembly();
+            if (entryAssembly == null)
+                throw new Exception("Could not gety entry assembly so a Game instance could not be created");
+            ExecutableDirectory = Path.GetDirectoryName(entryAssembly.Location) + Path.DirectorySeparatorChar;
             global::System.Console.WriteLine(ExecutableDirectory);
             Window = window;
             window.Game = this;
@@ -137,8 +140,8 @@ namespace Walgelijk
         [Command]
         private static string Version()
         {
-            var assemblyName = Assembly.GetAssembly(typeof(Game)).GetName();
-            return $"{assemblyName.Name} v{assemblyName.Version}\n";
+            var assemblyName = Assembly.GetAssembly(typeof(Game))?.GetName() ?? null;
+            return $"{assemblyName?.Name ?? "null assembly"} v{assemblyName?.Version ?? (new global::System.Version(0,0,0))}\n";
         }
     }
 }

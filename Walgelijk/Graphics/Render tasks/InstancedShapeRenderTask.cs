@@ -10,7 +10,7 @@ namespace Walgelijk
         /// <summary>
         /// Create a shape render task
         /// </summary>
-        public InstancedShapeRenderTask(VertexBuffer vertexBuffer, Matrix4x4 modelMatrix = default, Material material = null) : base(vertexBuffer, modelMatrix, material)
+        public InstancedShapeRenderTask(VertexBuffer vertexBuffer, Matrix4x4 modelMatrix = default, Material? material = null) : base(vertexBuffer, modelMatrix, material)
         {
         }
 

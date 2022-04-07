@@ -35,7 +35,7 @@ namespace Walgelijk
             return new RenderOrder(Layer, order);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is RenderOrder order &&
                    Layer == order.Layer &&
@@ -59,7 +59,7 @@ namespace Walgelijk
 
         public static bool operator ==(RenderOrder left, RenderOrder right)
         {
-            return left.Equals(right);
+            return left.OrderInLayer == right.OrderInLayer && left.Layer == right.Layer;
         }
 
         public static bool operator !=(RenderOrder left, RenderOrder right)

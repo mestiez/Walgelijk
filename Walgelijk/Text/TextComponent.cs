@@ -16,7 +16,7 @@ namespace Walgelijk
         private float trackingMultiplier = 1;
         private float lineHeightMultiplier = 1;
         private float kerningMultiplier = 1f;
-        private IList<ColourInstruction> colourInstructions = null;
+        private IList<ColourInstruction>? colourInstructions = null;
 
         /// <summary>
         /// The raw text mesh generator. You can edit this all you want but it's safer to use the properties of the <see cref="TextComponent"/>
@@ -31,7 +31,7 @@ namespace Walgelijk
         /// <summary>
         /// Create a text component
         /// </summary>
-        public TextComponent(string displayString = null, Font font = null)
+        public TextComponent(string? displayString = null, Font? font = null)
         {
             this.displayString = displayString ?? "";
             this.font = font ?? Font.Default;
@@ -107,13 +107,10 @@ namespace Walgelijk
         /// <summary>
         /// Text colour instructions
         /// </summary>
-        public IList<ColourInstruction> ColorInstructions
+        public IList<ColourInstruction>? ColorInstructions
         {
             get => colourInstructions;
-            set
-            {
-                colourInstructions = value;
-            }
+            set => colourInstructions = value;
         }
 
         /// <summary>
@@ -217,7 +214,7 @@ namespace Walgelijk
 
         private void CreateVertices()
         {
-            if (VertexBuffer.Vertices == null || VertexBuffer.Vertices.Length < displayString.Length * 4)
+            if (VertexBuffer.Vertices.Length < displayString.Length * 4)
             {
                 VertexBuffer.Vertices = new Vertex[displayString.Length * 4];
                 VertexBuffer.Indices = new uint[displayString.Length * 6];

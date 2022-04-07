@@ -10,7 +10,7 @@ namespace Walgelijk
         /// <summary>
         /// Create a shape render task
         /// </summary>
-        public ShapeRenderTask(VertexBuffer vertexBuffer, Matrix4x4 modelMatrix = default, Material material = null)
+        public ShapeRenderTask(VertexBuffer vertexBuffer, Matrix4x4 modelMatrix = default, Material? material = null)
         {
             VertexBuffer = vertexBuffer;
             Material = material ?? Material.DefaultTextured;

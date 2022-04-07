@@ -103,7 +103,7 @@ namespace Walgelijk
                 if (args.Length <= i)
                     if (expected.HasDefaultValue)
                     {
-                        toPass[i] = expected.DefaultValue;
+                        toPass[i] = expected.DefaultValue ?? throw new global::System.Exception("HasDefaultValue returned true but it doesn't actually have one, somehow");
                         continue;
                     }
                     else
@@ -169,7 +169,7 @@ namespace Walgelijk
                         }
                         break;
                     default:
-                        console.Print(returned.ToString());
+                        console.Print(returned?.ToString() ?? "null");
                         break;
                 }
             }

@@ -8,9 +8,9 @@ namespace Walgelijk
     /// </summary>
     /// <typeparam name="UnloadedType">The key. This object is usually light and cheap to create</typeparam>
     /// <typeparam name="LoadedType">The loaded object. This object is usually heavy and expensive to create</typeparam>
-    public abstract class Cache<UnloadedType, LoadedType>
+    public abstract class Cache<UnloadedType, LoadedType> where UnloadedType : notnull
     {
-        protected readonly Dictionary<UnloadedType, LoadedType> loaded = new Dictionary<UnloadedType, LoadedType>();
+        protected readonly Dictionary<UnloadedType, LoadedType> Loaded = new();
 
         /// <summary>
         /// Load or create a <typeparamref name="LoadedType"/> from an <typeparamref name="UnloadedType"/>
@@ -19,11 +19,11 @@ namespace Walgelijk
         /// <returns></returns>
         public virtual LoadedType Load(UnloadedType obj)
         {
-            if (loaded.TryGetValue(obj, out var v))
+            if (Loaded.TryGetValue(obj, out var v))
                 return v;
 
             v = CreateNew(obj);
-            loaded.Add(obj, v);
+            Loaded.Add(obj, v);
             return v;
         }
 
@@ -45,29 +45,29 @@ namespace Walgelijk
         /// </summary>
         public void Unload(UnloadedType obj)
         {
-            if (!loaded.TryGetValue(obj, out var loadedObj))
+            if (!Loaded.TryGetValue(obj, out var loadedObj))
             {
                 Logger.Error($"Attempt to unload a(n) {typeof(UnloadedType).Name} that isn't loaded");
                 return;
             }
 
             DisposeOf(loadedObj);
-            loaded.Remove(obj);
+            Loaded.Remove(obj);
         }
 
         /// <summary>
         /// Returns if an entry is in the cache
         /// </summary>
-        public bool Has(UnloadedType obj) => loaded.ContainsKey(obj);
+        public bool Has(UnloadedType obj) => Loaded.ContainsKey(obj);
 
         /// <summary>
         /// Clear the cache
         /// </summary>
         public void UnloadAll()
         {
-            foreach (var entry in loaded)
+            foreach (var entry in Loaded)
                 DisposeOf(entry.Value);
-            loaded.Clear();
+            Loaded.Clear();
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Walgelijk
         /// </summary>
         public IEnumerable<LoadedType> GetAllLoaded()
         {
-            foreach (var item in loaded)
+            foreach (var item in Loaded)
                 yield return item.Value;
         }
 
@@ -84,7 +84,7 @@ namespace Walgelijk
         /// </summary>
         public IEnumerable<UnloadedType> GetAllUnloaded()
         {
-            foreach (var item in loaded)
+            foreach (var item in Loaded)
                 yield return item.Key;
         }
     }

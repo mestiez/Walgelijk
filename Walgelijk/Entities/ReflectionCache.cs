@@ -17,7 +17,7 @@ namespace Walgelijk
                 attributes.Add(type, attr);
             }
 
-            return attr as AttributeType[];
+            return attr as AttributeType[] ?? throw new Exception("Cached attribute array is invalid");
         }
     }
 }

@@ -59,22 +59,22 @@ namespace Walgelijk
         /// <summary>
         /// Fired when an entity is created and registered
         /// </summary>
-        public event Action<Entity> OnCreateEntity;
+        public event Action<Entity>? OnCreateEntity;
 
         /// <summary>
         /// Fired when a component is attached to an entity
         /// </summary>
-        public event Action<Entity, object> OnAttachComponent;
+        public event Action<Entity, object>? OnAttachComponent;
 
         /// <summary>
         /// Fired when a component is detached from an entity
         /// </summary>
-        public event Action<Entity> OnDetachComponent;
+        public event Action<Entity>? OnDetachComponent;
 
         /// <summary>
         /// Fired when a system is added
         /// </summary>
-        public event Action<System> OnAddSystem;
+        public event Action<System>? OnAddSystem;
 
         /// <summary>
         /// Add a system
@@ -348,7 +348,7 @@ namespace Walgelijk
         /// Returns the first found instance of the given type.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool FindAnyComponent<T>(out T anyInstance, out Entity entity) where T : class
+        public bool FindAnyComponent<T>(out T? anyInstance, out Entity entity) where T : class
         {
             foreach (var item in componentsToAdd)
                 if (item.Component is T typed)
@@ -374,7 +374,7 @@ namespace Walgelijk
         /// Retrieve the first component of the specified type on the given entity, otherwise returns default
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T GetComponentFrom<T>(Entity entity) where T : class
+        public T? GetComponentFrom<T>(Entity entity) where T : class
         {
             if (components.TryGetComponentFrom<T>(entity, out var attemptResult))
                 return attemptResult;
@@ -420,9 +420,9 @@ namespace Walgelijk
         /// Retrieve the first component of the specified type on the given entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryGetComponentFrom<T>(Entity entity, out T component) where T : class
+        public bool TryGetComponentFrom<T>(Entity entity, out T? component) where T : class
         {
-            component = default;
+            component = null;
 
             foreach (var item in componentsToAdd)
                 if (item.Entity == entity && item.Component is T typed)
@@ -475,9 +475,10 @@ namespace Walgelijk
             IEnumerable<object> existing = GetAllComponentsFrom(entity);
 
             foreach (var requirement in requirements)
-                foreach (var type in requirement.Types)
-                    if (!(existing.Any(e => type.IsAssignableFrom(e.GetType()))))
-                        throw new InvalidOperationException($"{component.GetType()} requires a {type}");
+                if (requirement.Types != null)
+                    foreach (var type in requirement.Types)
+                        if (!(existing.Any(e => type.IsAssignableFrom(e.GetType()))))
+                            throw new InvalidOperationException($"{component.GetType()} requires a {type}");
         }
 
         /// <summary>
@@ -516,10 +517,7 @@ namespace Walgelijk
         public void Initialise()
         {
             if (Game != null)
-            {
-                Game.Time.RenderDeltaTime = 0;
-                Game.Time.UpdateDeltaTime = 0;
-            }
+                Game.Time.DeltaTime = 0;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

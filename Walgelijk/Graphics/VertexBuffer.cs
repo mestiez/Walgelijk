@@ -9,10 +9,10 @@ namespace Walgelijk
     /// </summary>
     public class VertexBuffer : IDisposable
     {
-        private Vertex[] vertices;
-        private uint[] indices;
+        private Vertex[] vertices = Array.Empty<Vertex>();
+        private uint[] indices = Array.Empty<uint>();
 
-        private readonly VertexAttributeArray[] extraAttributes = null;
+        private readonly VertexAttributeArray[]? extraAttributes = null;
 
         /// <summary>
         /// The way vertices are drawn
@@ -22,7 +22,7 @@ namespace Walgelijk
         /// <summary>
         /// Create a VertexBuffer with the specified vertices and indices
         /// </summary>
-        public VertexBuffer(Vertex[] vertices, uint[] indices, VertexAttributeArray[] extraAttributes = null)
+        public VertexBuffer(Vertex[] vertices, uint[] indices, VertexAttributeArray[]? extraAttributes = null)
         {
             this.vertices = vertices;
             this.indices = indices;
@@ -142,7 +142,7 @@ namespace Walgelijk
         /// <summary>
         /// Get a vertex attribute array. Returns null if nothing is found. This is a reference value.
         /// </summary>
-        public VertexAttributeArray GetAttribute(int location)
+        public VertexAttributeArray? GetAttribute(int location)
         {
             if (extraAttributes == null)
                 return null;

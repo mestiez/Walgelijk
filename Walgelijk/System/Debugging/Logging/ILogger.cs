@@ -1,4 +1,6 @@
-﻿namespace Walgelijk
+﻿using System;
+
+namespace Walgelijk
 {
     /// <summary>
     /// Interface for basic logging
@@ -8,18 +10,18 @@
         /// <summary>
         /// Debug information
         /// </summary>
-        public void Debug(object message, object source = null);
+        public void Debug(string message, string? source = null);
         /// <summary>
         /// Log information
         /// </summary>
-        public void Log(object message, object source = null);
+        public void Log(string message, string? source = null);
         /// <summary>
         /// Log a warning
         /// </summary>
-        public void Warn(object message, object source = null);
+        public void Warn(string message, string? source = null);
         /// <summary>
         /// Log an error
         /// </summary>
-        public void Error(object message, object source = null);
+        public void Error(string message, string? source = null);
     }
 }

@@ -116,7 +116,7 @@ namespace Walgelijk
             return $"({R},{G},{B},{A})";
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Color color &&
                    R == color.R &&
@@ -132,7 +132,10 @@ namespace Walgelijk
 
         public static bool operator ==(Color left, Color right)
         {
-            return left.Equals(right);
+            return left.R == right.R &&
+                   left.G == right.G &&
+                   left.B == right.B &&
+                   left.A == right.A;
         }
 
         public static bool operator !=(Color left, Color right)

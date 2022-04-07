@@ -13,7 +13,7 @@
         }
 
         /// <summary>
-        /// The component of type <see cref="T"/>
+        /// The component of type <typeparamref name="T"/>
         /// </summary>
         public T Component { get; set; }
         /// <summary>

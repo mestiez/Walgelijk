@@ -74,7 +74,7 @@ namespace Walgelijk
         /// <summary>
         /// Direct access to the pixel data. This may be null if <see cref="DisposeLocalCopy"/> was called.
         /// </summary>
-        public Color[] RawData;
+        public Color[]? RawData;
 
         private FilterMode filterMode = FilterMode.Nearest;
         private WrapMode wrapMode = WrapMode.Clamp;

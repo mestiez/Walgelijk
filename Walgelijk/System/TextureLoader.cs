@@ -65,7 +65,7 @@ namespace Walgelijk
             for (int yy = 0; yy < image.Height; yy++)
             {
                 int y = flipY ? (image.Height - 1 - yy) : yy;
-                Span<Rgba32> pixelRowSpan = image.GetPixelRowSpan(y);
+                Span<Rgba32> pixelRowSpan = image.PixelBuffer.DangerousGetRowSpan(y);
                 for (int x = 0; x < image.Width; x++)
                 {
                     if (i >= destination.Length)

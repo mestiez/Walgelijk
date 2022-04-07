@@ -8,6 +8,6 @@
         /// <summary>
         /// Relevant component types
         /// </summary>
-        public global::System.Type[] Types { get; protected set; }
+        public global::System.Type[]? Types { get; protected set; }
     }
 }

@@ -10,6 +10,11 @@
         /// </summary>
         public RenderTarget Target { get; set; }
 
+        public TargetRenderTask(RenderTarget target)
+        {
+            Target = target;
+        }
+
         public void Execute(IGraphics graphics)
         {
             if (graphics.CurrentTarget != Target)

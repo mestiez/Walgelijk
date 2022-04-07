@@ -2,7 +2,7 @@
 {
     internal struct DefaultMaterialInitialiser
     {
-        private static Material material;
+        private static Material? material;
 
         public static Material GetMaterial()
         {

@@ -22,11 +22,7 @@ namespace Walgelijk
         /// </summary>
         public abstract Vector2 Size { get; set; }
         /// <summary>
-        /// Speed the game should render at
-        /// </summary>
-        public abstract int TargetFrameRate { get; set; }
-        /// <summary>
-        /// Speed the game should run updates at
+        /// Speed the game should update at
         /// </summary>
         public abstract int TargetUpdateRate { get; set; }
         /// <summary>
@@ -81,19 +77,19 @@ namespace Walgelijk
         /// <summary>
         /// Fires when the window is resized. Provides new size
         /// </summary>
-        public event EventHandler<Vector2> OnResize;
+        public event EventHandler<Vector2>? OnResize;
         /// <summary>
         /// Fires when the window is moved. Provides new position
         /// </summary>
-        public event EventHandler<Vector2> OnMove;
+        public event EventHandler<Vector2>? OnMove;
         /// <summary>
         /// Fires when a file is dropped on the window, Provides file paths
         /// </summary>
-        public event EventHandler<string[]> OnFileDrop;
+        public event EventHandler<string[]>? OnFileDrop;
         /// <summary>
         /// Fires when the window is going to close
         /// </summary>
-        public event EventHandler OnClose;
+        public event EventHandler? OnClose;
 
         /// <summary>
         /// Start the main game loop

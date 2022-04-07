@@ -78,7 +78,7 @@ namespace Walgelijk
             /// <summary>
             /// What to do once all logos have been displayed
             /// </summary>
-            public Action OnEnd;
+            public Action? OnEnd;
         }
 
         /// <summary>
@@ -97,12 +97,12 @@ namespace Walgelijk
             /// <summary>
             /// Sound to play
             /// </summary>
-            public Sound Sound;
+            public Sound? Sound;
 
             /// <summary>
             /// Create a logo with a texture and an optional sound
             /// </summary>
-            public Logo(IReadableTexture texture, float duration = 1f, Sound sound = null)
+            public Logo(IReadableTexture texture, float duration = 1f, Sound? sound = null)
             {
                 Texture = texture;
                 Duration = duration;
@@ -138,11 +138,14 @@ namespace Walgelijk
                 var rect = Scene.GetComponentFrom<RectangleShapeComponent>(entity);
                 var transform = Scene.GetComponentFrom<TransformComponent>(entity);
 
+                if (rect == null || transform == null)
+                    return;
+
                 if (component.Lifetime == 0)
                     setLogo(component.Logos[0]);
 
-                component.CurrentTime += Time.UpdateDeltaTime;
-                component.Lifetime += Time.UpdateDeltaTime;
+                component.CurrentTime += Time.DeltaTime;
+                component.Lifetime += Time.DeltaTime;
 
                 if (component.CurrentTime > component.Logos[component.CurrentLogoIndex].Duration)
                 {

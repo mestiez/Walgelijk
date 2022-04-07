@@ -56,21 +56,21 @@ namespace Walgelijk.OpenTK
             device = ALC.OpenDevice(deviceName);
 
             if (device == ALDevice.Null)
-                Logger.Warn(deviceName == null ? "No audio device could be found" : "The requested audio device could not be found", this);
+                Logger.Warn(deviceName == null ? "No audio device could be found" : "The requested audio device could not be found", nameof(OpenALAudioRenderer));
 
             context = ALC.CreateContext(device, new ALContextAttributes());
             if (context == ALContext.Null)
-                Logger.Warn("No audio context could be created", this);
+                Logger.Warn("No audio context could be created", nameof(OpenALAudioRenderer));
 
             bool couldSetContext = ALC.MakeContextCurrent(context);
 
             canPlayAudio = device != ALDevice.Null && context != ALContext.Null && couldSetContext;
 
             if (!couldSetContext)
-                Logger.Warn("The audio context could not be set", this);
+                Logger.Warn("The audio context could not be set", nameof(OpenALAudioRenderer));
 
             if (!canPlayAudio)
-                Logger.Error("Failed to initialise the audio renderer", this);
+                Logger.Error("Failed to initialise the audio renderer", nameof(OpenALAudioRenderer));
         }
 
         private static void UpdateIfRequired(Sound sound, out int source)
@@ -249,7 +249,7 @@ namespace Walgelijk.OpenTK
 
             foreach (var item in temporarySources)
             {
-                item.CurrentLifetime += game.Time.UpdateDeltaTime;
+                item.CurrentLifetime += game.Time.DeltaTime;
             }
         }
 

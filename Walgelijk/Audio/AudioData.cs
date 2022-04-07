@@ -7,7 +7,7 @@ namespace Walgelijk
     /// </summary>
     public class AudioData : IExternal<byte>
     {
-        private byte[] data;
+        private byte[]? data;
 
         /// <summary>
         /// Number of channels

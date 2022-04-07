@@ -21,7 +21,8 @@ namespace Walgelijk.OpenTK
 
         public static bool operator ==(LoadedShader left, LoadedShader right)
         {
-            return left.Equals(right);
+            return left.VertexShaderHandle == right.VertexShaderHandle &&
+                   left.FragmentShaderHandle == right.FragmentShaderHandle;
         }
 
         public static bool operator !=(LoadedShader left, LoadedShader right)

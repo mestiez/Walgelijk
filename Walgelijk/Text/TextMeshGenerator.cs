@@ -181,7 +181,7 @@ public class TextMeshGenerator
     /// <summary>
     /// Generate 2D text mesh. Returns a structure containing some results
     /// </summary>
-    public TextMeshResult Generate(string displayString, Vertex[] vertices, uint[] indices, IList<ColourInstruction> colours = null) =>
+    public TextMeshResult Generate(string displayString, Vertex[] vertices, uint[] indices, IList<ColourInstruction>? colours = null) =>
         Generate(displayString.AsSpan(), vertices, indices, colours);
 
     /// <summary>
@@ -191,7 +191,7 @@ public class TextMeshGenerator
     /// <param name="vertices">Vertex array that will be populated. This needs to be the length of displayString * 4</param>
     /// <param name="indices">Index array that will be populated. This needs to be the length of displayString * 6</param>
     /// <param name="colours">Colours to set at indices</param>
-    public TextMeshResult Generate(ReadOnlySpan<char> displayString, Vertex[] vertices, uint[] indices, IList<ColourInstruction> colours = null)
+    public TextMeshResult Generate(ReadOnlySpan<char> displayString, Vertex[] vertices, uint[] indices, IList<ColourInstruction>? colours = null)
     {
         float cursor = 0;
         float width = Font.Width;
@@ -430,7 +430,7 @@ internal struct GlyphUVInfo
         Height = h;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return obj is GlyphUVInfo info &&
                X == info.X &&
@@ -446,7 +446,10 @@ internal struct GlyphUVInfo
 
     public static bool operator ==(GlyphUVInfo left, GlyphUVInfo right)
     {
-        return left.Equals(right);
+        return left.X == right.X &&
+               left.Y == right.Y &&
+               left.Width == right.Width &&
+               left.Height == right.Height;
     }
 
     public static bool operator !=(GlyphUVInfo left, GlyphUVInfo right)

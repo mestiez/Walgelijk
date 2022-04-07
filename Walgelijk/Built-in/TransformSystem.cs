@@ -48,7 +48,7 @@ namespace Walgelijk
                 transform.RecalculateModelMatrix(Matrix4x4.Identity);
         }
 
-        private void CascadeMatrixCalculation(EntityWith<TransformComponent> current, IEnumerable<EntityWith<TransformComponent>> collection, TransformComponent up = null)
+        private void CascadeMatrixCalculation(EntityWith<TransformComponent> current, IEnumerable<EntityWith<TransformComponent>> collection, TransformComponent? up = null)
         {
             var transform = current.Component;
             bool shouldRecalculate = !transform.IsMatrixCached;

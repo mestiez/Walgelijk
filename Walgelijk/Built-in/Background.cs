@@ -41,7 +41,7 @@ namespace Walgelijk
                 foreach (var item in Scene.GetAllComponentsOfType<BackgroundComponent>())
                 {
                     var bg = item.Component;
-                    if (!bg.Visible || bg.Material == null)
+                    if (!bg.Visible || bg.Material == null || bg.RenderTask == null)
                         continue;
 
                     bg.RenderTask.Material = bg.Material;
@@ -60,7 +60,7 @@ namespace Walgelijk
             /// <summary>
             /// Material to draw with
             /// </summary>
-            public Material Material;
+            public Material? Material;
             /// <summary>
             /// The order at which to draw the backgound. 
             /// </summary>
@@ -77,7 +77,7 @@ namespace Walgelijk
             /// <summary>
             /// Relevant render task
             /// </summary>
-            public ShapeRenderTask RenderTask;
+            public ShapeRenderTask? RenderTask;
         }
     }
 }

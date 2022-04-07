@@ -13,7 +13,7 @@ namespace Walgelijk
         /// <summary>
         /// Display name of the font
         /// </summary>
-        public string Name { get; internal set; }
+        public string Name { get; internal set; } = string.Empty;
         /// <summary>
         /// Retrieve the point size this font was loaded with
         /// </summary>
@@ -45,24 +45,24 @@ namespace Walgelijk
         /// <summary>
         /// Array of texture pages this font uses
         /// </summary>
-        public IReadableTexture[] Pages { get; internal set; }
+        public IReadableTexture[]? Pages { get; internal set; }
         /// <summary>
         /// Glyphs by character
         /// </summary>
-        public Dictionary<char, Glyph> Glyphs { get; internal set; }
+        public Dictionary<char, Glyph>? Glyphs { get; internal set; }
         /// <summary>
         /// Kernings by <see cref="KerningPair"/>
         /// </summary>
-        public Dictionary<KerningPair, Kerning> Kernings { get; internal set; }
+        public Dictionary<KerningPair, Kerning>? Kernings { get; internal set; }
 
         /// <summary>
         /// Material this font uses. Be aware this may be shared across text. Use <see cref="TextMaterial.CreateFor(Font)"/> to create a new material.
         /// </summary>
-        public Material Material
+        public Material? Material
         {
             get;
             set;
-        }
+        } 
 
         /// <summary>
         /// Load a font from a metadata file (BMFont .fnt)
@@ -77,7 +77,8 @@ namespace Walgelijk
         /// </summary>
         public Glyph GetGlyph(char c, Glyph fallback = default)
         {
-            if (Glyphs.Count == 0) return default;
+            if (Glyphs == null || Glyphs.Count == 0) 
+                return default;
             if (Glyphs.TryGetValue(c, out var glyph))
                 return glyph;
             return fallback;
@@ -88,7 +89,8 @@ namespace Walgelijk
         /// </summary>
         public Kerning GetKerning(char previous, char current)
         {
-            if (Kernings.Count == 0) return default;
+            if (Kernings == null || Kernings.Count == 0) 
+                return default;
             if (Kernings.TryGetValue(new KerningPair { CurrentChar = current, PreviousChar = previous }, out var kerning))
                 return kerning;
             return default;
@@ -114,7 +116,7 @@ namespace Walgelijk
         /// </summary>
         public char CurrentChar;
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is KerningPair pair &&
                    PreviousChar == pair.PreviousChar &&
@@ -128,7 +130,8 @@ namespace Walgelijk
 
         public static bool operator ==(KerningPair left, KerningPair right)
         {
-            return left.Equals(right);
+            return left.PreviousChar == right.PreviousChar &&
+                   left.CurrentChar == right.CurrentChar;
         }
 
         public static bool operator !=(KerningPair left, KerningPair right)

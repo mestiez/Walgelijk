@@ -14,7 +14,7 @@ namespace Walgelijk
         private readonly Material fontMaterial;
         private readonly VertexBuffer circle = PrimitiveMeshes.GenerateCircle(12, 1);
         private readonly VertexBuffer rect = new VertexBuffer(PrimitiveMeshes.Quad.Vertices, PrimitiveMeshes.Quad.Indices);
-        private readonly VertexBuffer text = new VertexBuffer(null, null);
+        private readonly VertexBuffer text = new VertexBuffer();
         private readonly TextMeshGenerator textGenerator = new TextMeshGenerator();
 
         private HashSet<Drawing> drawings = new();
@@ -33,7 +33,7 @@ namespace Walgelijk
             textGenerator.Font = Font.Default;
             textGenerator.Color = Colors.White;
 
-            fontMaterial = new Material(Font.Default.Material);
+            fontMaterial = new Material(Font.Default.Material ?? throw new Exception("Font.Default.Material is null somehow"));
             debugMaterial = new Material(new Shader(
                 @"#version 460
 
@@ -196,8 +196,8 @@ void main()
 
         private class DebugTextDrawTask : DebugDrawTask
         {
-            public string String;
-            public TextMeshGenerator Generator;
+            public string String = string.Empty;
+            public TextMeshGenerator? Generator;
 
             public DebugTextDrawTask(VertexBuffer vertexBuffer, Matrix4x4 modelMatrix, Material material, Color tint) : base(vertexBuffer, modelMatrix, material, tint)
             {
@@ -206,6 +206,9 @@ void main()
 
             protected override void Draw(IGraphics graphics)
             {
+                if (Generator == null)
+                    return;
+
                 int vertexCount = String.Length * 4;
 
                 if (VertexBuffer.Vertices == null || VertexBuffer.Vertices.Length != vertexCount)

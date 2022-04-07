@@ -1,4 +1,6 @@
-﻿namespace Walgelijk
+﻿using System;
+
+namespace Walgelijk
 {
     /// <summary>
     /// Access the logging implementation
@@ -13,36 +15,40 @@
         /// <summary>
         /// Log information
         /// </summary>
-        public static void Debug(object message, object source = null)
+        public static void Debug(in string message, in string? source = null)
         {
             Implementation.Debug(message, source);
+
             OnLog.Dispatch((message, source, LogLevel.Debug));
         }
 
         /// <summary>
         /// Log information
         /// </summary>
-        public static void Log(object message, object source = null)
+        public static void Log(in string message, in string? source = null)
         {
             Implementation.Log(message, source);
+
             OnLog.Dispatch((message, source, LogLevel.Info));
         }
 
         /// <summary>
         /// Log a warning
         /// </summary>
-        public static void Warn(object message, object source = null)
+        public static void Warn(in string message, in string? source = null)
         {
             Implementation.Warn(message, source);
+
             OnLog.Dispatch((message, source, LogLevel.Warn));
         }
 
         /// <summary>
         /// Log an error
         /// </summary>
-        public static void Error(object message, object source = null)
+        public static void Error(in string message, in string? source = null)
         {
             Implementation.Error(message, source);
+
             OnLog.Dispatch((message, source, LogLevel.Error));
         }
 

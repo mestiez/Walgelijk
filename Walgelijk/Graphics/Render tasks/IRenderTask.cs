@@ -11,7 +11,6 @@ namespace Walgelijk
         /// <summary>
         /// Execute the render task on the given render target
         /// </summary>
-        /// <param name="target"></param>
         public void Execute(IGraphics graphics);
     }
 }

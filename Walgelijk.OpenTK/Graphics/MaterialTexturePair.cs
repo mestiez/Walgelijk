@@ -31,7 +31,9 @@ namespace Walgelijk.OpenTK
 
         public static bool operator ==(MaterialTexturePair left, MaterialTexturePair right)
         {
-            return left.Equals(right);
+            return left.Material.ProgramHandle == right.Material.ProgramHandle &&
+                   left.UniformLocation == right.UniformLocation &&
+                   left.Texture.Index == right.Texture.Index;
         }
 
         public static bool operator !=(MaterialTexturePair left, MaterialTexturePair right)

@@ -28,6 +28,9 @@ namespace Walgelijk
 
         private void ControlCamera(CameraSystem system)
         {
+            if (system.MainCameraComponent == null || system.MainCameraTransform == null)
+                return;
+
             var transform = system.MainCameraTransform;
             var delta = Vector2.Zero;
             var zoom = system.MainCameraComponent.OrthographicSize;
@@ -42,9 +45,9 @@ namespace Walgelijk
                 delta += new Vector2(1, 0);
 
             if (delta != Vector2.Zero)
-                transform.Position += Vector2.Normalize(delta) * zoom * Speed * Time.UpdateDeltaTime;
+                transform.Position += Vector2.Normalize(delta) * zoom * Speed * Time.DeltaTime;
 
-            float zoomFac = MathF.Pow(ZoomFactor, Time.UpdateDeltaTime);
+            float zoomFac = MathF.Pow(ZoomFactor, Time.DeltaTime);
             if (Input.IsKeyHeld(Key.Equal))
                 system.MainCameraComponent.OrthographicSize /= zoomFac;
             if (Input.IsKeyHeld(Key.Minus))

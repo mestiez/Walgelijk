@@ -53,7 +53,7 @@ namespace Walgelijk
 
         public override void SetAt(int index, object value) => Data[index] = (float)value;
 
-        public override T[] GetData<T>() => Data as T[];
+        public override T[] GetData<T>() => Data as T[] ?? throw new global::System.Exception("Data in vertex attribute array was not of the expected type");
     }
 
     /// <summary>
@@ -75,7 +75,7 @@ namespace Walgelijk
 
         public override void SetAt(int index, object value) => Data[index] = (int)value;
 
-        public override T[] GetData<T>() => Data as T[];
+        public override T[] GetData<T>() => Data as T[] ?? throw new global::System.Exception("Data in vertex attribute array was not of the expected type");
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ namespace Walgelijk
 
         public override void SetAt(int index, object value) => Data[index] = (Vector2)value;
 
-        public override T[] GetData<T>() => Data as T[];
+        public override T[] GetData<T>() => Data as T[] ?? throw new global::System.Exception("Data in vertex attribute array was not of the expected type");
     }
 
     /// <summary>
@@ -119,7 +119,7 @@ namespace Walgelijk
 
         public override void SetAt(int index, object value) => Data[index] = (Vector3)value;
 
-        public override T[] GetData<T>() => Data as T[];
+        public override T[] GetData<T>() => Data as T[] ?? throw new global::System.Exception("Data in vertex attribute array was not of the expected type");
     }
 
     /// <summary>
@@ -141,7 +141,7 @@ namespace Walgelijk
 
         public override void SetAt(int index, object value) => Data[index] = (Vector4)value;
 
-        public override T[] GetData<T>() => Data as T[];
+        public override T[] GetData<T>() => Data as T[] ?? throw new global::System.Exception("Data in vertex attribute array was not of the expected type");
     }
 
     /// <summary>
@@ -163,6 +163,6 @@ namespace Walgelijk
 
         public override void SetAt(int index, object value) => Data[index] = (Matrix4x4)value;
 
-        public override T[] GetData<T>() => Data as T[];
+        public override T[] GetData<T>() => Data as T[] ?? throw new global::System.Exception("Data in vertex attribute array was not of the expected type");
     }
 }

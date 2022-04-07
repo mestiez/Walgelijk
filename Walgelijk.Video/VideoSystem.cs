@@ -31,9 +31,9 @@ namespace Walgelijk.Video
 
                     float dt;
                     if (gifComponent.IgnoreTimeScale)
-                        dt = Time.UpdateDeltaTimeUnscaled * gifComponent.PlaybackSpeed;
+                        dt = Time.DeltaTimeUnscaled * gifComponent.PlaybackSpeed;
                     else 
-                        dt = Time.UpdateDeltaTime * gifComponent.PlaybackSpeed;
+                        dt = Time.DeltaTime * gifComponent.PlaybackSpeed;
 
                     gifComponent.PlaybackTime += dt;
                         

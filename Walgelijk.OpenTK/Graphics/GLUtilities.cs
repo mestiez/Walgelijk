@@ -21,7 +21,7 @@ namespace Walgelijk.OpenTK
                 var e = GL.GetError();
                 if (e == ErrorCode.NoError)
                     break;
-                Logger.Error(e, nameof(OpenTKWindow));
+                Logger.Error("GL Error: " + e.ToString(), nameof(OpenTKWindow));
                 if (throwException)
                     throw new GraphicsException((exceptionPrepend ?? string.Empty) + e.ToString());
             }

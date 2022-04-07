@@ -10,7 +10,7 @@ namespace Walgelijk.ParticleSystem
             var s = Scene.GetAllComponentsOfType<ParticlesComponent>();
             foreach (var item in s)
             {
-                var transform = Scene.GetComponentFrom<TransformComponent>(item.Entity);
+                var transform = Scene.GetComponentFast<TransformComponent>(item.Entity);
                 var particles = item.Component;
 
                 HandleEmission(particles, transform);
@@ -23,7 +23,7 @@ namespace Walgelijk.ParticleSystem
             var s = Scene.GetAllComponentsOfType<ParticlesComponent>();
             foreach (var item in s)
             {
-                var transform = Scene.GetComponentFrom<TransformComponent>(item.Entity);
+                var transform = Scene.GetComponentFast<TransformComponent>(item.Entity);
                 var particles = item.Component;
 
                 RenderParticleSystem(particles, transform);
@@ -35,7 +35,7 @@ namespace Walgelijk.ParticleSystem
             if (particles.EmissionRate <= float.Epsilon) return;
 
             particles.EmissionDistributor.Rate = particles.EmissionRate;
-            var cycles = particles.EmissionDistributor.CalculateCycleCount(Time.UpdateDeltaTime);
+            var cycles = particles.EmissionDistributor.CalculateCycleCount(Time.DeltaTime);
 
             for (int i = 0; i < cycles; i++)
                 CreateParticle(particles, transform);
@@ -95,7 +95,7 @@ namespace Walgelijk.ParticleSystem
 
         private void UpdateParticleSystem(ParticlesComponent particles, TransformComponent transform)
         {
-            var dt = Time.UpdateDeltaTime * particles.SimulationSpeed;
+            var dt = Time.DeltaTime * particles.SimulationSpeed;
 
             for (int i = 0; i < particles.MaxParticleCount; i++)
             {

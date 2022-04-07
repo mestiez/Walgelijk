@@ -30,6 +30,6 @@ namespace Walgelijk
         /// <summary>
         /// The task that applies the effects
         /// </summary>
-        public ActionRenderTask EffectTask { get; internal set; } = null;
+        public ActionRenderTask? EffectTask { get; internal set; } = null;
     }
 }

@@ -39,7 +39,7 @@ namespace Walgelijk
         public abstract Vector3 ListenerPosition { get; set; }
 
         /// <summary>
-        /// Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="PlayOnce(Sound)"/>
+        /// Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="PlayOnce(Sound, float, float)"/> or <see cref="PlayOnce(Sound, Vector2, float, float)"/>
         /// </summary>
         public abstract bool IsPlaying(Sound sound);
 
@@ -70,7 +70,7 @@ namespace Walgelijk
         public abstract void Stop(Sound sound);
 
         /// <summary>
-        /// Set the volume of a specific sound. Does not affect sounds created using <see cref="PlayOnce(Sound, float)"/>
+        /// Set the volume of a specific sound. Does not affect sounds created using <see cref="PlayOnce(Sound, float, float)"/> or <see cref="PlayOnce(Sound, Vector2, float, float)"/>
         /// </summary>
         public abstract void SetVolume(Sound sound, float volume);
 

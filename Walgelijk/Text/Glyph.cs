@@ -49,7 +49,7 @@ namespace Walgelijk
         /// </summary>
         public int Page;
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Glyph glyph &&
                    Identity == glyph.Identity &&
@@ -80,7 +80,15 @@ namespace Walgelijk
 
         public static bool operator ==(Glyph left, Glyph right)
         {
-            return left.Equals(right);
+            return left.Identity == right.Identity &&
+                   left.X == right.X &&
+                   left.Y == right.Y &&
+                   left.Width == right.Width &&
+                   left.Height == right.Height &&
+                   left.XOffset == right.XOffset &&
+                   left.YOffset == right.YOffset &&
+                   left.Advance == right.Advance &&
+                   left.Page == right.Page;
         }
 
         public static bool operator !=(Glyph left, Glyph right)

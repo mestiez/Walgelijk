@@ -134,28 +134,28 @@ namespace Walgelijk
         /// <summary>
         /// Try to get a IReadableTexture uniform value
         /// </summary>
-        public bool TryGetValue(string key, out IReadableTexture v) => Textures.TryGetValue(key, out v);
+        public bool TryGetValue(string key, out IReadableTexture? v) => Textures.TryGetValue(key, out v);
 
         /// <summary>
         /// Try to get an int[] uniform value
         /// </summary>
-        public bool TryGetValue(string key, out int[] v) => IntegerArrays.TryGetValue(key, out v);
+        public bool TryGetValue(string key, out int[]? v) => IntegerArrays.TryGetValue(key, out v);
         /// <summary>
         /// Try to get a float[] uniform value
         /// </summary>
-        public bool TryGetValue(string key, out float[] v) => FloatArrays.TryGetValue(key, out v);
+        public bool TryGetValue(string key, out float[]? v) => FloatArrays.TryGetValue(key, out v);
         /// <summary>
         /// Try to get a double[] uniform value
         /// </summary>
-        public bool TryGetValue(string key, out double[] v) => DoubleArrays.TryGetValue(key, out v);
+        public bool TryGetValue(string key, out double[]? v) => DoubleArrays.TryGetValue(key, out v);
         /// <summary>
         /// Try to get a Vector3[] uniform value
         /// </summary>
-        public bool TryGetValue(string key, out Vector3[] v) => Vec3Arrays.TryGetValue(key, out v);
+        public bool TryGetValue(string key, out Vector3[]? v) => Vec3Arrays.TryGetValue(key, out v);
         /// <summary>
         /// Try to get a Matrix4x4[] uniform value
         /// </summary>
-        public bool TryGetValue(string key, out Matrix4x4[] v) => Matrix4x4Arrays.TryGetValue(key, out v);
+        public bool TryGetValue(string key, out Matrix4x4[]? v) => Matrix4x4Arrays.TryGetValue(key, out v);
 
         /// <summary>
         /// Does the uniform with the given name exist?
@@ -396,7 +396,7 @@ namespace Walgelijk
         /// Try to get the value of a uniform
         /// </summary>
         /// <returns>True if the uniform exists</returns>
-        public bool TryGetUniform(string name, out IReadableTexture value) => InternalUniforms.TryGetValue(name, out value);
+        public bool TryGetUniform(string name, out IReadableTexture? value) => InternalUniforms.TryGetValue(name, out value);
 
         /// <summary>
         /// Try to get the value of a uniform
@@ -444,31 +444,31 @@ namespace Walgelijk
         /// Try to get the value of a uniform
         /// </summary>
         /// <returns>True if the uniform exists</returns>
-        public bool TryGetUniform(string name, out int[] value) => InternalUniforms.TryGetValue(name, out value);
+        public bool TryGetUniform(string name, out int[]? value) => InternalUniforms.TryGetValue(name, out value);
 
         /// <summary>
         /// Try to get the value of a uniform
         /// </summary>
         /// <returns>True if the uniform exists</returns>
-        public bool TryGetUniform(string name, out float[] value) => InternalUniforms.TryGetValue(name, out value);
+        public bool TryGetUniform(string name, out float[]? value) => InternalUniforms.TryGetValue(name, out value);
 
         /// <summary>
         /// Try to get the value of a uniform
         /// </summary>
         /// <returns>True if the uniform exists</returns>
-        public bool TryGetUniform(string name, out double[] value) => InternalUniforms.TryGetValue(name, out value);
+        public bool TryGetUniform(string name, out double[]? value) => InternalUniforms.TryGetValue(name, out value);
 
         /// <summary>
         /// Try to get the value of a uniform
         /// </summary>
         /// <returns>True if the uniform exists</returns>
-        public bool TryGetUniform(string name, out Vector3[] value) => InternalUniforms.TryGetValue(name, out value);
+        public bool TryGetUniform(string name, out Vector3[]? value) => InternalUniforms.TryGetValue(name, out value);
 
         /// <summary>
         /// Try to get the value of a uniform
         /// </summary>
         /// <returns>True if the uniform exists</returns>
-        public bool TryGetUniform(string name, out Matrix4x4[] value) => InternalUniforms.TryGetValue(name, out value);
+        public bool TryGetUniform(string name, out Matrix4x4[]? value) => InternalUniforms.TryGetValue(name, out value);
 
         /// <summary>
         /// Returns whether a uniform with the given name has been registered in the material

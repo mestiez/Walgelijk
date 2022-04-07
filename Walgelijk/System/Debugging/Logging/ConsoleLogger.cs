@@ -7,40 +7,44 @@ namespace Walgelijk
     /// </summary>
     public sealed class ConsoleLogger : ILogger
     {
-        public void Debug(object message, object source)
+        public void Debug(string message, string? source = null)
         {
-            Write("[DBG]", message.ToString(), source, ConsoleColor.Magenta);
+            Write("[DBG]", message, source ?? "null", ConsoleColor.Magenta);
         }
 
-        public void Log(object message, object source)
+        public void Log(string message, string? source = null)
         {
-            Write("[LOG]", message.ToString(), source);
+            Write("[LOG]", message, source ?? "null");
         }
 
-        public void Warn(object message, object source)
+        public void Warn(string message, string? source = null)
         {
-            Write("[WRN]", message.ToString(), source, ConsoleColor.DarkYellow);
+            Write("[WRN]", message, source ?? "null", ConsoleColor.DarkYellow);
         }
 
-        public void Error(object message, object source)
+        public void Error(string message, string? source = null)
         {
-            Write("[ERR]", message.ToString(), source, ConsoleColor.Red);
+            Write("[ERR]", message, source ?? "null", ConsoleColor.Red);
         }
 
-        private void Write(string prefix, string message, object source, ConsoleColor color = ConsoleColor.White)
+        private void Write(ReadOnlySpan<char> prefix, ReadOnlySpan<char> message, ReadOnlySpan<char> source, ConsoleColor color = ConsoleColor.White)
         {
             Console.ForegroundColor = color;
-            Console.Write(prefix);
-            Console.Write(" ");
+            for (int i = 0; i < prefix.Length; i++)
+                Console.Write(prefix[i]);
+
+            Console.Write(' ');
 
             Console.ForegroundColor = ConsoleColor.Gray;
-            Console.Write(message);
+            for (int i = 0; i < message.Length; i++)
+                Console.Write(message[i]);
 
             if (source != null)
             {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.Write(" ");
-                Console.Write(source.ToString());
+                Console.Write(' ');
+                for (int i = 0; i < source.Length; i++)
+                    Console.Write(source[i]);
             }
 
             Console.Write(Environment.NewLine);

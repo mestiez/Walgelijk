@@ -15,7 +15,7 @@
         /// </summary>
         /// <param name="vertexBuffer">VertexBuffer to draw</param>
         /// <param name="material">Material to draw it with</param>
-        public void Draw(VertexBuffer vertexBuffer, Material material = null);
+        public void Draw(VertexBuffer vertexBuffer, Material? material = null);
 
         /// <summary>
         /// Draw a instanced vertex buffer to the currently activated target
@@ -23,7 +23,7 @@
         /// <param name="vertexBuffer">VertexBuffer to draw</param>
         /// <param name="instanceCount">Amount of elements to draw</param>
         /// <param name="material">Material to draw it with</param>
-        public void DrawInstanced(VertexBuffer vertexBuffer, int instanceCount, Material material = null);
+        public void DrawInstanced(VertexBuffer vertexBuffer, int instanceCount, Material? material = null);
 
         /// <summary>
         /// Set a shader program uniform

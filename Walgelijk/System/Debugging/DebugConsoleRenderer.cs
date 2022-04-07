@@ -25,7 +25,7 @@ namespace Walgelijk
 
         private List<ColourInstruction> textColors = new List<ColourInstruction>();
 
-        public string InputString { get; set; }
+        public string InputString { get; set; } = string.Empty;
         public Rect TextBounds => text.LocalBoundingBox;
 
         public const float ConsoleNotificationDuration = 5;
@@ -96,7 +96,7 @@ namespace Walgelijk
             if (consoleSlideOffset > float.Epsilon)
                 RenderActiveConsole();
 
-            float consoleSpeed = debugConsole.Game.Time.RenderDeltaTime / ConsoleSlideDuration;
+            float consoleSpeed = debugConsole.Game.Time.DeltaTime / ConsoleSlideDuration;
             consoleSlideOffset += debugConsole.IsActive ? consoleSpeed : -consoleSpeed;
             consoleSlideOffset = Utilities.Clamp(consoleSlideOffset);
 
@@ -106,7 +106,7 @@ namespace Walgelijk
 
         private void RenderOverlayConsole()
         {
-            overlayLife += debugConsole.Game.Time.RenderDeltaTime;
+            overlayLife += debugConsole.Game.Time.DeltaTime;
 
             if (dirtyLog && debugConsole.Log.Count > 0)
             {
@@ -117,7 +117,7 @@ namespace Walgelijk
                 dirtyLog = false;
             }
 
-            if (overlayLife < ConsoleNotificationDuration)
+            if (overlayLife < ConsoleNotificationDuration && overlay.RenderTask != null)
             {
                 overlay.RenderTask.ModelMatrix = textModel * Matrix4x4.CreateTranslation(
                     debugConsole.Game.Window.Size.X - overlay.LocalBoundingBox.Width - 5,

@@ -12,7 +12,7 @@ namespace Walgelijk
         /// </summary>
         public int Identity { get; set; }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Entity entity &&
                    Identity == entity.Identity;
@@ -25,7 +25,7 @@ namespace Walgelijk
 
         public static bool operator ==(Entity left, Entity right)
         {
-            return left.Equals(right);
+            return left.Identity == right.Identity;
         }
 
         public static bool operator !=(Entity left, Entity right)

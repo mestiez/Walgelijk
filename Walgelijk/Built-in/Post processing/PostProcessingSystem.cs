@@ -10,14 +10,14 @@ namespace Walgelijk
     {
         private bool needsNewRT = true;
 
-        private RenderTexture rt0;
-        private RenderTexture rt1;
+        private RenderTexture? rt0;
+        private RenderTexture? rt1;
 
         //TODO uitzoeken of rt1 wel nodig is en of je niet gewoon de target van de window kan gebruiken????????
 
-        private ActionRenderTask rt0TargetTask;
+        private ActionRenderTask? rt0TargetTask;
 
-        private Material fullscreenMaterial;
+        private Material? fullscreenMaterial;
         private Matrix4x4 fullscreenModel;
 
         public override void Initialise()
@@ -40,9 +40,10 @@ namespace Walgelijk
 
             Logger.Log($"New post-processing RenderTextures created with size {rt0.Size}");
 
-            void disposeOf(RenderTexture rt)
+            void disposeOf(RenderTexture? rt)
             {
-                if (rt != null) rt.Dispose();
+                if (rt != null)
+                    rt.Dispose();
             }
 
             RenderTexture getNewTexture()
@@ -52,7 +53,7 @@ namespace Walgelijk
             }
         }
 
-        private void OnResize(object sender, Vector2 e)
+        private void OnResize(object? sender, Vector2 e)
         {
             needsNewRT = true;
         }
@@ -64,9 +65,10 @@ namespace Walgelijk
 
             var containers = Scene.GetAllComponentsOfType<PostProcessingComponent>();
 
-            foreach (var item in containers)
-                if (item.Component.Enabled)
-                    RenderQueue.Add(rt0TargetTask, item.Component.Begin);
+            if (rt0TargetTask != null)
+                foreach (var item in containers)
+                    if (item.Component.Enabled)
+                        RenderQueue.Add(rt0TargetTask, item.Component.Begin);
         }
 
         public override void PostRender()
@@ -79,7 +81,7 @@ namespace Walgelijk
             foreach (var item in containers)
             {
                 if (!item.Component.Enabled)
-                    continue ;
+                    continue;
 
                 var container = item.Component;
 
@@ -92,6 +94,9 @@ namespace Walgelijk
 
         private void PrepareTarget(IGraphics graphics)
         {
+            if (rt0 == null || rt1 == null)
+                return;
+
             var windowTarget = Scene.Game.Window.RenderTarget;
 
             graphics.CurrentTarget = rt1;
@@ -108,7 +113,10 @@ namespace Walgelijk
 
         private void ApplyEffects(PostProcessingComponent component, IGraphics graphics)
         {
-            RenderTexture last = null;
+            if (rt0 == null || rt1 == null || fullscreenMaterial == null)
+                return;
+
+            RenderTexture? last = null;
 
             var a = rt0;
             var b = rt1;

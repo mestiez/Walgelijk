@@ -36,7 +36,7 @@ namespace Walgelijk
         /// <summary>
         /// Get an object from the pool. This will be ready for use or null, if the pool is at full capacity. 
         /// </summary>
-        public virtual T RequestObject(InitialData initialiser)
+        public virtual T? RequestObject(InitialData initialiser)
         {
             bool somethingAvailable = freeToUse.Count > 0;
 
@@ -49,7 +49,7 @@ namespace Walgelijk
             }
             else //over capacity
             {
-                Logger.Warn("Pool can't satisfy demand because the MaximumCapacity is too low.", this);
+                Logger.Warn("Pool can't satisfy demand because the MaximumCapacity is too low.", GetType().Name);
                 return GetOverCapacityFallback();
             }
         }
@@ -63,7 +63,7 @@ namespace Walgelijk
             if (currentlyInUse.Remove(obj))
                 freeToUse.Push(obj);
             else
-                Logger.Warn("Object that was returned to the pool was already in the pool.", this);
+                Logger.Warn("Object that was returned to the pool was already in the pool.", GetType().Name);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Walgelijk
         /// </summary>
         /// <param name="initialiser"></param>
         /// <returns></returns>
-        protected virtual T GetExistingFromPool(InitialData initialiser)
+        protected virtual T? GetExistingFromPool(InitialData initialiser)
         {
             if (!freeToUse.TryPop(out var f))
                 return null;

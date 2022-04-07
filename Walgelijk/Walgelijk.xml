@@ -101,7 +101,7 @@
         </member>
         <member name="M:Walgelijk.AudioRenderer.IsPlaying(Walgelijk.Sound)">
             <summary>
-            Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="!:PlayOnce(Sound)"/>
+            Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Single,System.Single)"/> or <see cref="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Numerics.Vector2,System.Single,System.Single)"/>
             </summary>
         </member>
         <member name="M:Walgelijk.AudioRenderer.Play(Walgelijk.Sound,System.Single)">
@@ -132,7 +132,7 @@
         </member>
         <member name="M:Walgelijk.AudioRenderer.SetVolume(Walgelijk.Sound,System.Single)">
             <summary>
-            Set the volume of a specific sound. Does not affect sounds created using <see cref="!:PlayOnce(Sound, float)"/>
+            Set the volume of a specific sound. Does not affect sounds created using <see cref="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Single,System.Single)"/> or <see cref="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Numerics.Vector2,System.Single,System.Single)"/>
             </summary>
         </member>
         <member name="M:Walgelijk.AudioRenderer.Pause(Walgelijk.Sound)">
@@ -942,7 +942,7 @@
         </member>
         <member name="P:Walgelijk.EntityWith`1.Component">
             <summary>
-            The component of type <see cref="!:T"/>
+            The component of type <typeparamref name="T"/>
             </summary>
         </member>
         <member name="P:Walgelijk.EntityWith`1.Entity">
@@ -2425,7 +2425,6 @@
             <summary>
             Execute the render task on the given render target
             </summary>
-            <param name="target"></param>
         </member>
         <member name="T:Walgelijk.ShapeRenderTask">
             <summary>
@@ -3448,22 +3447,22 @@
             Interface for basic logging
             </summary>
         </member>
-        <member name="M:Walgelijk.ILogger.Debug(System.Object,System.Object)">
+        <member name="M:Walgelijk.ILogger.Debug(System.String,System.String)">
             <summary>
             Debug information
             </summary>
         </member>
-        <member name="M:Walgelijk.ILogger.Log(System.Object,System.Object)">
+        <member name="M:Walgelijk.ILogger.Log(System.String,System.String)">
             <summary>
             Log information
             </summary>
         </member>
-        <member name="M:Walgelijk.ILogger.Warn(System.Object,System.Object)">
+        <member name="M:Walgelijk.ILogger.Warn(System.String,System.String)">
             <summary>
             Log a warning
             </summary>
         </member>
-        <member name="M:Walgelijk.ILogger.Error(System.Object,System.Object)">
+        <member name="M:Walgelijk.ILogger.Error(System.String,System.String)">
             <summary>
             Log an error
             </summary>
@@ -3478,22 +3477,22 @@
             The logging implementation used. Set to <see cref="T:Walgelijk.ConsoleLogger"/> by default
             </summary>
         </member>
-        <member name="M:Walgelijk.Logger.Debug(System.Object,System.Object)">
+        <member name="M:Walgelijk.Logger.Debug(System.String@,System.String@)">
             <summary>
             Log information
             </summary>
         </member>
-        <member name="M:Walgelijk.Logger.Log(System.Object,System.Object)">
+        <member name="M:Walgelijk.Logger.Log(System.String@,System.String@)">
             <summary>
             Log information
             </summary>
         </member>
-        <member name="M:Walgelijk.Logger.Warn(System.Object,System.Object)">
+        <member name="M:Walgelijk.Logger.Warn(System.String@,System.String@)">
             <summary>
             Log a warning
             </summary>
         </member>
-        <member name="M:Walgelijk.Logger.Error(System.Object,System.Object)">
+        <member name="M:Walgelijk.Logger.Error(System.String@,System.String@)">
             <summary>
             Log an error
             </summary>
@@ -3962,14 +3961,9 @@
             Structure that holds frame specific time data
             </summary>
         </member>
-        <member name="P:Walgelijk.Time.UpdateDeltaTime">
+        <member name="P:Walgelijk.Time.DeltaTime">
             <summary>
-            Returns the amount of seconds that have passed since the last update frame
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Time.RenderDeltaTime">
-            <summary>
-            Returns the amount of seconds that have passed since the last rendered frame, unaffected by <see cref="P:Walgelijk.Time.TimeScale"/>
+            Returns the amount of seconds that have passed since the last frame
             </summary>
         </member>
         <member name="P:Walgelijk.Time.SecondsSinceLoad">
@@ -3982,9 +3976,9 @@
             Returns the amount of seconds that have passed since the last scene change
             </summary>
         </member>
-        <member name="P:Walgelijk.Time.UpdateDeltaTimeUnscaled">
+        <member name="P:Walgelijk.Time.DeltaTimeUnscaled">
             <summary>
-            Returns the amount of seconds that have passed since the last update frame, unaffected by <see cref="P:Walgelijk.Time.TimeScale"/>
+            Returns the amount of seconds that have passed since the last frame, unaffected by <see cref="P:Walgelijk.Time.TimeScale"/>
             </summary>
         </member>
         <member name="P:Walgelijk.Time.SecondsSinceLoadUnscaled">
@@ -4760,14 +4754,9 @@
             Size of the window in pixels
             </summary>
         </member>
-        <member name="P:Walgelijk.Window.TargetFrameRate">
-            <summary>
-            Speed the game should render at
-            </summary>
-        </member>
         <member name="P:Walgelijk.Window.TargetUpdateRate">
             <summary>
-            Speed the game should run updates at
+            Speed the game should update at
             </summary>
         </member>
         <member name="P:Walgelijk.Window.VSync">

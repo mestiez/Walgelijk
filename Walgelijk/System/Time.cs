@@ -6,13 +6,9 @@
     public class Time
     {
         /// <summary>
-        /// Returns the amount of seconds that have passed since the last update frame
+        /// Returns the amount of seconds that have passed since the last frame
         /// </summary>
-        public float UpdateDeltaTime { get; set; }
-        /// <summary>
-        /// Returns the amount of seconds that have passed since the last rendered frame, unaffected by <see cref="TimeScale"/>
-        /// </summary>
-        public float RenderDeltaTime { get; set; }
+        public float DeltaTime { get; set; }
         /// <summary>
         /// Returns the amount of seconds that have passed since the game was launched
         /// </summary>
@@ -23,9 +19,9 @@
         public float SecondsSinceSceneChange { get; set; }
 
         /// <summary>
-        /// Returns the amount of seconds that have passed since the last update frame, unaffected by <see cref="TimeScale"/>
+        /// Returns the amount of seconds that have passed since the last frame, unaffected by <see cref="TimeScale"/>
         /// </summary>
-        public float UpdateDeltaTimeUnscaled { get; set; }
+        public float DeltaTimeUnscaled { get; set; }
         /// <summary>
         /// Returns the amount of seconds that have passed since the game was launched, unaffected by <see cref="TimeScale"/>
         /// </summary>

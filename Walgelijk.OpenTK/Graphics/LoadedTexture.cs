@@ -32,7 +32,9 @@ namespace Walgelijk.OpenTK
 
         public static bool operator ==(LoadedTexture left, LoadedTexture right)
         {
-            return left.Equals(right);
+            return left.Width == right.Width &&
+                   left.Height == right.Height &&
+                   left.Index == right.Index;
         }
 
         public static bool operator !=(LoadedTexture left, LoadedTexture right)
@@ -78,7 +80,8 @@ namespace Walgelijk.OpenTK
 
         public static bool operator ==(TextureUnitLink left, TextureUnitLink right)
         {
-            return left.Equals(right);
+            return left.Texture.Index == right.Texture.Index &&
+                   left.Unit == right.Unit;
         }
 
         public static bool operator !=(TextureUnitLink left, TextureUnitLink right)
