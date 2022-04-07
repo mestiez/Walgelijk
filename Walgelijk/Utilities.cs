@@ -269,20 +269,14 @@ namespace Walgelijk
         /// <summary>
         /// Remaps a linear value from 0 to 1 to an ease-in ease-out cubic curve
         /// </summary>
-        public static float EaseInOutCubic(float x)
-        {
-            float a = -2 * x + 2;
-            return x < 0.5f ? 4 * x * x * x : 1 - (a * a * a) / 2;
-        }
+        [Obsolete]
+        public static float EaseInOutCubic(float x) => Easings.Cubic.InOut(x);
 
         /// <summary>
         /// Remaps a linear value from 0 to 1 to an ease-in ease-out quadractic curve
         /// </summary>
-        public static float EaseInOutQuad(float x)
-        {
-            float a = -2 * x + 2;
-            return x < 0.5f ? 2 * x * x : 1 - (a * a) / 2;
-        }
+        [Obsolete]
+        public static float EaseInOutQuad(float x) => Easings.Quad.InOut(x);
 
         /// <summary>
         /// Returns the given fallback value (0 by default) if the given input value is NaN

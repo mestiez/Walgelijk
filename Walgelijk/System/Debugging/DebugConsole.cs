@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Walgelijk
 {
+
     /// <summary>
     /// Class that renders and controls the debug console
     /// </summary>
@@ -12,12 +13,21 @@ namespace Walgelijk
         /// <summary>
         /// The key that will toggle the console
         /// </summary>
-        public const Key ToggleKey = Key.F12;
+        public Key ToggleKey = Key.F12;
 
         /// <summary>
         /// Whether the console is shown and active or not
         /// </summary>
-        public bool IsActive { get; private set; }
+        public bool IsActive
+        {
+            get => isActive;
+
+            set
+            {
+                isActive = value;
+                renderer.SetDirty();
+            }
+        }
 
         /// <summary>
         /// The <see cref="Game"/> this console is associated with
@@ -34,13 +44,31 @@ namespace Walgelijk
         /// </summary>
         public bool DrawConsoleNotification { get; set; }
 
-        internal float ScrollOffset = 0;
+        /// <summary>
+        /// Filters what kind of messages will be displayed
+        /// </summary>
+        public ConsoleMessageType Filter
+        {
+            get => filter; 
+            
+            set
+            {
+                filter = value;
+                renderer.SetDirty();
+            }
+        }
+        /// <summary>
+        /// Scroll offset of the console
+        /// </summary>
+        public float ScrollOffset;
 
         private readonly DebugConsoleRenderer renderer;
-        internal List<(string message, Color color)> Log = new(128);
+        internal List<(string message, Color color, ConsoleMessageType type)> Log = new(128);
         internal List<string> InputHistory = new();
         private int historyIndex = 0;
         private string currentInput = "";
+        private bool isActive;
+        private ConsoleMessageType filter = ConsoleMessageType.All;
 
         private InputState Input => Game.Window.InputState;
 
@@ -53,27 +81,32 @@ namespace Walgelijk
             {
                 Color c;
                 string name;
+                ConsoleMessageType messageType;
                 switch (e.Level)
                 {
                     default:
                     case LogLevel.Debug:
                         c = Colors.Purple;
+                        messageType = ConsoleMessageType.Debug;
                         name = "DBG";
-                        break;                   
+                        break;
                     case LogLevel.Info:
                         c = DebugConsoleRenderer.DefaultTextColour;
+                        messageType = ConsoleMessageType.Info;
                         name = "LOG";
                         break;
                     case LogLevel.Warn:
                         c = Colors.Orange;
+                        messageType = ConsoleMessageType.Warning;
                         name = "WRN";
                         break;
                     case LogLevel.Error:
                         c = Colors.Red;
+                        messageType = ConsoleMessageType.Error;
                         name = "ERR";
                         break;
                 }
-                Print($"[{name}] {e.Message}", c);
+                Print($"[{name}] {e.Message}", c, messageType);
             });
         }
 
@@ -82,38 +115,39 @@ namespace Walgelijk
             if (Input.IsKeyReleased(ToggleKey))
             {
                 IsActive = !IsActive;
-                renderer.SetDirtyLog();
+                renderer.SetDirty();
             }
 
             UpdateConsole();
         }
-        
+
         /// <summary>
         /// Print text to the console
         /// </summary>
-        public void Print(string text, Color color)
+        public void Print(ReadOnlySpan<char> text, Color color, ConsoleMessageType level = ConsoleMessageType.Info)
         {
             if (Log.Count == Log.Capacity - 1)
                 Log.RemoveAt(0);
-            Log.Add((text, color));
-            renderer.SetDirtyLog();
-        }      
-        
+            Log.Add((new string(text), color, level));
+            renderer.SetDirty();
+            ScrollOffset = 0;
+        }
+
         /// <summary>
         /// Print text to the console
         /// </summary>
-        public void Print(string text)
+        public void Print(ReadOnlySpan<char> text)
         {
             Print(text, DebugConsoleRenderer.DefaultTextColour);
         }
-                
+
         /// <summary>
         /// Clear the console
         /// </summary>
         public void Clear()
         {
             Log.Clear();
-            renderer.SetDirtyLog();
+            renderer.SetDirty();
         }
 
         private void UpdateConsole()

@@ -10,6 +10,7 @@ namespace Walgelijk
         private readonly TextComponent text;
         private readonly TextComponent overlay;
         private readonly TextComponent inputBox;
+        private readonly TextComponent consoleInfo;
         private readonly RectangleShapeComponent background;
         private readonly RectangleShapeComponent inputBackground;
 
@@ -31,7 +32,7 @@ namespace Walgelijk
         public const int TotalHeight = 350;
         public const int InputHeight = 20;
         public const int LogHeight = TotalHeight - InputHeight;
-        public const float ConsoleSlideDuration = 0.3f;
+        public const float ConsoleSlideDuration = 0.2f;
 
         public static Color DefaultTextColour = new Color("#D42C5E");
 
@@ -58,6 +59,12 @@ namespace Walgelijk
             inputBox = new TextComponent();
             inputBox.RenderTask.ScreenSpace = true;
 
+            consoleInfo = new TextComponent();
+            consoleInfo.RenderTask.ScreenSpace = true;
+            consoleInfo.Color = Colors.White.WithAlpha(0.1f);
+            consoleInfo.HorizontalAlignment = HorizontalTextAlign.Right;
+            consoleInfo.String = "Filter disabled";
+
             overlay = new TextComponent();
             overlay.RenderTask.ScreenSpace = true;
 
@@ -79,6 +86,7 @@ namespace Walgelijk
                 inputBox.RenderTask,
                 boundsTask,
                 text.RenderTask,
+                consoleInfo.RenderTask,
                 DrawBoundsTask.DisableDrawBoundsTask
              );
         }
@@ -136,6 +144,9 @@ namespace Walgelijk
 
                 foreach (var entry in debugConsole.Log)
                 {
+                    if ((entry.type & debugConsole.Filter) != entry.type)
+                        continue;
+
                     if (entry.color != c)
                     {
                         c = entry.color;
@@ -147,11 +158,13 @@ namespace Walgelijk
                 text.String = s;
 
                 dirtyLog = false;
+
+                consoleInfo.String = $"Filter: {debugConsole.Filter}"; 
             }
 
             inputBox.String = InputString;
 
-            float yPos = (1 - consoleSlideOffset) * -TotalHeight;
+            float yPos = (1 - /*Easings.Cubic.Out*/(consoleSlideOffset)) * -TotalHeight;
             model = Matrix4x4.CreateTranslation(0, yPos, 0);
 
             boundsTask.DrawBounds = new DrawBounds(new Vector2(debugConsole.Game.Window.Size.X, Utilities.Clamp(LogHeight + yPos, float.Epsilon, LogHeight)), default);
@@ -161,12 +174,13 @@ namespace Walgelijk
             inputBackground.RenderTask.ModelMatrix = Matrix4x4.CreateScale(debugConsole.Game.Window.Size.X, -InputHeight, 1) * Matrix4x4.CreateTranslation(0, -InputHeight + TotalHeight, 0) * model;
             inputBox.RenderTask.ModelMatrix = textModel * Matrix4x4.CreateTranslation(5, -InputHeight + TotalHeight + 1, 0) * model;
             background.RenderTask.ModelMatrix = Matrix4x4.CreateScale(debugConsole.Game.Window.Size.X, -TotalHeight, 1) * model;
+            consoleInfo.RenderTask.ModelMatrix = textModel * Matrix4x4.CreateScale(1.5f) * Matrix4x4.CreateTranslation(debugConsole.Game.Window.Size.X - 10, 10, 0);
 
             var queue = debugConsole.Game.RenderQueue;
             queue.Add(activeConsoleTask, DefaultLayers.DebugUI.WithOrder(1));
         }
 
-        public void SetDirtyLog()
+        public void SetDirty()
         {
             dirtyLog = true;
         }

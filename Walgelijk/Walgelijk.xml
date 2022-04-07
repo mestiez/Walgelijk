@@ -484,7 +484,7 @@
         </member>
         <member name="T:Walgelijk.ShapeComponent">
             <summary>
-            Interface that provides a <see cref="P:Walgelijk.ShapeComponent.VertexBuffer"/> and <see cref="T:Walgelijk.ShapeRenderTask"/>
+            Provides a <see cref="P:Walgelijk.ShapeComponent.VertexBuffer"/> and <see cref="T:Walgelijk.ShapeRenderTask"/>
             </summary>
         </member>
         <member name="P:Walgelijk.ShapeComponent.VertexBuffer">
@@ -795,6 +795,51 @@
         <member name="T:Walgelijk.Vec3Curve">
             <summary>
             <see cref="T:System.Numerics.Vector3"/> curve
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Easings">
+            <summary>
+            Utility struct full of easing curve functions
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Easings.Cubic">
+            <summary>
+            Cubic easing functions
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Cubic.InOut(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in ease-out cubic curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Cubic.In(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in cubic curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Cubic.Out(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-out cubic curve
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Easings.Quad">
+            <summary>
+            Quadtratic easing functions
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Quad.InOut(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in ease-out quadractic curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Quad.In(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in quadractic curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Quad.Out(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-out quadractic curve
             </summary>
         </member>
         <member name="T:Walgelijk.ComponentCollection">
@@ -1221,6 +1266,21 @@
         <member name="P:Walgelijk.System.Audio">
             <summary>
             Active audio renderer
+            </summary>
+        </member>
+        <member name="P:Walgelijk.System.Game">
+            <summary>
+            Relevant game instance
+            </summary>
+        </member>
+        <member name="P:Walgelijk.System.Window">
+            <summary>
+            Relevant window instance
+            </summary>
+        </member>
+        <member name="P:Walgelijk.System.Graphics">
+            <summary>
+            Relevant graphics instance
             </summary>
         </member>
         <member name="P:Walgelijk.System.ExecutionOrder">
@@ -2952,27 +3012,27 @@
         </member>
         <member name="M:Walgelijk.Noise.GetValue(System.Single,System.Single,System.Single)">
             <summary>
-            Get value noise with cubic interpolation
+            Get value noise with cubic interpolation ranging from -1 to 1
             </summary>
         </member>
         <member name="M:Walgelijk.Noise.GetPerlin(System.Single,System.Single,System.Single)">
             <summary>
-            Get Perlin noise
+            Get Perlin noise ranging from -1 to 1
             </summary>
         </member>
         <member name="M:Walgelijk.Noise.GetSimplex(System.Single,System.Single,System.Single)">
             <summary>
-            Get OpenSimplex noise
+            Get OpenSimplex noise ranging from -1 to 1
             </summary>
         </member>
         <member name="M:Walgelijk.Noise.GetCellular(System.Single,System.Single,System.Single)">
             <summary>
-            Get cellular noise
+            Get cellular noise ranging from -1 to 1
             </summary>
         </member>
         <member name="M:Walgelijk.Noise.GetFractal(System.Single,System.Single,System.Single,System.Int32)">
             <summary>
-            Get fractal simplex noise
+            Get fractal simplex noise ranging from -1 to 1
             </summary>
         </member>
         <member name="T:Walgelijk.Pool`2">
@@ -3293,6 +3353,36 @@
             Implicit string conversion
             </summary>
         </member>
+        <member name="T:Walgelijk.ConsoleMessageType">
+            <summary>
+            Type of console message. Used for filtering
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ConsoleMessageType.All">
+            <summary>
+            Shows up regardless of filter
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ConsoleMessageType.Debug">
+            <summary>
+            Debug message
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ConsoleMessageType.Info">
+            <summary>
+            Info message
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ConsoleMessageType.Warning">
+            <summary>
+            Warning message
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ConsoleMessageType.Error">
+            <summary>
+            Error message
+            </summary>
+        </member>
         <member name="T:Walgelijk.DebugConsole">
             <summary>
             Class that renders and controls the debug console
@@ -3323,12 +3413,22 @@
             Briefly draw the most recent console message to the screen even if the console is not open.
             </summary>
         </member>
-        <member name="M:Walgelijk.DebugConsole.Print(System.String,Walgelijk.Color)">
+        <member name="P:Walgelijk.DebugConsole.Filter">
+            <summary>
+            Filters what kind of messages will be displayed
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DebugConsole.ScrollOffset">
+            <summary>
+            Scroll offset of the console
+            </summary>
+        </member>
+        <member name="M:Walgelijk.DebugConsole.Print(System.ReadOnlySpan{System.Char},Walgelijk.Color,Walgelijk.ConsoleMessageType)">
             <summary>
             Print text to the console
             </summary>
         </member>
-        <member name="M:Walgelijk.DebugConsole.Print(System.String)">
+        <member name="M:Walgelijk.DebugConsole.Print(System.ReadOnlySpan{System.Char})">
             <summary>
             Print text to the console
             </summary>
@@ -3730,6 +3830,86 @@
         <member name="M:Walgelijk.Resources.Unload``1(``0)">
             <summary>
             Unloads an asset. Removes it from the cache and also disposes of it if it implements <see cref="T:System.IDisposable"/>
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Selection.ISelectable">
+            <summary>
+            Guarantees a selectable object
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Selection.ISelectable.RaycastOrder">
+            <summary>
+            Order in the selection stack. The lower this number, the further back it is.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.ISelectable.ContainsPoint(System.Numerics.Vector2)">
+            <summary>
+            Returns true if the object contains the point
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Selection.ISelectable.Disabled">
+            <summary>
+            If this returns true, the object will be ignored by the selection system
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Selection.SelectionManager`1">
+            <summary>
+            Generic ordered selectable object manager
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Selection.SelectionManager`1.Selectables">
+            <summary>
+            List of selectables
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Selection.SelectionManager`1.SelectedObject">
+            <summary>
+            Currently selected object
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Selection.SelectionManager`1.HoveringObject">
+            <summary>
+            The object that is currently being hovered over
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.SelectionManager`1.UpdateState(System.Numerics.Vector2,System.Boolean)">
+            <summary>
+            Update the selection manager given a mouse position and whether it is pressed
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.SelectionManager`1.GetAllIndicesAt(System.Numerics.Vector2)">
+            <summary>
+            Get all the selection indices (indices in the <see cref="F:Walgelijk.Selection.SelectionManager`1.Selectables"/> list) that overlap the given point
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.SelectionManager`1.UpdateOrder">
+            <summary>
+            Should call every time the list changes (something added, something removed)
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.SelectionManager`1.IsSelected(`0)">
+            <summary>
+            Returns true if the given object is selected
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.SelectionManager`1.IsHovering(`0)">
+            <summary>
+            Returns true if the mouse position (given in <see cref="M:Walgelijk.Selection.SelectionManager`1.UpdateState(System.Numerics.Vector2,System.Boolean)"/>) is hovering over the given object
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.SelectionManager`1.PullToFront(`0)">
+            <summary>
+            Pull the given object to the front
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.SelectionManager`1.Select(`0)">
+            <summary>
+            Select the given object
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.SelectionManager`1.DeselectAll">
+            <summary>
+            Deselect everything
             </summary>
         </member>
         <member name="T:Walgelijk.TextureLoader">
@@ -4167,6 +4347,11 @@
         <member name="M:Walgelijk.TextMeshGenerator.CalculateTextWidth(System.ReadOnlySpan{System.Char})">
             <summary>
             Return the total predicted width for a line of text ignoring all textbox and alignment settings
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TextMeshGenerator.CalculateTextHeight(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Return the total predicted height of a line according to line count and line height, accounting for textbox and alignment settings
             </summary>
         </member>
         <member name="M:Walgelijk.TextMeshGenerator.Generate(System.String,Walgelijk.Vertex[],System.UInt32[],System.Collections.Generic.IList{Walgelijk.TextMeshGenerator.ColourInstruction})">

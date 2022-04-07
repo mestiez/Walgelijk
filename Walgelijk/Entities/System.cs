@@ -36,6 +36,21 @@ namespace Walgelijk
         protected AudioRenderer Audio => Scene.Game.AudioRenderer;
 
         /// <summary>
+        /// Relevant game instance
+        /// </summary>
+        protected Game Game => Scene.Game;
+
+        /// <summary>
+        /// Relevant window instance
+        /// </summary>
+        protected Window Window => Game.Window;
+
+        /// <summary>
+        /// Relevant graphics instance
+        /// </summary>
+        protected IGraphics Graphics => Window.Graphics;
+
+        /// <summary>
         /// The order of execution relative to other systems
         /// </summary>
         public int ExecutionOrder

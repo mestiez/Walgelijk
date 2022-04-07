@@ -94,6 +94,8 @@ namespace Test
 
             public override void Render()
             {
+
+
                 if (Gui.ClickButton("R", new Vector2(100 + 256 + 5, 100), new Vector2(32)))
                     Initialise();
 
@@ -128,6 +130,8 @@ namespace Test
                     var text = Scene.GetComponentFast<TextComponent>(entity);
                     text.WrappingWidth = MathF.Max(10, Input.WorldMousePosition.X - pos);
                     DebugDraw.Rectangle(text.LocalBoundingBox, 0, Colors.Magenta);
+                    //DebugDraw.Text(text.LocalBoundingBox.TopLeft + new Vector2(0, 30), text.TextMeshGenerator.CalculateTextHeight(text.String).ToString(), 3, Colors.Red);
+                    DebugDraw.Line(text.LocalBoundingBox.TopLeft + new Vector2(-10 ,0), text.LocalBoundingBox.TopLeft + new Vector2(-10, -text.TextMeshGenerator.CalculateTextHeight(text.String)));
                     if (Input.IsKeyPressed(Key.D1))
                     {
                         switch (text.HorizontalAlignment)

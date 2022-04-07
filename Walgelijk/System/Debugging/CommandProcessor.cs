@@ -158,13 +158,13 @@ namespace Walgelijk
                         switch (commandResult.Type)
                         {
                             case LogLevel.Info:
-                                console.Print(commandResult.Message);
+                                console.Print(commandResult.Message, Color.White, level: ConsoleMessageType.All);
                                 break;
                             case LogLevel.Warn:
-                                console.Print(commandResult.Message, Colors.Orange);
+                                console.Print(commandResult.Message, Colors.Orange, level: ConsoleMessageType.Warning);
                                 break;
                             case LogLevel.Error:
-                                console.Print(commandResult.Message, Colors.Red);
+                                console.Print(commandResult.Message, Colors.Red,  ConsoleMessageType.Error);
                                 return false;
                         }
                         break;

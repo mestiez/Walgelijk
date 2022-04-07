@@ -7,9 +7,10 @@
     <RepositoryUrl>https://github.com/mestiez/Walgelijk</RepositoryUrl>
     <Company>Studio Minus</Company>
     <Authors>mestiez</Authors>
-    <Version>0.2.79</Version>
+    <Version>0.2.84</Version>
     <Description>Studio Minus game engine</Description>
     <PackageIcon>cirkel avatar.png</PackageIcon>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

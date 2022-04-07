@@ -27,6 +27,8 @@ public class Entry
              new OpenALAudioRenderer()
              );
 
+        PrepareResourceInitialise();
+
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
         Game.Window.SetIcon(TextureLoader.FromFile("resources/textures/icon.png"));
@@ -36,8 +38,6 @@ public class Entry
         Game.AudioRenderer.Volume = 0.5f;
 
         Gui.Context.Order = RenderOrders.Imgui;
-
-        PrepareResourceInitialise();
 
         TextureLoader.Settings.FilterMode = FilterMode.Linear;
 

@@ -34,6 +34,60 @@ namespace Walgelijk
             Game.Stop();
         }
 
+        [Command(HelpString = "Get the console filter")]
+        private static CommandResult GetFilter()
+        {
+            return Game.Console.Filter.ToString();
+        }
+
+        [Command(HelpString = "Set the console filter. E.g 'setfilter error warn'")]
+        private static CommandResult SetFilter(string type)
+        {
+            if (type == "All")
+            {
+                Game.Console.Filter = ConsoleMessageType.All;
+                return "Filter disabled. Everything is shown.";
+            }
+
+            int spanIndex = 0;
+            var s = type.AsSpan();
+            var final = (ConsoleMessageType)0;
+            while (true)
+            {
+                var part = s[spanIndex..];
+                var eaten = eatEnum(part, out var result);
+                if (eaten > 0)
+                {
+                    final |= result;
+                    spanIndex += eaten;
+                    if (spanIndex >= s.Length)
+                        break;
+                }
+                else
+                    break;
+
+                static int eatEnum(ReadOnlySpan<char> input, out ConsoleMessageType result)
+                {
+                    for (int i = 0; i <= input.Length; i++)
+                    {
+                        var ss = input[..i];
+                        if (Enum.TryParse(ss, out result))
+                            return i;
+                    }
+                    result = ConsoleMessageType.Error;
+                    return 0;
+                }
+            }
+
+            if (final > 0)
+            {
+                Game.Console.Filter = final;
+                return $"Set filter to show: {final}";
+            }
+
+            return CommandResult.Error($"Invalid filter value. Seperated by a space, you can only enter these values:\nAll\n{string.Join("\n", Enum.GetNames<LogLevel>())}");
+        }
+
         [Command(HelpString = "Sets the render rate cap. Expects an integer")]
         private static CommandResult FpsCap(int target = 0)
         {

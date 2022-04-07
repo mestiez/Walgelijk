@@ -198,6 +198,8 @@ namespace Walgelijk.OpenTK
 
         private void OnWindowLoad()
         {
+            window.IsVisible = true;
+
             window.MakeCurrent();
             RenderTarget.Size = Size;
 
@@ -205,8 +207,6 @@ namespace Walgelijk.OpenTK
             stopwatch.Start();
 
             renderTarget.Initialise();
-
-            window.IsVisible = true;
         }
 
         private void OnRenderFrame(FrameEventArgs obj)
