@@ -348,7 +348,7 @@ namespace Walgelijk
         /// Returns the first found instance of the given type.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool FindAnyComponent<T>(out T? anyInstance, out Entity entity) where T : class
+        public bool FindAnyComponent<T>([global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out T? anyInstance, out Entity entity) where T : class
         {
             foreach (var item in componentsToAdd)
                 if (item.Component is T typed)
@@ -420,7 +420,7 @@ namespace Walgelijk
         /// Retrieve the first component of the specified type on the given entity
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryGetComponentFrom<T>(Entity entity, out T? component) where T : class
+        public bool TryGetComponentFrom<T>(Entity entity, [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out T? component) where T : class
         {
             component = null;
 

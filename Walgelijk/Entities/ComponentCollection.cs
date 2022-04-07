@@ -75,7 +75,7 @@ namespace Walgelijk
             if (list != null)
                 foreach (var item in list)
                     if (item.Component is T typed)
-                    yield return new EntityWith<T>(typed, item.Entity);
+                        yield return new EntityWith<T>(typed, item.Entity);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Walgelijk
         /// Try to get the component of the <b>exact</b> type that is given
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryGetComponentFrom<T>(Entity entity, out T? component) where T : class
+        public bool TryGetComponentFrom<T>(Entity entity, [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out T? component) where T : class
         {
             if (byEntityByType.TryGetValue(entity, out var dict) && dict.TryGetValue(typeof(T), out var untyped) && untyped is T typed)
             {
