@@ -3936,22 +3936,22 @@
             Copies pixels from <see cref="T:SixLabors.ImageSharp.Image"/> to an array
             </summary>
         </member>
-        <member name="T:Walgelijk.TextureLoader.ImportSettings">
+        <member name="T:Walgelijk.ImportSettings">
             <summary>
             Import settings options
             </summary>
         </member>
-        <member name="F:Walgelijk.TextureLoader.ImportSettings.FilterMode">
+        <member name="F:Walgelijk.ImportSettings.FilterMode">
             <summary>
             The filter mode to set by default
             </summary>
         </member>
-        <member name="F:Walgelijk.TextureLoader.ImportSettings.WrapMode">
+        <member name="F:Walgelijk.ImportSettings.WrapMode">
             <summary>
             The wrap mode to set by default
             </summary>
         </member>
-        <member name="F:Walgelijk.TextureLoader.ImportSettings.HDR">
+        <member name="F:Walgelijk.ImportSettings.HDR">
             <summary>
             The HDR flag value by default. <b>This is not applicable currently because the decoder can't read HDRIs yet</b>
             </summary>

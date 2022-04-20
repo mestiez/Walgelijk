@@ -22,6 +22,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmarks", "Benchmarks\Benchmarks.csproj", "{7C0A18B0-E532-487E-9E73-AB79AF0977B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageDecoder", "ImageDecoder\ImageDecoder.csproj", "{81C5C34A-7E08-4F23-B396-1F2A16B2C721}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +60,14 @@ Global
 		{6E4B4D84-D4FC-4FD7-BE0C-281E8E3B78B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E4B4D84-D4FC-4FD7-BE0C-281E8E3B78B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E4B4D84-D4FC-4FD7-BE0C-281E8E3B78B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C0A18B0-E532-487E-9E73-AB79AF0977B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C0A18B0-E532-487E-9E73-AB79AF0977B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C0A18B0-E532-487E-9E73-AB79AF0977B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C0A18B0-E532-487E-9E73-AB79AF0977B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81C5C34A-7E08-4F23-B396-1F2A16B2C721}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81C5C34A-7E08-4F23-B396-1F2A16B2C721}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81C5C34A-7E08-4F23-B396-1F2A16B2C721}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81C5C34A-7E08-4F23-B396-1F2A16B2C721}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

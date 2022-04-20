@@ -3,88 +3,87 @@ using System;
 using System.Collections.Generic;
 using Walgelijk;
 
-namespace Tests
+namespace Tests;
+
+[TestClass]
+public class SceneTests
 {
-    [TestClass]
-    public class SceneTests
+    [TestMethod]
+    public void EntityDeleteMemoryTest()
     {
-        [TestMethod]
-        public void EntityDeleteMemoryTest()
+        const int entityCount = 5000;
+        const float diffThreshold = 0.1f;
+
+        Scene scene = new Scene();
+
+        long initialMemory = GC.GetTotalMemory(true);
+
+        for (int i = 0; i < entityCount; i++)
         {
-            const int entityCount = 5000;
-            const float diffThreshold = 0.1f;
-
-            Scene scene = new Scene();
-
-            long initialMemory = GC.GetTotalMemory(true);
-
-            for (int i = 0; i < entityCount; i++)
-            {
-                var e = createEntity();
-                scene.UpdateSystems();
-                scene.RemoveEntity(e);
-                scene.UpdateSystems();
-            }
-
+            var e = createEntity();
             scene.UpdateSystems();
-            GC.Collect(100, GCCollectionMode.Forced, true);
+            scene.RemoveEntity(e);
+            scene.UpdateSystems();
+        }
 
-            long afterMemory = GC.GetTotalMemory(true);
+        scene.UpdateSystems();
+        GC.Collect(100, GCCollectionMode.Forced, true);
 
-            long diff = Math.Abs(afterMemory - initialMemory);
+        long afterMemory = GC.GetTotalMemory(true);
 
-            string mess = $"Difference is {diff}. Before is {initialMemory}, after is {afterMemory}";
-            Assert.IsTrue(diff / initialMemory < diffThreshold, mess);
-            Console.WriteLine(mess);
+        long diff = Math.Abs(afterMemory - initialMemory);
 
-            Entity createEntity()
-            {
-                var ent = scene.CreateEntity();
+        string mess = $"Difference is {diff}. Before is {initialMemory}, after is {afterMemory}";
+        Assert.IsTrue(diff / initialMemory < diffThreshold, mess);
+        Console.WriteLine(mess);
 
-                scene.AttachComponent(ent, new TransformComponent());
-                scene.AttachComponent(ent, new CameraComponent());
-
-                return ent;
-            }
-        }         
-        
-        [TestMethod]
-        public void DetachComponentMemoryTest()
+        Entity createEntity()
         {
-            const int entityCount = 5000;
-            const float diffThreshold = 0.1f;
+            var ent = scene.CreateEntity();
 
-            Scene scene = new Scene();
+            scene.AttachComponent(ent, new TransformComponent());
+            scene.AttachComponent(ent, new CameraComponent());
 
-            long initialMemory = GC.GetTotalMemory(true);
+            return ent;
+        }
+    }
 
-            for (int i = 0; i < entityCount; i++)
-            {
-                var e = createEntity();
-                scene.UpdateSystems();
-                scene.DetachComponent<TransformComponent>(e);
-                scene.DetachComponent<CameraComponent>(e);
-                scene.UpdateSystems();
-            }
+    [TestMethod]
+    public void DetachComponentMemoryTest()
+    {
+        const int entityCount = 5000;
+        const float diffThreshold = 0.1f;
 
-            GC.Collect(100, GCCollectionMode.Forced, true);
+        Scene scene = new Scene();
 
-            long afterMemory = GC.GetTotalMemory(true);
-            
-            long diff = Math.Abs(afterMemory - initialMemory);
+        long initialMemory = GC.GetTotalMemory(true);
 
-            string mess = $"Difference is {diff}. Before is {initialMemory}, after is {afterMemory}";
-            Assert.IsTrue(diff / initialMemory < diffThreshold, mess);
-            Console.WriteLine(mess);
+        for (int i = 0; i < entityCount; i++)
+        {
+            var e = createEntity();
+            scene.UpdateSystems();
+            scene.DetachComponent<TransformComponent>(e);
+            scene.DetachComponent<CameraComponent>(e);
+            scene.UpdateSystems();
+        }
 
-            Entity createEntity()
-            {
-                var ent = scene.CreateEntity();
+        GC.Collect(100, GCCollectionMode.Forced, true);
 
-                scene.AttachComponent(ent, new TransformComponent());
-                scene.AttachComponent(ent, new CameraComponent());
-                return ent;
-            }
-        }        
+        long afterMemory = GC.GetTotalMemory(true);
+
+        long diff = Math.Abs(afterMemory - initialMemory);
+
+        string mess = $"Difference is {diff}. Before is {initialMemory}, after is {afterMemory}";
+        Assert.IsTrue(diff / initialMemory < diffThreshold, mess);
+        Console.WriteLine(mess);
+
+        Entity createEntity()
+        {
+            var ent = scene.CreateEntity();
+
+            scene.AttachComponent(ent, new TransformComponent());
+            scene.AttachComponent(ent, new CameraComponent());
+            return ent;
+        }
     }
 }

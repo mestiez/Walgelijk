@@ -8,11 +8,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Walgelijk" Version="0.2.81" />
-		<PackageReference Include="Walgelijk.Imgui" Version="0.9.32" />
-		<PackageReference Include="Walgelijk.OpenTK" Version="0.1.58" />
-		<PackageReference Include="Walgelijk.ParticleSystem" Version="0.0.13" />
-		<PackageReference Include="Walgelijk.SimpleDrawing" Version="1.11.0" />
+		<PackageReference Include="Walgelijk" Version="0.2.89" />
+		<PackageReference Include="Walgelijk.Imgui" Version="0.10.4" />
+		<PackageReference Include="Walgelijk.OpenTK" Version="0.1.59" />
+		<PackageReference Include="Walgelijk.ParticleSystem" Version="0.0.14" />
+		<PackageReference Include="Walgelijk.SimpleDrawing" Version="1.15.0" />
 	</ItemGroup>
 
 	<ItemGroup>

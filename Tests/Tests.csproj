@@ -17,7 +17,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ImageDecoder\ImageDecoder.csproj" />
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="test.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
