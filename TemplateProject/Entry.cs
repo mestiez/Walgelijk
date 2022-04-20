@@ -32,7 +32,6 @@ public class Entry
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
         Game.Window.SetIcon(TextureLoader.FromFile("resources/textures/icon.png"));
-        Game.Window.TargetFrameRate = 0;
         Game.Window.TargetUpdateRate = 0;
         Game.Window.VSync = false;
         Game.AudioRenderer.Volume = 0.5f;

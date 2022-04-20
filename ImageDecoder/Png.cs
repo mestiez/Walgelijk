@@ -29,42 +29,42 @@ public static class Png
     public static byte[] Decode(byte[] raw, out int width, out int height)
     {
         int cursor = 0;
-        var span = raw.AsSpan();
+        var rawSpan = raw.AsSpan();
         width = 0;
         height = 0;
 
-        byte bitDepth;
-        ColourType colorType;
-        byte compressionMethod;
-        byte filterMethod;
-        byte interlaceMethod;
+        byte bitDepth = 0;
+        ColourType colorType = ColourType.TrueColourWithAlpha;
+        byte compressionMethod = 0;
+        byte filterMethod = 0;
+        byte interlaceMethod = 0;
 
         //http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
         //if so, they must appear consecutively with no other intervening chunks 
         //hoeft dus geen list
-        var allIdat = new List<byte>();
+        byte[]? compressedData = null;
+        int compressedDataCursor = 0;
 
         cursor += magic.Length;
-        if (!span[0..cursor].SequenceEqual(magic))
+        if (!rawSpan[0..cursor].SequenceEqual(magic))
             throw new Exception("File is not a PNG image.");
 
         while (cursor < raw.Length)
         {
             var chunk = Chunk.FromBytes(raw, cursor);
-            var data = span[chunk.DataSlice.Index..(chunk.DataSlice.Index + chunk.DataSlice.Length)];
+            var data = rawSpan[chunk.DataSlice.Index..(chunk.DataSlice.Index + chunk.DataSlice.Length)];
             switch (chunk.Type)
             {
                 case ChunkType.IHDR:
                     width = BinaryPrimitives.ReadInt32BigEndian(data[0..4]);
-                    height = BinaryPrimitives.ReadInt32BigEndian(data[4..8]);
-
                     if (width == 0)
                         throw new Exception("Width cannot be 0");
+
+                    height = BinaryPrimitives.ReadInt32BigEndian(data[4..8]);
                     if (height == 0)
                         throw new Exception("Height cannot be 0");
 
                     bitDepth = data[8];
-
                     if (bitDepth is not (1 or 2 or 4 or 8 or 16))
                         throw new Exception($"Bit depth value '{bitDepth}' is invalid. 1, 2, 4, 8, 16 are allowed.");
 
@@ -73,6 +73,8 @@ public static class Png
                     filterMethod = data[11];
                     interlaceMethod = data[12];
 
+                    compressedData = new byte[width * height * (bitDepth / 8 * 4)]; 
+
                     if (interlaceMethod != 0)
                         throw new Exception("There is no support for interlaced images");
                     break;
@@ -80,8 +82,10 @@ public static class Png
                     break;
                 case ChunkType.IDAT:
                     {
-                        for (int i = 0; i < span.Length; i++)
-                            allIdat.Add(span[i]);
+                        if (compressedData == null)
+                            throw new Exception("IDAT chunk before IHDR chunk. Invalid png file.");
+                        data.CopyTo(compressedData.AsSpan()[compressedDataCursor..(compressedDataCursor + data.Length)]);
+                        compressedDataCursor += data.Length;
                     }
                     break;
                 case ChunkType.IEND:
@@ -97,9 +101,12 @@ public static class Png
                 break;
         }
 
-        using var stream = new MemoryStream(allIdat.ToArray());
-        using var decompressor = new ComponentAce.Compression.Libs.zlib.ZInputStream(stream);
-        var result = new byte[width * height * 4];
+        if (compressedData == null)
+            throw new Exception("IEND chunk before IHDR chunk. Invalid png file.");
+
+        using var stream = new MemoryStream(compressedData, 0, compressedDataCursor);
+        using var decompressor = new ZInputStream(stream);
+        var result = new byte[width * height * (bitDepth / 8 * 4)]; //je moet colorType ook ff doen voor die *4 want je weet niet of er 4 kanalen zijn
         var buffer = new byte[5];
         int index = 0;
         while (true)
@@ -118,6 +125,9 @@ public static class Png
             if (index >= result.Length)
                 break;
         }
+
+        stream.Dispose();
+        decompressor.Dispose();
 
         return result;
     }
