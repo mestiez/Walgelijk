@@ -25,7 +25,7 @@ namespace Walgelijk.Video
     {
         static VideoManager()
         {
-            ffmpeg.RootPath = $"runtimes\\win-x64\\native";
+            ffmpeg.RootPath = $"runtimes/win-x64/native";
         }
 
         internal static unsafe LoadedVideo OpenFile(string path)
