@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using System;
+using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -198,7 +199,7 @@ namespace Walgelijk.OpenTK
 
         public bool TryGetId(IReadableTexture texture, out int textureId)
         {
-            textureId  = -1;
+            textureId = -1;
             if (GPUObjects.TextureCache.Has(texture))
             {
                 textureId = GPUObjects.TextureCache.Load(texture).Index;
@@ -222,6 +223,47 @@ namespace Walgelijk.OpenTK
                 return extraVboLength;
             }
             return -1;
+        }
+
+        public void SaveTexture(FileStream output, IReadableTexture texture)
+        {
+            if (TryGetId(texture, out var id))
+            {
+                using var image = new SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba32>(texture.Width, texture.Height);
+                var frame = image.Frames.RootFrame;
+                byte[] data = new byte[texture.Width * texture.Height * 4 * (texture.HDR ? 4 : 1)];
+
+
+                if (texture is Texture)
+                {
+                    GL.BindTexture(TextureTarget.Texture2D, id);
+                    GL.GetTexImage(TextureTarget.Texture2D, 0, PixelFormat.Rgba, texture.HDR ? PixelType.Float : PixelType.UnsignedByte, data);
+                }
+                else if (texture is RenderTexture)
+                {
+                    GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, id);
+                    GL.ReadPixels(0, 0, texture.Width, texture.Height, PixelFormat.Rgba, texture.HDR ? PixelType.Float : PixelType.UnsignedByte, data);
+                }
+                else throw new InvalidOperationException("Can only save Texture and RenderTexture");
+
+                int i = 0;
+                for (int yy = 0; yy < frame.Height; yy++)
+                {
+                    int y = (frame.Height - 1 - yy);
+                    Span<SixLabors.ImageSharp.PixelFormats.Rgba32> pixelRowSpan = frame.PixelBuffer.DangerousGetRowSpan(y);
+                    for (int x = 0; x < image.Width; x++)
+                    {
+                        pixelRowSpan[x] = new SixLabors.ImageSharp.PixelFormats.Rgba32(
+                            data[i + 0],
+                            data[i + 1],
+                            data[i + 2],
+                            data[i + 3]);
+                        i += 4;
+                    }
+                }
+
+                image.Save(output, new SixLabors.ImageSharp.Formats.Png.PngEncoder());
+            }
         }
 
         public bool TryGetId(Material mat, out int id)

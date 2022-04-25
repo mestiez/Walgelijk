@@ -1856,7 +1856,12 @@
         </member>
         <member name="M:Walgelijk.IGraphics.Upload(System.Object)">
             <summary>
-            Forcibly upload an objec to the GPU if supported. Won't do anything if the object was already there.
+            Forcibly upload an object to the GPU if supported. Won't do anything if the object was already there.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IGraphics.SaveTexture(System.IO.FileStream,Walgelijk.IReadableTexture)">
+            <summary>
+            Save a texture to disk as a PNG
             </summary>
         </member>
         <member name="M:Walgelijk.IGraphics.TryGetId(Walgelijk.RenderTexture,System.Int32@,System.Int32@)">

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using Walgelijk;
@@ -123,6 +124,15 @@ namespace Test
         {
             public override void Update()
             {
+                if (Input.IsKeyReleased(Key.F8))
+                {
+                    using var o = File.Create("test.png");
+                    Graphics.Upload(Resources.Load<Texture>("pride.png"));
+                    Graphics.SaveTexture(o, Resources.Load<Texture>("pride.png"));
+                    o.Close();
+                    o.Dispose();
+                }
+
                 if (Scene.TryGetEntityWithTag(new Tag(234), out var entity))
                 {
                     var pos = Scene.GetComponentFast<TransformComponent>(entity).Position.X;

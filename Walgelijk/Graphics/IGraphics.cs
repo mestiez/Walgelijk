@@ -46,9 +46,14 @@
         public void Delete(object obj);
 
         /// <summary>
-        /// Forcibly upload an objec to the GPU if supported. Won't do anything if the object was already there.
+        /// Forcibly upload an object to the GPU if supported. Won't do anything if the object was already there.
         /// </summary>
         public void Upload(object obj);
+
+        /// <summary>
+        /// Save a texture to disk as a PNG
+        /// </summary>
+        public void SaveTexture(global::System.IO.FileStream output, IReadableTexture texture);
 
         /// <summary>
         /// Try to get the ID of the given graphics object. 
