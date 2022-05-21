@@ -21,7 +21,7 @@
         {
             var i = Cache.Load(gif);
             var frame = i.Frames[index];
-            TextureLoader.CopyPixels(frame, ref output.RawData, true);
+            ImageSharpDecoder.CopyPixels(frame, ref output.RawData, true);
             output.ForceUpdate();
         }
     }

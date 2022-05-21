@@ -1,9 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
-using BigGustave;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using StbiSharp;
 using Walgelijk;
 
 namespace Tests;
@@ -11,14 +7,21 @@ namespace Tests;
 [SimpleJob(RuntimeMoniker.Net60)]
 public class TextureLoadingBenchmarks
 {
-    public const string TestImagePath = "test-image.png";
+    public const string PngImage = "test.png";
+    public const string QoiImage = "test.qoi";
 
     [Benchmark]
-    public void ImageSharpDecoder()
+    public void Png()
     {
-        using var image = Image.Load<Rgba32>(TestImagePath, out _);
-        var loaded = TextureLoader.FromImageSharpImage(image);
-        image.Dispose();
+        var loaded = TextureLoader.FromFile(PngImage);
+        loaded.DisposeLocalCopy();
+    }
+
+    [Benchmark]
+    public void Qio()
+    {
+        var loaded = TextureLoader.FromFile(QoiImage);
+        loaded.DisposeLocalCopy();
     }
 
     //[Benchmark]
@@ -60,18 +63,18 @@ public class TextureLoadingBenchmarks
     //        }
     //}
 
-    [Benchmark]
-    public void WalgelijkImageDecoder()
-    {
-        var img = ImageDecoder.Png.Decode(File.ReadAllBytes(TestImagePath), out int width, out int height).AsSpan();
-        var colors = new Walgelijk.Color[width * height];
+    //[Benchmark]
+    //public void WalgelijkImageDecoder()
+    //{
+    //    var img = ImageDecoder.Png.Decode(File.ReadAllBytes(TestImagePath), out int width, out int height).AsSpan();
+    //    var colors = new Walgelijk.Color[width * height];
 
-        for (int i = 0; i < colors.Length; i++)
-        {
-            var rgba = img[(i * 4)..(i * 4 + 4)];
-            colors[i] = new Walgelijk.Color(rgba[0], rgba[1], rgba[2], rgba[3]);
-        }
+    //    for (int i = 0; i < colors.Length; i++)
+    //    {
+    //        var rgba = img[(i * 4)..(i * 4 + 4)];
+    //        colors[i] = new Walgelijk.Color(rgba[0], rgba[1], rgba[2], rgba[3]);
+    //    }
 
-        var loaded = new Texture(width, height, colors, false, false);
-    }
+    //    var loaded = new Texture(width, height, colors, false, false);
+    //}
 }

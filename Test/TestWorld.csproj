@@ -124,6 +124,12 @@
     <None Update="resources\test.mp4">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="resources\textures\qoitest.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\textures\qoitest.qoi">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="resources\textures\wavey.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

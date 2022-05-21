@@ -3926,19 +3926,14 @@
             Default import settings
             </summary>
         </member>
+        <member name="F:Walgelijk.TextureLoader.Decoders">
+            <summary>
+            List of image decoders. This list is walked through for every image that is loaded, from top to bottom. You can manipulate this list in any way you like.
+            </summary>
+        </member>
         <member name="M:Walgelijk.TextureLoader.FromFile(System.String,System.Boolean,System.Boolean)">
             <summary>
             Loads texture from file
-            </summary>
-        </member>
-        <member name="M:Walgelijk.TextureLoader.FromImageSharpImage(SixLabors.ImageSharp.Image{SixLabors.ImageSharp.PixelFormats.Rgba32},System.Boolean,System.Boolean)">
-            <summary>
-            Loads texture from <see cref="T:SixLabors.ImageSharp.Image"/>
-            </summary>
-        </member>
-        <member name="M:Walgelijk.TextureLoader.CopyPixels(SixLabors.ImageSharp.ImageFrame{SixLabors.ImageSharp.PixelFormats.Rgba32},Walgelijk.Color[]@,System.Boolean)">
-            <summary>
-            Copies pixels from <see cref="T:SixLabors.ImageSharp.Image"/> to an array
             </summary>
         </member>
         <member name="T:Walgelijk.ImportSettings">
@@ -3960,6 +3955,67 @@
             <summary>
             The HDR flag value by default. <b>This is not applicable currently because the decoder can't read HDRIs yet</b>
             </summary>
+        </member>
+        <member name="T:Walgelijk.IImageDecoder">
+            <summary>
+            Interface for decoders used by the <see cref="T:Walgelijk.TextureLoader"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IImageDecoder.Decode(System.ReadOnlySpan{System.Byte}@,System.Boolean)">
+            <summary>
+            Decode the given byte array and return a flattened 2D pixel grid. Throws an exception if the image can't be loaded.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IImageDecoder.Decode(System.Byte[]@,System.Int32,System.Boolean)">
+            <summary>
+            Decode the given byte array and return a flattened 2D pixel grid. Throws an exception if the image can't be loaded.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IImageDecoder.CanDecode(System.String@)">
+            <summary>
+            Returns true for files this decoder can decode based on their filename
+            </summary>
+        </member>
+        <member name="T:Walgelijk.DecodedImage">
+            <summary>
+            Returned by an image decoder
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ImageSharpDecoder">
+            <summary>
+            Decodes the most common image formats (PNG, JPEG, BMP, etc.)
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ImageSharpDecoder.CopyPixels(SixLabors.ImageSharp.ImageFrame{SixLabors.ImageSharp.PixelFormats.Rgba32},Walgelijk.Color[]@,System.Boolean)">
+            <summary>
+            Copies pixels from <see cref="T:SixLabors.ImageSharp.Image"/> to an array
+            </summary>
+        </member>
+        <member name="T:Walgelijk.QOIDecoder">
+            <summary>Decoder of the "Quite OK Image" (QOI) format.</summary>
+        </member>
+        <member name="M:Walgelijk.QOIDecoder.Decode(System.ReadOnlySpan{System.Byte}@,System.Int32)">
+            <summary>Decodes the given QOI file contents.</summary>
+            <remarks>Returns <see langword="true" /> if decoded successfully.</remarks>
+            <param name="encoded">QOI file contents. Only the first <c>encodedSize</c> bytes are accessed.</param>
+            <param name="encodedSize">QOI file length.</param>
+        </member>
+        <member name="P:Walgelijk.QOIDecoder.Width">
+            <summary>Returns the width of the decoded image in pixels.</summary>
+        </member>
+        <member name="P:Walgelijk.QOIDecoder.Height">
+            <summary>Returns the height of the decoded image in pixels.</summary>
+        </member>
+        <member name="P:Walgelijk.QOIDecoder.Pixels">
+            <summary>Returns the pixels of the decoded image, top-down, left-to-right.</summary>
+            <remarks>Each pixel is a 32-bit integer 0xAARRGGBB.</remarks>
+        </member>
+        <member name="P:Walgelijk.QOIDecoder.HasAlpha">
+            <summary>Returns the information about the alpha channel from the file header.</summary>
+        </member>
+        <member name="P:Walgelijk.QOIDecoder.IsLinearColorspace">
+            <summary>Returns the color space information from the file header.</summary>
+            <remarks><see langword="false" /> = sRGB with linear alpha channel.<see langword="true" /> = all channels linear.</remarks>
         </member>
         <member name="T:Walgelijk.Time">
             <summary>
