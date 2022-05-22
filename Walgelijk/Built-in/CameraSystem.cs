@@ -78,10 +78,10 @@ namespace Walgelijk
             if (MainCameraComponent.Clear)
             {
                 clearTask.ClearColor = MainCameraComponent.ClearColour;
-                RenderQueue.Add(clearTask, DefaultLayers.CameraOperations);
+                RenderQueue.Add(clearTask, RenderOrder.CameraOperations);
             }
 
-            RenderQueue.Add(renderTask, DefaultLayers.CameraOperations);
+            RenderQueue.Add(renderTask, RenderOrder.CameraOperations);
         }
 
         private void SetRenderTask()

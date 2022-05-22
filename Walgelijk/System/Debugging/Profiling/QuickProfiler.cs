@@ -35,18 +35,17 @@ namespace Walgelijk
             Rect textBounds = text.LocalBoundingBox;
             background.RenderTask.ModelMatrix = Matrix4x4.CreateScale(new Vector3(textBounds.Width + (2 * Padding), -textBounds.Height - (2 * Padding), 1));
 
-            queue.Add(background.RenderTask, DefaultLayers.DebugUI);
-            queue.Add(text.RenderTask, DefaultLayers.DebugUI);
+            queue.Add(background.RenderTask, RenderOrder.DebugUI);
+            queue.Add(text.RenderTask, RenderOrder.DebugUI);
         }
 
         private string ConstructDisplayText(int queuelength)
         {
-            float frameTime = MathF.Round(1000 / profiler.UpdatesPerSecond, 3);
             float renderTime = MathF.Round(1000 / profiler.FramesPerSecond, 3);
 
             string t =
-                $"frame time {frameTime}ms\n" +
                 $"render time {renderTime}ms\n" +
+                $"{MathF.Floor(1000 / renderTime)} fps\n" +
                 $"{queuelength} render tasks\n\n";
 
             foreach (var item in profiler.GetProfiledTasks())

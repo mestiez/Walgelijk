@@ -35,6 +35,30 @@ namespace Walgelijk
             return new RenderOrder(Layer, order);
         }
 
+        /// <summary>
+        /// Return a copy of this RenderOrder with the layer offset by the given amount
+        /// </summary>
+        public RenderOrder OffsetLayer(int offset)
+        {
+            return new RenderOrder(Layer, OrderInLayer + offset);
+        }
+
+        /// <summary>
+        /// Return a copy of this RenderOrder with the order offset by the given amount
+        /// </summary>
+        public RenderOrder OffsetOrder(int offset)
+        {
+            return new RenderOrder(Layer, OrderInLayer + offset);
+        }
+
+        /// <summary>
+        /// Return a copy of this RenderOrder with both the layer and order offset by the given amount
+        /// </summary>
+        public RenderOrder Offset(int layerOffset, int orderOffset)
+        {
+            return new RenderOrder(Layer + layerOffset, OrderInLayer + orderOffset);
+        }
+
         public override bool Equals(object? obj)
         {
             return obj is RenderOrder order &&
@@ -98,5 +122,35 @@ namespace Walgelijk
             else
                 return left.Layer <= right.Layer;
         }
+
+        /// <summary>
+        /// The default render order. (0, 0)
+        /// </summary>
+        public static readonly RenderOrder Zero = new RenderOrder();
+
+        /// <summary>
+        /// The render order where camera operations are executed (-10000, 0)
+        /// </summary>
+        public static readonly RenderOrder CameraOperations = new(-10000, 0);
+
+        /// <summary>
+        /// The render order where UI is drawn (10000, 0)
+        /// </summary>
+        public static readonly RenderOrder UI = new(10000, 0);
+
+        /// <summary>
+        /// The render order where debugging UI is drawn (10001, 0)
+        /// </summary>
+        public static readonly RenderOrder DebugUI = new(10001, 0);
+
+        /// <summary>
+        /// The minimum render order (<see cref="int.MinValue"/>, <see cref="int.MinValue"/>)
+        /// </summary>
+        public static readonly RenderOrder Bottom = new(int.MinValue, int.MinValue);
+
+        /// <summary>
+        /// The maximum render order (<see cref="int.MaxValue"/>, <see cref="int.MaxValue"/>)
+        /// </summary>
+        public static readonly RenderOrder Top = new(int.MaxValue, int.MaxValue);
     }
 }

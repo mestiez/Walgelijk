@@ -96,7 +96,7 @@ namespace Test
             public override void Render()
             {
                 Draw.Reset();
-                Draw.Order = DefaultLayers.Top;
+                Draw.Order = RenderOrder.Top;
                 Draw.Image(Resources.Load<Texture>("qoitest.qoi"), new Rect(Input.WorldMousePosition+ new Vector2(0, 256), new Vector2(512)), ImageContainmentMode.Contain);
 
                 if (Gui.ClickButton("R", new Vector2(100 + 256 + 5, 100), new Vector2(32)))

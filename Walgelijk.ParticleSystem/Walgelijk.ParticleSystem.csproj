@@ -3,8 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.14</Version>
+    <Version>0.0.15</Version>
     <Description>Simpele particlesystem voor Walgelijk</Description>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

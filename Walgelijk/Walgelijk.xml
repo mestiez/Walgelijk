@@ -1749,41 +1749,6 @@
             Draw a rectangle
             </summary>
         </member>
-        <member name="T:Walgelijk.DefaultLayers">
-            <summary>
-            Structure that holds some common <see cref="T:Walgelijk.RenderOrder"/>s
-            </summary>
-        </member>
-        <member name="F:Walgelijk.DefaultLayers.Zero">
-            <summary>
-            The default render order. (0, 0)
-            </summary>
-        </member>
-        <member name="F:Walgelijk.DefaultLayers.CameraOperations">
-            <summary>
-            The render order where camera operations are executed (-10000, 0)
-            </summary>
-        </member>
-        <member name="F:Walgelijk.DefaultLayers.UI">
-            <summary>
-            The render order where UI is drawn (10000, 0)
-            </summary>
-        </member>
-        <member name="F:Walgelijk.DefaultLayers.DebugUI">
-            <summary>
-            The render order where debugging UI is drawn (10001, 0)
-            </summary>
-        </member>
-        <member name="F:Walgelijk.DefaultLayers.Bottom">
-            <summary>
-            The minimum render order (<see cref="F:System.Int32.MinValue"/>, <see cref="F:System.Int32.MinValue"/>)
-            </summary>
-        </member>
-        <member name="F:Walgelijk.DefaultLayers.Top">
-            <summary>
-            The maximum render order (<see cref="F:System.Int32.MaxValue"/>, <see cref="F:System.Int32.MaxValue"/>)
-            </summary>
-        </member>
         <member name="T:Walgelijk.FilterMode">
             <summary>
             Filter mode for textures
@@ -2497,6 +2462,51 @@
             </summary>
             <param name="order"></param>
             <returns></returns>
+        </member>
+        <member name="M:Walgelijk.RenderOrder.OffsetLayer(System.Int32)">
+            <summary>
+            Return a copy of this RenderOrder with the layer offset by the given amount
+            </summary>
+        </member>
+        <member name="M:Walgelijk.RenderOrder.OffsetOrder(System.Int32)">
+            <summary>
+            Return a copy of this RenderOrder with the order offset by the given amount
+            </summary>
+        </member>
+        <member name="M:Walgelijk.RenderOrder.Offset(System.Int32,System.Int32)">
+            <summary>
+            Return a copy of this RenderOrder with both the layer and order offset by the given amount
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderOrder.Zero">
+            <summary>
+            The default render order. (0, 0)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderOrder.CameraOperations">
+            <summary>
+            The render order where camera operations are executed (-10000, 0)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderOrder.UI">
+            <summary>
+            The render order where UI is drawn (10000, 0)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderOrder.DebugUI">
+            <summary>
+            The render order where debugging UI is drawn (10001, 0)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderOrder.Bottom">
+            <summary>
+            The minimum render order (<see cref="F:System.Int32.MinValue"/>, <see cref="F:System.Int32.MinValue"/>)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderOrder.Top">
+            <summary>
+            The maximum render order (<see cref="F:System.Int32.MaxValue"/>, <see cref="F:System.Int32.MaxValue"/>)
+            </summary>
         </member>
         <member name="T:Walgelijk.RenderQueue">
             <summary>
@@ -3557,11 +3567,6 @@
             Provides performance information
             </summary>
         </member>
-        <member name="P:Walgelijk.Profiler.UpdatesPerSecond">
-            <summary>
-            Amount of updates in the last second
-            </summary>
-        </member>
         <member name="P:Walgelijk.Profiler.FramesPerSecond">
             <summary>
             Amount of frames rendered in the last second
@@ -3578,12 +3583,7 @@
             </summary>
             <param name="game"></param>
         </member>
-        <member name="M:Walgelijk.Profiler.Update">
-            <summary>
-            Force the profiler to update. Should be handled by the window.
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Profiler.Render">
+        <member name="M:Walgelijk.Profiler.Tick">
             <summary>
             Force the profiler to calculate render information. Should be handled by the window.
             </summary>

@@ -129,7 +129,7 @@ namespace Walgelijk
                 else
                     overlay.Color = Colors.White;
 
-                debugConsole.Game.RenderQueue.Add(overlay.RenderTask, DefaultLayers.DebugUI.WithOrder(1));
+                debugConsole.Game.RenderQueue.Add(overlay.RenderTask, RenderOrder.DebugUI.WithOrder(1));
             }
         }
 
@@ -177,7 +177,7 @@ namespace Walgelijk
             consoleInfo.RenderTask.ModelMatrix = textModel * Matrix4x4.CreateScale(1.5f) * Matrix4x4.CreateTranslation(debugConsole.Game.Window.Size.X - 10, 10, 0);
 
             var queue = debugConsole.Game.RenderQueue;
-            queue.Add(activeConsoleTask, DefaultLayers.DebugUI.WithOrder(1));
+            queue.Add(activeConsoleTask, RenderOrder.DebugUI.WithOrder(1));
         }
 
         public void SetDirty()

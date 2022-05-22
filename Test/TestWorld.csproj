@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Walgelijk.Imgui" Version="0.10.4" />
+    <PackageReference Include="Walgelijk.Imgui" Version="0.10.6" />
     <PackageReference Include="Walgelijk.UI" Version="0.0.19" />
   </ItemGroup>
 

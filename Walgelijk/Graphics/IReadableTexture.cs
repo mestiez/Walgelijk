@@ -3,7 +3,6 @@ using System.Numerics;
 
 namespace Walgelijk
 {
-
     /// <summary>
     /// A texture that can be written to
     /// </summary>
