@@ -209,8 +209,18 @@ namespace Walgelijk
         public static Texture White { get; } = new Texture(1, 1, new[] { Color.White });
 
         /// <summary>
-        /// 2x2 magenta-black checkerboard texture, usually used to indicate something has gone wrong
+        /// 8x8 red-black frowning face texture, usually used to indicate something has gone wrong
         /// </summary>
-        public static Texture ErrorTexture { get; } = new Texture(2, 2, new[] { Colors.Black, Colors.Magenta, Colors.Magenta, Colors.Black });
+        public static Texture ErrorTexture { get; } = new Texture(8, 8,
+            new[] {
+                Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Red,
+                Colors.Red, Colors.Black, Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Black, Colors.Red,
+                Colors.Red, Colors.Black, Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Black, Colors.Red,
+                Colors.Red, Colors.Red, Colors.Black, Colors.Black, Colors.Black, Colors.Black, Colors.Red, Colors.Red,
+                Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Red,
+                Colors.Red, Colors.Black, Colors.Black, Colors.Red, Colors.Red, Colors.Black, Colors.Black, Colors.Red,
+                Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Red,
+                Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Red, Colors.Red,
+            }, false, false);
     }
 }

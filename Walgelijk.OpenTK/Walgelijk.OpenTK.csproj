@@ -7,7 +7,7 @@
     <Authors>mestiez</Authors>
     <Company>Studio Minus</Company>
     <RepositoryType>https://github.com/mestiez/Walgelijk</RepositoryType>
-    <Version>0.1.61</Version>
+    <Version>0.1.62</Version>
     <Description>OpenTK rendering implementatie</Description>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <PackageReference Include="NVorbis" Version="0.10.4" />
-    <PackageReference Include="OpenTK" Version="4.6.7" />
+    <PackageReference Include="OpenTK" Version="4.7.2" />
   </ItemGroup>
 
   <ItemGroup>
