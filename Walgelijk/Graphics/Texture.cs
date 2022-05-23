@@ -76,7 +76,7 @@ namespace Walgelijk
         /// </summary>
         public Color[]? RawData;
 
-        private FilterMode filterMode = FilterMode.Linear;
+        private FilterMode filterMode = FilterMode.Nearest;
         private WrapMode wrapMode = WrapMode.Clamp;
 
         /// <summary>
