@@ -228,7 +228,7 @@ namespace Walgelijk.OpenTK
 
             Graphics.CurrentTarget = RenderTarget;
 
-            Game.Profiling.Render();
+            //Game.Profiling.Render();
             Game.Console.Render();
 
             RenderQueue.RenderAndReset(internalGraphics);
@@ -243,7 +243,7 @@ namespace Walgelijk.OpenTK
             Game.Console.Update();
             if (!Game.Console.IsActive)
                 Game.Scene?.UpdateSystems();
-            Game.Profiling.Update();
+            Game.Profiling.Tick();
             Game.AudioRenderer.Process(Game);
 
             inputHandler.Reset();
