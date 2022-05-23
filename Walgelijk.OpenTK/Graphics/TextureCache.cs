@@ -89,10 +89,17 @@ namespace Walgelijk.OpenTK
             int i = 0;
             foreach (var pixel in pixels)
             {
-                data[i]     = (byte)(Utilities.Clamp(pixel.R) * 255);
-                data[i + 1] = (byte)(Utilities.Clamp(pixel.G) * 255);
-                data[i + 2] = (byte)(Utilities.Clamp(pixel.B) * 255);
-                data[i + 3] = (byte)(Utilities.Clamp(pixel.A) * 255);
+                //data[i]     = (byte)(Utilities.Clamp(pixel.R) * 255);
+                //data[i + 1] = (byte)(Utilities.Clamp(pixel.G) * 255);
+                //data[i + 2] = (byte)(Utilities.Clamp(pixel.B) * 255);
+                //data[i + 3] = (byte)(Utilities.Clamp(pixel.A) * 255);
+
+                (byte r, byte g, byte b, byte a) = pixel.ToBytes();
+
+                data[i] = r;
+                data[i + 1] = g;
+                data[i + 2] = b;
+                data[i + 3] = a;
 
                 i += componentCount;
             }

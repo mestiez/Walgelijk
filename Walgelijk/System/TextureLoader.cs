@@ -41,6 +41,8 @@ public struct TextureLoader
             {
                 var img = item.Decode(File.ReadAllBytes(path), flipY);
                 t = new Texture(img.Width, img.Height, img.Colors, generateMipMaps, false);
+                t.FilterMode = Settings.FilterMode;
+                t.WrapMode = Settings.WrapMode;
                 return t;
             }
             catch (Exception e)
