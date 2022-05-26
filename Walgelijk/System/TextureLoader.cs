@@ -47,8 +47,11 @@ public struct TextureLoader
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("Image decoder failure:" + e.Message);
                     t?.DisposeLocalCopy();
+
+                    if (Game.Main?.DevelopmentMode ?? true)
+                        throw;
+                    Logger.Error("Image decoder failure:" + e.Message);
                     continue;
                 }
             }

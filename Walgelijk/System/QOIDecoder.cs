@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Buffers;
+using System.Threading.Tasks;
 
 namespace Walgelijk;
 
@@ -7,10 +9,9 @@ public class QOIDecoder : IImageDecoder
 {
     private int width;
     private int height;
-    private int[] pixels = Array.Empty<int>();
     private bool alpha;
     private bool linearColorspace;
-
+    private int[]? pixels = null;
     private static readonly int[] index = new int[64];
 
     /// <summary>Decodes the given QOI file contents.</summary>
@@ -48,10 +49,10 @@ public class QOIDecoder : IImageDecoder
                 return false;
         }
         int pixelsSize = width * height;
-        int[] pixels = new int[pixelsSize];
+        pixels = ArrayPool<int>.Shared.Rent(pixelsSize);
+        //int[] pixels = new int[pixelsSize];
         encodedSize -= 8;
         int encodedOffset = 14;
-        //int[] index = new int[64];
         Array.Clear(index);
         int pixel = -16777216;
         for (int pixelsOffset = 0; pixelsOffset < pixelsSize;)
@@ -100,31 +101,39 @@ public class QOIDecoder : IImageDecoder
             return false;
         this.width = width;
         this.height = height;
-        this.pixels = pixels;
         return true;
     }
 
     public DecodedImage Decode(in ReadOnlySpan<byte> bytes, bool flipY)
     {
-        if (Decode(bytes, bytes.Length))
+        try
         {
-            var colors = new Color[width * height];
-
-            for (int i = 0; i < pixels.Length; i++)
+            if (Decode(bytes, bytes.Length) && pixels != null)
             {
-                //var p = pixels[i];// (flipY ? pixels[width* height -1 - i] : pixels[i]);
-                var p = (flipY ? pixels[(i % width) + (height - 1 - i / width) * width] : pixels[i]);
-                colors[i] = new Color(
-                    (byte)((p & 0x00_FF_00_00) >> (6 * 8)),
-                    (byte)((p & 0x00_00_FF_00) >> (5 * 8)),
-                    (byte)(p & 0x00_00_00_FF),
-                    (byte)(((uint)p & 0xFF_00_00_00) >> (7 * 8))//(uint)p >> (8*7)
-                    );
-            }
+                var colors = new Color[width * height];
 
-            return new DecodedImage(width, height, colors);
+                for (int i = 0; i < width * height; i++)
+                {
+                    var v = flipY ? pixels[(i % width) + (height - 1 - i / width) * width] : pixels[i];
+                    colors[i] =
+                        new((byte)((v & 0xFF_00_00) >> 48),
+                            (byte)((v & 0xFF_00) >> 40),
+                            (byte)(v & 0xFF),
+                            (byte)(((uint)v & 0xFF_00_00_00) >> 56));
+                }
+                return new DecodedImage(width, height, colors);
+            }
+            throw new Exception("Image could not be decoded because it isn't valid");
         }
-        throw new Exception("Image could not be decoded because it isn't valid");
+        catch (Exception)
+        {
+            throw;
+        }
+        finally
+        {
+            if (pixels != null)
+                ArrayPool<int>.Shared.Return(pixels);
+        }
     }
 
     public DecodedImage Decode(in byte[] bytes, int count, bool flipY) => Decode(bytes.AsSpan()[0..count], flipY);
@@ -136,10 +145,6 @@ public class QOIDecoder : IImageDecoder
 
     /// <summary>Returns the height of the decoded image in pixels.</summary>
     public int Height => this.height;
-
-    /// <summary>Returns the pixels of the decoded image, top-down, left-to-right.</summary>
-    /// <remarks>Each pixel is a 32-bit integer 0xAARRGGBB.</remarks>
-    public int[] Pixels => this.pixels;
 
     /// <summary>Returns the information about the alpha channel from the file header.</summary>
     public bool HasAlpha => this.alpha;

@@ -71,10 +71,10 @@ public class ImageSharpDecoder : IImageDecoder
             e(filename, ".jpg") ||
             e(filename, ".bmp") ||
             e(filename, ".webp") ||
-            e(filename, ".pbm") ||
+            e(filename, ".tga") ||
             e(filename, ".tif") ||
             e(filename, ".tiff") ||
-            e(filename, ".tga") ||
+            e(filename, ".pbm") ||
             e(filename, ".gif");
 
         static bool e(in string filename, in string ex) => filename.EndsWith(ex, StringComparison.InvariantCultureIgnoreCase);

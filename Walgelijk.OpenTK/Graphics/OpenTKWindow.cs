@@ -6,6 +6,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Numerics;
@@ -14,56 +15,58 @@ using Vector2 = System.Numerics.Vector2;
 
 namespace Walgelijk.OpenTK
 {
-    /// <summary>
-    /// OpenTK implementation of <see cref="Window"/>
-    /// </summary>
-    public class OpenTKWindow : Window
+    internal class GameWindowImplementation : GameWindow
     {
-        internal readonly GameWindow window;
-        internal readonly OpenTKWindowRenderTarget renderTarget;
+        public readonly OpenTKWindow EngineWindow;
 
-        private readonly InputHandler inputHandler;
-        internal readonly OpenTKGraphics internalGraphics;
-
-        private readonly Time time = new();
-        private Stopwatch stopwatch;
-
-        public OpenTKWindow(string title, Vector2 position, Vector2 size)
+        public GameWindowImplementation(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings, OpenTKWindow engineWindow) : base(gameWindowSettings, nativeWindowSettings)
         {
-            GameWindowSettings windowSettings = new();
-
-            window = new GameWindow(windowSettings, new NativeWindowSettings
-            {
-                Size = new global::OpenTK.Mathematics.Vector2i((int)size.X, (int)size.Y),
-                Title = title,
-                StartVisible = false,
-                NumberOfSamples = 16
-            });
-
-            if (position.X >= 0 && position.Y >= 0)
-                Position = position;
-
-            renderTarget = new OpenTKWindowRenderTarget();
-            renderTarget.Window = this;
-
-            inputHandler = new InputHandler(this);
-            internalGraphics = new OpenTKGraphics();
-
-            Logger.Log("Graphics API: " + window.API.ToString());
+            EngineWindow = engineWindow;
         }
 
+        protected override void OnLoad()
+        {
+            base.OnLoad();
+
+            IsVisible = true;
+            MakeCurrent();
+
+            EngineWindow.OnWindowLoad();
+        }
+
+        protected override void OnMove(WindowPositionEventArgs e)
+        {
+            base.OnMove(e);
+            EngineWindow.OnWindowMove(e);
+        }
+
+        protected override void OnRenderFrame(FrameEventArgs args)
+        {
+            base.OnRenderFrame(args);
+            EngineWindow.Update(args.Time);
+        }
+
+        protected override void OnResize(ResizeEventArgs e)
+        {
+            base.OnResize(e);
+            EngineWindow.OnWindowResize(e);
+        }
+
+        protected override void OnUnload()
+        {
+            base.OnUnload();
+            EngineWindow.OnWindowClose();
+        }
+    }
+
+    public class OpenTKWindow : Window
+    {
         public override string Title { get => window.Title; set => window.Title = value; }
         public override Vector2 Position { get => new Vector2(window.Location.X, window.Location.Y); set => window.Location = new global::OpenTK.Mathematics.Vector2i((int)value.X, (int)value.Y); }
         public override int TargetUpdateRate
         {
-            get
-            {
-                return (int)window.UpdateFrequency;
-            }
-            set
-            {
-                window.RenderFrequency = window.UpdateFrequency = value;
-            }
+            get => (int)window.UpdateFrequency;
+            set => window.RenderFrequency = window.UpdateFrequency = value;
         }
         public override bool VSync { get => window.VSync == VSyncMode.On; set => window.VSync = (value ? VSyncMode.On : VSyncMode.Off); }
         public override bool IsOpen => window.Exists && !window.IsExiting;
@@ -74,20 +77,47 @@ namespace Walgelijk.OpenTK
         public override InputState InputState => inputHandler?.InputState ?? default;
         public override RenderTarget RenderTarget => renderTarget;
         public override IGraphics Graphics => internalGraphics;
-
         public override Vector2 Size
         {
             get => new(window.Size.X, window.Size.Y);
-            set
-            {
-                window.Size = new global::OpenTK.Mathematics.Vector2i((int)value.X, (int)value.Y);
-            }
+            set => window.Size = new global::OpenTK.Mathematics.Vector2i((int)value.X, (int)value.Y);
         }
 
-        public override void Close()
+        internal readonly Time time = new();
+        internal readonly GameWindowImplementation window;
+        internal readonly OpenTKWindowRenderTarget renderTarget;
+        internal readonly InputHandler inputHandler;
+        internal readonly OpenTKGraphics internalGraphics;
+
+        public OpenTKWindow(string title, Vector2 position, Vector2 size)
         {
-            window.Close();
+            GameWindowSettings windowSettings = new();
+
+            window = new GameWindowImplementation(windowSettings, new NativeWindowSettings
+            {
+                Size = new global::OpenTK.Mathematics.Vector2i((int)size.X, (int)size.Y),
+                Title = title,
+                StartVisible = false,
+                NumberOfSamples = 16,
+            }, this);
+
+            if (position.X >= 0 && position.Y >= 0)
+                Position = position;
+            else
+                window.CenterWindow();
+
+            renderTarget = new OpenTKWindowRenderTarget();
+            renderTarget.Window = this;
+
+            inputHandler = new InputHandler(this);
+            internalGraphics = new OpenTKGraphics();
+
+            Logger.Log("Graphics API: " + window.API.ToString());
         }
+
+        public override void Close() => window.Close();
+
+        public override void ResetInputState() => inputHandler.Reset();
 
         public override void SetIcon(IReadableTexture texture, bool flipY = true)
         {
@@ -108,13 +138,51 @@ namespace Walgelijk.OpenTK
                 icon[i + 3] = bytes.a;
             }
 
-            void getCoords(int index, out int x, out int y)
+            static void getCoords(int index, out int x, out int y)
             {
                 x = index % res;
                 y = (int)MathF.Floor(index / res);
             }
 
             window.Icon = new WindowIcon(new global::OpenTK.Windowing.Common.Input.Image(res, res, icon));
+        }
+
+        public override void StartLoop() => window.Run();
+
+        internal void Update(double dt)
+        {
+            {
+                Game.Console.Update();
+                if (!Game.Console.IsActive)
+                    Game.Scene?.UpdateSystems();
+                Game.Profiling.Tick();
+                Game.AudioRenderer.Process(Game);
+
+                inputHandler.Reset();
+
+                var unscaledDt = (float)dt;
+                var scaledDt = (float)dt * Time.TimeScale;
+
+                time.DeltaTimeUnscaled = unscaledDt;
+                time.DeltaTime = scaledDt;
+
+                time.SecondsSinceSceneChange += unscaledDt;
+                time.SecondsSinceSceneChangeUnscaled += scaledDt;
+
+                time.SecondsSinceLoad += scaledDt;
+                time.SecondsSinceLoadUnscaled += unscaledDt;
+            }
+
+            {
+                GLUtilities.PrintGLErrors(Game.Main.DevelopmentMode);
+                Game.Scene?.RenderSystems();
+                if (Game.DevelopmentMode)
+                    Game.DebugDraw.Render();
+                Graphics.CurrentTarget = RenderTarget;
+                Game.Console.Render();
+                RenderQueue.RenderAndReset(internalGraphics);
+                window.SwapBuffers();
+            }
         }
 
         public override Vector2 ScreenToWindowPoint(Vector2 point)
@@ -154,35 +222,30 @@ namespace Walgelijk.OpenTK
             //TODO HOEZO WERKT DIT? WAAROM MOET IK HET KEER 2 DOEN?
 
             var m = renderTarget.ViewMatrix * renderTarget.ProjectionMatrix;
-            if (!Matrix4x4.Invert(m, out var inverted)) return point;
+            if (!Matrix4x4.Invert(m, out var inverted))
+                return point;
 
             return Vector2.Transform(point, inverted);
         }
 
-        public override void StartLoop()
+        internal void OnWindowLoad()
         {
-            HookIntoEvents();
-            window.Run();
-        }
-
-        public override void ResetInputState()
-        {
-            inputHandler.Reset();
-        }
-
-        private void HookIntoEvents()
-        {
-            window.Closed += OnWindowClose;
-            window.Resize += OnWindowResize;
-            window.Move += OnWindowMove;
-            window.FileDrop += OnFileDropped;
-
-            window.UpdateFrame += OnUpdateFrame;
-            window.RenderFrame += OnRenderFrame;
-
-            window.Load += OnWindowLoad;
+            RenderTarget.Size = Size;
+            renderTarget.Initialise();
 
             GL.DebugMessageCallback(OnGLDebugMessage, IntPtr.Zero);
+        }
+
+        internal void OnWindowClose() => InvokeCloseEvent();
+
+        internal void OnFileDropped(FileDropEventArgs obj) => InvokeFileDropEvent(obj.FileNames);
+
+        internal void OnWindowMove(WindowPositionEventArgs e) => InvokeMoveEvent(new Vector2(e.Position.X, e.Position.Y));
+
+        internal void OnWindowResize(ResizeEventArgs e)
+        {
+            RenderTarget.Size = new Vector2(e.Width, e.Height);
+            InvokeResizeEvent(Size);
         }
 
         private void OnGLDebugMessage(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
@@ -203,82 +266,6 @@ namespace Walgelijk.OpenTK
                     Logger.Log(str, nameof(OpenTKWindow));
                     break;
             }
-        }
-
-        private void OnWindowLoad()
-        {
-            window.IsVisible = true;
-
-            window.MakeCurrent();
-            RenderTarget.Size = Size;
-
-            stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            renderTarget.Initialise();
-        }
-
-        private void OnRenderFrame(FrameEventArgs obj)
-        {
-            GLUtilities.PrintGLErrors(Game.Main.DevelopmentMode);
-
-            Game.Scene?.RenderSystems();
-            if (Game.DevelopmentMode)
-                Game.DebugDraw.Render();
-
-            Graphics.CurrentTarget = RenderTarget;
-
-            //Game.Profiling.Render();
-            Game.Console.Render();
-
-            RenderQueue.RenderAndReset(internalGraphics);
-
-            //GL.Flush();
-            //GL.Finish();
-            window.SwapBuffers();
-        }
-
-        private void OnUpdateFrame(FrameEventArgs obj)
-        {
-            Game.Console.Update();
-            if (!Game.Console.IsActive)
-                Game.Scene?.UpdateSystems();
-            Game.Profiling.Tick();
-            Game.AudioRenderer.Process(Game);
-
-            inputHandler.Reset();
-
-            var now = stopwatch.Elapsed.TotalSeconds;
-
-            time.DeltaTimeUnscaled = (float)(now - time.SecondsSinceLoadUnscaled);
-            time.DeltaTime = time.DeltaTimeUnscaled * Time.TimeScale;
-
-            time.SecondsSinceSceneChange += time.DeltaTime;
-            time.SecondsSinceSceneChangeUnscaled += time.DeltaTimeUnscaled;
-
-            time.SecondsSinceLoad += time.DeltaTime;
-            time.SecondsSinceLoadUnscaled = (float)now;
-        }
-
-        private void OnFileDropped(FileDropEventArgs obj)
-        {
-            InvokeFileDropEvent(obj.FileNames);
-        }
-
-        private void OnWindowMove(WindowPositionEventArgs e)
-        {
-            InvokeMoveEvent(new Vector2(e.Position.X, e.Position.Y));
-        }
-
-        private void OnWindowResize(ResizeEventArgs e)
-        {
-            RenderTarget.Size = new Vector2(e.Width, e.Height);
-            InvokeResizeEvent(Size);
-        }
-
-        private void OnWindowClose()
-        {
-            InvokeCloseEvent();
         }
     }
 }

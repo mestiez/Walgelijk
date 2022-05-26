@@ -3785,10 +3785,6 @@
         <member name="P:Walgelijk.QOIDecoder.Height">
             <summary>Returns the height of the decoded image in pixels.</summary>
         </member>
-        <member name="P:Walgelijk.QOIDecoder.Pixels">
-            <summary>Returns the pixels of the decoded image, top-down, left-to-right.</summary>
-            <remarks>Each pixel is a 32-bit integer 0xAARRGGBB.</remarks>
-        </member>
         <member name="P:Walgelijk.QOIDecoder.HasAlpha">
             <summary>Returns the information about the alpha channel from the file header.</summary>
         </member>
