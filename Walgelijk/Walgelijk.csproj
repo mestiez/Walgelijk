@@ -66,8 +66,4 @@
     </None>
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="call push_nuget.bat $(Version)" />
-  </Target>
-
 </Project>
