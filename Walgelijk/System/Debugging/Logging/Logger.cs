@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 
 namespace Walgelijk
 {
@@ -10,14 +11,18 @@ namespace Walgelijk
         /// <summary>
         /// The logging implementation used. Set to <see cref="ConsoleLogger"/> by default
         /// </summary>
-        public static ILogger Implementation { get; set; } = new ConsoleLogger();
+        public static ConcurrentBag<ILogger> Implementations { get; set; } = new ConcurrentBag<ILogger>(new ILogger[] {
+            new ConsoleLogger(),
+            new DiskLogger()
+        });
 
         /// <summary>
         /// Log information
         /// </summary>
-        public static void Debug(in string message, in string? source = null)
+        public static void Debug(in string message, [global::System.Runtime.CompilerServices.CallerMemberName] in string? source = null)
         {
-            Implementation.Debug(message, source);
+            foreach (var impl in Implementations)
+                impl.Debug(message, source);
 
             OnLog.Dispatch((message, source, LogLevel.Debug));
         }
@@ -25,9 +30,10 @@ namespace Walgelijk
         /// <summary>
         /// Log information
         /// </summary>
-        public static void Log(in string message, in string? source = null)
+        public static void Log(in string message, [global::System.Runtime.CompilerServices.CallerMemberName] in string? source = null)
         {
-            Implementation.Log(message, source);
+            foreach (var impl in Implementations)
+                impl.Log(message, source);
 
             OnLog.Dispatch((message, source, LogLevel.Info));
         }
@@ -35,9 +41,10 @@ namespace Walgelijk
         /// <summary>
         /// Log a warning
         /// </summary>
-        public static void Warn(in string message, in string? source = null)
+        public static void Warn(in string message, [global::System.Runtime.CompilerServices.CallerMemberName] in string? source = null)
         {
-            Implementation.Warn(message, source);
+            foreach (var impl in Implementations)
+                impl.Warn(message, source);
 
             OnLog.Dispatch((message, source, LogLevel.Warn));
         }
@@ -45,9 +52,10 @@ namespace Walgelijk
         /// <summary>
         /// Log an error
         /// </summary>
-        public static void Error(in string message, in string? source = null)
+        public static void Error(in string message, [global::System.Runtime.CompilerServices.CallerMemberName] in string? source = null)
         {
-            Implementation.Error(message, source);
+            foreach (var impl in Implementations)
+                impl.Error(message, source);
 
             OnLog.Dispatch((message, source, LogLevel.Error));
         }
@@ -56,5 +64,12 @@ namespace Walgelijk
         /// Event dispatched when a message is logged at any level
         /// </summary>
         public static readonly Hook<LogMessage> OnLog = new Hook<LogMessage>();
+
+        public static void Dispose()
+        {
+            foreach (var impl in Implementations)
+                if (impl != null && impl is IDisposable disp)
+                    disp.Dispose();
+        }
     }
 }

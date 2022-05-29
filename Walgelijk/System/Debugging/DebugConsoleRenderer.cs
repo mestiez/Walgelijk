@@ -53,6 +53,7 @@ namespace Walgelijk
             //text.LineHeightMultiplier = .7f;
             text.RenderTask.ScreenSpace = true;
             text.Color = Colors.White;
+            text.RenderOrder = RenderOrder.Top.WithOrder(int.MaxValue);
             text.ColorInstructions = textColors;
             text.ParseRichText = false;
 
@@ -64,18 +65,22 @@ namespace Walgelijk
             consoleInfo.Color = Colors.White.WithAlpha(0.1f);
             consoleInfo.HorizontalAlignment = HorizontalTextAlign.Right;
             consoleInfo.String = "Filter disabled";
+            consoleInfo.RenderOrder = RenderOrder.Top.WithOrder(int.MaxValue);
 
             overlay = new TextComponent();
             overlay.RenderTask.ScreenSpace = true;
+            overlay.RenderOrder = RenderOrder.Top.WithOrder(int.MaxValue);
 
             inputBackground = new RectangleShapeComponent();
             inputBackground.Color = new Color(15, 15, 15);
             inputBackground.Pivot = Vector2.Zero;
+            inputBackground.RenderOrder = RenderOrder.Top.WithOrder(int.MaxValue);
             inputBackground.RenderTask.ScreenSpace = true;
 
             background = new RectangleShapeComponent();
             background.Color = new Color(25, 25, 25);
             background.Pivot = Vector2.Zero;
+            background.RenderOrder = RenderOrder.Top.WithOrder(int.MaxValue);
             background.RenderTask.ScreenSpace = true;
 
             boundsTask = new DrawBoundsTask(new DrawBounds(new Vector2(0, LogHeight), Vector2.Zero));
@@ -177,7 +182,7 @@ namespace Walgelijk
             consoleInfo.RenderTask.ModelMatrix = textModel * Matrix4x4.CreateScale(1.5f) * Matrix4x4.CreateTranslation(debugConsole.Game.Window.Size.X - 10, 10, 0);
 
             var queue = debugConsole.Game.RenderQueue;
-            queue.Add(activeConsoleTask, RenderOrder.DebugUI.WithOrder(1));
+            queue.Add(activeConsoleTask, RenderOrder.Top.WithOrder(int.MaxValue));
         }
 
         public void SetDirty()

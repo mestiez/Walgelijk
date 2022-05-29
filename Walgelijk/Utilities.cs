@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -172,6 +173,14 @@ namespace Walgelijk
         public static T PickRandom<T>(IList<T> collection)
         {
             return collection[RandomInt(0, collection.Count)];
+        }
+
+        /// <summary>
+        /// Return a random entry in a <see cref="IEnumerable{T}"/>
+        /// </summary>
+        public static T PickRandom<T>(IEnumerable<T> collection)
+        {
+            return collection.ElementAt(RandomInt(0, collection.Count()));
         }
 
         /// <summary>

@@ -3307,6 +3307,67 @@
             Returns the point on the rectangle that is closest to the given point
             </summary>
         </member>
+        <member name="T:Walgelijk.Asset">
+            <summary>
+            An asset ID. This is actually just a signed 32 bit integer.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Asset.Id">
+            <summary>
+            The unique identity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Asset.#ctor(System.String@)">
+            <summary>
+            Construct an asset ID from a string. The actual Id is just the hashcode of the string. 
+            <br></br>
+            Note that this constructor adds permanently binds the asset ID and the given string in a static dictionary, accessible from <see cref="M:Walgelijk.Assets.GetAssetName(Walgelijk.Asset@)"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Asset.#ctor(System.Int32)">
+            <summary>
+            Construct an asset ID from an integer
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Assets">
+            <summary>
+            Global ID based resource directory. Uses <see cref="T:Walgelijk.Resources"/> to load and store the actual data.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Assets.Load``1(Walgelijk.Asset@)">
+            <summary>
+            Loads the given asset
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Assets.TryLoad``1(Walgelijk.Asset@,``0@)">
+            <summary>
+            Tries to load the given asset. Returns true if successful, meaning the loaded object is non-null and where <see cref="M:Walgelijk.Resources.CanLoad(System.Type)"/> returns true for its type
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="id"></param>
+            <param name="asset"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Assets.Get(Walgelijk.Asset@)">
+            <summary>
+            Get file associated with the asset.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Assets.TryGet(Walgelijk.Asset@,System.IO.FileInfo@)">
+            <summary>
+            Tries to get the file associated with the asset. Returns true if successful.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Assets.Register(System.String,Walgelijk.Asset@)">
+            <summary>
+            Register an asset to the registry. This asset can later be loaded and retrieved using the given asset ID
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Assets.RegisterEntireDirectory(System.String,System.String,System.IO.SearchOption)">
+            <summary>
+            Register the contents of a directory to the asset system, using the file names with extension as their ID
+            </summary>
+        </member>
         <member name="T:Walgelijk.CommandAttribute">
             <summary>
             Attribute that registers a command to the command processor registry
@@ -3452,6 +3513,11 @@
             Clear the console
             </summary>
         </member>
+        <member name="T:Walgelijk.DiskLogger">
+            <summary>
+            A disk logger. Logs to the <see cref="F:Walgelijk.DiskLogger.TargetPath"/>
+            </summary>
+        </member>
         <member name="T:Walgelijk.ConsoleLogger">
             <summary>
             The default logger. Logs to the console.
@@ -3487,7 +3553,7 @@
             Access the logging implementation
             </summary>
         </member>
-        <member name="P:Walgelijk.Logger.Implementation">
+        <member name="P:Walgelijk.Logger.Implementations">
             <summary>
             The logging implementation used. Set to <see cref="T:Walgelijk.ConsoleLogger"/> by default
             </summary>
@@ -3770,6 +3836,11 @@
             Copies pixels from <see cref="T:SixLabors.ImageSharp.Image"/> to an array
             </summary>
         </member>
+        <member name="T:Walgelijk.NameGenerator">
+            <summary>
+            Very basic random name generator
+            </summary>
+        </member>
         <member name="T:Walgelijk.QOIDecoder">
             <summary>Decoder of the "Quite OK Image" (QOI) format.</summary>
         </member>
@@ -3794,7 +3865,7 @@
         </member>
         <member name="T:Walgelijk.Resources">
             <summary>
-            Global path based resource storage
+            Global path based resource storage. It's recommended to use the <see cref="T:Walgelijk.Assets"/> system to interface with this instead of using this directly.
             </summary>
         </member>
         <member name="E:Walgelijk.Resources.OnStartLoad">
@@ -4554,6 +4625,11 @@
         <member name="M:Walgelijk.Utilities.PickRandom``1(System.Collections.Generic.IList{``0})">
             <summary>
             Return a random entry in a <see cref="T:System.Collections.Generic.ICollection`1"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.PickRandom``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Return a random entry in a <see cref="T:System.Collections.Generic.IEnumerable`1"/>
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.AngleToVector(System.Single)">

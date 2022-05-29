@@ -35,6 +35,8 @@ namespace Test
             Resources.SetBasePathForType<Texture>("textures");
             Resources.SetBasePathForType<Font>("fonts");
 
+            Assets.Register("resources/textures/qoitest.qoi", "qoitest");
+
             //game.Scene = SplashScreen.CreateScene(new[]{
             //    new SplashScreen.Logo(Resources.Load<Texture>("walgelijk.png"), 0.5f),
             //    },
@@ -97,7 +99,7 @@ namespace Test
             {
                 Draw.Reset();
                 Draw.Order = RenderOrder.Top;
-                Draw.Image(Resources.Load<Texture>("qoitest.qoi"), new Rect(Input.WorldMousePosition+ new Vector2(0, 256), new Vector2(512)), ImageContainmentMode.Contain);
+                Draw.Image(Assets.Load<Texture>("qoitest"), new Rect(Input.WorldMousePosition+ new Vector2(0, 256), new Vector2(512)), ImageContainmentMode.Contain);
 
                 if (Gui.ClickButton("R", new Vector2(100 + 256 + 5, 100), new Vector2(32)))
                     Initialise();
@@ -130,8 +132,8 @@ namespace Test
                 if (Input.IsKeyReleased(Key.F8))
                 {
                     using var o = File.Create("test.png");
-                    Graphics.Upload(Resources.Load<Texture>("pride.png"));
-                    Graphics.SaveTexture(o, Resources.Load<Texture>("pride.png"));
+                    Graphics.Upload(Assets.Load<Texture>("pride.png"));
+                    Graphics.SaveTexture(o, Assets.Load<Texture>("pride.png"));
                     o.Close();
                     o.Dispose();
                 }

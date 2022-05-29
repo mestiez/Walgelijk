@@ -135,6 +135,7 @@ public class Game
 
         AudioRenderer?.Release();
         Window.Close();
+        Logger.Dispose();
     }
 
     [Command]
