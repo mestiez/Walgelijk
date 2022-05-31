@@ -18,28 +18,28 @@ namespace Walgelijk
 
         public void Debug(string message, string? source = null)
         {
-            output.WriteLine("[DBG] {0} ({1})", message, source);
+            output?.WriteLine("[DBG] {0} ({1})", message, source);
         }
 
         public void Error(string message, string? source = null)
         {
-            output.WriteLine("[ERR] {0} ({1})", message, source);
+            output?.WriteLine("[ERR] {0} ({1})", message, source);
         }
 
         public void Log(string message, string? source = null)
         {
-            output.WriteLine("[LOG] {0} ({1})", message, source);
+            output?.WriteLine("[LOG] {0} ({1})", message, source);
         }
 
         public void Warn(string message, string? source = null)
         {
-            output.WriteLine("[WRN] {0} ({1})", message, source);
+            output?.WriteLine("[WRN] {0} ({1})", message, source);
         }
 
         public void Dispose()
         {
-            output.Close();
-            output.Dispose();
+            output?.Close();
+            output?.Dispose();
         }
     }
 
