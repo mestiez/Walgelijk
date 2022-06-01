@@ -53,10 +53,10 @@ namespace Walgelijk.OpenTK
                     GL.BufferData(BufferTarget.ArrayBuffer, size, array.GetData<int>(), hint);
                     break;
                 case AttributeType.Float:
-                    GL.BufferData(BufferTarget.ArrayBuffer, size, array.GetData<int>(), hint);
+                    GL.BufferData(BufferTarget.ArrayBuffer, size, array.GetData<float>(), hint);
                     break;
                 case AttributeType.Double:
-                    GL.BufferData(BufferTarget.ArrayBuffer, size, array.GetData<int>(), hint);
+                    GL.BufferData(BufferTarget.ArrayBuffer, size, array.GetData<double>(), hint);
                     break;
                 case AttributeType.Vector2:
                     GL.BufferData(BufferTarget.ArrayBuffer, size, array.GetData<Vector2>(), hint);
