@@ -151,13 +151,13 @@ namespace Walgelijk.OpenTK
             AL.SourcePlay(s);
         }
 
-        private int CreateTempSource(Sound sound, float volume, Vector2 worldPosition, float pitch, AudioTrack track = null)
+        private int CreateTempSource(Sound sound, float volume, Vector2 worldPosition, float pitch, AudioTrack? track = null)
         {
             var source = SourceCache.CreateSourceFor(sound);
             AL.Source(source, ALSourceb.SourceRelative, !sound.Spatial);
             AL.Source(source, ALSourceb.Looping, false);
-            AL.Source(source, ALSourcef.Gain, volume * track.Volume);
-            AL.Source(source, ALSourcef.Pitch, pitch * track.Pitch);
+            AL.Source(source, ALSourcef.Gain, (sound.Track?.Muted ?? false) ? 0 : (volume * (sound.Track?.Volume ?? 1)));
+            AL.Source(source, ALSourcef.Pitch, pitch * (sound.Track?.Pitch ?? 1));
             if (sound.Spatial)
                 AL.Source(source, ALSource3f.Position, worldPosition.X, 0, worldPosition.Y);
             AL.SourcePlay(source);
@@ -172,24 +172,24 @@ namespace Walgelijk.OpenTK
             return source;
         }
 
-        public override void PlayOnce(Sound sound, float volume = 1, float pitch = 1, AudioTrack track = null)
+        public override void PlayOnce(Sound sound, float volume = 1, float pitch = 1, AudioTrack? track = null)
         {
-            if (!canPlayAudio || sound.Data == null || track.Muted)
+            if (!canPlayAudio || sound.Data == null || (track?.Muted ?? false))
                 return;
 
             UpdateIfRequired(sound, out _);
-            CreateTempSource(sound, volume, default, pitch, track);
+            CreateTempSource(sound, volume, default, pitch, track ?? sound.Track);
         }
 
-        public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1, AudioTrack track = null)
+        public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1, AudioTrack? track = null)
         {
-            if (!canPlayAudio || sound.Data == null || track.Muted)
+            if (!canPlayAudio || sound.Data == null || (track?.Muted ?? false))
                 return;
 
             UpdateIfRequired(sound, out _);
             if (!sound.Spatial)
                 Logger.Warn("Attempt to play a non-spatial sound in space!");
-            CreateTempSource(sound, volume, worldPosition, pitch, track);
+            CreateTempSource(sound, volume, worldPosition, pitch, track ?? sound.Track);
         }
 
         public override void Stop(Sound sound)

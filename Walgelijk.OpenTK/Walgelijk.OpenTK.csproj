@@ -7,7 +7,7 @@
     <Authors>mestiez</Authors>
     <Company>Studio Minus</Company>
     <RepositoryType>https://github.com/mestiez/Walgelijk</RepositoryType>
-    <Version>0.1.66</Version>
+    <Version>0.1.67</Version>
     <Description>OpenTK rendering implementatie</Description>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
