@@ -151,7 +151,9 @@ namespace Walgelijk.OpenTK
 
         internal void Update(double dt)
         {
+            //update
             {
+                Game.AudioRenderer.UpdateTracks();
                 Game.Console.Update();
                 if (!Game.Console.IsActive)
                     Game.Scene?.UpdateSystems();
@@ -173,6 +175,7 @@ namespace Walgelijk.OpenTK
                 time.SecondsSinceLoadUnscaled += unscaledDt;
             }
 
+            //render
             {
                 GLUtilities.PrintGLErrors(Game.Main.DevelopmentMode);
                 Game.Scene?.RenderSystems();

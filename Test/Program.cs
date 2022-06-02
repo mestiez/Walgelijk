@@ -77,9 +77,9 @@ namespace Test
             scene.AddSystem(new DebugCameraSystem());
             scene.AddSystem(new Scene2System());
 
-           // AudioData costolotData = game.AudioRenderer.LoadSound("resources\\audio\\Costolot.ogg");
-           // var music = new Sound(costolotData, true, false);
-           // game.AudioRenderer.Play(music);
+            // AudioData costolotData = game.AudioRenderer.LoadSound("resources\\audio\\Costolot.ogg");
+            // var music = new Sound(costolotData, true, false);
+            // game.AudioRenderer.Play(music);
 
             game.Console.DrawConsoleNotification = false;
 
@@ -89,9 +89,13 @@ namespace Test
         public class Scene2System : Walgelijk.System
         {
             private string[] audioDevices = null;
+            private AudioTrack track = new(1, 1, false);
+            private Sound costolot = new Sound(Resources.Load<AudioData>("Costolot.ogg"), true, false);
+            private Sound kampvuur = new Sound(Resources.Load<AudioData>("kampvuurliedlied.wav"), true, false);
 
             public override void Initialise()
             {
+                costolot.Track = track;
                 audioDevices = game.AudioRenderer.EnumerateAvailableAudioDevices().ToArray();
             }
 
@@ -99,29 +103,44 @@ namespace Test
             {
                 Draw.Reset();
                 Draw.Order = RenderOrder.Top;
-                Draw.Image(Assets.Load<Texture>("qoitest"), new Rect(Input.WorldMousePosition+ new Vector2(0, 256), new Vector2(512)), ImageContainmentMode.Contain);
+                // Draw.Image(Assets.Load<Texture>("qoitest"), new Rect(Input.WorldMousePosition + new Vector2(0, 256), new Vector2(512)), ImageContainmentMode.Contain);
 
-                if (Gui.ClickButton("R", new Vector2(100 + 256 + 5, 100), new Vector2(32)))
-                    Initialise();
-
-                if (Gui.ClickButton("P", new Vector2(100 + 256 + 5 + 32 + 5, 100), new Vector2(32)))
+                if (Gui.ClickButton("costolot", new Vector2(100, 100), new Vector2(100, 32)))
                 {
-                    AudioData costolotData = Resources.Load<AudioData>("Costolot.ogg");
-                    var music = new Sound(costolotData, true, false);
-                    game.AudioRenderer.Play(music);
+                    if (Audio.IsPlaying(costolot))
+                        Audio.Pause(costolot);
+                    else
+                        Audio.Play(costolot);
                 }
 
-
-                Gui.Label(game.AudioRenderer.GetCurrentAudioDevice(), new Vector2(256));
-
-                int i = 0;
-                foreach (var item in audioDevices)
+                if (Gui.ClickButton("kampvuur", new Vector2(210, 100), new Vector2(100, 32)))
                 {
-                    if (Gui.ClickButton(item, new Vector2(100, 100 + i * (32 + 5)), 
-                        new Vector2(256, 32), optionalId: i))
-                        game.AudioRenderer.SetAudioDevice(item);
-                    i++;
+                    if (Audio.IsPlaying(kampvuur))
+                        Audio.Pause(kampvuur);
+                    else
+                        Audio.Play(kampvuur);
                 }
+
+                float v = costolot.Volume;
+                if (Gui.SliderHorizontal("{0}% self", new Vector2(100, 140), new Vector2(100, 32), ref v, 0, 1f, 2, step: 0.01f, displayTransformer: static a => MathF.Round(a * 100)))
+                {
+                    costolot.Volume = v;
+                    costolot.RequiresUpdate = true;
+                }
+
+                v = track.Volume;
+                if (Gui.SliderHorizontal("{0}% track", new Vector2(100, 180), new Vector2(100, 32), ref v, 0, 1f, 2, step: 0.01f, displayTransformer: static a => MathF.Round(a * 100)))
+                    track.Volume = v;
+
+                v = track.Pitch;
+                if (Gui.SliderHorizontal("{0}% pitch", new Vector2(210, 180), new Vector2(100, 32), ref v, 0.01f, 2f, 2, step: 0.01f, displayTransformer: static a => MathF.Round(a * 100)))
+                    track.Pitch = v;
+
+                if (Gui.ClickButton("pause all", new Vector2(100, 220), new Vector2(100, 32)))
+                    Audio.PauseAll();
+
+                if (Gui.ClickButton("pause track", new Vector2(100, 260), new Vector2(100, 32)))
+                    Audio.PauseAll(track);
             }
         }
 
@@ -145,7 +164,7 @@ namespace Test
                     text.WrappingWidth = MathF.Max(10, Input.WorldMousePosition.X - pos);
                     DebugDraw.Rectangle(text.LocalBoundingBox, 0, Colors.Magenta);
                     //DebugDraw.Text(text.LocalBoundingBox.TopLeft + new Vector2(0, 30), text.TextMeshGenerator.CalculateTextHeight(text.String).ToString(), 3, Colors.Red);
-                    DebugDraw.Line(text.LocalBoundingBox.TopLeft + new Vector2(-10 ,0), text.LocalBoundingBox.TopLeft + new Vector2(-10, -text.TextMeshGenerator.CalculateTextHeight(text.String)));
+                    DebugDraw.Line(text.LocalBoundingBox.TopLeft + new Vector2(-10, 0), text.LocalBoundingBox.TopLeft + new Vector2(-10, -text.TextMeshGenerator.CalculateTextHeight(text.String)));
                     if (Input.IsKeyPressed(Key.D1))
                     {
                         switch (text.HorizontalAlignment)

@@ -348,6 +348,12 @@ namespace Walgelijk
         /// Returns the first found instance of the given type.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool FindAnyComponent<T>([global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out T? anyInstance) where T : class => FindAnyComponent(out anyInstance, out _);
+
+        /// <summary>
+        /// Returns the first found instance of the given type.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool FindAnyComponent<T>([global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out T? anyInstance, out Entity entity) where T : class
         {
             foreach (var item in componentsToAdd)
@@ -442,7 +448,7 @@ namespace Walgelijk
         }
 
         /// <summary>
-        /// Get if an entity has a component
+        /// Get if an entity has a component. This is a bit slow so you should really just have the entity at hand
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool HasComponent<T>(Entity entity) where T : class

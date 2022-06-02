@@ -27,16 +27,6 @@ namespace Walgelijk
 
         public override bool IsPlaying(Sound sound) => false;
 
-        public override void Play(Sound sound, float volume = 1) { }
-
-        public override void PlayOnce(Sound sound, float volume = 1, float pitch = 1) { }
-
-        public override void Play(Sound sound, Vector2 worldPosition, float volume = 1) { }
-
-        public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1) { }
-
-        public override void SetVolume(Sound sound, float volume) { }
-
         public override void DisposeOf(AudioData audioData)
         {
             audioData.DisposeLocalCopy();
@@ -52,5 +42,25 @@ namespace Walgelijk
         {
             yield break;
         }
+
+        public override void Play(Sound sound, float volume = 1) { }
+
+        public override void PlayOnce(Sound sound, float volume = 1, float pitch = 1, AudioTrack? track = null) { }
+
+        public override void Play(Sound sound, Vector2 worldPosition, float volume = 1l) { }
+
+        public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1, AudioTrack? track = null) { }
+
+        public override void PauseAll() { }
+
+        public override void PauseAll(AudioTrack track) { }
+
+        public override void ResumeAll() { }
+
+        public override void StopAll(AudioTrack track) { }
+
+        public override void UpdateTracks() { }
+
+        public override void ResumeAll(AudioTrack track) { }
     }
 }

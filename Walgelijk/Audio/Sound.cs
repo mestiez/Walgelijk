@@ -31,15 +31,26 @@ namespace Walgelijk
         public float Pitch = 1;
 
         /// <summary>
+        /// Volume adjustment
+        /// </summary>
+        public float Volume = 1;
+
+        /// <summary>
         /// Is the sound affected by the listener position? True by default. Set to false for things like UI SFX.
         /// </summary>
         public bool Spatial = true;
 
-        public Sound(AudioData data, bool loops = false, bool spatial = true)
+        /// <summary>
+        /// The audio track this sound is playing on
+        /// </summary>
+        public AudioTrack? Track;
+
+        public Sound(AudioData data, bool loops = false, bool spatial = true, AudioTrack? track = null)
         {
             Data = data;
             Looping = loops;
             Spatial = spatial;
+            Track = track;
         }
 
         /// <summary>

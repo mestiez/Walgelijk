@@ -7,5 +7,6 @@
         public float Duration;
         public float CurrentLifetime;
         public float Volume;
+        public AudioTrack? Track;
     }
 }

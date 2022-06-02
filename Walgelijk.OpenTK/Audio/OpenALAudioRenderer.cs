@@ -18,6 +18,9 @@ namespace Walgelijk.OpenTK
         private bool canEnumerateDevices = false;
         private readonly List<TemporarySource> temporarySources = new();
 
+        private readonly Dictionary<AudioTrack, HashSet<Sound>> tracks = new();
+        private readonly Dictionary<Sound, AudioTrack?> trackBySound = new();
+
         public override float Volume
         {
             get
@@ -57,7 +60,6 @@ namespace Walgelijk.OpenTK
 
             if (device == ALDevice.Null)
                 Logger.Warn(deviceName == null ? "No audio device could be found" : "The requested audio device could not be found", nameof(OpenALAudioRenderer));
-
             context = ALC.CreateContext(device, new ALContextAttributes());
             if (context == ALContext.Null)
                 Logger.Warn("No audio context could be created", nameof(OpenALAudioRenderer));
@@ -73,18 +75,20 @@ namespace Walgelijk.OpenTK
                 Logger.Error("Failed to initialise the audio renderer", nameof(OpenALAudioRenderer));
         }
 
-        private static void UpdateIfRequired(Sound sound, out int source)
+        private void UpdateIfRequired(Sound sound, out int source)
         {
             source = AudioObjects.Sources.Load(sound);
 
-            if (!sound.RequiresUpdate)
+            if (!sound.RequiresUpdate && !(sound.Track?.RequiresUpdate ?? false))
                 return;
 
             sound.RequiresUpdate = false;
+
             AL.Source(source, ALSourceb.SourceRelative, !sound.Spatial);
             AL.Source(source, ALSourceb.Looping, sound.Looping);
             AL.Source(source, ALSourcef.RolloffFactor, sound.RolloffFactor);
-            AL.Source(source, ALSourcef.Pitch, sound.Pitch);
+            AL.Source(source, ALSourcef.Pitch, sound.Pitch * (sound.Track?.Pitch ?? 1));
+            AL.Source(source, ALSourcef.Gain, (sound.Track?.Muted ?? false) ? 0 : (sound.Volume * (sound.Track?.Volume ?? 1)));
         }
 
         public override AudioData LoadSound(string path, bool streaming = false)
@@ -126,8 +130,9 @@ namespace Walgelijk.OpenTK
             if (!canPlayAudio || sound.Data == null)
                 return;
 
+            sound.Volume = volume;
+            EnforceCorrectTrack(sound);
             UpdateIfRequired(sound, out int s);
-            SetVolume(sound, 1);
             AL.SourcePlay(s);
         }
 
@@ -136,8 +141,9 @@ namespace Walgelijk.OpenTK
             if (!canPlayAudio || sound.Data == null)
                 return;
 
+            sound.Volume = volume;
+            EnforceCorrectTrack(sound);
             UpdateIfRequired(sound, out int s);
-            SetVolume(sound, 1);
             if (sound.Spatial)
                 AL.Source(s, ALSource3f.Position, worldPosition.X, 0, worldPosition.Y);
             else
@@ -145,13 +151,13 @@ namespace Walgelijk.OpenTK
             AL.SourcePlay(s);
         }
 
-        private int CreateTempSource(Sound sound, float volume, Vector2 worldPosition, float pitch)
+        private int CreateTempSource(Sound sound, float volume, Vector2 worldPosition, float pitch, AudioTrack track = null)
         {
             var source = SourceCache.CreateSourceFor(sound);
             AL.Source(source, ALSourceb.SourceRelative, !sound.Spatial);
             AL.Source(source, ALSourceb.Looping, false);
-            AL.Source(source, ALSourcef.Gain, volume);
-            AL.Source(source, ALSourcef.Pitch, pitch);
+            AL.Source(source, ALSourcef.Gain, volume * track.Volume);
+            AL.Source(source, ALSourcef.Pitch, pitch * track.Pitch);
             if (sound.Spatial)
                 AL.Source(source, ALSource3f.Position, worldPosition.X, 0, worldPosition.Y);
             AL.SourcePlay(source);
@@ -160,29 +166,30 @@ namespace Walgelijk.OpenTK
                 CurrentLifetime = 0,
                 Duration = (float)sound.Data.Duration.TotalSeconds,
                 Sound = sound,
-                Source = source
+                Source = source,
+                Track = track
             });
             return source;
         }
 
-        public override void PlayOnce(Sound sound, float volume = 1, float pitch = 1)
+        public override void PlayOnce(Sound sound, float volume = 1, float pitch = 1, AudioTrack track = null)
         {
-            if (!canPlayAudio || sound.Data == null)
+            if (!canPlayAudio || sound.Data == null || track.Muted)
                 return;
 
             UpdateIfRequired(sound, out _);
-            CreateTempSource(sound, volume, default, pitch);
+            CreateTempSource(sound, volume, default, pitch, track);
         }
 
-        public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1)
+        public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1, AudioTrack track = null)
         {
-            if (!canPlayAudio || sound.Data == null)
+            if (!canPlayAudio || sound.Data == null || track.Muted)
                 return;
 
             UpdateIfRequired(sound, out _);
             if (!sound.Spatial)
                 Logger.Warn("Attempt to play a non-spatial sound in space!");
-            CreateTempSource(sound, volume, worldPosition, pitch);
+            CreateTempSource(sound, volume, worldPosition, pitch, track);
         }
 
         public override void Stop(Sound sound)
@@ -258,12 +265,6 @@ namespace Walgelijk.OpenTK
             return AL.GetSourceState(AudioObjects.Sources.Load(sound)) == ALSourceState.Playing;
         }
 
-        public override void SetVolume(Sound sound, float volume)
-        {
-            var s = AudioObjects.Sources.Load(sound);
-            AL.Source(s, ALSourcef.Gain, volume);
-        }
-
         public override void DisposeOf(AudioData audioData)
         {
             if (audioData != null)
@@ -310,6 +311,101 @@ namespace Walgelijk.OpenTK
 
             foreach (var deviceName in ALC.GetString(AlcGetStringList.AllDevicesSpecifier))
                 yield return deviceName;
+        }
+
+        public void Resume(Sound sound)
+        {
+            if (AL.GetSourceState(AudioObjects.Sources.Load(sound)) == ALSourceState.Paused)
+                Play(sound);
+        }
+
+        public override void PauseAll()
+        {
+            foreach (var item in AudioObjects.Sources.GetAllUnloaded())
+                Pause(item);
+        }
+
+        public override void PauseAll(AudioTrack track)
+        {
+            if (tracks.TryGetValue(track, out var set))
+                foreach (var item in set)
+                    Pause(item);
+        }
+
+        public override void ResumeAll()
+        {
+            foreach (var item in AudioObjects.Sources.GetAllUnloaded())
+                Resume(item);
+        }
+
+        public override void ResumeAll(AudioTrack track)
+        {
+            if (tracks.TryGetValue(track, out var set))
+                foreach (var item in set)
+                    Resume(item);
+        }
+
+        public override void StopAll(AudioTrack track)
+        {
+            if (tracks.TryGetValue(track, out var set))
+                foreach (var item in set)
+                    Stop(item);
+        }
+
+        private void EnforceCorrectTrack(Sound s)
+        {
+            //if the sound has been countered
+            if (trackBySound.TryGetValue(s, out var cTrack))
+            {
+                // but the track it claims to be associated with does not match what we have stored
+                if (s.Track != cTrack)
+                {
+                    //synchronise
+                    trackBySound[s] = s.Track;
+
+                    if (s.Track != null)
+                        addOrCreateTrack();
+
+                    //remove from old track
+                    if (cTrack != null && tracks.TryGetValue(cTrack, out var oldSet))
+                        oldSet.Remove(s);
+                }
+            }
+            else //its never been encountered...
+            {
+                trackBySound.Add(s, s.Track);
+                if (s.Track != null)
+                    addOrCreateTrack();
+            }
+
+            void addOrCreateTrack()
+            {
+                //add to tracks list
+                if (tracks.TryGetValue(s.Track, out var set))
+                    set.Add(s);
+                else
+                {
+                    set = new HashSet<Sound>();
+                    set.Add(s);
+                    tracks.Add(s.Track, set);
+                }
+            }
+        }
+
+        public override void UpdateTracks()
+        {
+            foreach (var track in tracks)
+            {
+                if (track.Key.RequiresUpdate)
+                {
+                    foreach (var sound in track.Value)
+                        UpdateIfRequired(sound, out _);
+                    track.Key.RequiresUpdate = false;
+                }
+            }
+
+            foreach (var item in AudioObjects.Sources.GetAllUnloaded())
+                UpdateIfRequired(item, out _);
         }
     }
 }
