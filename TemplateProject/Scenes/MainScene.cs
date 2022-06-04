@@ -1,7 +1,7 @@
 ﻿using Walgelijk;
 using Walgelijk.Imgui;
 
-namespace Videogame.Scenes;
+namespace TemplateProject.Scenes;
 
 public struct MainScene
 {

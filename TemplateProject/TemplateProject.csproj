@@ -8,9 +8,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Walgelijk" Version="0.2.96" />
-		<PackageReference Include="Walgelijk.Imgui" Version="0.10.9" />
-		<PackageReference Include="Walgelijk.OpenTK" Version="0.1.63" />
+		<PackageReference Include="Walgelijk" Version="0.2.99" />
+		<PackageReference Include="Walgelijk.Imgui" Version="0.10.11" />
+		<PackageReference Include="Walgelijk.OpenTK" Version="0.1.67" />
 		<PackageReference Include="Walgelijk.ParticleSystem" Version="0.0.15" />
 		<PackageReference Include="Walgelijk.SimpleDrawing" Version="1.17.0" />
 	</ItemGroup>

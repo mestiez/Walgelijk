@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Numerics;
+using TemplateProject.Scenes;
 using Walgelijk;
 using Walgelijk.Imgui;
 using Walgelijk.OpenTK;
@@ -52,7 +53,7 @@ public class Entry
         Draw.TextMeshGenerator.KerningMultiplier = 0.9f;
         Draw.TextMeshGenerator.LineHeightMultiplier = 0.9f;
 
-        Game.Scene = Scenes.MainScene.Create(Game);
+        Game.Scene = MainScene.Create(Game);
 
         Game.Start();
     }
