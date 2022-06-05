@@ -1,15 +1,201 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Walgelijk
 {
+#nullable enable
+    public class ReferenceComponentCollection : IComponentCollection
+    {
+        public const int MaxComponentCount = 65536;
+
+        private readonly ComponentDisposalManager disposalManager = new();
+        /// <inheritdoc/>
+        public ComponentDisposalManager DisposalManager => disposalManager;
+
+        // alle components. andere collecties refereren naar deze lijst. hier mogen alleen de ECHTE types inzitten. geen abstrace classes dus
+        private readonly Dictionary<Type, CountingArray> componentsByType = new();
+
+        // indices pointing to an array in componentsByType
+        private readonly Dictionary<Entity, CountingArray<ComponentIndex>> indicesByEntity = new();
+
+        private void AddToOrCreateTypeCollection<T>(T component, out Type type, out int index) where T : class
+        {
+            type = component.GetType();
+            if (!componentsByType.TryGetValue(typeof(T), out var array))
+                array = componentsByType[typeof(T)] = new CountingArray(new T[MaxComponentCount], 0);
+
+            if (!array.TryAdd(component, out index))
+                throw new Exception("Failed to add component to collection (wrong type?)");
+        }
+
+        private void RemoveComponent(Type type, int index)
+        {
+            if (componentsByType.TryGetValue(type, out var array))
+            {
+                array.
+            }
+        }
+
+        public void IComponentCollection.Add(object component, Entity entity)
+        {
+            AddToOrCreateTypeCollection(component, out var type, out var index);
+
+            if (!indicesByEntity.TryGetValue(entity, out var comps))
+                comps = new(new ComponentIndex[MaxComponentCount], 0);
+
+            if (!comps.TryAdd(new ComponentIndex(type, index), out _))
+                throw new Exception("Failed to add component to collection (wrong type?)");
+        }
+
+        public bool IComponentCollection.DeleteEntity(Entity entity)
+        {
+            if (!indicesByEntity.TryGetValue(entity, out var array))
+                yield break;
+
+            var s = array.GetSpan();
+            for (int i = 0; i < s.Length; i++)
+            {
+                var compIndex = s[i];
+                var comp = componentsByType[compIndex.Type].GetAt(compIndex.Index);
+
+                if (comp is IDisposable disp)
+                    disp.Dispose();
+
+                RemoveComponent(compIndex.Type, compIndex.Index);
+            }
+        }
+
+        public IEnumerable GetAllComponentsFrom(Entity entity)
+        {
+            if (!indicesByEntity.TryGetValue(entity, out var array))
+                yield break;
+
+            var s = array.GetSpan();
+            for (int i = 0; i < s.Length; i++)
+            {
+                var compIndex = s[i];
+                var comp = componentsByType[compIndex.Type].GetAt(compIndex.Index);
+                yield return comp;
+            }
+        }
+
+        public IEnumerable<EntityWith<T>> GetAllComponentsOfType<T>()
+        {
+        }
+
+        public T GetComponentFrom<T>(Entity entity)
+        {
+        }
+
+        public bool GetEntityFromComponent(object comp, out Entity entity)
+        {
+        }
+
+        public bool RemoveComponentOfType(Type type, Entity entity)
+        {
+        }
+
+        public bool RemoveComponentOfType<T>(Entity entity)
+        {
+        }
+
+        public bool TryGetComponentFrom<T>(Entity entity, [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out T? component) where T : class
+        {
+        }
+
+        private struct ComponentIndex
+        {
+            public readonly Type Type;
+            public readonly int Index;
+
+            public ComponentIndex(Type type, int index)
+            {
+                Type = type;
+                Index = index;
+            }
+        }
+
+        private class CountingArray<T>
+        {
+            public T[] Array;
+            public int Count;
+
+            public CountingArray(T[] array, int count)
+            {
+                Array = array;
+                Count = count;
+            }
+
+            public bool TryAdd(T obj, out int index)
+            {
+                index = -1;
+                if (Count >= Array.Length)
+                    return false;
+                index = Count;
+                Array[index] = obj;
+                Count++;
+                return true;
+            }
+
+            public ReadOnlySpan<T> GetSpan() => Array.AsSpan()[0..Count];
+            public T GetAt(int index) => Array[index];
+        }
+
+        private class CountingArray
+        {
+            public Array Array;
+            public int Count;
+
+            public CountingArray(Array array, int count)
+            {
+                Array = array;
+                Count = count;
+            }
+
+            public bool TryAdd<T>(T obj, out int index)
+            {
+                index = -1;
+                if (Count >= Array.Length || Array is not T[] typed)
+                    return false;
+                index = Count;
+                typed[index] = obj;
+                Count++;
+                return true;
+            }
+
+            public bool TryRemove(int index)
+            {
+
+            }
+
+            public ReadOnlySpan<T> GetSpan<T>() where T
+            {
+                if (Array is not T[] typed)
+                    return ReadOnlySpan<T>.Empty;
+                return typed.AsSpan()[0..Count];
+            }
+
+            public T GetAt<T>(int index)
+            {
+                if (Array is not T[] typed)
+                    throw new Exception("wrong type");
+                return typed[index];
+            }
+
+            public object? GetAt(int index) => Array.GetValue(index);
+            public void SetAt<T>(int index, T obj) => Array.SetValue(obj, index);
+        }
+    }
+#nullable restore
+
     /// <summary>
     /// A collection of components
     /// </summary>
-    public class ComponentCollection
+    public class LegacyComponentCollection : IComponentCollection
     {
         private readonly HashSet<EntityWithAnything> allComponents = new HashSet<EntityWithAnything>();
 
@@ -17,10 +203,8 @@ namespace Walgelijk
         private readonly Dictionary<Entity, List<object>> byEntity = new();
         private readonly Dictionary<Entity, Dictionary<Type, object>> byEntityByType = new();
 
-        /// <summary>
-        /// Manages the disposal of components
-        /// </summary>
-        public readonly ComponentDisposalManager DisposalManager = new();
+        private readonly ComponentDisposalManager disposalManager = new();
+        public ComponentDisposalManager DisposalManager => disposalManager;
 
         /// <summary>
         /// Add a component to the collection

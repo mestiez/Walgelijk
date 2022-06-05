@@ -26,14 +26,14 @@ namespace Walgelijk
         public ComponentDisposalManager ComponentDisposal => components.DisposalManager;
 
         private readonly Dictionary<int, Entity> entities = new();
-        private readonly ComponentCollection components = new();
+        private readonly IComponentCollection components = new LegacyComponentCollection();
         private readonly Dictionary<Type, System> systems = new();
         private readonly List<System> orderedSystemCollection = new();
 
         private readonly Dictionary<Entity, Tag> tagByEntity = new();
         private readonly Dictionary<Tag, HashSet<Entity>> entitiesByTag = new();
 
-        private readonly HashSet<ComponentCollection.EntityWithAnything> componentsToAdd = new();
+        private readonly HashSet<LegacyComponentCollection.EntityWithAnything> componentsToAdd = new();
         private readonly HashSet<(Type, Entity)> componentsToDestroy = new();
         private readonly HashSet<Entity> entitiesToDestroy = new();
 
@@ -469,7 +469,7 @@ namespace Walgelijk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T AttachComponent<T>(Entity entity, T component) where T : class
         {
-            componentsToAdd.Add(new ComponentCollection.EntityWithAnything(component, entity));
+            componentsToAdd.Add(new LegacyComponentCollection.EntityWithAnything(component, entity));
 
             return component;
         }
