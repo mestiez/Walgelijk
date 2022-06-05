@@ -7,6 +7,8 @@ namespace Walgelijk;
 /// </summary>
 public class NameGenerator
 {
+    public static readonly NameGenerator Shared = new NameGenerator();
+
     public static readonly string[] Vowels =
     {
         "a",
