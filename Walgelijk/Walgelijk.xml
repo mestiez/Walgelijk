@@ -899,74 +899,69 @@
             Remaps a linear value from 0 to 1 to an ease-out quadractic curve
             </summary>
         </member>
-        <member name="T:Walgelijk.ComponentCollection">
+        <member name="T:Walgelijk.BasicComponentCollection">
             <summary>
             A collection of components
             </summary>
         </member>
-        <member name="F:Walgelijk.ComponentCollection.DisposalManager">
-            <summary>
-            Manages the disposal of components
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ComponentCollection.Add(System.Object,Walgelijk.Entity)">
+        <member name="M:Walgelijk.BasicComponentCollection.Add(System.Object,Walgelijk.Entity)">
             <summary>
             Add a component to the collection
             </summary>
         </member>
-        <member name="M:Walgelijk.ComponentCollection.GetAllComponentsOfType``1">
+        <member name="M:Walgelijk.BasicComponentCollection.GetAllComponentsOfType``1">
             <summary>
             Iterates over components by type
             </summary>
         </member>
-        <member name="M:Walgelijk.ComponentCollection.GetComponentFrom``1(Walgelijk.Entity)">
+        <member name="M:Walgelijk.BasicComponentCollection.GetComponentFrom``1(Walgelijk.Entity)">
             <summary>
             Get the component of the <b>exact</b> type that is given
             </summary>
         </member>
-        <member name="M:Walgelijk.ComponentCollection.TryGetComponentFrom``1(Walgelijk.Entity,``0@)">
+        <member name="M:Walgelijk.BasicComponentCollection.TryGetComponentFrom``1(Walgelijk.Entity,``0@)">
             <summary>
             Try to get the component of the <b>exact</b> type that is given
             </summary>
         </member>
-        <member name="M:Walgelijk.ComponentCollection.GetAllComponentsFrom(Walgelijk.Entity)">
+        <member name="M:Walgelijk.BasicComponentCollection.GetAllComponentsFrom(Walgelijk.Entity)">
             <summary>
             Iterate over all components attached to an entity
             </summary>
         </member>
-        <member name="M:Walgelijk.ComponentCollection.GetEntityFromComponent(System.Object,Walgelijk.Entity@)">
+        <member name="M:Walgelijk.BasicComponentCollection.GetEntityFromComponent(System.Object,Walgelijk.Entity@)">
             <summary>
             Get the entity that the given component is attached to
             </summary>
         </member>
-        <member name="M:Walgelijk.ComponentCollection.DeleteEntity(Walgelijk.Entity)">
+        <member name="M:Walgelijk.BasicComponentCollection.DeleteEntity(Walgelijk.Entity)">
             <summary>
             Delete all components belonging to the given entity
             </summary>
         </member>
-        <member name="M:Walgelijk.ComponentCollection.RemoveComponentOfType``1(Walgelijk.Entity)">
+        <member name="M:Walgelijk.BasicComponentCollection.RemoveComponentOfType``1(Walgelijk.Entity)">
             <summary>
             Detach a component of a type from an entity
             </summary>
             <returns>True if anything was removed</returns>
         </member>
-        <member name="M:Walgelijk.ComponentCollection.RemoveComponentOfType(System.Type,Walgelijk.Entity)">
+        <member name="M:Walgelijk.BasicComponentCollection.RemoveComponentOfType(System.Type,Walgelijk.Entity)">
             <summary>
             Detach a component of a type from an entity
             </summary>
             <returns>True if anything was removed</returns>
         </member>
-        <member name="T:Walgelijk.ComponentCollection.EntityWithAnything">
+        <member name="T:Walgelijk.EntityWithAnything">
             <summary>
             Entity and object tuple
             </summary>
         </member>
-        <member name="F:Walgelijk.ComponentCollection.EntityWithAnything.Component">
+        <member name="F:Walgelijk.EntityWithAnything.Component">
             <summary>
             Related component
             </summary>
         </member>
-        <member name="F:Walgelijk.ComponentCollection.EntityWithAnything.Entity">
+        <member name="F:Walgelijk.EntityWithAnything.Entity">
             <summary>
             Entity that the component is attached to
             </summary>

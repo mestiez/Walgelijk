@@ -131,6 +131,7 @@ namespace Walgelijk.OpenTK
                 return;
 
             sound.Volume = volume;
+            sound.ForceUpdate();
             EnforceCorrectTrack(sound);
             UpdateIfRequired(sound, out int s);
             AL.SourcePlay(s);
@@ -142,6 +143,7 @@ namespace Walgelijk.OpenTK
                 return;
 
             sound.Volume = volume;
+            sound.ForceUpdate();
             EnforceCorrectTrack(sound);
             UpdateIfRequired(sound, out int s);
             if (sound.Spatial)
