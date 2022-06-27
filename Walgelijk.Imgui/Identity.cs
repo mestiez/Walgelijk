@@ -1,7 +1,5 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 
-#pragma warning disable CA2211 // Non-constant fields should not be visible
 namespace Walgelijk.Imgui;
 
 public delegate Vector2 OffsetLayout(Identity parent, Identity current, Vector2 currentPosition, Style? style = null);
@@ -202,4 +200,3 @@ public struct AnimationState
     /// </summary>
     public float TimeActive;
 }
-#pragma warning restore CA2211 // Non-constant fields should not be visible
