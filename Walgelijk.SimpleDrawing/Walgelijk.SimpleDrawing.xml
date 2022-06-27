@@ -1,0 +1,391 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Walgelijk.SimpleDrawing</name>
+    </assembly>
+    <members>
+        <member name="T:Walgelijk.SimpleDrawing.Draw">
+            <summary>
+            Main simple drawing function class
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Draw.Colour">
+            <summary>
+            The colour to draw with
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Draw.Order">
+            <summary>
+            The order at which to draw
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Draw.TransformMatrix">
+            <summary>
+            The transformation matrix that is applied to drawings
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Draw.ScreenSpace">
+            <summary>
+            Are all given transformations in screen space?
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Draw.DrawBounds">
+            <summary>
+            The current drawing bounds
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Draw.Font">
+            <summary>
+            The current font
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Draw.FontSize">
+            <summary>
+            The current font size in px
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Draw.OutlineWidth">
+            <summary>
+            The current outline width. No outline will be drawn if approximately 0 or lower
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Draw.OutlineColour">
+            <summary>
+            The current outline colour. No outline will be drawn if transparent
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Draw.Material">
+            <summary>
+            Material for shapes. <b>This has no influence over text.</b> Text uses the material provided by the <see cref="F:Walgelijk.SimpleDrawing.Draw.Font"/>.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Draw.Texture">
+            <summary>
+            The texture for shapes. <b>This has no influence over text.</b> Text uses the texture provided by the <see cref="F:Walgelijk.SimpleDrawing.Draw.Font"/>.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Draw.TextMeshGenerator">
+            <summary>
+            Text generator used for <see cref="M:Walgelijk.SimpleDrawing.Draw.Text(System.String,System.Numerics.Vector2,System.Numerics.Vector2,Walgelijk.HorizontalTextAlign,Walgelijk.VerticalTextAlign,System.Single,System.Single)"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Draw.CalculateTextWidth(System.ReadOnlySpan{System.Char})">
+            <summary>
+            Calculate the pixel width of the given text considering the font and font size. This function doesn't care about wrapping.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Draw.CalculateTextHeight(System.ReadOnlySpan{System.Char},System.Single)">
+            <summary>
+            Calculate the pixel height of the given text considering the font and font size. This function cares about wrapping.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Draw.RenderQueue">
+            <summary>
+            Reference to the target <see cref="T:Walgelijk.RenderQueue"/>. The system will fall back to the currently active RenderQueue if this is null.s
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Draw.ClearTextMeshCache">
+            <summary>
+            Dispose of all cached text meshes. This frees a bit of memory (both GPU and CPU), but may briefly slow down the application 
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Draw.Reset">
+            <summary>
+            Reset the drawing state: <br></br><br></br>
+            material = default drawing material, <br></br>
+            texture = white pixel, <br></br>
+            colour = white, <br></br>
+            font = default font,<br></br>
+            font size = 12, <br></br>
+            drawbounds = none,<br></br>
+            order = 0, <br></br>
+            screenspace = false,<br></br>
+            outline width = 0,<br></br>
+            outline colour = white,<br></br>
+            transform matrix = identity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Draw.ResetTexture">
+            <summary>
+            Reset the texture for shapes to white.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Draw.ResetTransformation">
+            <summary>
+            Reset the transformation matrix.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Draw.ResetDrawBounds">
+            <summary>
+            Reset the draw bounds to a disabled state.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Draw.ResetMaterial">
+            <summary>
+            Reset the material for shapes to white.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Draw.Quad(System.Numerics.Vector2,System.Numerics.Vector2,System.Single,System.Single)">
+            <summary>
+            Draw a <see cref="F:Walgelijk.SimpleDrawing.DrawingPrimitives.Quad"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Draw.Circle(System.Numerics.Vector2,System.Numerics.Vector2,System.Single)">
+            <summary>
+            Draw a <see cref="F:Walgelijk.SimpleDrawing.DrawingPrimitives.Circle"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Draw.TriangleIsco(System.Numerics.Vector2,System.Numerics.Vector2,System.Single)">
+            <summary>
+            Draw a <see cref="F:Walgelijk.SimpleDrawing.DrawingPrimitives.IsoscelesTriangle"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Draw.TriangleRight(System.Numerics.Vector2,System.Numerics.Vector2,System.Single)">
+            <summary>
+            Draw a <see cref="F:Walgelijk.SimpleDrawing.DrawingPrimitives.RightAngledTriangle"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Draw.Text(System.String,System.Numerics.Vector2,System.Numerics.Vector2,Walgelijk.HorizontalTextAlign,Walgelijk.VerticalTextAlign,System.Single,System.Single)">
+            <summary>
+            Draw text.
+            </summary>
+            <param name="text">The text to draw. Supported characters depends on the font.</param>
+            <param name="pivot">The pivot point.</param>
+            <param name="scale">The scale multiplier. The size of the text is determined by <see cref="F:Walgelijk.SimpleDrawing.Draw.FontSize"/>. This parameter will usually just be <see cref="P:System.Numerics.Vector2.One"/></param>.
+            <param name="halign">How to horizontally align the text to the pivot point</param>
+            <param name="valign">How to vertically align the text to the pivot point</param>
+            <param name="textBoxWidth">The width before the text starts wrapping</param>
+            <param name="degrees">Text rotation in degrees</param>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Draw.Line(System.Numerics.Vector2,System.Numerics.Vector2,System.Single,System.Single)">
+            <summary>
+            Draw a line from A to B
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Draw.Quad(System.Numerics.Vector2,System.Numerics.Vector2,System.Numerics.Vector2,System.Numerics.Vector2)">
+            <summary>
+            Draw a quadrilateral shape
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Draw.Image(Walgelijk.IReadableTexture,Walgelijk.Rect,Walgelijk.SimpleDrawing.ImageContainmentMode,System.Single,System.Single)">
+            <summary>
+            Draw an image inside a given rectangle. Notice that this sets Draw.Texture
+            </summary>
+        </member>
+        <member name="T:Walgelijk.SimpleDrawing.Drawing">
+            <summary>
+            A drawing instruction
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Drawing.VertexBuffer">
+            <summary>
+            Relevant VertexBuffer
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Drawing.Material">
+            <summary>
+            Material to draw with
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Drawing.Texture">
+            <summary>
+            Texture to draw with
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Drawing.DrawBounds">
+            <summary>
+            Drawbounds to draw within
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Drawing.ReturnVertexBufferToPool">
+            <summary>
+            Should the vertex buffer be returned to the <see cref="F:Walgelijk.SimpleDrawing.Draw.PolygonPool"/>?
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Drawing.Position">
+            <summary>
+            Relevant position
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Drawing.RotationRadians">
+            <summary>
+            Relevant rotation in radians
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Drawing.Scale">
+            <summary>
+            Relevant scaling vector
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Drawing.Transformation">
+            <summary>
+            Relevant transformation matrix
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Drawing.Roundness">
+            <summary>
+            Roundness, if applicable
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Drawing.OutlineWidth">
+            <summary>
+            Outline width, if applicable
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Drawing.ScreenSpace">
+            <summary>
+            Should the transformation be considered to be in screenspace?
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Drawing.Color">
+            <summary>
+            Colour to draw with
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Drawing.OutlineColour">
+            <summary>
+            Colour to draw outlines with, if applicable
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.Drawing.TextDrawing">
+            <summary>
+            The relevant <see cref="F:Walgelijk.SimpleDrawing.Drawing.TextDrawing"/>, if applicable
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Drawing.#ctor(Walgelijk.VertexBuffer,System.Numerics.Vector2,System.Numerics.Vector2,System.Single,Walgelijk.Color,Walgelijk.Material,Walgelijk.IReadableTexture,System.Boolean,Walgelijk.DrawBounds,System.Single,Walgelijk.Color)">
+            <summary>
+            Create a drawing for a simple shape with a texture
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.Drawing.#ctor(Walgelijk.VertexBuffer,System.Numerics.Vector2,System.Numerics.Vector2,System.Single,Walgelijk.Color,System.Boolean,Walgelijk.SimpleDrawing.TextDrawing,Walgelijk.DrawBounds)">
+            <summary>
+            Create a drawing for text
+            </summary>
+        </member>
+        <member name="T:Walgelijk.SimpleDrawing.DrawingMaterialCache">
+            <summary>
+            Caches textures bound to materials
+            </summary>
+        </member>
+        <member name="T:Walgelijk.SimpleDrawing.DrawingMaterialCreator">
+            <summary>
+            Responsible for creating materials that support textures, outline, and roundness
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.DrawingMaterialCreator.Cache">
+            <summary>
+            Reference to the material cache
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.DrawingMaterialCreator.MainTexUniform">
+            <summary>
+            Main texture uniform
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.DrawingMaterialCreator.ScaleUniform">
+            <summary>
+            Actual transformation scale uniform
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.DrawingMaterialCreator.RoundednessUniform">
+            <summary>
+            The roundness uniform
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.DrawingMaterialCreator.OutlineWidthUniform">
+            <summary>
+            Outline width uniform
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.DrawingMaterialCreator.OutlineColourUniform">
+            <summary>
+            Outline colour uniform
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.DrawingMaterialCreator.TintUniform">
+            <summary>
+            Colour uniform
+            </summary>
+        </member>
+        <member name="P:Walgelijk.SimpleDrawing.DrawingMaterialCreator.BasicMaterial">
+            <summary>
+            Gets the default material with a white texture
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SimpleDrawing.DrawingMaterialCreator.Create(Walgelijk.IReadableTexture)">
+            <summary>
+            Create a material for a texture
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.DrawingPrimitives.Circle">
+            <summary>
+            Circle with 64 edges
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.DrawingPrimitives.Quad">
+            <summary>
+            Top left quad
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.DrawingPrimitives.IsoscelesTriangle">
+            <summary>
+            Top left isosceles triangle
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.DrawingPrimitives.RightAngledTriangle">
+            <summary>
+            Top left right angled triangle
+            </summary>
+        </member>
+        <member name="T:Walgelijk.SimpleDrawing.DrawingTaskPool">
+            <summary>
+            The pool that drawing tasks are taken out of
+            </summary>
+        </member>
+        <member name="T:Walgelijk.SimpleDrawing.PolygonPool">
+            <summary>
+            The pool that polygon vertex buffers are taken out of
+            </summary>
+        </member>
+        <member name="T:Walgelijk.SimpleDrawing.PooledDrawingTask">
+            <summary>
+            A drawing task that is meant to be pooled as to avoid constant allocation
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.PooledDrawingTask.Drawing">
+            <summary>
+            Reference to the drawing
+            </summary>
+        </member>
+        <member name="T:Walgelijk.SimpleDrawing.TextDrawing">
+            <summary>
+            A drawing instruction for text
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.TextDrawing.Text">
+            <summary>
+            The text
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.TextDrawing.Font">
+            <summary>
+            The font. Will fall back to default font if null.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.TextDrawing.TextBoxWidth">
+            <summary>
+            The width before wrapping
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.TextDrawing.VerticalAlign">
+            <summary>
+            Vertical alignment
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SimpleDrawing.TextDrawing.HorizontalAlign">
+            <summary>
+            Horizontal alignment
+            </summary>
+        </member>
+    </members>
+</doc>

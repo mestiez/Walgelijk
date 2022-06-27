@@ -17,14 +17,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.Video", "Walgelij
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TemplateProject", "TemplateProject\TemplateProject.csproj", "{6E4B4D84-D4FC-4FD7-BE0C-281E8E3B78B6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DCF24638-F50A-40F7-AFE2-A1D26B3762F2}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Benchmarks", "Benchmarks\Benchmarks.csproj", "{7C0A18B0-E532-487E-9E73-AB79AF0977B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmarks", "Benchmarks\Benchmarks.csproj", "{7C0A18B0-E532-487E-9E73-AB79AF0977B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageDecoder", "ImageDecoder\ImageDecoder.csproj", "{81C5C34A-7E08-4F23-B396-1F2A16B2C721}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageDecoder", "ImageDecoder\ImageDecoder.csproj", "{81C5C34A-7E08-4F23-B396-1F2A16B2C721}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.Imgui", "Walgelijk.Imgui\Walgelijk.Imgui.csproj", "{815B1786-A974-4DE1-8F67-96E58C10EB4F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.Physics", "Walgelijk.Physics\Walgelijk.Physics.csproj", "{0470D703-88A4-4CE5-83B2-5BEF7DC1DE1E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.SimpleDrawing", "Walgelijk.SimpleDrawing\Walgelijk.SimpleDrawing.csproj", "{1D800BA8-D9E5-4CE8-8685-8958E1814E61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,6 +69,18 @@ Global
 		{81C5C34A-7E08-4F23-B396-1F2A16B2C721}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81C5C34A-7E08-4F23-B396-1F2A16B2C721}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81C5C34A-7E08-4F23-B396-1F2A16B2C721}.Release|Any CPU.Build.0 = Release|Any CPU
+		{815B1786-A974-4DE1-8F67-96E58C10EB4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{815B1786-A974-4DE1-8F67-96E58C10EB4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{815B1786-A974-4DE1-8F67-96E58C10EB4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{815B1786-A974-4DE1-8F67-96E58C10EB4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0470D703-88A4-4CE5-83B2-5BEF7DC1DE1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0470D703-88A4-4CE5-83B2-5BEF7DC1DE1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0470D703-88A4-4CE5-83B2-5BEF7DC1DE1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0470D703-88A4-4CE5-83B2-5BEF7DC1DE1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D800BA8-D9E5-4CE8-8685-8958E1814E61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D800BA8-D9E5-4CE8-8685-8958E1814E61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D800BA8-D9E5-4CE8-8685-8958E1814E61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D800BA8-D9E5-4CE8-8685-8958E1814E61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
