@@ -565,6 +565,37 @@
             The input state local to this control
             </summary>
         </member>
+        <member name="F:Walgelijk.Imgui.Identity.AnimationState">
+            <summary>
+            Animation state
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Imgui.Identity.ToString">
+            <summary>
+            Raw value as string
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Walgelijk.Imgui.AnimationState">
+            <summary>
+            Stores time data for controls
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Imgui.AnimationState.TimeAlive">
+            <summary>
+            Seconds this control has existed for
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Imgui.AnimationState.TimeHot">
+            <summary>
+            Seconds this control has been hot
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Imgui.AnimationState.TimeActive">
+            <summary>
+            Seconds this control has been active
+            </summary>
+        </member>
         <member name="M:Walgelijk.Imgui.ImguiUtils.NormaliseSize(System.Numerics.Vector2)">
             <summary>
             Makes sure the given size vector is not negative, NaN, or infinite
