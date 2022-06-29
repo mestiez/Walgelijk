@@ -1,0 +1,60 @@
+name: Build, test, upload
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore -c Release
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    - name: Publish Walgelijk
+      uses: brandedoutcast/publish-nuget@v2.5.5
+      with:
+        PROJECT_FILE_PATH: Walgelijk\Walgelijk.csproj
+        NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
+
+    - name: Publish Walgelijk.OpenTK
+      uses: brandedoutcast/publish-nuget@v2.5.5
+      with:
+        PROJECT_FILE_PATH: Walgelijk.OpenTK\Walgelijk.OpenTK.csproj
+        NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
+
+    - name: Publish Walgelijk.SimpleDrawing
+      uses: brandedoutcast/publish-nuget@v2.5.5
+      with:
+        PROJECT_FILE_PATH: Walgelijk.SimpleDrawing\Walgelijk.SimpleDrawing.csproj
+        NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
+
+    - name: Publish Walgelijk.Imgui
+      uses: brandedoutcast/publish-nuget@v2.5.5
+      with:
+        PROJECT_FILE_PATH: Walgelijk.Imgui\Walgelijk.Imgui.csproj
+        NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
+
+    - name: Publish Walgelijk.Physics
+      uses: brandedoutcast/publish-nuget@v2.5.5
+      with:
+        PROJECT_FILE_PATH: Walgelijk.Physics\Walgelijk.Physics.csproj
+        NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
+
+    - name: Publish Walgelijk.ParticleSystem
+      uses: brandedoutcast/publish-nuget@v2.5.5
+      with:
+        PROJECT_FILE_PATH: Walgelijk.ParticleSystem\Walgelijk.ParticleSystem.csproj
+        NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
