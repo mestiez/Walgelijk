@@ -6,6 +6,7 @@ if [%KEY%]==[] goto fail
 dotnet clean -c Release
 dotnet restore
 dotnet build -c Release
+dotnet test --no-build --verbosity normal -c Release
 dotnet pack -c Release --no-build
 
 dotnet nuget push Walgelijk\bin\Release\*.nupkg --api-key %KEY% --source "https://nuget.pkg.github.com/Walgelijk/index.json" --skip-duplicate

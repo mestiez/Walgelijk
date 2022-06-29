@@ -17,11 +17,5 @@ jobs:
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore -c Release
-    - name: Test
-      run: dotnet test --no-build --verbosity normal -c Release
-    - name: Publish
-      run: call push.bat ${{ secrets.NUGET_API_KEY }}
+    - name: run sequence
+      run: .\push.bat ${{ secrets.NUGET_API_KEY }}
