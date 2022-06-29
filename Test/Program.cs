@@ -151,8 +151,8 @@ namespace Test
                 if (Input.IsKeyReleased(Key.F8))
                 {
                     using var o = File.Create("test.png");
-                    Graphics.Upload(Texture.ErrorTexture);
-                    Graphics.SaveTexture(o, Texture.ErrorTexture);
+                    Graphics.Upload(Assets.Load<Texture>("resources/textures/pride.png"));
+                    Graphics.SaveTexture(o, Assets.Load<Texture>("resources/textures/pride.png"));
                     o.Close();
                     o.Dispose();
                 }
