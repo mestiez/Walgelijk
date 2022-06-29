@@ -1,18 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.17</Version>
-    <Description>Simple particlesystem</Description>
-    <DebugType>embedded</DebugType>
-    <Authors>mestiez</Authors>
-    <Company>Studio Minus</Company>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Version>0.0.17</Version>
+		<Description>Simple particlesystem</Description>
+		<DebugType>embedded</DebugType>
+		<Authors>mestiez</Authors>
+		<Company>Studio Minus</Company>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
-  </ItemGroup>
+	<Target Name="PostClean" AfterTargets="Clean">
+		<RemoveDir Directories="$(BaseIntermediateOutputPath)" />
+		<!-- obj -->
+		<RemoveDir Directories="$(BaseOutputPath)" />
+		<!-- bin -->
+	</Target>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
+	</ItemGroup>
 
 </Project>
