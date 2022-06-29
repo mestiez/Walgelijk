@@ -34,7 +34,8 @@ namespace Test
             Resources.SetBasePathForType<Texture>("textures");
             Resources.SetBasePathForType<Font>("fonts");
 
-            Assets.Register("resources/textures/qoitest.qoi", "qoitest");
+            Assets.Register("qoitest", static asset => Resources.Load<Texture>("qoitest.qoi"));
+            Assets.Register("resources/textures/pride.png", Assets.TextureFileProvider);
 
             //game.Scene = SplashScreen.CreateScene(new[]{
             //    new SplashScreen.Logo(Resources.Load<Texture>("walgelijk.png"), 0.5f),
@@ -102,7 +103,7 @@ namespace Test
             {
                 Draw.Reset();
                 Draw.Order = RenderOrder.Top;
-                // Draw.Image(Assets.Load<Texture>("qoitest"), new Rect(Input.WorldMousePosition + new Vector2(0, 256), new Vector2(512)), ImageContainmentMode.Contain);
+                Draw.Image(Assets.Load<Texture>("qoitest"), new Rect(Input.WorldMousePosition + new Vector2(0, 256), new Vector2(512)), ImageContainmentMode.Contain);
 
                 if (Gui.ClickButton("costolot", new Vector2(100, 100), new Vector2(100, 32)))
                 {
@@ -150,8 +151,8 @@ namespace Test
                 if (Input.IsKeyReleased(Key.F8))
                 {
                     using var o = File.Create("test.png");
-                    Graphics.Upload(Assets.Load<Texture>("pride.png"));
-                    Graphics.SaveTexture(o, Assets.Load<Texture>("pride.png"));
+                    Graphics.Upload(Texture.ErrorTexture);
+                    Graphics.SaveTexture(o, Texture.ErrorTexture);
                     o.Close();
                     o.Dispose();
                 }

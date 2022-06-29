@@ -8,13 +8,15 @@ using System.Threading.Tasks;
 namespace Walgelijk;
 
 /// <summary>
-/// Global ID based resource directory. Uses <see cref="Resources"/> to load and store the actual data.
+/// Global ID based resource directory
 /// </summary>
 public static class Assets
 {
-    private static readonly ConcurrentDictionary<Asset, FileInfo> registeredAssets = new();
+    private static readonly ConcurrentDictionary<Asset, AssetProvider> registeredAssets = new();
     private static readonly ConcurrentDictionary<Asset, object> loadedAssets = new();
     internal static readonly ConcurrentDictionary<Asset, string> NameByAsset = new();
+
+    public delegate object AssetProvider(Asset asset);
 
     /// <summary>
     /// Loads the given asset
@@ -28,15 +30,11 @@ public static class Assets
     }
 
     /// <summary>
-    /// Tries to load the given asset. Returns true if successful, meaning the loaded object is non-null and where <see cref="Resources.CanLoad(Type)"/> returns true for its type
+    /// Tries to load the given asset. Returns true if successful, meaning the loaded object is non-null
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="id"></param>
-    /// <param name="asset"></param>
-    /// <returns></returns>
     public static bool TryLoad<T>(in Asset id, [NotNullWhen(true)] out T? asset)
     {
-        if (!registeredAssets.TryGetValue(id, out var file))
+        if (!registeredAssets.TryGetValue(id, out var provider))
         {
             Logger.Error($"Attempt to load unregistered asset '{GetAssetName(id)}'");
             asset = default;
@@ -50,19 +48,23 @@ public static class Assets
                 asset = typed;
                 return true;
             }
-            else
-            {
-                Logger.Error($"Invalid attempt to load asset '{GetAssetName(id)}' as a {typeof(T).Name}");
-                asset = default;
-                return false;
-            }
+
+            Logger.Error($"Invalid attempt to load asset '{GetAssetName(id)}' as a {typeof(T).Name}");
+            asset = default;
+            return false;
         }
 
-        var obj = Resources.Load<T>(file.FullName, true);
+        var obj = provider(id);
         if (obj == null)
         {
+            Logger.Error($"Asset '{GetAssetName(id)}' provided by {provider} is null!");
+            asset = default;
+            return false;
+        }
 
-            Logger.Error($"Asset '{GetAssetName(id)}' at {file.FullName} is null!");
+        if (obj is not T t2)
+        {
+            Logger.Error($"Asset '{GetAssetName(id)}' provided by {provider} is not of the requested type {typeof(T)}!");
             asset = default;
             return false;
         }
@@ -70,34 +72,25 @@ public static class Assets
         if (!loadedAssets.TryAdd(id, obj))
             throw new AssetException(id, "Asset has already been loaded, somehow");
 
-        asset = obj;
+        asset = t2;
         Logger.Log($"Asset {GetAssetName(id)} loaded");
         return true;
     }
 
+    /// <summary>
+    /// Gets the associated name or integer ID of the given asset
+    /// </summary>
     public static string GetAssetName(in Asset asset)
     {
         if (NameByAsset.TryGetValue(asset, out var name))
             return name;
-        if (registeredAssets.TryGetValue(asset, out var file))
-            return file.Name;
         return asset.Id.ToString();
     }
 
     /// <summary>
-    /// Get file associated with the asset.
-    /// </summary>
-    public static FileInfo Get(in Asset asset) => registeredAssets[asset];
-
-    /// <summary>
-    /// Tries to get the file associated with the asset. Returns true if successful.
-    /// </summary>
-    public static bool TryGet(in Asset id, [NotNullWhen(true)] out FileInfo? asset) => registeredAssets.TryGetValue(id, out asset);
-
-    /// <summary>
     /// Register an asset to the registry. This asset can later be loaded and retrieved using the given asset ID
     /// </summary>
-    public static bool Register(string path, in Asset id)
+    public static bool Register(in Asset id, AssetProvider provider)
     {
         if (registeredAssets.ContainsKey(id))
         {
@@ -105,9 +98,9 @@ public static class Assets
             return false;
         }
 
-        if (registeredAssets.TryAdd(id, new FileInfo(path)))
+        if (registeredAssets.TryAdd(id, provider))
         {
-            Logger.Log($"Asset {GetAssetName(id)} registered ({Path.GetFileName(path)})");
+            Logger.Log($"Asset {GetAssetName(id)} registered ({provider})");
             return true;
         }
         return false;
@@ -121,12 +114,21 @@ public static class Assets
     /// <summary>
     /// Register the contents of a directory to the asset system, using the file names with extension as their ID
     /// </summary>
-    public static void RegisterEntireDirectory(string dirPath, string pattern = "*", SearchOption searchOption = SearchOption.AllDirectories)
+    public static void RegisterEntireDirectory(AssetProvider provider, string dirPath, string pattern = "*", SearchOption searchOption = SearchOption.AllDirectories)
     {
         foreach (var path in Directory.EnumerateFiles(dirPath, pattern, searchOption))
         {
             var name = Path.GetFileName(path);
-            Register(path, new Asset(name));
+            Register(name, provider);
         }
     }
+
+    /// <summary>
+    /// Standard path-based <see cref="Texture"/> loader
+    /// </summary>
+    public static object TextureFileProvider(Asset asset) => Resources.Load<Texture>(GetAssetName(asset), true);
+    /// <summary>
+    /// Standard path-based <see cref="AudioData"/> loader
+    /// </summary>
+    public static object AudioDataFileProvider(Asset asset) => Resources.Load<AudioData>(GetAssetName(asset), true);
 }

@@ -3480,7 +3480,7 @@
         </member>
         <member name="T:Walgelijk.Assets">
             <summary>
-            Global ID based resource directory. Uses <see cref="T:Walgelijk.Resources"/> to load and store the actual data.
+            Global ID based resource directory
             </summary>
         </member>
         <member name="M:Walgelijk.Assets.Load``1(Walgelijk.Asset@)">
@@ -3490,31 +3490,32 @@
         </member>
         <member name="M:Walgelijk.Assets.TryLoad``1(Walgelijk.Asset@,``0@)">
             <summary>
-            Tries to load the given asset. Returns true if successful, meaning the loaded object is non-null and where <see cref="M:Walgelijk.Resources.CanLoad(System.Type)"/> returns true for its type
+            Tries to load the given asset. Returns true if successful, meaning the loaded object is non-null
             </summary>
-            <typeparam name="T"></typeparam>
-            <param name="id"></param>
-            <param name="asset"></param>
-            <returns></returns>
         </member>
-        <member name="M:Walgelijk.Assets.Get(Walgelijk.Asset@)">
+        <member name="M:Walgelijk.Assets.GetAssetName(Walgelijk.Asset@)">
             <summary>
-            Get file associated with the asset.
+            Gets the associated name or integer ID of the given asset
             </summary>
         </member>
-        <member name="M:Walgelijk.Assets.TryGet(Walgelijk.Asset@,System.IO.FileInfo@)">
-            <summary>
-            Tries to get the file associated with the asset. Returns true if successful.
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Assets.Register(System.String,Walgelijk.Asset@)">
+        <member name="M:Walgelijk.Assets.Register(Walgelijk.Asset@,Walgelijk.Assets.AssetProvider)">
             <summary>
             Register an asset to the registry. This asset can later be loaded and retrieved using the given asset ID
             </summary>
         </member>
-        <member name="M:Walgelijk.Assets.RegisterEntireDirectory(System.String,System.String,System.IO.SearchOption)">
+        <member name="M:Walgelijk.Assets.RegisterEntireDirectory(Walgelijk.Assets.AssetProvider,System.String,System.String,System.IO.SearchOption)">
             <summary>
             Register the contents of a directory to the asset system, using the file names with extension as their ID
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Assets.TextureFileProvider(Walgelijk.Asset)">
+            <summary>
+            Standard path-based <see cref="T:Walgelijk.Texture"/> loader
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Assets.AudioDataFileProvider(Walgelijk.Asset)">
+            <summary>
+            Standard path-based <see cref="T:Walgelijk.AudioData"/> loader
             </summary>
         </member>
         <member name="T:Walgelijk.CommandAttribute">
