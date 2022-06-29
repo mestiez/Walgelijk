@@ -24,37 +24,37 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal -c Release
     - name: Publish Walgelijk
-      uses: alirezanet/publish-nuget@v3.0.0
+      uses: brandedoutcast/publish-nuget@v2
       with:
         PROJECT_FILE_PATH: Walgelijk\Walgelijk.csproj
         NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
 
     - name: Publish Walgelijk.OpenTK
-      uses: alirezanet/publish-nuget@v3.0.0
+      uses: brandedoutcast/publish-nuget@v2
       with:
         PROJECT_FILE_PATH: Walgelijk.OpenTK\Walgelijk.OpenTK.csproj
         NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
 
     - name: Publish Walgelijk.SimpleDrawing
-      uses: alirezanet/publish-nuget@v3.0.0
+      uses: brandedoutcast/publish-nuget@v2
       with:
         PROJECT_FILE_PATH: Walgelijk.SimpleDrawing\Walgelijk.SimpleDrawing.csproj
         NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
 
     - name: Publish Walgelijk.Imgui
-      uses: alirezanet/publish-nuget@v3.0.0
+      uses: brandedoutcast/publish-nuget@v2
       with:
         PROJECT_FILE_PATH: Walgelijk.Imgui\Walgelijk.Imgui.csproj
         NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
 
     - name: Publish Walgelijk.Physics
-      uses: alirezanet/publish-nuget@v3.0.0
+      uses: brandedoutcast/publish-nuget@v2
       with:
         PROJECT_FILE_PATH: Walgelijk.Physics\Walgelijk.Physics.csproj
         NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
 
     - name: Publish Walgelijk.ParticleSystem
-      uses: alirezanet/publish-nuget@v3.0.0
+      uses: brandedoutcast/publish-nuget@v2
       with:
         PROJECT_FILE_PATH: Walgelijk.ParticleSystem\Walgelijk.ParticleSystem.csproj
         NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
