@@ -9,10 +9,12 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>mestiez</Authors>
     <Company>Studio Minus</Company>
-    <Version>0.10.11</Version>
+    <Version>0.10.12</Version>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <DebugType>embedded</DebugType>
+    <Description>Provides full immediate-mode GUI</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -7,15 +7,21 @@
     <StartupObject />
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.17</Version>
+    <Version>1.18</Version>
+    <Authors>mestiez</Authors>
+    <Company>Studio Minus</Company>
+    <Description>Provides immediate-mode drawing API</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>C:\Projects\Walgelijk.Imgui\Walgelijk.SimpleDrawing\Walgelijk.SimpleDrawing.xml</DocumentationFile>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

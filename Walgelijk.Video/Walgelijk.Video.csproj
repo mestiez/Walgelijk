@@ -4,18 +4,21 @@
     <TargetFramework>net6.0</TargetFramework>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.7</Version>
+    <Version>0.8</Version>
     <Company>Studio Minus</Company>
-    <Authors>zooi</Authors>
-    <Description>Doet video dingen :)</Description>
+    <Authors>mestiez</Authors>
+    <Description>Video functionality for Walgelijk</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

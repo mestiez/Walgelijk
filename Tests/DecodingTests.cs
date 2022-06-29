@@ -7,7 +7,7 @@ using Walgelijk;
 
 namespace Tests;
 
-[TestClass]
+//[TestClass]
 public class DecodingTests
 {
     private byte[] input;

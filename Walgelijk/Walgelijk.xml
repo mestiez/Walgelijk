@@ -2771,8 +2771,6 @@
             <summary>
             Create a shader from vertex and fragment shader code
             </summary>
-            <param name="vertexShader"></param>
-            <param name="fragmentShader"></param>
         </member>
         <member name="P:Walgelijk.Shader.VertexShader">
             <summary>
@@ -2788,11 +2786,8 @@
             <summary>
             Load shader from files
             </summary>
-            <param name="vertPath"></param>
-            <param name="fragPath"></param>
-            <returns></returns>
         </member>
-        <member name="P:Walgelijk.Shader.Default">
+        <member name="F:Walgelijk.Shader.Default">
             <summary>
             Default shader. Renders vertex colours and textures.
             </summary>

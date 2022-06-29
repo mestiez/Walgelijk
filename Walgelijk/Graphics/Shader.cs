@@ -8,14 +8,11 @@ namespace Walgelijk
     /// <summary>
     /// Structure that holds the code for a full shader program
     /// </summary>
-    [Serializable]
-    public struct Shader : IDisposable
+    public class Shader : IDisposable
     {
         /// <summary>
         /// Create a shader from vertex and fragment shader code
         /// </summary>
-        /// <param name="vertexShader"></param>
-        /// <param name="fragmentShader"></param>
         public Shader(string vertexShader, string fragmentShader)
         {
             VertexShader = vertexShader;
@@ -35,9 +32,6 @@ namespace Walgelijk
         /// <summary>
         /// Load shader from files
         /// </summary>
-        /// <param name="vertPath"></param>
-        /// <param name="fragPath"></param>
-        /// <returns></returns>
         public static Shader Load(string vertPath, string fragPath)
         {
             string vert = File.ReadAllText(vertPath);
@@ -53,16 +47,6 @@ namespace Walgelijk
         /// <summary>
         /// Default shader. Renders vertex colours and textures.
         /// </summary>
-        public static Shader Default
-        {
-            get
-            {
-                return new Shader
-                {
-                    VertexShader = ShaderDefaults.WorldSpaceVertex,
-                    FragmentShader = ShaderDefaults.TexturedFragment
-                };
-            }
-        }
+        public static readonly Shader Default = new(ShaderDefaults.WorldSpaceVertex, ShaderDefaults.TexturedFragment);
     }
 }
