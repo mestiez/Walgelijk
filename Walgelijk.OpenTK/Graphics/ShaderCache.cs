@@ -15,7 +15,6 @@ namespace Walgelijk.OpenTK
             };
         }
 
-
         private static void CreateShaderProgram(Shader shader, out int vert, out int frag)
         {
             vert = GL.CreateShader(ShaderType.VertexShader);

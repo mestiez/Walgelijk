@@ -40,7 +40,7 @@
         /// </summary>
         public static Material BasicMaterial => Cache.Load(Texture.White);
 
-        public static readonly string FragmentShader =
+        public const string FragmentShader =
             @$"#version 460
 
 in vec2 uv;
@@ -84,12 +84,14 @@ void main()
     color.a *= corner;
 }}";
 
+        public static readonly Shader DefaultShader = new(ShaderDefaults.WorldSpaceVertex, FragmentShader);
+
         /// <summary>
         /// Create a material for a texture
         /// </summary>
         public static Material Create(IReadableTexture tex)
         {
-            var m = new Material(new Shader(ShaderDefaults.WorldSpaceVertex, FragmentShader));
+            var m = new Material(DefaultShader);
             m.SetUniform(MainTexUniform, tex);
             return m;
         }

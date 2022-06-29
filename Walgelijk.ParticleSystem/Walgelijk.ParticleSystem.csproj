@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.16</Version>
+    <Version>0.0.17</Version>
     <Description>Simple particlesystem</Description>
     <DebugType>embedded</DebugType>
     <Authors>mestiez</Authors>

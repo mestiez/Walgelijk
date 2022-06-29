@@ -7,6 +7,9 @@ namespace Walgelijk
     /// </summary>
     public struct TextMaterial
     {
+        public static readonly Shader LegacyShader = new Shader(ShaderDefaults.WorldSpaceVertex, Resources.Load<string>("resources/shaders/legacy-font.frag", true));
+        public static readonly Shader SdfShader = new Shader(ShaderDefaults.WorldSpaceVertex, Resources.Load<string>("resources/shaders/sdf-font.frag", true));
+
         /// <summary>
         /// Create a material for a given font
         /// </summary>
@@ -28,9 +31,7 @@ namespace Walgelijk
         /// </summary>
         public static Material CreateClipMaterial(IReadableTexture[] pages)
         {
-            string vert = ShaderDefaults.WorldSpaceVertex;
-            string frag = Resources.Load<string>("resources/shaders/legacy-font.frag", true);
-            Material mat = new Material(new Shader(vert, frag));
+            Material mat = new Material(LegacyShader);
 
             //TODO meer pages
             mat.SetUniform("mainTex", pages[0]);
@@ -43,9 +44,7 @@ namespace Walgelijk
         /// </summary>
         public static Material CreateSDFMaterial(IReadableTexture[] pages)
         {
-            string vert = ShaderDefaults.WorldSpaceVertex;
-            string frag = Resources.Load<string>("resources/shaders/sdf-font.frag", true);
-            Material mat = new Material(new Shader(vert, frag));
+            Material mat = new Material(SdfShader);
 
             //TODO meer pages
             mat.SetUniform("mainTex", pages[0]);

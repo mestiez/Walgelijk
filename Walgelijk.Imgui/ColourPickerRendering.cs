@@ -77,9 +77,11 @@ void main()
 
             public static readonly Material SaturationValueMaterial = Create();
 
+            public static readonly Shader DefaultShader = new (ShaderDefaults.WorldSpaceVertex, FragmentShader);
+
             public static Material Create()
             {
-                var m = new Material(new Shader(ShaderDefaults.WorldSpaceVertex, FragmentShader));
+                var m = new Material(DefaultShader);
                 return m;
             }
         }

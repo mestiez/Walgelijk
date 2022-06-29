@@ -2,7 +2,7 @@
 
 namespace Walgelijk.OpenTK
 {
-    public struct LoadedShader
+    public struct LoadedShader : IEquatable<LoadedShader>
     {
         public int VertexShaderHandle;
         public int FragmentShaderHandle;
@@ -12,6 +12,12 @@ namespace Walgelijk.OpenTK
             return obj is LoadedShader shader &&
                    VertexShaderHandle == shader.VertexShaderHandle &&
                    FragmentShaderHandle == shader.FragmentShaderHandle;
+        }
+
+        public bool Equals(LoadedShader other)
+        {
+            return VertexShaderHandle == other.VertexShaderHandle &&
+                   FragmentShaderHandle == other.FragmentShaderHandle;
         }
 
         public override int GetHashCode()

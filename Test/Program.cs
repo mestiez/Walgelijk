@@ -8,7 +8,6 @@ using Walgelijk.Imgui;
 using Walgelijk.OpenTK;
 using Walgelijk.ParticleSystem;
 using Walgelijk.SimpleDrawing;
-using Walgelijk.UI;
 using Walgelijk.Video;
 
 namespace Test
@@ -213,17 +212,12 @@ namespace Test
             scene.AttachComponent(camera, new TransformComponent());
             scene.AttachComponent(camera, new CameraComponent { PixelsPerUnit = 1, OrthographicSize = 0.02f });
 
-            scene.AttachComponent(scene.CreateEntity(), new UiDataComponent());
-
             scene.AddSystem(new TransformSystem());
             scene.AddSystem(new CameraSystem() { ExecutionOrder = -1 });
             scene.AddSystem(new ShapeRendererSystem());
             scene.AddSystem(new WaveMovementSystem());
             scene.AddSystem(new DebugCameraSystem());
             scene.AddSystem(new ParticleSystem());
-            scene.AddSystem(new ElementTransformSystem());
-            scene.AddSystem(new ElementEventSystem());
-            scene.AddSystem(new ElementRenderingSystem());
             scene.AddSystem(new VideoSystem());
             //     scene.AddSystem(new PostProcessingSystem() { ExecutionOrder = -2 });
 
@@ -261,27 +255,6 @@ namespace Test
             scene.AttachComponent(x50y50, new TransformComponent { Position = new Vector2(50, 50) });
             scene.AttachComponent(x50y50, new RectangleShapeComponent { Color = Colors.Blue });
             scene.AttachComponent(x50y50, new WaveMovementComponent());
-
-            var agag = scene.CreateEntity();
-            scene.AttachComponent(agag, new TransformComponent());
-            var ccc = scene.AttachComponent(agag, new ElementComponent
-            {
-                Anchors = new IAnchor[]
-                 {
-                    new HorizontalCenterAnchor(),
-                    new TopAnchor{Offset = 15},
-                 },
-                Size = new Vector2(128),
-                StyleOverride = new Walgelijk.UI.Style
-                {
-                    BackgroundColour = new Property<Color>(Colors.Gray, Colors.Magenta, Colors.Magenta * 0.5f)
-                },
-                Overflow = OverflowBehaviour.Hide
-            });
-
-            ccc.SetTextString("hoe <color=#ff0000>is het </color><i>vandaag\nhawiudhauwdhawduawhdiauwhdaiuwhd");
-            ccc.Text.Generator.ParseRichText = true;
-            ccc.Text.Rebuild();
 
             var particles = scene.CreateEntity();
             scene.AttachComponent(particles, new TransformComponent());

@@ -45,7 +45,7 @@ void main()
 
         public static Material CreateDefaultMaterial()
         {
-            Material mat = new Material(DefaultShader);
+            var mat = new Material(DefaultShader);
             mat.SetUniform(ShaderDefaults.MainTextureUniform, Texture.White);
             return mat;
         }

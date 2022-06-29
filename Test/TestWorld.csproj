@@ -7,13 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Walgelijk.Imgui" Version="0.10.9" />
-    <PackageReference Include="Walgelijk.UI" Version="0.0.19" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\Walgelijk.Imgui\Walgelijk.Imgui.csproj" />
     <ProjectReference Include="..\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />
     <ProjectReference Include="..\Walgelijk.ParticleSystem\Walgelijk.ParticleSystem.csproj" />
+    <ProjectReference Include="..\Walgelijk.SimpleDrawing\Walgelijk.SimpleDrawing.csproj" />
     <ProjectReference Include="..\Walgelijk.Video\Walgelijk.Video.csproj" />
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
   </ItemGroup>
