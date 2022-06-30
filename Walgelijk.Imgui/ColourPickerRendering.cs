@@ -22,7 +22,7 @@ namespace Walgelijk.Imgui
         public struct Shaders
         {
             public const string HueUniform = "hue";
-            public static readonly string FragmentShader =
+            public const string FragmentShader =
     @$"#version 460
 
 in vec2 uv;
@@ -75,9 +75,9 @@ void main()
     color.rgb = saturationValue;
 }}";
 
-            public static readonly Material SaturationValueMaterial = Create();
-
             public static readonly Shader DefaultShader = new(ShaderDefaults.WorldSpaceVertex, FragmentShader);
+
+            public static readonly Material SaturationValueMaterial = Create();
 
             public static Material Create()
             {
