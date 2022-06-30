@@ -46,6 +46,10 @@ namespace Walgelijk.SimpleDrawing
         /// Relevant transformation matrix
         /// </summary>
         public Matrix4x4 Transformation = Matrix4x4.Identity;
+        /// <summary>
+        /// Current blend mode
+        /// </summary>
+        public BlendMode? BlendMode = null;
 
         /// <summary>
         /// Roundness, if applicable
@@ -103,7 +107,7 @@ namespace Walgelijk.SimpleDrawing
         public Drawing(VertexBuffer vertexBuffer, Vector2 position, Vector2 scale, float rotationRadians, Color color, bool screenSpace, TextDrawing textDrawing, DrawBounds drawBounds)
         {
             VertexBuffer = vertexBuffer;
-            Material = textDrawing.Font?.Material ?? Font.Default.Material;
+            Material = textDrawing.Font?.Material ?? Font.Default.Material ?? Material.DefaultTextured;
             Texture = null;
             ScreenSpace = screenSpace;
             Position = position;

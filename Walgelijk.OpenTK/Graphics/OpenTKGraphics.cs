@@ -114,6 +114,7 @@ namespace Walgelijk.OpenTK
             int prog = loadedShader.ProgramHandle;
 
             GPUObjects.MaterialTextureCache.ActivateTexturesFor(loadedShader);
+            GLUtilities.SetBlendMode(material.BlendMode);
             GL.UseProgram(prog);
         }
 

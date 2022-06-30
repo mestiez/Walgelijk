@@ -1610,6 +1610,41 @@
             Four rows of Vector4
             </summary>
         </member>
+        <member name="T:Walgelijk.BlendMode">
+            <summary>
+            Blend modes
+            </summary>
+        </member>
+        <member name="F:Walgelijk.BlendMode.AlphaBlend">
+            <summary>
+            Default blend mode
+            </summary>
+        </member>
+        <member name="F:Walgelijk.BlendMode.Addition">
+            <summary>
+            Adds RGB values
+            </summary>
+        </member>
+        <member name="F:Walgelijk.BlendMode.Screen">
+            <summary>
+            Invert, multiply, invert
+            </summary>
+        </member>
+        <member name="F:Walgelijk.BlendMode.Multiply">
+            <summary>
+            Multiply blend mode
+            </summary>
+        </member>
+        <member name="F:Walgelijk.BlendMode.Lighten">
+            <summary>
+            Only keeps the greatest pixel value
+            </summary>
+        </member>
+        <member name="F:Walgelijk.BlendMode.Negate">
+            <summary>
+            Inverts pixel values
+            </summary>
+        </member>
         <member name="T:Walgelijk.Color">
             <summary>
             Colour with 4 floating point components ranging from 0-1
@@ -2080,156 +2115,6 @@
             Whether or not the renderer needs to send new information to the GPU
             </summary>
         </member>
-        <member name="T:Walgelijk.UniformDictionary">
-            <summary>
-            Dictionary collection for all valid uniform datatypes
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Single)">
-            <summary>
-            Set or add a float uniform
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Int32)">
-            <summary>
-            Set or add an int uniform
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Byte)">
-            <summary>
-            Set or add an int (really. bytes are just converted to ints) uniform
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Double)">
-            <summary>
-            Set or add a double uniform
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Numerics.Vector2)">
-            <summary>
-            Set or add a Vector2 uniform
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Numerics.Vector3)">
-            <summary>
-            Set or add a Vector3 uniform
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Numerics.Vector4)">
-            <summary>
-            Set or add a Vector4 uniform
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Numerics.Matrix4x4)">
-            <summary>
-            Set or add a Matrix4x4 uniform
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,Walgelijk.IReadableTexture)">
-            <summary>
-            Set or add a IReadableTexture uniform
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Int32[])">
-            <summary>
-            Set or add an int[] uniform
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Single[])">
-            <summary>
-            Set or add a float[] uniform
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Double[])">
-            <summary>
-            Set or add a double[] uniform
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Numerics.Vector3[])">
-            <summary>
-            Set or add a Vector3[] uniform
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Numerics.Matrix4x4[])">
-            <summary>
-            Set or add a Matrix4x4[] uniform
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Byte@)">
-            <summary>
-            Try to get a byte uniform value
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Int32@)">
-            <summary>
-            Try to get an integer uniform value
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Single@)">
-            <summary>
-            Try to get a float uniform value
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Double@)">
-            <summary>
-            Try to get a double uniform value
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Numerics.Vector2@)">
-            <summary>
-            Try to get a Vector2 uniform value
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Numerics.Vector3@)">
-            <summary>
-            Try to get a Vector3 uniform value
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Numerics.Vector4@)">
-            <summary>
-            Try to get a Vector4 uniform value
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Numerics.Matrix4x4@)">
-            <summary>
-            Try to get a Matrix4x4 uniform value
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,Walgelijk.IReadableTexture@)">
-            <summary>
-            Try to get a IReadableTexture uniform value
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Int32[]@)">
-            <summary>
-            Try to get an int[] uniform value
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Single[]@)">
-            <summary>
-            Try to get a float[] uniform value
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Double[]@)">
-            <summary>
-            Try to get a double[] uniform value
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Numerics.Vector3[]@)">
-            <summary>
-            Try to get a Vector3[] uniform value
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Numerics.Matrix4x4[]@)">
-            <summary>
-            Try to get a Matrix4x4[] uniform value
-            </summary>
-        </member>
-        <member name="M:Walgelijk.UniformDictionary.ContainsKey(System.String)">
-            <summary>
-            Does the uniform with the given name exist?
-            </summary>
-        </member>
         <member name="T:Walgelijk.Material">
             <summary>
             Object that holds unique information specific to a shader
@@ -2238,6 +2123,11 @@
         <member name="P:Walgelijk.Material.Shader">
             <summary>
             The shader this material uses
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Material.BlendMode">
+            <summary>
+            Blend mode to use for this material
             </summary>
         </member>
         <member name="F:Walgelijk.Material.InternalUniforms">
@@ -2946,6 +2836,156 @@
         <member name="P:Walgelijk.Texture.ErrorTexture">
             <summary>
             8x8 red-black frowning face texture, usually used to indicate something has gone wrong
+            </summary>
+        </member>
+        <member name="T:Walgelijk.UniformDictionary">
+            <summary>
+            Dictionary collection for all valid uniform datatypes
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Single)">
+            <summary>
+            Set or add a float uniform
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Int32)">
+            <summary>
+            Set or add an int uniform
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Byte)">
+            <summary>
+            Set or add an int (really. bytes are just converted to ints) uniform
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Double)">
+            <summary>
+            Set or add a double uniform
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Numerics.Vector2)">
+            <summary>
+            Set or add a Vector2 uniform
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Numerics.Vector3)">
+            <summary>
+            Set or add a Vector3 uniform
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Numerics.Vector4)">
+            <summary>
+            Set or add a Vector4 uniform
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Numerics.Matrix4x4)">
+            <summary>
+            Set or add a Matrix4x4 uniform
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,Walgelijk.IReadableTexture)">
+            <summary>
+            Set or add a IReadableTexture uniform
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Int32[])">
+            <summary>
+            Set or add an int[] uniform
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Single[])">
+            <summary>
+            Set or add a float[] uniform
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Double[])">
+            <summary>
+            Set or add a double[] uniform
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Numerics.Vector3[])">
+            <summary>
+            Set or add a Vector3[] uniform
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.SetValue(System.String,System.Numerics.Matrix4x4[])">
+            <summary>
+            Set or add a Matrix4x4[] uniform
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Byte@)">
+            <summary>
+            Try to get a byte uniform value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Int32@)">
+            <summary>
+            Try to get an integer uniform value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Single@)">
+            <summary>
+            Try to get a float uniform value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Double@)">
+            <summary>
+            Try to get a double uniform value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Numerics.Vector2@)">
+            <summary>
+            Try to get a Vector2 uniform value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Numerics.Vector3@)">
+            <summary>
+            Try to get a Vector3 uniform value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Numerics.Vector4@)">
+            <summary>
+            Try to get a Vector4 uniform value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Numerics.Matrix4x4@)">
+            <summary>
+            Try to get a Matrix4x4 uniform value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,Walgelijk.IReadableTexture@)">
+            <summary>
+            Try to get a IReadableTexture uniform value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Int32[]@)">
+            <summary>
+            Try to get an int[] uniform value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Single[]@)">
+            <summary>
+            Try to get a float[] uniform value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Double[]@)">
+            <summary>
+            Try to get a double[] uniform value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Numerics.Vector3[]@)">
+            <summary>
+            Try to get a Vector3[] uniform value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.TryGetValue(System.String,System.Numerics.Matrix4x4[]@)">
+            <summary>
+            Try to get a Matrix4x4[] uniform value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.UniformDictionary.ContainsKey(System.String)">
+            <summary>
+            Does the uniform with the given name exist?
             </summary>
         </member>
         <member name="T:Walgelijk.Vertex">

@@ -50,6 +50,11 @@ namespace Walgelijk.SimpleDrawing
         public static float OutlineWidth = 0;
 
         /// <summary>
+        /// The current blend mode. Set to null to fall back to the Material's set blend mode.
+        /// </summary>
+        public static BlendMode? BlendMode;
+
+        /// <summary>
         /// The current outline colour. No outline will be drawn if transparent
         /// </summary>
         public static Color OutlineColour = Colors.Black;
@@ -124,7 +129,8 @@ namespace Walgelijk.SimpleDrawing
                 Material ?? DrawingMaterialCreator.Cache.Load(Texture ?? Walgelijk.Texture.White),
                 Texture ?? Walgelijk.Texture.White, ScreenSpace, DrawBounds, OutlineWidth, OutlineColour)
             {
-                Transformation = TransformMatrix
+                Transformation = TransformMatrix,
+                BlendMode = BlendMode
             };
 
         /// <summary>
@@ -146,6 +152,7 @@ namespace Walgelijk.SimpleDrawing
             ResetTexture();
             ResetDrawBounds();
             ResetMaterial();
+            BlendMode = null;
             Order = default;
             Font = Font.Default;
             FontSize = 12;
@@ -236,7 +243,8 @@ namespace Walgelijk.SimpleDrawing
             };
             Enqueue(new Drawing(textMesh, pivot, calculatedScale, degrees * Utilities.DegToRad, Colour, ScreenSpace, textDrawing, DrawBounds)
             {
-                Transformation = TransformMatrix
+                Transformation = TransformMatrix,
+                BlendMode = BlendMode
             });
         }
 

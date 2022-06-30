@@ -103,7 +103,9 @@ namespace Test
             {
                 Draw.Reset();
                 Draw.Order = RenderOrder.Top;
+                Draw.BlendMode = BlendMode.AlphaBlend;
                 Draw.Image(Assets.Load<Texture>("qoitest"), new Rect(Input.WorldMousePosition + new Vector2(0, 256), new Vector2(512)), ImageContainmentMode.Contain);
+                Draw.BlendMode = null;
 
                 if (Gui.ClickButton("costolot", new Vector2(100, 100), new Vector2(100, 32)))
                 {
