@@ -36,7 +36,7 @@ namespace Walgelijk
             public override void Render()
             {
                 var windowSize = Scene.Game.Window.Size;
-                var stretch = Matrix4x4.CreateScale(windowSize.X, -windowSize.Y, 1) * Matrix4x4.CreateTranslation(0, windowSize.Y,0);
+                var stretch = Matrix4x4.CreateScale(windowSize.X, -windowSize.Y, 1) * Matrix4x4.CreateTranslation(0, windowSize.Y, 0);
 
                 foreach (var item in Scene.GetAllComponentsOfType<BackgroundComponent>())
                 {

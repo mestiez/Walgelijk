@@ -29,9 +29,9 @@ namespace Walgelijk.Physics
                 var c = item.Value;
                 var topleft = new Vector2(c.X, c.Y) * world.ChunkSize;
                 DebugDraw.Rectangle(
-                    topleft - cSize, cSize, 
-                    0, 
-                    c.IsEmpty ? Colors.Gray * .5f : Colors.Aqua * .5f, 
+                    topleft - cSize, cSize,
+                    0,
+                    c.IsEmpty ? Colors.Gray * .5f : Colors.Aqua * .5f,
                     renderOrder: c.IsEmpty ? back : RenderOrder.Zero);
             }
         }

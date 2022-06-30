@@ -46,6 +46,10 @@ namespace Walgelijk.SimpleDrawing
         /// Relevant transformation matrix
         /// </summary>
         public Matrix4x4 Transformation = Matrix4x4.Identity;
+        /// <summary>
+        /// Current blend mode
+        /// </summary>
+        public BlendMode? BlendMode = null;
 
         /// <summary>
         /// Roundness, if applicable
@@ -62,7 +66,7 @@ namespace Walgelijk.SimpleDrawing
         /// <summary>
         /// Colour to draw with
         /// </summary>
-        public Color Color;      
+        public Color Color;
         /// <summary>
         /// Colour to draw outlines with, if applicable
         /// </summary>
@@ -77,7 +81,7 @@ namespace Walgelijk.SimpleDrawing
         /// Create a drawing for a simple shape with a texture
         /// </summary>
         public Drawing(
-            VertexBuffer vertexBuffer, Vector2 position, Vector2 scale, float rotationRadians, 
+            VertexBuffer vertexBuffer, Vector2 position, Vector2 scale, float rotationRadians,
             Color color, Material material, IReadableTexture texture, bool screenSpace, DrawBounds drawBounds,
             float outlineWidth, Color outlineColour)
         {
@@ -103,7 +107,7 @@ namespace Walgelijk.SimpleDrawing
         public Drawing(VertexBuffer vertexBuffer, Vector2 position, Vector2 scale, float rotationRadians, Color color, bool screenSpace, TextDrawing textDrawing, DrawBounds drawBounds)
         {
             VertexBuffer = vertexBuffer;
-            Material = textDrawing.Font?.Material ?? Font.Default.Material;
+            Material = textDrawing.Font?.Material ?? Font.Default.Material ?? Material.DefaultTextured;
             Texture = null;
             ScreenSpace = screenSpace;
             Position = position;

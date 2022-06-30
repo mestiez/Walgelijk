@@ -34,15 +34,16 @@ namespace Test
             Resources.SetBasePathForType<Texture>("textures");
             Resources.SetBasePathForType<Font>("fonts");
 
-            Assets.Register("resources/textures/qoitest.qoi", "qoitest");
+            Assets.Register("qoitest", static asset => Resources.Load<Texture>("qoitest.qoi"));
+            Assets.Register("resources/textures/pride.png", Assets.TextureFileProvider);
 
-            //game.Scene = SplashScreen.CreateScene(new[]{
-            //    new SplashScreen.Logo(Resources.Load<Texture>("walgelijk.png"), 0.5f),
-            //    },
-            //() =>
-            //{
-            //});
-            game.Scene = LoadScene2(game);
+            game.Scene = SplashScreen.CreateScene(new[]{
+                new SplashScreen.Logo(Resources.Load<Texture>("walgelijk.png"), 0.1f),
+                },
+            () =>
+            {
+                game.Scene = LoadScene2(game);
+            });
 
 #if DEBUG
             game.DevelopmentMode = true;
@@ -102,7 +103,9 @@ namespace Test
             {
                 Draw.Reset();
                 Draw.Order = RenderOrder.Top;
-                // Draw.Image(Assets.Load<Texture>("qoitest"), new Rect(Input.WorldMousePosition + new Vector2(0, 256), new Vector2(512)), ImageContainmentMode.Contain);
+                Draw.BlendMode = BlendMode.Multiply;
+                Draw.Image(Assets.Load<Texture>("qoitest"), new Rect(Vector2.Zero, new Vector2(512)), ImageContainmentMode.Contain);
+                Draw.BlendMode = null;
 
                 if (Gui.ClickButton("costolot", new Vector2(100, 100), new Vector2(100, 32)))
                 {
@@ -140,6 +143,13 @@ namespace Test
 
                 if (Gui.ClickButton("pause track", new Vector2(100, 260), new Vector2(100, 32)))
                     Audio.PauseAll(track);
+
+                if (Scene.FindAnyComponent<CameraComponent>(out var camera))
+                {
+                    var c = camera.ClearColour;
+                    Gui.Colourpicker(new Vector2(500, 15), new Vector2(256, 300), false, ref c);
+                    camera.ClearColour = c;
+                }
             }
         }
 
@@ -150,8 +160,8 @@ namespace Test
                 if (Input.IsKeyReleased(Key.F8))
                 {
                     using var o = File.Create("test.png");
-                    Graphics.Upload(Assets.Load<Texture>("pride.png"));
-                    Graphics.SaveTexture(o, Assets.Load<Texture>("pride.png"));
+                    Graphics.Upload(Assets.Load<Texture>("resources/textures/pride.png"));
+                    Graphics.SaveTexture(o, Assets.Load<Texture>("resources/textures/pride.png"));
                     o.Close();
                     o.Dispose();
                 }

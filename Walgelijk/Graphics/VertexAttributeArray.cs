@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace Walgelijk;
 
@@ -170,6 +169,6 @@ public class Matrix4x4AttributeArray : VertexAttributeArray
 
     public override void SetAt(int index, object value) => Data[index] = (Matrix4x4)value;
 
-    public override T[] GetData<T>() => Data as T[] ?? 
+    public override T[] GetData<T>() => Data as T[] ??
         throw new global::System.Exception($"Data in vertex attribute array {Data.GetType().Name} was not of the expected type {typeof(T).Name}");
 }

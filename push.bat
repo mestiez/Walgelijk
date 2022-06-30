@@ -20,3 +20,4 @@ exit /B 0
 
 :fail
 @echo No key given
+exit /B 1

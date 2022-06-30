@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Walgelijk.Video
+﻿namespace Walgelijk.Video
 {
     /// <summary>
     /// Component that contains a gif and some options

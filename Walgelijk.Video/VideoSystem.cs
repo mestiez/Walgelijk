@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Walgelijk.Video
+﻿namespace Walgelijk.Video
 {
     /// <summary>
     /// Controls the behaviour of gifs and videos
@@ -32,11 +30,11 @@ namespace Walgelijk.Video
                     float dt;
                     if (gifComponent.IgnoreTimeScale)
                         dt = Time.DeltaTimeUnscaled * gifComponent.PlaybackSpeed;
-                    else 
+                    else
                         dt = Time.DeltaTime * gifComponent.PlaybackSpeed;
 
                     gifComponent.PlaybackTime += dt;
-                        
+
                     int frameToDisplay = gif.GetFrameIndexAt(gifComponent.PlaybackTime);
 
                     if (!gifComponent.Loop && frameToDisplay >= gif.FrameCount - 1)

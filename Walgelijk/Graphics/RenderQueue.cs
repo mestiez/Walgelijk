@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Walgelijk
 {
@@ -31,7 +29,7 @@ namespace Walgelijk
             var command = new Command { RenderTask = task, Order = order };
             command.Order = order;
 
-            if (commands.Count == 0 || commands[commands.Count-1].Order <= order)
+            if (commands.Count == 0 || commands[commands.Count - 1].Order <= order)
             {
                 commands.Add(command);
                 return;

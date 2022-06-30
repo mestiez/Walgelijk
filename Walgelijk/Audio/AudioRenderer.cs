@@ -104,6 +104,16 @@ public abstract class AudioRenderer
     public abstract void StopAll(AudioTrack track);
 
     /// <summary>
+    /// Set time in seconds for the sound if it is playing
+    /// </summary>
+    public abstract void SetTime(Sound sound, float seconds);
+
+    /// <summary>
+    /// Get time in seconds for the sound if it is playing
+    /// </summary>
+    public abstract float GetTime(Sound sound);
+
+    /// <summary>
     /// Load a sound from file
     /// </summary>
     public abstract AudioData LoadSound(string path, bool streaming = false);

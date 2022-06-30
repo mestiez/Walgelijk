@@ -11,15 +11,15 @@ namespace Walgelijk
         /// <summary>
         /// Shows up regardless of filter
         /// </summary>
-        All     = 0x1111,
+        All = 0x1111,
         /// <summary>
         /// Debug message
         /// </summary>
-        Debug   = 0x0001,
+        Debug = 0x0001,
         /// <summary>
         /// Info message
         /// </summary>
-        Info    = 0x0010,
+        Info = 0x0010,
         /// <summary>
         /// Warning message
         /// </summary>
@@ -27,6 +27,6 @@ namespace Walgelijk
         /// <summary>
         /// Error message
         /// </summary>
-        Error   = 0x1000,
+        Error = 0x1000,
     }
 }

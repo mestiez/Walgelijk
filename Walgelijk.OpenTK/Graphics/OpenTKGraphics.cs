@@ -1,7 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using System;
 using System.IO;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Walgelijk.OpenTK
@@ -115,6 +114,7 @@ namespace Walgelijk.OpenTK
             int prog = loadedShader.ProgramHandle;
 
             GPUObjects.MaterialTextureCache.ActivateTexturesFor(loadedShader);
+            GLUtilities.SetBlendMode(material.BlendMode);
             GL.UseProgram(prog);
         }
 

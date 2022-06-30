@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-
-namespace Walgelijk
+﻿namespace Walgelijk
 {
     /// <summary>
     /// A task that can be queued in the render queue

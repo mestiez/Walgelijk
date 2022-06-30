@@ -1,0 +1,26 @@
+name: Build, test, upload
+
+on:
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  publish:
+
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+    - name: clean
+      run: dotnet clean -c Release
+    - name: restore
+      run: dotnet restore
+    - name: build
+      run: dotnet build -c Release
+    - name: test
+      run: dotnet test --no-build --verbosity normal -c Release
+      

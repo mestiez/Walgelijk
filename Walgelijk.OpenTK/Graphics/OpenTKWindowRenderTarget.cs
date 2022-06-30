@@ -23,7 +23,8 @@ namespace Walgelijk.OpenTK
         internal void Initialise()
         {
             GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GL.BlendFuncSeparate(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha, BlendingFactorSrc.SrcAlpha, BlendingFactorDest.One);
+            GL.BlendEquationSeparate(BlendEquationMode.FuncAdd, BlendEquationMode.FuncAdd);
 
             GPUObjects.RenderTargetDictionary.Set(this, 0);
             Window.internalGraphics.CurrentTarget = this;

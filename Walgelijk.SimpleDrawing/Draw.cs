@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Numerics;
 #pragma warning disable CA2211 // Non-constant fields should not be visible
 
@@ -49,6 +48,11 @@ namespace Walgelijk.SimpleDrawing
         /// The current outline width. No outline will be drawn if approximately 0 or lower
         /// </summary>
         public static float OutlineWidth = 0;
+
+        /// <summary>
+        /// The current blend mode. Set to null to fall back to the Material's set blend mode.
+        /// </summary>
+        public static BlendMode? BlendMode;
 
         /// <summary>
         /// The current outline colour. No outline will be drawn if transparent
@@ -125,7 +129,8 @@ namespace Walgelijk.SimpleDrawing
                 Material ?? DrawingMaterialCreator.Cache.Load(Texture ?? Walgelijk.Texture.White),
                 Texture ?? Walgelijk.Texture.White, ScreenSpace, DrawBounds, OutlineWidth, OutlineColour)
             {
-                Transformation = TransformMatrix
+                Transformation = TransformMatrix,
+                BlendMode = BlendMode
             };
 
         /// <summary>
@@ -147,6 +152,7 @@ namespace Walgelijk.SimpleDrawing
             ResetTexture();
             ResetDrawBounds();
             ResetMaterial();
+            BlendMode = null;
             Order = default;
             Font = Font.Default;
             FontSize = 12;
@@ -237,7 +243,8 @@ namespace Walgelijk.SimpleDrawing
             };
             Enqueue(new Drawing(textMesh, pivot, calculatedScale, degrees * Utilities.DegToRad, Colour, ScreenSpace, textDrawing, DrawBounds)
             {
-                Transformation = TransformMatrix
+                Transformation = TransformMatrix,
+                BlendMode = BlendMode
             });
         }
 

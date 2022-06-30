@@ -39,7 +39,7 @@ namespace Walgelijk.Physics
         /// Recalculates the <see cref="Bounds"/> property. This is automatically done at the beginning of each frame by the <see cref="PhysicsSystem"/>
         /// </summary>
         public void RecalculateBounds();
-        
+
         /// <summary>
         /// Returns an enumerable collection of all intersections between the given line (not line segment) and the collider
         /// </summary>

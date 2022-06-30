@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Walgelijk
+﻿namespace Walgelijk
 {
     /// <summary>
     /// Holds game logic

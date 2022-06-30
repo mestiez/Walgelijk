@@ -27,10 +27,7 @@ namespace Walgelijk
 
         public override bool IsPlaying(Sound sound) => false;
 
-        public override void DisposeOf(AudioData audioData)
-        {
-            audioData.DisposeLocalCopy();
-        }
+        public override void DisposeOf(AudioData audioData) => audioData.DisposeLocalCopy();
 
         public override void DisposeOf(Sound sound) { }
 
@@ -62,5 +59,9 @@ namespace Walgelijk
         public override void UpdateTracks() { }
 
         public override void ResumeAll(AudioTrack track) { }
+
+        public override void SetTime(Sound sound, float seconds) { }
+
+        public override float GetTime(Sound sound) => 0;
     }
 }

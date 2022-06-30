@@ -1,7 +1,4 @@
-﻿
-using System.Numerics;
-
-namespace Walgelijk.SimpleDrawing
+﻿namespace Walgelijk.SimpleDrawing
 {
     /// <summary>
     /// The pool that drawing tasks are taken out of

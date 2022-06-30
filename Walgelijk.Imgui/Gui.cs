@@ -141,6 +141,7 @@ public static class Gui
         Draw.ScreenSpace = true;
         Draw.Order = Context.Order;
         Draw.OutlineWidth = 0;
+        Draw.BlendMode = null;
     }
 
     /// <summary>

@@ -43,7 +43,7 @@ namespace Walgelijk.Imgui
                 for (int p = 0; p < allowed.Length; p++)
                     if (allowed[p].Contains(str[i]))
                     {
-                        f =  true;
+                        f = true;
                         break;
                     }
 

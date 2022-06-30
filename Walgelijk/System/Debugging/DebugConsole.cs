@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Walgelijk
 {
@@ -49,8 +48,8 @@ namespace Walgelijk
         /// </summary>
         public ConsoleMessageType Filter
         {
-            get => filter; 
-            
+            get => filter;
+
             set
             {
                 filter = value;

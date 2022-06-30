@@ -91,11 +91,11 @@ public class Context
         };
 
         created.LocalInputState.ButtonsHeld = new (bool, bool)[Gui.Input.ButtonsHeld.Length];
-        created.LocalInputState.ButtonsUp   = new bool[Gui.Input.ButtonsUp.Length];
+        created.LocalInputState.ButtonsUp = new bool[Gui.Input.ButtonsUp.Length];
         created.LocalInputState.ButtonsDown = new bool[Gui.Input.ButtonsDown.Length];
 
-        created.LocalInputState.KeysHeld = new (bool,bool)[Gui.Input.KeysHeld.Length];
-        created.LocalInputState.KeysUp   = new bool[Gui.Input.KeysUp.Length];
+        created.LocalInputState.KeysHeld = new (bool, bool)[Gui.Input.KeysHeld.Length];
+        created.LocalInputState.KeysUp = new bool[Gui.Input.KeysUp.Length];
         created.LocalInputState.KeysDown = new bool[Gui.Input.KeysDown.Length];
 
         LastCreatedIdentity = created;

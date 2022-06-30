@@ -102,14 +102,14 @@ namespace Walgelijk
         /// <summary>
         /// Does the rectangle contain the given point?
         /// </summary>
-        public readonly bool ContainsPoint(Vector2 point) => 
+        public readonly bool ContainsPoint(Vector2 point) =>
             point.X > MinX && point.X < MaxX && point.Y > MinY && point.Y < MaxY;
 
         /// <summary>
         /// Does the rectangle, optionally expanded, contain the given point?
         /// </summary>
-        public readonly bool ContainsPoint(Vector2 point, float expand) => 
-            point.X > MinX - expand && point.X < MaxX + expand && point.Y > MinY -expand && point.Y < MaxY + expand;
+        public readonly bool ContainsPoint(Vector2 point, float expand) =>
+            point.X > MinX - expand && point.X < MaxX + expand && point.Y > MinY - expand && point.Y < MaxY + expand;
 
         /// <summary>
         /// Does the rectangle overlap with the given rectangle?

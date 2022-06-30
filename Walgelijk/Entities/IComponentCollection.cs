@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Walgelijk;
 
 public interface IComponentCollection
-{    
+{
     void Add(object component, Entity entity);
     bool DeleteEntity(Entity entity);
     IEnumerable GetAllComponentsFrom(Entity entity);

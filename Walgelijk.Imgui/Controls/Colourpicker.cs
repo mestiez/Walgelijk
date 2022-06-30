@@ -27,6 +27,8 @@ namespace Walgelijk.Imgui.Controls
 
         public static bool Process(Vector2 topLeft, Vector2 size, bool editableAlpha, ref Color color, Style? style = null, [CallerLineNumber] int site = 0, int optionalId = 0)
         {
+            //rainbowTexture.Dispose();
+            //rainbowTexture = null;
             if (rainbowTexture == null)
             {
                 rainbowTexture = new Texture(1, 256);

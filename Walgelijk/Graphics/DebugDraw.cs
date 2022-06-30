@@ -156,7 +156,7 @@ void main()
         /// <summary>
         /// Draw a rectangle
         /// </summary>
-        public void Rectangle(Rect rect, float rotationDegrees, Color? color = null, float? duration = null, RenderOrder renderOrder = default) => 
+        public void Rectangle(Rect rect, float rotationDegrees, Color? color = null, float? duration = null, RenderOrder renderOrder = default) =>
             Rectangle(rect.TopLeft, new Vector2(rect.Width, rect.Height), rotationDegrees, color, duration, renderOrder);
 
         /// <summary>

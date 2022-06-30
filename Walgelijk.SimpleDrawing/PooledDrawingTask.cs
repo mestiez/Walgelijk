@@ -100,7 +100,11 @@ namespace Walgelijk.SimpleDrawing
             {
                 graphics.DrawBounds = Drawing.DrawBounds;
                 graphics.CurrentTarget.ModelMatrix = CreateMatrix(Drawing.Position, Drawing.Scale, Drawing.RotationRadians) * Drawing.Transformation;
+                var oldBm = material.BlendMode;
+                if (Drawing.BlendMode.HasValue)
+                    material.BlendMode = Drawing.BlendMode.Value;
                 graphics.Draw(Drawing.VertexBuffer, material);
+                material.BlendMode = oldBm;
                 graphics.DrawBounds = DrawBounds.DisabledBounds;
             }
         }

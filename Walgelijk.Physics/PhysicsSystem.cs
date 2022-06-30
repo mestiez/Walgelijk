@@ -359,7 +359,7 @@ namespace Walgelijk.Physics
 
             rectangle = new Rect(minX, minY, maxX, maxY);
 
-            var center = new Vector2((minX + maxX) /2, (minY + maxY) / 2);
+            var center = new Vector2((minX + maxX) / 2, (minY + maxY) / 2);
             int i = 0;
             var min = GetChunkPositionFrom(minX, maxX + world.ChunkSize, world.ChunkSize);
             var max = GetChunkPositionFrom(maxY + world.ChunkSize, minY, world.ChunkSize);

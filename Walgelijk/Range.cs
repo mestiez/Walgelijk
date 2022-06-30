@@ -88,7 +88,7 @@ namespace Walgelijk
             return Utilities.Clamp(v, Min, Max);
         }
     }
-    
+
 
     /// <summary>
     /// Struct with a minimum and maximum integer value
@@ -154,10 +154,10 @@ namespace Walgelijk
 
         public override bool IsInRange(Vector2 v)
         {
-            return 
-                v.X >= Min.X && 
-                v.Y >= Min.Y && 
-                v.X <= Max.X && 
+            return
+                v.X >= Min.X &&
+                v.Y >= Min.Y &&
+                v.X <= Max.X &&
                 v.Y < Max.Y;
         }
 

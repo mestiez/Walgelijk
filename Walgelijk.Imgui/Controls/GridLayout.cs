@@ -52,7 +52,7 @@ public struct GridLayout
         };
 
         //if (Gui.ContainsMouse(id, true))
-            PositioningUtils.ProcessScrolling(Gui.Context, id, style, 32);
+        PositioningUtils.ProcessScrolling(Gui.Context, id, style, 32);
 
         // Gui.PrepareDrawer();
         //  Draw.Colour = Gui.GetBackgroundColour(style, State.Active);

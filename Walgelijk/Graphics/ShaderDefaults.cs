@@ -25,7 +25,7 @@
         /// <summary>
         /// Model matrix uniform name
         /// </summary>
-        public const string ModelMatrixUniform = "model";     
+        public const string ModelMatrixUniform = "model";
         /// <summary>
         /// Main texture uniform name
         /// </summary>
