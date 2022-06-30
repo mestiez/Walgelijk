@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Walgelijk
+﻿namespace Walgelijk
 {
     /// <summary>
     /// Interface for basic logging

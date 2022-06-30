@@ -58,13 +58,13 @@ namespace Walgelijk
             string getTypeName(global::System.Type type)
             {
                 if (type == typeof(float))
-                    return "float";                
+                    return "float";
                 if (type == typeof(bool))
-                    return "bool";               
+                    return "bool";
                 if (type == typeof(int))
-                    return "int";               
+                    return "int";
                 if (type == typeof(uint))
-                    return "uint";               
+                    return "uint";
                 if (type == typeof(string))
                     return "string";
                 return type.Name.ToLower();
@@ -165,7 +165,7 @@ namespace Walgelijk
                                 console.Print(commandResult.Message, Colors.Orange, level: ConsoleMessageType.Warning);
                                 break;
                             case LogLevel.Error:
-                                console.Print(commandResult.Message, Colors.Red,  ConsoleMessageType.Error);
+                                console.Print(commandResult.Message, Colors.Red, ConsoleMessageType.Error);
                                 return false;
                         }
                         break;

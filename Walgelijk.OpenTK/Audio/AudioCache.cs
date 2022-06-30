@@ -1,5 +1,4 @@
 ﻿using OpenTK.Audio.OpenAL;
-using System.Collections.Generic;
 
 namespace Walgelijk.OpenTK
 {

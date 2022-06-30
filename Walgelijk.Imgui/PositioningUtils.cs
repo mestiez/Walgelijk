@@ -108,7 +108,7 @@ namespace Walgelijk.Imgui
         {
             var old = id.InnerScrollOffset;
             GetVerticalScrollBounds(id, padding, out var lowerBound, out var upperBound);
-            id.InnerScrollOffset.Y = Utilities.Clamp(id.InnerScrollOffset.Y + delta, lowerBound, upperBound) ;
+            id.InnerScrollOffset.Y = Utilities.Clamp(id.InnerScrollOffset.Y + delta, lowerBound, upperBound);
             return id.InnerScrollOffset.Y - old.Y;
         }
 
@@ -119,7 +119,7 @@ namespace Walgelijk.Imgui
         {
             var old = id.InnerScrollOffset;
             GetHorizontalScrollBounds(id, padding, out var lowerBound, out var upperBound);
-            id.InnerScrollOffset.X = Utilities.Clamp(id.InnerScrollOffset.X + delta, lowerBound, upperBound) ;
+            id.InnerScrollOffset.X = Utilities.Clamp(id.InnerScrollOffset.X + delta, lowerBound, upperBound);
             return id.InnerScrollOffset.X - old.X;
         }
 

@@ -35,5 +35,5 @@
         /// Factor by which the time is multiplied
         /// </summary>
         public float TimeScale { get; set; } = 1;
-}
+    }
 }

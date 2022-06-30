@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace Walgelijk
+﻿namespace Walgelijk
 {
     /// <summary>
     /// Generates entity identities

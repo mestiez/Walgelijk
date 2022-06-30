@@ -37,7 +37,7 @@ namespace Walgelijk.OpenTK
 
         protected override void DisposeOf(LoadedShader loaded)
         {
-            GL.DeleteShader(loaded.VertexShaderHandle); 
+            GL.DeleteShader(loaded.VertexShaderHandle);
             GL.DeleteShader(loaded.FragmentShaderHandle);
         }
     }

@@ -62,7 +62,7 @@ namespace Walgelijk.SimpleDrawing
         /// <summary>
         /// Colour to draw with
         /// </summary>
-        public Color Color;      
+        public Color Color;
         /// <summary>
         /// Colour to draw outlines with, if applicable
         /// </summary>
@@ -77,7 +77,7 @@ namespace Walgelijk.SimpleDrawing
         /// Create a drawing for a simple shape with a texture
         /// </summary>
         public Drawing(
-            VertexBuffer vertexBuffer, Vector2 position, Vector2 scale, float rotationRadians, 
+            VertexBuffer vertexBuffer, Vector2 position, Vector2 scale, float rotationRadians,
             Color color, Material material, IReadableTexture texture, bool screenSpace, DrawBounds drawBounds,
             float outlineWidth, Color outlineColour)
         {

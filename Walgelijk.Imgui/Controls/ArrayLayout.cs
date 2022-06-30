@@ -73,7 +73,7 @@ public struct ArrayLayout
         }
 
         //if (Gui.ContainsMouse(id, true))
-            PositioningUtils.ProcessScrolling(Gui.Context, id, style, 32);
+        PositioningUtils.ProcessScrolling(Gui.Context, id, style, 32);
 
         Gui.PrepareDrawer();
         Draw.Colour = Gui.GetBackgroundColour(style, State.Active);
@@ -155,7 +155,7 @@ public struct ArrayLayout
         }
 
         //if (Gui.ContainsMouse(id, true))
-            PositioningUtils.ProcessScrolling(Gui.Context, id, style, 32, true);
+        PositioningUtils.ProcessScrolling(Gui.Context, id, style, 32, true);
 
         Gui.PrepareDrawer();
         Draw.Colour = Gui.GetBackgroundColour(style, State.Active);

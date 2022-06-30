@@ -164,6 +164,16 @@
             Stop all sounds in the given track
             </summary>
         </member>
+        <member name="M:Walgelijk.AudioRenderer.SetTime(Walgelijk.Sound,System.Single)">
+            <summary>
+            Set time in seconds for the sound if it is playing
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioRenderer.GetTime(Walgelijk.Sound)">
+            <summary>
+            Get time in seconds for the sound if it is playing
+            </summary>
+        </member>
         <member name="M:Walgelijk.AudioRenderer.LoadSound(System.String,System.Boolean)">
             <summary>
             Load a sound from file

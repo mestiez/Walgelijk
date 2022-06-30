@@ -1,6 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using System;
-using System.Collections.Immutable;
 
 namespace Walgelijk.OpenTK
 {

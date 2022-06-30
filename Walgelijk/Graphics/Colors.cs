@@ -79,7 +79,7 @@
         /// Yellow
         /// </summary>
         public static readonly Color Yellow = new Color(255, 221, 0);
-   
+
         /// <summary>
         /// Aqua
         /// </summary>

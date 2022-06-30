@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -72,7 +71,7 @@ namespace Walgelijk
                 kerning.SecondChar = (char)GetIntFrom("second", line);
                 kerning.Amount = GetIntFrom("amount", line);
 
-                font.Kernings.Add(new KerningPair {CurrentChar = kerning.FirstChar, PreviousChar = kerning.SecondChar}, kerning);
+                font.Kernings.Add(new KerningPair { CurrentChar = kerning.FirstChar, PreviousChar = kerning.SecondChar }, kerning);
             }
         }
 
@@ -133,7 +132,7 @@ namespace Walgelijk
 
         private static int GetIntFrom(string name, string line)
         {
-            if (int.TryParse(GetStringFrom(name, line), out var result)) 
+            if (int.TryParse(GetStringFrom(name, line), out var result))
                 return result;
 
             Logger.Warn($"Cannot parse font metadata variable \"{name}\" to integer for \"{currentlyLoadingPath}\"", nameof(FontLoader));

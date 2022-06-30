@@ -164,7 +164,7 @@ namespace Walgelijk
 
                 dirtyLog = false;
 
-                consoleInfo.String = $"Filter: {debugConsole.Filter}"; 
+                consoleInfo.String = $"Filter: {debugConsole.Filter}";
             }
 
             inputBox.String = InputString;

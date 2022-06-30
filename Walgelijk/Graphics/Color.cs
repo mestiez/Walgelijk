@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.Common;
 using System.Numerics;
 
 namespace Walgelijk
@@ -151,8 +150,8 @@ namespace Walgelijk
                 left.B * right.B,
                 left.A * right.A
                 );
-        }        
-        
+        }
+
         public static Color operator *(float v, Color c)
         {
             return new Color(
@@ -161,8 +160,8 @@ namespace Walgelijk
                 c.B * v,
                 c.A * v
                 );
-        } 
-        
+        }
+
         public static Color operator *(Color c, float v)
         {
             return new Color(
@@ -218,7 +217,7 @@ namespace Walgelijk
             return new Vector4(value.R, value.G, value.B, value.A);
         }
 
-        public static implicit operator Color((float r,float g,float b,float a) value)
+        public static implicit operator Color((float r, float g, float b, float a) value)
         {
             return new Color(value.r, value.g, value.b, value.a);
         }

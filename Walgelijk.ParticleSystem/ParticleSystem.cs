@@ -117,7 +117,7 @@ namespace Walgelijk.ParticleSystem
                         positionData.newVelocity.Y *= -particles.FloorBounceFactor;
                         positionData.newVelocity.X *= 1 - particles.FloorCollisionDampeningFactor;
                         positionData.newPosition.Y = particles.FloorLevel.Value;
-                        if (MathF.Abs(particle.Position.Y  - particles.FloorLevel.Value) > 0.01f)
+                        if (MathF.Abs(particle.Position.Y - particles.FloorLevel.Value) > 0.01f)
                             particles.OnHitFloor.Dispatch(particle);
                     }
 

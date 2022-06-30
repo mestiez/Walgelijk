@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO.IsolatedStorage;
-using System.Linq;
 
 namespace Walgelijk
 {
@@ -62,7 +60,7 @@ namespace Walgelijk
         {
             get;
             set;
-        } 
+        }
 
         /// <summary>
         /// Load a font from a metadata file (BMFont .fnt)
@@ -77,7 +75,7 @@ namespace Walgelijk
         /// </summary>
         public Glyph GetGlyph(char c, Glyph fallback = default)
         {
-            if (Glyphs == null || Glyphs.Count == 0) 
+            if (Glyphs == null || Glyphs.Count == 0)
                 return default;
             if (Glyphs.TryGetValue(c, out var glyph))
                 return glyph;
@@ -89,7 +87,7 @@ namespace Walgelijk
         /// </summary>
         public Kerning GetKerning(char previous, char current)
         {
-            if (Kernings == null || Kernings.Count == 0) 
+            if (Kernings == null || Kernings.Count == 0)
                 return default;
             if (Kernings.TryGetValue(new KerningPair { CurrentChar = current, PreviousChar = previous }, out var kerning))
                 return kerning;

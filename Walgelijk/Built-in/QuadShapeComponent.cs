@@ -33,5 +33,5 @@ namespace Walgelijk
                 VertexBuffer = VertexBuffer
             };
         }
-    }   
+    }
 }

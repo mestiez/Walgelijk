@@ -9,7 +9,7 @@
 
         protected override void DisposeOf(TextureUnitLink loaded)
         {
-            
+
         }
 
         internal void ActivateTexturesFor(LoadedMaterial material)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Numerics;
 #pragma warning disable CA2211 // Non-constant fields should not be visible
 

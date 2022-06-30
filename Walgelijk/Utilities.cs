@@ -305,12 +305,12 @@ namespace Walgelijk
         /// <summary>
         /// Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
         /// </summary>
-        public static Vector2 Snap(Vector2 x, float snapSize) => new Vector2(Snap(x.X, snapSize), Snap(x.Y,snapSize));
+        public static Vector2 Snap(Vector2 x, float snapSize) => new Vector2(Snap(x.X, snapSize), Snap(x.Y, snapSize));
 
         /// <summary>
         /// Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
         /// </summary>
-        public static Vector3 Snap(Vector3 x, float snapSize) => new Vector3(Snap(x.X, snapSize), Snap(x.Y,snapSize), Snap(x.Z,snapSize));
+        public static Vector3 Snap(Vector3 x, float snapSize) => new Vector3(Snap(x.X, snapSize), Snap(x.Y, snapSize), Snap(x.Z, snapSize));
 
         /// <summary>
         /// Are the two given character spans the same, regardless of casing? 

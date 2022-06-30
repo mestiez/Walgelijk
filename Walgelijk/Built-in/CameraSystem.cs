@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Numerics;
 
 namespace Walgelijk
@@ -71,7 +70,7 @@ namespace Walgelijk
 
         public override void PreRender()
         {
-            if (!mainCameraSet || MainCameraComponent == null) 
+            if (!mainCameraSet || MainCameraComponent == null)
                 return;
             SetRenderTask();
 
@@ -86,7 +85,7 @@ namespace Walgelijk
 
         private void SetRenderTask()
         {
-            if (MainCameraTransform == null || MainCameraComponent == null) 
+            if (MainCameraTransform == null || MainCameraComponent == null)
                 return;
 
             var renderTarget = Scene.Game.Window.RenderTarget;

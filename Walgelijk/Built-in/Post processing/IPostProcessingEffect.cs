@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace Walgelijk
+﻿namespace Walgelijk
 {
     /// <summary>
     /// A post processing effect

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Numerics;
 
 namespace Walgelijk
@@ -26,7 +25,7 @@ namespace Walgelijk
         public readonly Dictionary<string, Vector3[]> Vec3Arrays = new();
         public readonly Dictionary<string, Matrix4x4[]> Matrix4x4Arrays = new();
 
-        private static void SetValue<T>(Dictionary<string, T> dict,string key, T value)
+        private static void SetValue<T>(Dictionary<string, T> dict, string key, T value)
         {
             if (!dict.TryAdd(key, value))
                 dict[key] = value;
@@ -164,7 +163,7 @@ namespace Walgelijk
         {
             //TODO misschien een aparte hashset met alle uniform namen
             if (Textures.ContainsKey(name))
-                return true;            
+                return true;
             if (Integers.ContainsKey(name))
                 return true;
             if (Floats.ContainsKey(name))

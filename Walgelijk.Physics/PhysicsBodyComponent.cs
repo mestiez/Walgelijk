@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace Walgelijk.Physics
+﻿namespace Walgelijk.Physics
 {
     /// <summary>
     /// Physics body component. Contains all data that describes a static or dynamic physical body

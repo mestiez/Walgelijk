@@ -1,9 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.IO;
-using System.Security.Authentication.ExtendedProtection;
-using System.Text;
-
-namespace Walgelijk
+﻿namespace Walgelijk
 {
     /// <summary>
     /// A sound that can be played. It does not contain audio data, but is instead linked to an <see cref="AudioData"/>

@@ -77,7 +77,7 @@ void main()
 
             public static readonly Material SaturationValueMaterial = Create();
 
-            public static readonly Shader DefaultShader = new (ShaderDefaults.WorldSpaceVertex, FragmentShader);
+            public static readonly Shader DefaultShader = new(ShaderDefaults.WorldSpaceVertex, FragmentShader);
 
             public static Material Create()
             {

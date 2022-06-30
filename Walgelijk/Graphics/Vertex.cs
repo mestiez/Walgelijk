@@ -36,8 +36,8 @@ namespace Walgelijk
             Position = position;
             TexCoords = texCoords;
             Color = color;
-        }        
-        
+        }
+
         /// <summary>
         /// Create a vertex with a position. White and zero UV by default;
         /// </summary>
@@ -54,7 +54,7 @@ namespace Walgelijk
         /// </summary>
         public Vertex(float x, float y, float z = 0)
         {
-            Position = new Vector3(x,y,z);
+            Position = new Vector3(x, y, z);
             TexCoords = Vector2.Zero;
             Color = Color.White;
         }

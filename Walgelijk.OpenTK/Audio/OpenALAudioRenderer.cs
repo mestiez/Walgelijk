@@ -1,10 +1,7 @@
 ﻿using OpenTK.Audio.OpenAL;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Walgelijk.OpenTK
 {
@@ -46,9 +43,7 @@ namespace Walgelijk.OpenTK
         public OpenALAudioRenderer()
         {
             Resources.RegisterType(typeof(AudioData), d => LoadSound(d));
-
             canEnumerateDevices = AL.IsExtensionPresent("ALC_ENUMERATION_EXT");
-
             Initialise();
         }
 
@@ -408,6 +403,19 @@ namespace Walgelijk.OpenTK
 
             foreach (var item in AudioObjects.Sources.GetAllUnloaded())
                 UpdateIfRequired(item, out _);
+        }
+
+        public override void SetTime(Sound sound, float seconds)
+        {
+            UpdateIfRequired(sound, out var source);
+            AL.Source(source, ALSourcef.SecOffset, seconds);
+        }
+
+        public override float GetTime(Sound sound)
+        {
+            UpdateIfRequired(sound, out var source);
+            AL.GetSource(source, ALSourcef.SecOffset, out var offset);
+            return offset;
         }
     }
 }

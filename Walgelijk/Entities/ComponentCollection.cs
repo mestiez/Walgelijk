@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -77,9 +76,9 @@ public class BasicComponentCollection : IComponentCollection
                     yield return new EntityWith<T>(typed, item.Entity);
     }
 
-        /// <summary>
-        /// Get the component of the <b>exact</b> type that is given
-        /// </summary>
+    /// <summary>
+    /// Get the component of the <b>exact</b> type that is given
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T GetComponentFrom<T>(Entity entity) where T : class
     {

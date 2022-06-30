@@ -31,11 +31,11 @@ namespace Walgelijk.Imgui
         {
             Array.Fill(ButtonsDown, false);
             Array.Fill(ButtonsUp, false);
-            Array.Fill(ButtonsHeld, (false,false));
+            Array.Fill(ButtonsHeld, (false, false));
 
             Array.Fill(KeysDown, false);
             Array.Fill(KeysUp, false);
-            Array.Fill(KeysHeld, (false,false));
+            Array.Fill(KeysHeld, (false, false));
 
             TextEntered = string.Empty;
             ScrollDelta = 0;
