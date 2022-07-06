@@ -56,6 +56,7 @@ public class OpenALAudioRenderer : AudioRenderer
 
     private readonly Dictionary<AudioTrack, HashSet<Sound>> tracks = new();
     private readonly Dictionary<Sound, AudioTrack?> trackBySound = new();
+    private readonly TemporarySource[] temporySourceBuffer;
 
     public override float Volume
     {
@@ -82,7 +83,8 @@ public class OpenALAudioRenderer : AudioRenderer
     public OpenALAudioRenderer(int maxTempSourceCount = 256)
     {
         MaxTempSourceCount = maxTempSourceCount;
-        temporarySources = new(MaxTempSourceCount); 
+        temporarySources = new(MaxTempSourceCount);
+        temporySourceBuffer = new TemporarySource[MaxTempSourceCount];
         Resources.RegisterType(typeof(AudioData), d => LoadSound(d));
         canEnumerateDevices = AL.IsExtensionPresent("ALC_ENUMERATION_EXT");
         Initialise();
@@ -280,19 +282,22 @@ public class OpenALAudioRenderer : AudioRenderer
         if (!canPlayAudio)
             return;
 
+        int i = 0;
         foreach (var v in temporarySources.GetAllInUse())
+            temporySourceBuffer[i++] = v;
+
+        foreach (var v in temporySourceBuffer.AsSpan()[0..i])
         {
             if (v.CurrentLifetime > v.Duration)
             {
                 AL.DeleteSource(v.Source);
                 temporarySources.ReturnToPool(v);
             }
+            else 
+                v.CurrentLifetime += game.Time.DeltaTime;
         }
 
-        foreach (var v in temporarySources.GetAllInUse())
-        {
-            v.CurrentLifetime += game.Time.DeltaTime;
-        }
+        Array.Clear(temporySourceBuffer);
     }
 
     public override bool IsPlaying(Sound sound)
