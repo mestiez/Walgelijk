@@ -3265,6 +3265,11 @@
             How many objects have been created
             </summary>
         </member>
+        <member name="M:Walgelijk.Pool`2.GetAllInUse">
+            <summary>
+            Enumerates through all objects currently in use
+            </summary>
+        </member>
         <member name="M:Walgelijk.Pool`2.#ctor(System.Int32)">
             <summary>
             Create a pool with the given capacity

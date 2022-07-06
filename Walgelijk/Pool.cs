@@ -23,6 +23,15 @@ namespace Walgelijk
         private readonly List<T> currentlyInUse;
 
         /// <summary>
+        /// Enumerates through all objects currently in use
+        /// </summary>
+        public IEnumerable<T> GetAllInUse()
+        {
+            foreach (var item in currentlyInUse)
+                yield return item;
+        }
+
+        /// <summary>
         /// Create a pool with the given capacity
         /// </summary>
         public Pool(int maxCapacity = 1000)
