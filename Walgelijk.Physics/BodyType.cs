@@ -1,8 +1,7 @@
-﻿namespace Walgelijk.Physics
+﻿namespace Walgelijk.Physics;
+
+public enum BodyType
 {
-    public enum BodyType
-    {
-        Dynamic,
-        Static
-    }
+    Dynamic,
+    Static
 }

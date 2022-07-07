@@ -1,14 +1,13 @@
 ﻿using System.Numerics;
 
-namespace Walgelijk.Physics
+namespace Walgelijk.Physics;
+
+public struct RaycastResult
 {
-    public struct RaycastResult
-    {
-        public Entity Entity;
-        public PhysicsBodyComponent Body;
-        public ICollider Collider;
-        public Vector2 Normal;
-        public float Distance;
-        public Vector2 Position;
-    }
+    public Entity Entity;
+    public PhysicsBodyComponent Body;
+    public ICollider Collider;
+    public Vector2 Normal;
+    public float Distance;
+    public Vector2 Position;
 }

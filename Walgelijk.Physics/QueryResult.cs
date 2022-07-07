@@ -1,9 +1,15 @@
-﻿namespace Walgelijk.Physics
+﻿namespace Walgelijk.Physics;
+
+public struct QueryResult
 {
-    public struct QueryResult
+    public readonly Entity Entity;
+    public readonly PhysicsBodyComponent Body;
+    public readonly ICollider Collider;
+
+    public QueryResult(Entity entity, PhysicsBodyComponent body, ICollider collider)
     {
-        public Entity Entity;
-        public PhysicsBodyComponent Body;
-        public ICollider Collider;
+        Entity = entity;
+        Body = body;
+        Collider = collider;
     }
 }
