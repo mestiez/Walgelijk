@@ -8,7 +8,7 @@ namespace Walgelijk
     public class FixedIntervalDistributor
     {
         /// <summary>
-        /// Preferred cycles rate
+        /// Preferred rate in Hz
         /// </summary>
         public float Rate
         {
@@ -21,7 +21,7 @@ namespace Walgelijk
         }
 
         /// <summary>
-        /// Maximum ouput cycles rate that
+        /// Maximum allowed ouput rate per frame
         /// </summary>
         public int MaxRate { get; set; } = 256;
 
@@ -40,10 +40,14 @@ namespace Walgelijk
         {
             timeStepAccumulator += realDeltaTime;
 
-            int requiredCycles = (int)MathF.Floor(timeStepAccumulator / Interval);
+            int requiredCycles = 0;
+            float interval = Interval;
 
-            if (requiredCycles > 0)
-                timeStepAccumulator -= requiredCycles * Interval;
+            while (timeStepAccumulator > interval)
+            {
+                timeStepAccumulator -= interval;
+                requiredCycles++;
+            }
 
             return Math.Min(MaxRate, requiredCycles);
         }
