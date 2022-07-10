@@ -10,28 +10,24 @@ namespace Walgelijk
         /// <summary>
         /// Preferred rate in Hz
         /// </summary>
-        public float Rate
-        {
-            get => updatesPerSecond;
-            set
-            {
-                updatesPerSecond = value;
-                Interval = 1f / value;
-            }
-        }
+        public float Rate { get; set; }
 
         /// <summary>
         /// Maximum allowed ouput rate per frame
         /// </summary>
         public int MaxRate { get; set; } = 256;
 
-        private float timeStepAccumulator = 0;
-        private float updatesPerSecond = 60;
-
         /// <summary>
         /// 1.0f / <see cref="Rate"/>
         /// </summary>
-        public float Interval { get; private set; } = 1 / 60f;
+        public float Interval { get => 1 / Rate; set => Rate = 1 / value; }
+
+        public FixedIntervalDistributor(float rateHz = 60)
+        {
+            Rate = rateHz;
+        }
+
+        private float timeStepAccumulator = 0;
 
         /// <summary>
         /// Calculate the amount of cycles to execute
