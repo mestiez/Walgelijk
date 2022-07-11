@@ -3897,12 +3897,12 @@
         </member>
         <member name="P:Walgelijk.FixedIntervalDistributor.Rate">
             <summary>
-            Preferred cycles rate
+            Preferred rate in Hz
             </summary>
         </member>
         <member name="P:Walgelijk.FixedIntervalDistributor.MaxRate">
             <summary>
-            Maximum ouput cycles rate that
+            Maximum allowed ouput rate per frame
             </summary>
         </member>
         <member name="P:Walgelijk.FixedIntervalDistributor.Interval">

@@ -19,7 +19,9 @@ namespace Walgelijk.Imgui.Controls
             int index = Array.IndexOf(names, Enum.GetName(typeof(T), selected));
             if (Process(topLeft, size, names, ref index, maxItemsBeforeScrolling, style, site, optionalId))
             {
-                selected = (T)values.GetValue(index);
+                var v = values.GetValue(index);
+                if (v != null)
+                    selected = (T)v;
                 return true;
             }
             return false;
@@ -67,7 +69,7 @@ namespace Walgelijk.Imgui.Controls
                 Gui.Context.Order = Draw.Order = RenderOrder.UI.WithOrder(int.MaxValue);
                 Gui.StartVerticalLayout(rect.BottomLeft + new Vector2(0, size.Y), new Vector2(size.X, listHeight), ArrayLayoutMode.Start, ArrayScaleMode.Stretch, style);
                 var layout = Gui.Context.LastCreatedIdentity ?? throw new Exception("Vertical dropdown layout could not be created");
-                layout.Order = 2147383648;
+                layout.Order = int.MaxValue - 1;
                 var layoutRect = new Rect(layout.TopLeft.X, layout.TopLeft.Y, layout.TopLeft.X + layout.Size.X, layout.TopLeft.Y + layout.Size.Y);
                 isMouseInsideDropdown = layoutRect.ContainsPoint(Gui.Input.WindowMousePos);
                 if (!Gui.Context.IsAnythingHot() && isMouseInsideDropdown)
@@ -89,7 +91,9 @@ namespace Walgelijk.Imgui.Controls
                 Gui.Context.Order = Draw.Order = oldOrder;
             }
 
-            Gui.ProcessButtonLike(id, rect, out var result, out var wasPressed, out var wasReleased, true);
+            bool result = false, wasPressed = false, wasReleased = false;
+            if (ActiveDropdown != id.Raw)
+                Gui.ProcessButtonLike(id, rect, out result, out wasPressed, out wasReleased, true);
 
             if (wasPressed)
             {
