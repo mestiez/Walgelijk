@@ -181,16 +181,16 @@ namespace Walgelijk
         public static T PickRandom<T>(IEnumerable<T> collection)
         {
             return collection.ElementAt(RandomInt(0, collection.Count()));
-        }      
-        
+        }
+
         /// <summary>
         /// Return a random value from the given parameters
         /// </summary>
         public static T PickRandom<T>(T first, T second)
         {
             return RandomFloat() > 0.5f ? first : second;
-        }     
-        
+        }
+
         /// <summary>
         /// Return a random value from the given parameters
         /// </summary>
@@ -202,8 +202,8 @@ namespace Walgelijk
                 1 => second,
                 _ => third,
             };
-        }  
-        
+        }
+
         /// <summary>
         /// Return a random value from the given parameters
         /// </summary>
@@ -216,8 +216,8 @@ namespace Walgelijk
                 2 => third,
                 _ => fourth,
             };
-        }    
-        
+        }
+
         /// <summary>
         /// Return a random value from the given parameters
         /// </summary>
@@ -379,10 +379,73 @@ namespace Walgelijk
             return NanFallback(targetPosition - v + f * MathF.Exp(-t));
         }
 
+
+        /// <summary>
+        /// Smoothly approaches a value to a target angle degrees given a speed and dt
+        /// <br></br>
+        /// By luispedrofonseca
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float SmoothAngleApproach(float pastPosition, float pastTargetPosition, float targetPosition, float speed, float deltaTime)
+        {
+            var t = deltaTime * speed;
+            var v = (DeltaAngle(pastTargetPosition, targetPosition)) / t;
+            var f = DeltaAngle(pastTargetPosition, pastPosition) + v;
+            return NanFallback(targetPosition - v + f * MathF.Exp(-t));
+        }
+
+        /// <summary>
+        /// Smoothly approaches a value to a target value given a speed and dt
+        /// <br></br>
+        /// By luispedrofonseca
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float SmoothApproach(float pastPosition, float targetPosition, float speed, float deltaTime)
+        {
+            var t = deltaTime * speed;
+            return NanFallback(targetPosition + (pastPosition - targetPosition) * MathF.Exp(-t));
+        }
+
+        /// <summary>
+        /// Smoothly approaches a value to a target value given a speed and dt
+        /// <br></br>
+        /// By luispedrofonseca
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 SmoothApproach(Vector2 pastPosition, Vector2 targetPosition, float speed, float deltaTime)
+        {
+            var t = deltaTime * speed;
+            return NanFallback(targetPosition + (pastPosition - targetPosition) * MathF.Exp(-t));
+        }
+
+        /// <summary>
+        /// Smoothly approaches a value to a target value given a speed and dt
+        /// <br></br>
+        /// By luispedrofonseca
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 SmoothApproach(Vector3 pastPosition, Vector3 targetPosition, float speed, float deltaTime)
+        {
+            var t = deltaTime * speed;
+            return NanFallback(targetPosition + (pastPosition - targetPosition) * MathF.Exp(-t));
+        }
+
+        /// <summary>
+        /// Smoothly approaches a value to a target value given a speed and dt
+        /// <br></br>
+        /// By luispedrofonseca
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 SmoothApproach(Vector4 pastPosition, Vector4 targetPosition, float speed, float deltaTime)
+        {
+            var t = deltaTime * speed;
+            return NanFallback(targetPosition + (pastPosition - targetPosition) * MathF.Exp(-t));
+        }
+
         /// <summary>
         /// Returns the given fallback value (0 by default) if the given input value is NaN
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float NanFallback(float v, float fallback = 0) => float.IsNaN(v) ? fallback : v;
 
         /// <summary>

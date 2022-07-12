@@ -4838,7 +4838,57 @@
             By luispedrofonseca
             </summary>
         </member>
+        <member name="M:Walgelijk.Utilities.SmoothAngleApproach(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target angle degrees given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector2,System.Numerics.Vector2,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector3,System.Numerics.Vector3,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector4,System.Numerics.Vector4,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
         <member name="M:Walgelijk.Utilities.NanFallback(System.Single,System.Single)">
+            <summary>
+            Returns the given fallback value (0 by default) if the given input value is NaN
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.NanFallback(System.Numerics.Vector2,System.Single)">
+            <summary>
+            Returns the given fallback value (0 by default) if the given input value is NaN
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.NanFallback(System.Numerics.Vector3,System.Single)">
+            <summary>
+            Returns the given fallback value (0 by default) if the given input value is NaN
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.NanFallback(System.Numerics.Vector4,System.Single)">
             <summary>
             Returns the given fallback value (0 by default) if the given input value is NaN
             </summary>
