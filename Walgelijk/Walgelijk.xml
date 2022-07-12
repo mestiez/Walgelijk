@@ -722,9 +722,9 @@
             Returns if the model matrix is aligned to the transformation
             </summary>
         </member>
-        <member name="M:Walgelijk.TransformComponent.RecalculateModelMatrix(System.Numerics.Matrix4x4)">
+        <member name="M:Walgelijk.TransformComponent.RecalculateModelMatrix(System.Numerics.Matrix3x2)">
             <summary>
-            Recalculate the model matrix considering a containing matrix. This is usually <see cref="P:System.Numerics.Matrix4x4.Identity"/>
+            Recalculate the model matrix considering a containing matrix. This is usually <see cref="P:System.Numerics.Matrix3x2.Identity"/>
             </summary>
         </member>
         <member name="T:Walgelijk.TransformSystem">

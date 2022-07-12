@@ -152,9 +152,11 @@ namespace Walgelijk.ParticleSystem
                 if (!particle.Active)
                     continue;
 
-                Matrix4x4 model = Matrix4x4.CreateRotationZ(particle.Angle) * Matrix4x4.CreateScale(particle.Size) * Matrix4x4.CreateTranslation(particle.Position.X, particle.Position.Y, 0);
+                var model = Matrix3x2.CreateRotation(particle.Angle * Utilities.DegToRad) 
+                    * Matrix3x2.CreateScale(particle.Size)
+                    * Matrix3x2.CreateTranslation(particle.Position.X, particle.Position.Y);
 
-                posArray.SetAt(activeIndex, model);
+                posArray.SetAt(activeIndex, new Matrix4x4(model));
                 colArray.SetAt(activeIndex, (Vector4)particle.Color);
 
                 activeIndex++;
@@ -164,7 +166,7 @@ namespace Walgelijk.ParticleSystem
 
             var task = particles.RenderTask;
             task.InstanceCount = particles.CurrentParticleCount;
-            task.ModelMatrix = particles.WorldSpace ? Matrix4x4.Identity : transform.LocalToWorldMatrix;
+            task.ModelMatrix = particles.WorldSpace ? Matrix4x4.Identity : new Matrix4x4(transform.LocalToWorldMatrix);
 
             particles.VertexBuffer.ExtraDataHasChanged = true;
 

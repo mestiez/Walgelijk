@@ -44,7 +44,7 @@ namespace Walgelijk
             bool shouldRecalculate = !transform.IsMatrixCached;
 
             if (shouldRecalculate)
-                transform.RecalculateModelMatrix(Matrix4x4.Identity);
+                transform.RecalculateModelMatrix(Matrix3x2.Identity);
         }
 
         private void CascadeMatrixCalculation(EntityWith<TransformComponent> current, IEnumerable<EntityWith<TransformComponent>> collection, TransformComponent? up = null)
@@ -53,7 +53,7 @@ namespace Walgelijk
             bool shouldRecalculate = !transform.IsMatrixCached;
 
             if (shouldRecalculate)
-                transform.RecalculateModelMatrix(up?.LocalToWorldMatrix ?? Matrix4x4.Identity);
+                transform.RecalculateModelMatrix(up?.LocalToWorldMatrix ?? Matrix3x2.Identity);
 
             foreach (var e in collection)
             {

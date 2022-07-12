@@ -31,11 +31,11 @@ namespace Walgelijk
                     shape.RenderTask.ModelMatrix = Matrix4x4.Identity;
                     float x = shape.HorizontalFlip ? -1 : 1;
                     float y = shape.VerticalFlip ? -1 : 1;
-                    shape.RenderTask.ModelMatrix *= Matrix4x4.CreateScale(x, y, 1);
-                    shape.RenderTask.ModelMatrix *= transform.LocalToWorldMatrix;
+                    shape.RenderTask.ModelMatrix *= new Matrix4x4(Matrix3x2.CreateScale(x, y));
+                    shape.RenderTask.ModelMatrix *= new Matrix4x4(transform.LocalToWorldMatrix);
                 }
                 else
-                    shape.RenderTask.ModelMatrix = transform.LocalToWorldMatrix;
+                    shape.RenderTask.ModelMatrix = new Matrix4x4(transform.LocalToWorldMatrix);
 
                 RenderQueue.Add(shape.RenderTask, shape.RenderOrder);
             }
