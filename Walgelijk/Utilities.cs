@@ -379,7 +379,6 @@ namespace Walgelijk
             return NanFallback(targetPosition - v + f * MathF.Exp(-t));
         }
 
-
         /// <summary>
         /// Smoothly approaches a value to a target angle degrees given a speed and dt
         /// <br></br>
@@ -392,6 +391,18 @@ namespace Walgelijk
             var v = (DeltaAngle(pastTargetPosition, targetPosition)) / t;
             var f = DeltaAngle(pastTargetPosition, pastPosition) + v;
             return NanFallback(targetPosition - v + f * MathF.Exp(-t));
+        }
+
+        /// <summary>
+        /// Smoothly approaches a value to a target angle degrees given a speed and dt
+        /// <br></br>
+        /// By luispedrofonseca
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float SmoothAngleApproach(float pastPosition, float targetPosition, float speed, float deltaTime)
+        {
+            var t = deltaTime * speed;
+            return NanFallback(targetPosition + DeltaAngle(pastPosition, targetPosition) * MathF.Exp(-t));
         }
 
         /// <summary>
