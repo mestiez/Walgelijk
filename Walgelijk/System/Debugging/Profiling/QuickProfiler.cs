@@ -7,7 +7,7 @@ namespace Walgelijk
     {
         private const float Padding = 5;
 
-        private readonly Matrix4x4 textModel = Matrix4x4.CreateScale(1f, -1f, 1) * Matrix4x4.CreateTranslation(Padding, Padding, 0);
+        private readonly Matrix3x2 textModel = Matrix3x2.CreateScale(1f, -1f) * Matrix3x2.CreateTranslation(Padding, Padding);
         private readonly TextComponent text;
         private readonly RectangleShapeComponent background;
         private readonly Profiler profiler;
@@ -33,7 +33,7 @@ namespace Walgelijk
             text.RenderTask.ModelMatrix = textModel;
 
             Rect textBounds = text.LocalBoundingBox;
-            background.RenderTask.ModelMatrix = Matrix4x4.CreateScale(new Vector3(textBounds.Width + (2 * Padding), -textBounds.Height - (2 * Padding), 1));
+            background.RenderTask.ModelMatrix = Matrix3x2.CreateScale(textBounds.Width + (2 * Padding), -textBounds.Height - (2 * Padding));
 
             queue.Add(background.RenderTask, RenderOrder.DebugUI);
             queue.Add(text.RenderTask, RenderOrder.DebugUI);

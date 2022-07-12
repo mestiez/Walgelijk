@@ -36,7 +36,7 @@ namespace Walgelijk
             public override void Render()
             {
                 var windowSize = Scene.Game.Window.Size;
-                var stretch = Matrix4x4.CreateScale(windowSize.X, -windowSize.Y, 1) * Matrix4x4.CreateTranslation(0, windowSize.Y, 0);
+                var stretch = Matrix3x2.CreateScale(windowSize.X, -windowSize.Y) * Matrix3x2.CreateTranslation(0, windowSize.Y);
 
                 foreach (var item in Scene.GetAllComponentsOfType<BackgroundComponent>())
                 {
@@ -45,7 +45,7 @@ namespace Walgelijk
                         continue;
 
                     bg.RenderTask.Material = bg.Material;
-                    bg.RenderTask.ModelMatrix = stretch * Matrix4x4.CreateTranslation(bg.Offset.X * windowSize.X, bg.Offset.Y * windowSize.Y, 0);
+                    bg.RenderTask.ModelMatrix = stretch * Matrix3x2.CreateTranslation(bg.Offset.X * windowSize.X, bg.Offset.Y * windowSize.Y);
 
                     RenderQueue.Add(bg.RenderTask, bg.RenderOrder);
                 }

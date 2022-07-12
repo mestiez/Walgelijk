@@ -17,8 +17,8 @@ namespace Walgelijk
         private readonly DrawBoundsTask boundsTask;
         private readonly GroupRenderTask activeConsoleTask;
 
-        private readonly Matrix4x4 textModel = Matrix4x4.CreateScale(1f, -1f, 1);
-        private Matrix4x4 model = Matrix4x4.Identity;
+        private readonly Matrix3x2 textModel = Matrix3x2.CreateScale(1f, -1f);
+        private Matrix3x2 model = Matrix3x2.Identity;
         private bool dirtyLog;
         private float overlayLife;
         private float consoleSlideOffset;
@@ -124,10 +124,8 @@ namespace Walgelijk
 
             if (overlayLife < ConsoleNotificationDuration && overlay.RenderTask != null)
             {
-                overlay.RenderTask.ModelMatrix = textModel * Matrix4x4.CreateTranslation(
-                    debugConsole.Game.Window.Size.X - overlay.LocalBoundingBox.Width - 5,
-                    5,
-                    0);
+                overlay.RenderTask.ModelMatrix = textModel * 
+                    Matrix3x2.CreateTranslation(debugConsole.Game.Window.Size.X - overlay.LocalBoundingBox.Width - 5, 5);
 
                 if (overlayLife > ConsoleNotificationDuration * .75f)
                     overlay.Color = Colors.White.WithAlpha(0.5f);
@@ -170,16 +168,16 @@ namespace Walgelijk
             inputBox.String = InputString;
 
             float yPos = (1 - /*Easings.Cubic.Out*/(consoleSlideOffset)) * -TotalHeight;
-            model = Matrix4x4.CreateTranslation(0, yPos, 0);
+            model = Matrix3x2.CreateTranslation(0, yPos);
 
             boundsTask.DrawBounds = new DrawBounds(new Vector2(debugConsole.Game.Window.Size.X, Utilities.Clamp(LogHeight + yPos, float.Epsilon, LogHeight)), default);
 
-            text.RenderTask.ModelMatrix = textModel * Matrix4x4.CreateTranslation(5, -text.LocalBoundingBox.Height + LogHeight + debugConsole.ScrollOffset - 5, 0) * model;
+            text.RenderTask.ModelMatrix = textModel * Matrix3x2.CreateTranslation(5, -text.LocalBoundingBox.Height + LogHeight + debugConsole.ScrollOffset - 5) * model;
 
-            inputBackground.RenderTask.ModelMatrix = Matrix4x4.CreateScale(debugConsole.Game.Window.Size.X, -InputHeight, 1) * Matrix4x4.CreateTranslation(0, -InputHeight + TotalHeight, 0) * model;
-            inputBox.RenderTask.ModelMatrix = textModel * Matrix4x4.CreateTranslation(5, -InputHeight + TotalHeight + 1, 0) * model;
-            background.RenderTask.ModelMatrix = Matrix4x4.CreateScale(debugConsole.Game.Window.Size.X, -TotalHeight, 1) * model;
-            consoleInfo.RenderTask.ModelMatrix = textModel * Matrix4x4.CreateScale(1.5f) * Matrix4x4.CreateTranslation(debugConsole.Game.Window.Size.X - 10, 10, 0);
+            inputBackground.RenderTask.ModelMatrix = Matrix3x2.CreateScale(debugConsole.Game.Window.Size.X, -InputHeight) * Matrix3x2.CreateTranslation(0, -InputHeight + TotalHeight) * model;
+            inputBox.RenderTask.ModelMatrix = textModel * Matrix3x2.CreateTranslation(5, -InputHeight + TotalHeight + 1) * model;
+            background.RenderTask.ModelMatrix = Matrix3x2.CreateScale(debugConsole.Game.Window.Size.X, -TotalHeight) * model;
+            consoleInfo.RenderTask.ModelMatrix = textModel * Matrix3x2.CreateScale(1.5f) * Matrix3x2.CreateTranslation(debugConsole.Game.Window.Size.X - 10, 10);
 
             var queue = debugConsole.Game.RenderQueue;
             queue.Add(activeConsoleTask, RenderOrder.Top.WithOrder(int.MaxValue));

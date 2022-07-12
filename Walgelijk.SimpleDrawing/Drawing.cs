@@ -45,7 +45,7 @@ namespace Walgelijk.SimpleDrawing
         /// <summary>
         /// Relevant transformation matrix
         /// </summary>
-        public Matrix4x4 Transformation = Matrix4x4.Identity;
+        public Matrix3x2 Transformation = Matrix3x2.Identity;
         /// <summary>
         /// Current blend mode
         /// </summary>

@@ -10,7 +10,7 @@ namespace Walgelijk
         /// <summary>
         /// Create a shape render task
         /// </summary>
-        public InstancedShapeRenderTask(VertexBuffer vertexBuffer, Matrix4x4 modelMatrix = default, Material? material = null) : base(vertexBuffer, modelMatrix, material)
+        public InstancedShapeRenderTask(VertexBuffer vertexBuffer, Matrix3x2 modelMatrix = default, Material? material = null) : base(vertexBuffer, modelMatrix, material)
         {
         }
 
@@ -21,7 +21,7 @@ namespace Walgelijk
 
         protected override void Draw(IGraphics graphics)
         {
-            graphics.CurrentTarget.ModelMatrix = ModelMatrix;
+            graphics.CurrentTarget.ModelMatrix = new Matrix4x4(ModelMatrix);
             graphics.DrawInstanced(VertexBuffer, InstanceCount, Material);
         }
     }

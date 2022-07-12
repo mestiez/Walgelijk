@@ -37,7 +37,7 @@ namespace Walgelijk
 
             VertexBuffer = new VertexBuffer();
             VertexBuffer.PrimitiveType = Primitive.Triangles;
-            RenderTask = new ShapeRenderTask(VertexBuffer, Matrix4x4.Identity, this.font.Material);
+            RenderTask = new ShapeRenderTask(VertexBuffer, Matrix3x2.Identity, this.font.Material);
 
             TextMeshGenerator = new TextMeshGenerator
             {

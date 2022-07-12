@@ -76,7 +76,7 @@ namespace Walgelijk
 
             RenderTask = new ShapeRenderTask(VertexBuffer)
             {
-                ModelMatrix = Matrix4x4.Identity,
+                ModelMatrix = Matrix3x2.Identity,
                 VertexBuffer = VertexBuffer
             };
 

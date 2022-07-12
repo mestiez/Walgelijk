@@ -2430,7 +2430,7 @@
             Render task that renders an instanced vertex buffer with a material
             </summary>
         </member>
-        <member name="M:Walgelijk.InstancedShapeRenderTask.#ctor(Walgelijk.VertexBuffer,System.Numerics.Matrix4x4,Walgelijk.Material)">
+        <member name="M:Walgelijk.InstancedShapeRenderTask.#ctor(Walgelijk.VertexBuffer,System.Numerics.Matrix3x2,Walgelijk.Material)">
             <summary>
             Create a shape render task
             </summary>
@@ -2455,7 +2455,7 @@
             Render task that renders a vertex buffer with a material
             </summary>
         </member>
-        <member name="M:Walgelijk.ShapeRenderTask.#ctor(Walgelijk.VertexBuffer,System.Numerics.Matrix4x4,Walgelijk.Material)">
+        <member name="M:Walgelijk.ShapeRenderTask.#ctor(Walgelijk.VertexBuffer,System.Numerics.Matrix3x2,Walgelijk.Material)">
             <summary>
             Create a shape render task
             </summary>

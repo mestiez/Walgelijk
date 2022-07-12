@@ -25,20 +25,20 @@ namespace Walgelijk.ParticleSystem
 
         public Material Material = Particle.DefaultMaterial;
 
-        public Vec2Range Gravity = new Vec2Range(new Vector2(0, -9.81f));
-        public FloatRange SpawnRadius = new FloatRange(0.2f, 1f);
-        public FloatRange LifeRange = new FloatRange(1, 3);
+        public Vec2Range Gravity = new (new Vector2(0, -9.81f));
+        public FloatRange SpawnRadius = new (0.2f, 1f);
+        public FloatRange LifeRange = new (1, 3);
 
-        public FloatRange StartSize = new FloatRange(1);
-        public FloatRange StartRotation = new FloatRange(0);
-        public Vec2Range StartVelocity = new Vec2Range(Vector2.One * -4, Vector2.One * 4);
-        public FloatRange StartRotationalVelocity = new FloatRange(-4, 4);
-        public ColorRange StartColor = new ColorRange(Colors.White);
-        public FloatRange Dampening = new FloatRange(0.1f);
-        public FloatRange RotationalDampening = new FloatRange(0.1f);
+        public FloatRange StartSize = new (1);
+        public FloatRange StartRotation = new (0);
+        public Vec2Range StartVelocity = new (Vector2.One * -4, Vector2.One * 4);
+        public FloatRange StartRotationalVelocity = new (-4, 4);
+        public ColorRange StartColor = new (Colors.White);
+        public FloatRange Dampening = new (0.1f);
+        public FloatRange RotationalDampening = new (0.1f);
 
-        public FloatCurve SizeOverLife = new FloatCurve(new Curve<float>.Key(1, 1));
-        public ColorCurve ColorOverLife = new ColorCurve(new Curve<Color>.Key(Colors.White, 1));
+        public FloatCurve SizeOverLife = new (new Curve<float>.Key(1, 1));
+        public ColorCurve ColorOverLife = new (new Curve<Color>.Key(Colors.White, 1));
 
         public float? FloorLevel = null;
         public float FloorBounceFactor = 0.4f;
@@ -53,7 +53,7 @@ namespace Walgelijk.ParticleSystem
         public readonly InstancedShapeRenderTask RenderTask;
         public readonly VertexBuffer VertexBuffer;
 
-        internal FixedIntervalDistributor EmissionDistributor = new FixedIntervalDistributor();
+        internal FixedIntervalDistributor EmissionDistributor = new();
 
         public RenderOrder Depth = default;
 
