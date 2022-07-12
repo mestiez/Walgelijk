@@ -4785,24 +4785,37 @@
             <param name="dampening">Optional dampening parameter (0 - 1)</param>
             <returns>A struct with the new position and new velocity</returns>
         </member>
-        <member name="M:Walgelijk.Utilities.GetLerpFactorDeltaTime(System.Single,System.Single)">
-            <summary>
-            Returns the lerp factor adjusted for the given time step
-            </summary>
-        </member>
         <member name="M:Walgelijk.Utilities.LerpDt(System.Single,System.Single)">
             <summary>
             Returns the lerp factor adjusted for the given time step
             </summary>
         </member>
-        <member name="M:Walgelijk.Utilities.EaseInOutCubic(System.Single)">
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>
-            Remaps a linear value from 0 to 1 to an ease-in ease-out cubic curve
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
             </summary>
         </member>
-        <member name="M:Walgelijk.Utilities.EaseInOutQuad(System.Single)">
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector2,System.Numerics.Vector2,System.Numerics.Vector2,System.Single,System.Single)">
             <summary>
-            Remaps a linear value from 0 to 1 to an ease-in ease-out quadractic curve
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector3,System.Numerics.Vector3,System.Numerics.Vector3,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector4,System.Numerics.Vector4,System.Numerics.Vector4,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.NanFallback(System.Single,System.Single)">

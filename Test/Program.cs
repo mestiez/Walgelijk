@@ -93,6 +93,9 @@ namespace Test
             private Sound costolot = new Sound(Resources.Load<AudioData>("Costolot.ogg"), true, false);
             private Sound kampvuur = new Sound(Resources.Load<AudioData>("kampvuurliedlied.wav"), true, false);
 
+            private Vector2 pos;
+            private Vector2 target;
+
             public override void Initialise()
             {
                 costolot.Track = track;
@@ -106,6 +109,12 @@ namespace Test
                 Draw.BlendMode = BlendMode.Multiply;
                 Draw.Image(Assets.Load<Texture>("qoitest"), new Rect(Vector2.Zero, new Vector2(512)), ImageContainmentMode.Contain);
                 Draw.BlendMode = null;
+
+                pos = Utilities.SmoothApproach(pos, target, Input.WorldMousePosition, 3, Time.DeltaTime);
+                target = Input.WorldMousePosition;
+                Draw.ResetTexture();
+                Draw.Colour = Colors.Magenta;
+                Draw.Circle(pos, new Vector2(20));
 
                 if (Gui.ClickButton("costolot", new Vector2(100, 100), new Vector2(100, 32)))
                 {
