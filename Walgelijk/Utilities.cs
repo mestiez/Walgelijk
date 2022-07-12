@@ -334,7 +334,7 @@ namespace Walgelijk
             var t = deltaTime * speed;
             var v = (targetPosition - pastTargetPosition) / t;
             var f = pastPosition - pastTargetPosition + v;
-            return targetPosition - v + f * MathF.Exp(-t);
+            return NanFallback(targetPosition - v + f * MathF.Exp(-t));
         }
 
         /// <summary>
@@ -348,7 +348,7 @@ namespace Walgelijk
             var t = deltaTime * speed;
             var v = (targetPosition - pastTargetPosition) / t;
             var f = pastPosition - pastTargetPosition + v;
-            return targetPosition - v + f * MathF.Exp(-t);
+            return NanFallback(targetPosition - v + f * MathF.Exp(-t));
         }
 
         /// <summary>
@@ -362,7 +362,7 @@ namespace Walgelijk
             var t = deltaTime * speed;
             var v = (targetPosition - pastTargetPosition) / t;
             var f = pastPosition - pastTargetPosition + v;
-            return targetPosition - v + f * MathF.Exp(-t);
+            return NanFallback(targetPosition - v + f * MathF.Exp(-t));
         }
 
         /// <summary>
@@ -376,7 +376,7 @@ namespace Walgelijk
             var t = deltaTime * speed;
             var v = (targetPosition - pastTargetPosition) / t;
             var f = pastPosition - pastTargetPosition + v;
-            return targetPosition - v + f * MathF.Exp(-t);
+            return NanFallback(targetPosition - v + f * MathF.Exp(-t));
         }
 
         /// <summary>
@@ -384,6 +384,24 @@ namespace Walgelijk
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)] 
         public static float NanFallback(float v, float fallback = 0) => float.IsNaN(v) ? fallback : v;
+
+        /// <summary>
+        /// Returns the given fallback value (0 by default) if the given input value is NaN
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 NanFallback(Vector2 v, float fallback = 0) => new Vector2(NanFallback(v.X), NanFallback(v.Y));
+
+        /// <summary>
+        /// Returns the given fallback value (0 by default) if the given input value is NaN
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 NanFallback(Vector3 v, float fallback = 0) => new Vector3(NanFallback(v.X), NanFallback(v.Y), NanFallback(v.Z));
+
+        /// <summary>
+        /// Returns the given fallback value (0 by default) if the given input value is NaN
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 NanFallback(Vector4 v, float fallback = 0) => new Vector4(NanFallback(v.X), NanFallback(v.Y), NanFallback(v.Z), NanFallback(v.W));
 
         /// <summary>
         /// Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>

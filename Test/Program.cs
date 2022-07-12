@@ -110,7 +110,7 @@ namespace Test
                 Draw.Image(Assets.Load<Texture>("qoitest"), new Rect(Vector2.Zero, new Vector2(512)), ImageContainmentMode.Contain);
                 Draw.BlendMode = null;
 
-                pos = Utilities.SmoothApproach(pos, target, Input.WorldMousePosition, 3, Time.DeltaTime);
+                pos = Utilities.SmoothApproach(pos, Input.WorldMousePosition, Input.WorldMousePosition, 3, Time.DeltaTime);
                 target = Input.WorldMousePosition;
                 Draw.ResetTexture();
                 Draw.Colour = Colors.Magenta;

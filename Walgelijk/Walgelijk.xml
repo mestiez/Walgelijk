@@ -4695,7 +4695,7 @@
         </member>
         <member name="M:Walgelijk.Utilities.RandomInt(System.Int32,System.Int32)">
             <summary>
-            Returns a random int in a range
+            Returns a random int in a range (inclusive min, exclusive max)
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.RandomByte">
@@ -4738,6 +4738,26 @@
         <member name="M:Walgelijk.Utilities.PickRandom``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
             Return a random entry in a <see cref="T:System.Collections.Generic.IEnumerable`1"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.PickRandom``1(``0,``0)">
+            <summary>
+            Return a random value from the given parameters
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.PickRandom``1(``0,``0,``0)">
+            <summary>
+            Return a random value from the given parameters
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.PickRandom``1(``0,``0,``0,``0)">
+            <summary>
+            Return a random value from the given parameters
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.PickRandom``1(``0,``0,``0,``0,``0)">
+            <summary>
+            Return a random value from the given parameters
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.AngleToVector(System.Single)">
