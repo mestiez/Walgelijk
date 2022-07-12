@@ -4845,6 +4845,13 @@
             By luispedrofonseca
             </summary>
         </member>
+        <member name="M:Walgelijk.Utilities.SmoothAngleApproach(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target angle degrees given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
         <member name="M:Walgelijk.Utilities.SmoothApproach(System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Smoothly approaches a value to a target value given a speed and dt
