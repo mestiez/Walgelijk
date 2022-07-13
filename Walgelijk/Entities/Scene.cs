@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace Walgelijk
 {
@@ -569,7 +570,10 @@ namespace Walgelijk
 
                         parallelGroupBySystemType.Add(type, group);
                         if (!parallelSystemGrouping.ContainsKey(group))
+                        {
+                            CreateThreadForGroup(group);
                             parallelSystemGrouping.Add(group, new HashSet<System>());
+                        }
                     }
 
                     system.ParallelGroup = group;
@@ -629,14 +633,25 @@ namespace Walgelijk
         /// </summary>
         public void RenderSystems()
         {
-            foreach (var system in orderedSystemCollection)
-                system.PreRender();
+            foreach (var item in orderedSystemCollection.GroupBy(static s => s.ParallelGroup))
+            {
+                if (item.Key != 0)
+                {
+                    dit werkt nog  niet
+                }
+  
+                void render()
+                {
+                    foreach (var system in item)
+                        system.PreRender();
 
-            foreach (var system in orderedSystemCollection)
-                system.Render();
+                    foreach (var system in orderedSystemCollection)
+                        system.Render();
 
-            foreach (var system in orderedSystemCollection)
-                system.PostRender();
+                    foreach (var system in orderedSystemCollection)
+                        system.PostRender();
+                }
+            }
         }
 
         /// <summary>
