@@ -30,6 +30,9 @@ namespace Walgelijk
         private readonly Dictionary<Type, System> systems = new();
         private readonly List<System> orderedSystemCollection = new();
 
+        private readonly Dictionary<int, HashSet<System>> parallelSystemGrouping = new();
+        private readonly Dictionary<Type, int> parallelGroupBySystemType = new();
+
         private readonly Dictionary<Entity, Tag> tagByEntity = new();
         private readonly Dictionary<Tag, HashSet<Entity>> entitiesByTag = new();
 
@@ -49,6 +52,7 @@ namespace Walgelijk
         {
             Game = game;
             ComponentDisposal.RegisterDisposer(new ShapeRendererDisposer());
+            parallelSystemGrouping.Add(0, new HashSet<System>());
         }
 
         /// <summary>
@@ -526,13 +530,55 @@ namespace Walgelijk
                 Game.Time.DeltaTime = 0;
         }
 
+        /// <summary>
+        /// Get all parallel groups 
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<int> GetParallelGroups() => parallelSystemGrouping.Keys;
+
+        /// <summary>
+        /// Get the systems in the given parallel group
+        /// </summary>
+        public IEnumerable<System> GetSystemsInParallelGroup(int group)
+        {
+            if (parallelSystemGrouping.TryGetValue(group, out var coll))
+                foreach (var item in coll)
+                    yield return item;
+            yield break;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ProcessAddDestroyBuffers()
         {
             foreach (var system in systemsToAdd)
             {
                 OnAddSystem?.Invoke(system);
-                systems.Add(system.GetType(), system);
+                var type = system.GetType();
+
+                if (type.GetCustomAttributes(typeof(ParallelAttribute), true).Any())
+                {
+                    if (!parallelGroupBySystemType.TryGetValue(type, out var group))
+                    {
+                        var attr = type.GetCustomAttributes(typeof(RequiresComponents), true);
+                        if (attr.Length > 1)
+                            throw new Exception("Parallel system can't have more than 1 RequiresComponents attribute");
+                        if (attr.Length == 1 && attr[0] is RequiresComponents rq)
+                            group = rq.GetTypeCollectionGroupId();
+                        else
+                            group = type.GetHashCode(); //doesnt depend on anything, get your own shit
+
+                        parallelGroupBySystemType.Add(type, group);
+                        if (!parallelSystemGrouping.ContainsKey(group))
+                            parallelSystemGrouping.Add(group, new HashSet<System>());
+                    }
+
+                    system.ParallelGroup = group;
+                    parallelSystemGrouping[group].Add(system);
+                }
+                else
+                    parallelSystemGrouping[0].Add(system);
+
+                systems.Add(type, system);
                 ReverseSortAddSystem(system);
                 system.ExecutionOrderChanged = false;
                 system.Initialise();
@@ -543,6 +589,7 @@ namespace Walgelijk
             {
                 if (systems.Remove(system.GetType(), out var removed))
                     orderedSystemCollection.Remove(removed);
+                parallelSystemGrouping[system.ParallelGroup].Remove(system);
             }
             systemsToDestroy.Clear();
 

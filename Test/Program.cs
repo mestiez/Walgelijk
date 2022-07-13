@@ -10,6 +10,48 @@ using Walgelijk.ParticleSystem;
 using Walgelijk.SimpleDrawing;
 using Walgelijk.Video;
 
+namespace TestWorld;
+
+public class Program
+{
+    private static Game game;
+
+    static void Main(string[] args)
+    {
+        game = new Game(
+            new OpenTKWindow("hallo daar", new Vector2(-1, -1), new Vector2(800, 600)),
+            new OpenALAudioRenderer()
+            );
+
+        game.Window.TargetUpdateRate = 0;
+        game.Console.DrawConsoleNotification = true;
+        game.Window.VSync = false;
+
+        Resources.RegisterType(typeof(Gif), path => Gif.Load(path));
+
+        Resources.SetBasePathForType<AudioData>("audio");
+        Resources.SetBasePathForType<Prefab>("prefabs");
+        Resources.SetBasePathForType<Texture>("textures");
+        Resources.SetBasePathForType<Font>("fonts");
+
+        Assets.Register("qoitest", static asset => Resources.Load<Texture>("qoitest.qoi"));
+        Assets.Register("resources/textures/pride.png", Assets.TextureFileProvider);
+
+        game.Scene = ThreadedSystemsScene.Load(game);
+
+#if DEBUG
+        game.DevelopmentMode = true;
+#else
+        game.DevelopmentMode = false;
+#endif
+        game.Window.SetIcon(Resources.Load<Texture>("icon.png"));
+        game.Profiling.DrawQuickProfiler = false;
+
+        game.Start();
+    }
+}
+
+#if FALSE
 namespace Test
 {
     class Program
@@ -390,3 +432,4 @@ namespace Test
         }
     }
 }
+#endif

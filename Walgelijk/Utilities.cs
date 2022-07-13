@@ -130,6 +130,24 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Shader-style deterministic random value (0 - 1)
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Hash(float p)
+        {
+            p = Fract(p * .1031f);
+            p *= p + 33.33f;
+            p *= p + p;
+            return Fract(p);
+        }        
+
+        /// <summary>
+        /// Get the fractional component
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Fract(float p) => p - MathF.Truncate(p);
+
+        /// <summary>
         /// Clamp a value within a range
         /// </summary>
         /// <returns></returns>

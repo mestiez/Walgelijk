@@ -1022,6 +1022,11 @@
             Generate a new identity value
             </summary>
         </member>
+        <member name="T:Walgelijk.ParallelAttribute">
+            <summary>
+            Attribute that lets the scene know that a System can be ran in parallel to others. A <see cref="T:Walgelijk.RequiresComponents"/> attribute can be used alongside this to make sure two systems that edit the same data are ran sequentially, atomically.
+            </summary>
+        </member>
         <member name="T:Walgelijk.Prefab">
             <summary>
             Structure that holds an entity and its components. Meant for serialisation.
@@ -1081,7 +1086,12 @@
             <summary>
             Construct a <see cref="T:Walgelijk.RequiresComponents"/> with the given types
             </summary>
-            <param name="componentTypes"></param>
+        </member>
+        <member name="M:Walgelijk.RequiresComponents.GetTypeCollectionGroupId">
+            <summary>
+            Get a unique ID for the types in the (treated as unordered) collection
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:Walgelijk.Scene">
             <summary>
@@ -1290,6 +1300,17 @@
             Prepares the scene for immediate activity. This is handled by the engine so there is no need to call this unless you know why you're calling it.
             </summary>
         </member>
+        <member name="M:Walgelijk.Scene.GetParallelGroups">
+            <summary>
+            Get all parallel groups 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Scene.GetSystemsInParallelGroup(System.Int32)">
+            <summary>
+            Get the systems in the given parallel group
+            </summary>
+        </member>
         <member name="M:Walgelijk.Scene.RenderSystems">
             <summary>
             Renders all systems that implement rendering code. This is typically handled by the window implementation
@@ -1348,6 +1369,11 @@
         <member name="P:Walgelijk.System.Graphics">
             <summary>
             Relevant graphics instance
+            </summary>
+        </member>
+        <member name="P:Walgelijk.System.ParallelGroup">
+            <summary>
+            The parallel group ID that this system belongs to. 0 means main thread.
             </summary>
         </member>
         <member name="P:Walgelijk.System.ExecutionOrder">
@@ -4706,6 +4732,16 @@
         <member name="M:Walgelijk.Utilities.RandomColour(System.Single)">
             <summary>
             Returns a colour where the RGB components are random
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Hash(System.Single)">
+            <summary>
+            Shader-style deterministic random value (0 - 1)
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Fract(System.Single)">
+            <summary>
+            Get the fractional component
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.Clamp(System.Single,System.Single,System.Single)">

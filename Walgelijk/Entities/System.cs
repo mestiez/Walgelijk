@@ -49,6 +49,11 @@
         protected IGraphics Graphics => Window.Graphics;
 
         /// <summary>
+        /// The parallel group ID that this system belongs to. 0 means main thread.
+        /// </summary>
+        public int ParallelGroup { get; internal set; } = 0;
+
+        /// <summary>
         /// The order of execution relative to other systems
         /// </summary>
         public int ExecutionOrder
