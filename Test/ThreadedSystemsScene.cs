@@ -34,13 +34,11 @@ public struct ThreadedSystemsScene
 
     }
 
-    [Parallel, RequiresComponents(typeof(PressureSimulationComponent))]
     public class PressureSimulationSystem : Walgelijk.System
     {
 
     }
 
-    [Parallel, RequiresComponents(typeof(PressureSimulationComponent))]
     public class PressureRenderingSystem : Walgelijk.System
     {
 
@@ -48,6 +46,7 @@ public struct ThreadedSystemsScene
 
     public class ParallelSystemDiagramSystem : Walgelijk.System
     {
+        #if FALSE
         public override void Render()
         {
             Draw.Reset();
@@ -78,5 +77,6 @@ public struct ThreadedSystemsScene
                 row++;
             }
         }
+        #endif
     }
 }

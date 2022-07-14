@@ -991,7 +991,7 @@
             An entity. Does nothing, simply holds an identity. Implicitly an integer.
             </summary>
         </member>
-        <member name="P:Walgelijk.Entity.Identity">
+        <member name="F:Walgelijk.Entity.Identity">
             <summary>
             The identity of the entity
             </summary>
@@ -1020,11 +1020,6 @@
         <member name="M:Walgelijk.IdentityGenerator.Generate">
             <summary>
             Generate a new identity value
-            </summary>
-        </member>
-        <member name="T:Walgelijk.ParallelAttribute">
-            <summary>
-            Attribute that lets the scene know that a System can be ran in parallel to others. A <see cref="T:Walgelijk.RequiresComponents"/> attribute can be used alongside this to make sure two systems that edit the same data are ran sequentially, atomically.
             </summary>
         </member>
         <member name="T:Walgelijk.Prefab">
@@ -1086,12 +1081,6 @@
             <summary>
             Construct a <see cref="T:Walgelijk.RequiresComponents"/> with the given types
             </summary>
-        </member>
-        <member name="M:Walgelijk.RequiresComponents.GetTypeCollectionGroupId">
-            <summary>
-            Get a unique ID for the types in the (treated as unordered) collection
-            </summary>
-            <returns></returns>
         </member>
         <member name="T:Walgelijk.Scene">
             <summary>
@@ -1300,17 +1289,6 @@
             Prepares the scene for immediate activity. This is handled by the engine so there is no need to call this unless you know why you're calling it.
             </summary>
         </member>
-        <member name="M:Walgelijk.Scene.GetParallelGroups">
-            <summary>
-            Get all parallel groups 
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Walgelijk.Scene.GetSystemsInParallelGroup(System.Int32)">
-            <summary>
-            Get the systems in the given parallel group
-            </summary>
-        </member>
         <member name="M:Walgelijk.Scene.RenderSystems">
             <summary>
             Renders all systems that implement rendering code. This is typically handled by the window implementation
@@ -1369,11 +1347,6 @@
         <member name="P:Walgelijk.System.Graphics">
             <summary>
             Relevant graphics instance
-            </summary>
-        </member>
-        <member name="P:Walgelijk.System.ParallelGroup">
-            <summary>
-            The parallel group ID that this system belongs to. 0 means main thread.
             </summary>
         </member>
         <member name="P:Walgelijk.System.ExecutionOrder">
