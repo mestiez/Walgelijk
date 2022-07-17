@@ -10,7 +10,7 @@ namespace Walgelijk
         /// <summary>
         /// Create a shape render task
         /// </summary>
-        public ShapeRenderTask(VertexBuffer vertexBuffer, Matrix4x4 modelMatrix = default, Material? material = null)
+        public ShapeRenderTask(VertexBuffer vertexBuffer, Matrix3x2 modelMatrix = default, Material? material = null)
         {
             VertexBuffer = vertexBuffer;
             Material = material ?? Material.DefaultTextured;
@@ -21,7 +21,7 @@ namespace Walgelijk
         /// <summary>
         /// The matrix to transform the vertices with
         /// </summary>
-        public Matrix4x4 ModelMatrix;
+        public Matrix3x2 ModelMatrix;
         /// <summary>
         /// Vertex buffer to draw
         /// </summary>
@@ -60,7 +60,7 @@ namespace Walgelijk
 
         protected virtual void Draw(IGraphics graphics)
         {
-            graphics.CurrentTarget.ModelMatrix = ModelMatrix;
+            graphics.CurrentTarget.ModelMatrix = new Matrix4x4(ModelMatrix);
             graphics.Draw(VertexBuffer, Material);
         }
     }

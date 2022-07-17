@@ -10,6 +10,48 @@ using Walgelijk.ParticleSystem;
 using Walgelijk.SimpleDrawing;
 using Walgelijk.Video;
 
+namespace TestWorld;
+
+public class Program
+{
+    private static Game game;
+
+    static void Main(string[] args)
+    {
+        game = new Game(
+            new OpenTKWindow("hallo daar", new Vector2(-1, -1), new Vector2(800, 600)),
+            new OpenALAudioRenderer()
+            );
+
+        game.Window.TargetUpdateRate = 0;
+        game.Console.DrawConsoleNotification = true;
+        game.Window.VSync = false;
+
+        Resources.RegisterType(typeof(Gif), path => Gif.Load(path));
+
+        Resources.SetBasePathForType<AudioData>("audio");
+        Resources.SetBasePathForType<Prefab>("prefabs");
+        Resources.SetBasePathForType<Texture>("textures");
+        Resources.SetBasePathForType<Font>("fonts");
+
+        Assets.Register("qoitest", static asset => Resources.Load<Texture>("qoitest.qoi"));
+        Assets.Register("resources/textures/pride.png", Assets.TextureFileProvider);
+
+        game.Scene = ThreadedSystemsScene.Load(game);
+
+#if DEBUG
+        game.DevelopmentMode = true;
+#else
+        game.DevelopmentMode = false;
+#endif
+        game.Window.SetIcon(Resources.Load<Texture>("icon.png"));
+        game.Profiling.DrawQuickProfiler = false;
+
+        game.Start();
+    }
+}
+
+#if FALSE
 namespace Test
 {
     class Program
@@ -93,6 +135,9 @@ namespace Test
             private Sound costolot = new Sound(Resources.Load<AudioData>("Costolot.ogg"), true, false);
             private Sound kampvuur = new Sound(Resources.Load<AudioData>("kampvuurliedlied.wav"), true, false);
 
+            private Vector2 pos;
+            private Vector2 target;
+
             public override void Initialise()
             {
                 costolot.Track = track;
@@ -106,6 +151,12 @@ namespace Test
                 Draw.BlendMode = BlendMode.Multiply;
                 Draw.Image(Assets.Load<Texture>("qoitest"), new Rect(Vector2.Zero, new Vector2(512)), ImageContainmentMode.Contain);
                 Draw.BlendMode = null;
+
+                pos = Utilities.SmoothApproach(pos, Input.WorldMousePosition, 3, Time.DeltaTime);
+                target = Input.WorldMousePosition;
+                Draw.ResetTexture();
+                Draw.Colour = Colors.Magenta;
+                Draw.Circle(pos, new Vector2(20));
 
                 if (Gui.ClickButton("costolot", new Vector2(100, 100), new Vector2(100, 32)))
                 {
@@ -381,3 +432,4 @@ namespace Test
         }
     }
 }
+#endif

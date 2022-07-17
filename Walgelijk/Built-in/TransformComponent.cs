@@ -22,6 +22,8 @@ namespace Walgelijk
             get => parent;
             set
             {
+                if (parent == value) 
+                    return;
                 parent = value;
                 IsMatrixCached = false;
             }
@@ -100,12 +102,12 @@ namespace Walgelijk
         /// <summary>
         /// The generated model matrix
         /// </summary>
-        public Matrix4x4 LocalToWorldMatrix;
+        public Matrix3x2 LocalToWorldMatrix;
 
         /// <summary>
         /// The inverse model matrix
         /// </summary>
-        public Matrix4x4 WorldToLocalMatrix;
+        public Matrix3x2 WorldToLocalMatrix;
 
         /// <summary>
         /// All transform matrices separated by step. Useful for transforming specific vectors to/from local space
@@ -118,20 +120,20 @@ namespace Walgelijk
         public bool IsMatrixCached;
 
         /// <summary>
-        /// Recalculate the model matrix considering a containing matrix. This is usually <see cref="Matrix4x4.Identity"/>
+        /// Recalculate the model matrix considering a containing matrix. This is usually <see cref="Matrix3x2.Identity"/>
         /// </summary>
-        public void RecalculateModelMatrix(Matrix4x4 containingMatrix)
+        public void RecalculateModelMatrix(Matrix3x2 containingMatrix)
         {
-            var matrix = Matrix4x4.CreateTranslation(-pivot.X, -pivot.Y, 0);
+            var matrix = Matrix3x2.CreateTranslation(-pivot.X, -pivot.Y);
             SeparateMatrices.AfterPivot = matrix;
 
-            matrix *= Matrix4x4.CreateScale(scale.X, scale.Y, 1);
+            matrix *= Matrix3x2.CreateScale(scale.X, scale.Y);
             SeparateMatrices.AfterScale = matrix;
 
-            matrix *= Matrix4x4.CreateRotationZ(rotation * Utilities.DegToRad, new Vector3(rotationPivot.X * scale.X, rotationPivot.Y * scale.Y, 0));
+            matrix *= Matrix3x2.CreateRotation(rotation * Utilities.DegToRad, new Vector2(rotationPivot.X * scale.X, rotationPivot.Y * scale.Y));
             SeparateMatrices.AfterRotation = matrix;
 
-            matrix *= Matrix4x4.CreateTranslation(position.X, position.Y, 0);
+            matrix *= Matrix3x2.CreateTranslation(position.X, position.Y);
             SeparateMatrices.AfterTranslation = matrix;
 
             //matrix *= Matrix4x4.CreateTranslation(-pivot);
@@ -143,7 +145,7 @@ namespace Walgelijk
 
             LocalToWorldMatrix = matrix;
 
-            if (Matrix4x4.Invert(LocalToWorldMatrix, out var result))
+            if (Matrix3x2.Invert(LocalToWorldMatrix, out var result))
                 WorldToLocalMatrix = result;
             else
                 WorldToLocalMatrix = LocalToWorldMatrix * -1;

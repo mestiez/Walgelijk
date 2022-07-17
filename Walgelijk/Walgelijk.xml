@@ -722,9 +722,9 @@
             Returns if the model matrix is aligned to the transformation
             </summary>
         </member>
-        <member name="M:Walgelijk.TransformComponent.RecalculateModelMatrix(System.Numerics.Matrix4x4)">
+        <member name="M:Walgelijk.TransformComponent.RecalculateModelMatrix(System.Numerics.Matrix3x2)">
             <summary>
-            Recalculate the model matrix considering a containing matrix. This is usually <see cref="P:System.Numerics.Matrix4x4.Identity"/>
+            Recalculate the model matrix considering a containing matrix. This is usually <see cref="P:System.Numerics.Matrix3x2.Identity"/>
             </summary>
         </member>
         <member name="T:Walgelijk.TransformSystem">
@@ -991,7 +991,7 @@
             An entity. Does nothing, simply holds an identity. Implicitly an integer.
             </summary>
         </member>
-        <member name="P:Walgelijk.Entity.Identity">
+        <member name="F:Walgelijk.Entity.Identity">
             <summary>
             The identity of the entity
             </summary>
@@ -1081,7 +1081,6 @@
             <summary>
             Construct a <see cref="T:Walgelijk.RequiresComponents"/> with the given types
             </summary>
-            <param name="componentTypes"></param>
         </member>
         <member name="T:Walgelijk.Scene">
             <summary>
@@ -2430,7 +2429,7 @@
             Render task that renders an instanced vertex buffer with a material
             </summary>
         </member>
-        <member name="M:Walgelijk.InstancedShapeRenderTask.#ctor(Walgelijk.VertexBuffer,System.Numerics.Matrix4x4,Walgelijk.Material)">
+        <member name="M:Walgelijk.InstancedShapeRenderTask.#ctor(Walgelijk.VertexBuffer,System.Numerics.Matrix3x2,Walgelijk.Material)">
             <summary>
             Create a shape render task
             </summary>
@@ -2455,7 +2454,7 @@
             Render task that renders a vertex buffer with a material
             </summary>
         </member>
-        <member name="M:Walgelijk.ShapeRenderTask.#ctor(Walgelijk.VertexBuffer,System.Numerics.Matrix4x4,Walgelijk.Material)">
+        <member name="M:Walgelijk.ShapeRenderTask.#ctor(Walgelijk.VertexBuffer,System.Numerics.Matrix3x2,Walgelijk.Material)">
             <summary>
             Create a shape render task
             </summary>
@@ -3265,6 +3264,11 @@
             How many objects have been created
             </summary>
         </member>
+        <member name="M:Walgelijk.Pool`2.GetAllInUse">
+            <summary>
+            Enumerates through all objects currently in use
+            </summary>
+        </member>
         <member name="M:Walgelijk.Pool`2.#ctor(System.Int32)">
             <summary>
             Create a pool with the given capacity
@@ -3892,12 +3896,12 @@
         </member>
         <member name="P:Walgelijk.FixedIntervalDistributor.Rate">
             <summary>
-            Preferred cycles rate
+            Preferred rate in Hz
             </summary>
         </member>
         <member name="P:Walgelijk.FixedIntervalDistributor.MaxRate">
             <summary>
-            Maximum ouput cycles rate that
+            Maximum allowed ouput rate per frame
             </summary>
         </member>
         <member name="P:Walgelijk.FixedIntervalDistributor.Interval">
@@ -4690,7 +4694,7 @@
         </member>
         <member name="M:Walgelijk.Utilities.RandomInt(System.Int32,System.Int32)">
             <summary>
-            Returns a random int in a range
+            Returns a random int in a range (inclusive min, exclusive max)
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.RandomByte">
@@ -4701,6 +4705,16 @@
         <member name="M:Walgelijk.Utilities.RandomColour(System.Single)">
             <summary>
             Returns a colour where the RGB components are random
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Hash(System.Single)">
+            <summary>
+            Shader-style deterministic random value (0 - 1)
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Fract(System.Single)">
+            <summary>
+            Get the fractional component
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.Clamp(System.Single,System.Single,System.Single)">
@@ -4733,6 +4747,26 @@
         <member name="M:Walgelijk.Utilities.PickRandom``1(System.Collections.Generic.IEnumerable{``0})">
             <summary>
             Return a random entry in a <see cref="T:System.Collections.Generic.IEnumerable`1"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.PickRandom``1(``0,``0)">
+            <summary>
+            Return a random value from the given parameters
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.PickRandom``1(``0,``0,``0)">
+            <summary>
+            Return a random value from the given parameters
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.PickRandom``1(``0,``0,``0,``0)">
+            <summary>
+            Return a random value from the given parameters
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.PickRandom``1(``0,``0,``0,``0,``0)">
+            <summary>
+            Return a random value from the given parameters
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.AngleToVector(System.Single)">
@@ -4780,27 +4814,97 @@
             <param name="dampening">Optional dampening parameter (0 - 1)</param>
             <returns>A struct with the new position and new velocity</returns>
         </member>
-        <member name="M:Walgelijk.Utilities.GetLerpFactorDeltaTime(System.Single,System.Single)">
-            <summary>
-            Returns the lerp factor adjusted for the given time step
-            </summary>
-        </member>
         <member name="M:Walgelijk.Utilities.LerpDt(System.Single,System.Single)">
             <summary>
             Returns the lerp factor adjusted for the given time step
             </summary>
         </member>
-        <member name="M:Walgelijk.Utilities.EaseInOutCubic(System.Single)">
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>
-            Remaps a linear value from 0 to 1 to an ease-in ease-out cubic curve
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
             </summary>
         </member>
-        <member name="M:Walgelijk.Utilities.EaseInOutQuad(System.Single)">
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector2,System.Numerics.Vector2,System.Numerics.Vector2,System.Single,System.Single)">
             <summary>
-            Remaps a linear value from 0 to 1 to an ease-in ease-out quadractic curve
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector3,System.Numerics.Vector3,System.Numerics.Vector3,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector4,System.Numerics.Vector4,System.Numerics.Vector4,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothAngleApproach(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target angle degrees given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothAngleApproach(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target angle degrees given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector2,System.Numerics.Vector2,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector3,System.Numerics.Vector3,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector4,System.Numerics.Vector4,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.NanFallback(System.Single,System.Single)">
+            <summary>
+            Returns the given fallback value (0 by default) if the given input value is NaN
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.NanFallback(System.Numerics.Vector2,System.Single)">
+            <summary>
+            Returns the given fallback value (0 by default) if the given input value is NaN
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.NanFallback(System.Numerics.Vector3,System.Single)">
+            <summary>
+            Returns the given fallback value (0 by default) if the given input value is NaN
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.NanFallback(System.Numerics.Vector4,System.Single)">
             <summary>
             Returns the given fallback value (0 by default) if the given input value is NaN
             </summary>

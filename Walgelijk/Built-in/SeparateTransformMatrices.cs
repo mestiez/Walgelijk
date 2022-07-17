@@ -10,26 +10,26 @@ namespace Walgelijk
         /// <summary>
         /// 0: The initial model matrix. A translation matrix for the transform pivot.
         /// </summary>
-        public Matrix4x4 AfterPivot;
+        public Matrix3x2 AfterPivot;
 
         /// <summary>
         /// 1: The matrix after scaling
         /// </summary>
-        public Matrix4x4 AfterScale;
+        public Matrix3x2 AfterScale;
 
         /// <summary>
         /// 2: The matrix after rotating
         /// </summary>
-        public Matrix4x4 AfterRotation;
+        public Matrix3x2 AfterRotation;
 
         /// <summary>
         /// 3: The matrix after translating
         /// </summary>
-        public Matrix4x4 AfterTranslation;
+        public Matrix3x2 AfterTranslation;
 
         /// <summary>
         /// 4: The final model matrix
         /// </summary>
-        public Matrix4x4 FinalModel;
+        public Matrix3x2 FinalModel;
     }
 }

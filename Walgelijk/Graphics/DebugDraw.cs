@@ -106,7 +106,7 @@ void main()
             var normalised = delta / distance;
 
             var rotation = MathF.Atan2(normalised.Y, normalised.X);
-            var model = Matrix4x4.CreateRotationZ(rotation) * Matrix4x4.CreateScale(distance) * Matrix4x4.CreateTranslation(new Vector3(from, 0));
+            var model = Matrix3x2.CreateRotation(rotation) * Matrix3x2.CreateScale(distance) * Matrix3x2.CreateTranslation(from);
 
             var task = new DebugDrawTask(PrimitiveMeshes.Line, model, debugMaterial, GetColor(color));
             AddDrawing(duration, renderOrder, task);
@@ -135,7 +135,7 @@ void main()
             if (!game.DevelopmentMode)
                 return;
 
-            var model = Matrix4x4.CreateScale(radius) * Matrix4x4.CreateTranslation(new Vector3(center, 0));
+            var model = Matrix3x2.CreateScale(radius) * Matrix3x2.CreateTranslation(center);
             var task = new DebugDrawTask(circle, model, debugMaterial, GetColor(color));
             AddDrawing(duration, renderOrder, task);
         }
@@ -148,7 +148,8 @@ void main()
             if (!game.DevelopmentMode)
                 return;
 
-            var model = Matrix4x4.CreateRotationZ(rotationDegrees * Utilities.DegToRad) * Matrix4x4.CreateScale(size.X, -size.Y, 0) * Matrix4x4.CreateTranslation(new Vector3(topleft, 0));
+            var model = Matrix3x2.CreateRotation(rotationDegrees * Utilities.DegToRad) * 
+                Matrix3x2.CreateScale(size.X, -size.Y) * Matrix3x2.CreateTranslation(topleft);
             var task = new DebugDrawTask(rect, model, debugMaterial, GetColor(color));
             AddDrawing(duration, renderOrder, task);
         }
@@ -167,7 +168,7 @@ void main()
             if (!game.DevelopmentMode)
                 return;
 
-            var model = Matrix4x4.CreateScale(size, size, 0) * Matrix4x4.CreateTranslation(new Vector3(topleft, 0));
+            var model = Matrix3x2.CreateScale(size) * Matrix3x2.CreateTranslation(topleft);
             var task = new DebugTextDrawTask(text, model, fontMaterial, GetColor(color))
             {
                 Generator = textGenerator,
@@ -199,7 +200,7 @@ void main()
             public string String = string.Empty;
             public TextMeshGenerator? Generator;
 
-            public DebugTextDrawTask(VertexBuffer vertexBuffer, Matrix4x4 modelMatrix, Material material, Color tint) : base(vertexBuffer, modelMatrix, material, tint)
+            public DebugTextDrawTask(VertexBuffer vertexBuffer, Matrix3x2 modelMatrix, Material material, Color tint) : base(vertexBuffer, modelMatrix, material, tint)
             {
                 Tint = tint;
             }
@@ -228,7 +229,7 @@ void main()
         {
             public Color Tint;
 
-            public DebugDrawTask(VertexBuffer vertexBuffer, Matrix4x4 modelMatrix, Material material, Color tint) : base(vertexBuffer, modelMatrix, material)
+            public DebugDrawTask(VertexBuffer vertexBuffer, Matrix3x2 modelMatrix, Material material, Color tint) : base(vertexBuffer, modelMatrix, material)
             {
                 Tint = tint;
             }

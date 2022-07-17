@@ -28,10 +28,9 @@ namespace Walgelijk
 
                 if (shape.HorizontalFlip || shape.VerticalFlip)
                 {
-                    shape.RenderTask.ModelMatrix = Matrix4x4.Identity;
                     float x = shape.HorizontalFlip ? -1 : 1;
                     float y = shape.VerticalFlip ? -1 : 1;
-                    shape.RenderTask.ModelMatrix *= Matrix4x4.CreateScale(x, y, 1);
+                    shape.RenderTask.ModelMatrix = Matrix3x2.CreateScale(x, y);
                     shape.RenderTask.ModelMatrix *= transform.LocalToWorldMatrix;
                 }
                 else

@@ -99,7 +99,7 @@ namespace Walgelijk.SimpleDrawing
             void draw(IGraphics graphics)
             {
                 graphics.DrawBounds = Drawing.DrawBounds;
-                graphics.CurrentTarget.ModelMatrix = CreateMatrix(Drawing.Position, Drawing.Scale, Drawing.RotationRadians) * Drawing.Transformation;
+                graphics.CurrentTarget.ModelMatrix = new Matrix4x4(CreateMatrix(Drawing.Position, Drawing.Scale, Drawing.RotationRadians) * Drawing.Transformation);
                 var oldBm = material.BlendMode;
                 if (Drawing.BlendMode.HasValue)
                     material.BlendMode = Drawing.BlendMode.Value;
@@ -110,9 +110,9 @@ namespace Walgelijk.SimpleDrawing
         }
 
         [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        private static Matrix4x4 CreateMatrix(Vector2 pos, Vector2 scale, float rotationRadians) =>
-            Matrix4x4.CreateScale(scale.X, scale.Y, 1) *
-            Matrix4x4.CreateRotationZ(-rotationRadians) *
-            Matrix4x4.CreateTranslation(pos.X, pos.Y, 0);
+        private static Matrix3x2 CreateMatrix(Vector2 pos, Vector2 scale, float rotationRadians) =>
+            Matrix3x2.CreateScale(scale.X, scale.Y) *
+            Matrix3x2.CreateRotation(-rotationRadians) *
+            Matrix3x2.CreateTranslation(pos.X, pos.Y);
     }
 }

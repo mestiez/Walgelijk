@@ -18,9 +18,18 @@ namespace Walgelijk
         /// How many objects have been created
         /// </summary>
         public int CreatedAmount { get; private set; } = 0;
-
+        
         private readonly Stack<T> freeToUse;
         private readonly List<T> currentlyInUse;
+
+        /// <summary>
+        /// Enumerates through all objects currently in use
+        /// </summary>
+        public IEnumerable<T> GetAllInUse()
+        {
+            foreach (var item in currentlyInUse)
+                yield return item;
+        }
 
         /// <summary>
         /// Create a pool with the given capacity

@@ -103,7 +103,7 @@ namespace Walgelijk
         }
 
         /// <summary>
-        /// Returns a random int in a range
+        /// Returns a random int in a range (inclusive min, exclusive max)
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int RandomInt(int min = 0, int max = 100)
@@ -128,6 +128,24 @@ namespace Walgelijk
         {
             return new Color(RandomFloat(), RandomFloat(), RandomFloat(), alpha);
         }
+
+        /// <summary>
+        /// Shader-style deterministic random value (0 - 1)
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Hash(float p)
+        {
+            p = Fract(p * .1031f);
+            p *= p + 33.33f;
+            p *= p + p;
+            return Fract(p);
+        }        
+
+        /// <summary>
+        /// Get the fractional component
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Fract(float p) => p - MathF.Truncate(p);
 
         /// <summary>
         /// Clamp a value within a range
@@ -184,9 +202,60 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Return a random value from the given parameters
+        /// </summary>
+        public static T PickRandom<T>(T first, T second)
+        {
+            return RandomFloat() > 0.5f ? first : second;
+        }
+
+        /// <summary>
+        /// Return a random value from the given parameters
+        /// </summary>
+        public static T PickRandom<T>(T first, T second, T third)
+        {
+            return RandomInt(0, 3) switch
+            {
+                0 => first,
+                1 => second,
+                _ => third,
+            };
+        }
+
+        /// <summary>
+        /// Return a random value from the given parameters
+        /// </summary>
+        public static T PickRandom<T>(T first, T second, T third, T fourth)
+        {
+            return RandomInt(0, 4) switch
+            {
+                0 => first,
+                1 => second,
+                2 => third,
+                _ => fourth,
+            };
+        }
+
+        /// <summary>
+        /// Return a random value from the given parameters
+        /// </summary>
+        public static T PickRandom<T>(T first, T second, T third, T fourth, T fifth)
+        {
+            return RandomInt(0, 5) switch
+            {
+                0 => first,
+                1 => second,
+                2 => third,
+                3 => fourth,
+                _ => fifth,
+            };
+        }
+
+        /// <summary>
         /// Returns a normalised <see cref="Vector2"/> corresponding to the given angle in degrees. 
         /// 0° gives (1, 0). 90° gives (0, 1)
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 AngleToVector(float degrees)
         {
             float rad = degrees * DegToRad;
@@ -197,6 +266,7 @@ namespace Walgelijk
         /// Returns an angle in degrees corresponding to the given normalised <see cref="Vector2"/>. 
         /// (1, 0) gives 0°. (0, 1) gives 90° 
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float VectorToAngle(Vector2 vector)
         {
             return MathF.Atan2(vector.Y, vector.X) * RadToDeg;
@@ -211,6 +281,7 @@ namespace Walgelijk
         /// <param name="b2">Destination upper bound</param>
         /// <param name="s">The value to remap</param>
         /// <returns>Remapped value <paramref name="s"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float MapRange(float a1, float a2, float b1, float b2, float s)
         {
             return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
@@ -225,6 +296,7 @@ namespace Walgelijk
         /// <param name="deltaTime">The time step</param>
         /// <param name="dampening">Optional dampening parameter (0 - 1)</param>
         /// <returns>A struct with the new position and new velocity</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (Vector2 newPosition, Vector2 newVelocity) ApplyAcceleration(Vector2 acceleration, Vector2 currentPos, Vector2 currentVelocity, float deltaTime, float dampening = 1)
         {
             currentVelocity *= MathF.Pow(1 - dampening, deltaTime);
@@ -244,6 +316,7 @@ namespace Walgelijk
         /// <param name="deltaTime">The time step</param>
         /// <param name="dampening">Optional dampening parameter (0 - 1)</param>
         /// <returns>A struct with the new position and new velocity</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static (float newPosition, float newVelocity) ApplyAcceleration(float acceleration, float currentPos, float currentVelocity, float deltaTime, float dampening = 1)
         {
             currentVelocity *= MathF.Pow(1 - dampening, deltaTime);
@@ -253,13 +326,6 @@ namespace Walgelijk
 
             return (newPos, newVel);
         }
-
-        /// <summary>
-        /// Returns the lerp factor adjusted for the given time step
-        /// </summary>
-        [global::System.Obsolete("use LerpDt instead")]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float GetLerpFactorDeltaTime(float lerpFactor, float deltaTime) => LerpDt(lerpFactor, deltaTime);
 
         /// <summary>
         /// Returns the lerp factor adjusted for the given time step
@@ -276,40 +342,181 @@ namespace Walgelijk
         }
 
         /// <summary>
-        /// Remaps a linear value from 0 to 1 to an ease-in ease-out cubic curve
+        /// Smoothly approaches a value to a target value given a speed and dt
+        /// <br></br>
+        /// By luispedrofonseca
         /// </summary>
-        [Obsolete]
-        public static float EaseInOutCubic(float x) => Easings.Cubic.InOut(x);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float SmoothApproach(float pastPosition, float pastTargetPosition, float targetPosition, float speed, float deltaTime)
+        {
+            var t = deltaTime * speed;
+            var v = (targetPosition - pastTargetPosition) / t;
+            var f = pastPosition - pastTargetPosition + v;
+            return NanFallback(targetPosition - v + f * MathF.Exp(-t));
+        }
 
         /// <summary>
-        /// Remaps a linear value from 0 to 1 to an ease-in ease-out quadractic curve
+        /// Smoothly approaches a value to a target value given a speed and dt
+        /// <br></br>
+        /// By luispedrofonseca
         /// </summary>
-        [Obsolete]
-        public static float EaseInOutQuad(float x) => Easings.Quad.InOut(x);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 SmoothApproach(Vector2 pastPosition, Vector2 pastTargetPosition, Vector2 targetPosition, float speed, float deltaTime)
+        {
+            var t = deltaTime * speed;
+            var v = (targetPosition - pastTargetPosition) / t;
+            var f = pastPosition - pastTargetPosition + v;
+            return NanFallback(targetPosition - v + f * MathF.Exp(-t));
+        }
+
+        /// <summary>
+        /// Smoothly approaches a value to a target value given a speed and dt
+        /// <br></br>
+        /// By luispedrofonseca
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 SmoothApproach(Vector3 pastPosition, Vector3 pastTargetPosition, Vector3 targetPosition, float speed, float deltaTime)
+        {
+            var t = deltaTime * speed;
+            var v = (targetPosition - pastTargetPosition) / t;
+            var f = pastPosition - pastTargetPosition + v;
+            return NanFallback(targetPosition - v + f * MathF.Exp(-t));
+        }
+
+        /// <summary>
+        /// Smoothly approaches a value to a target value given a speed and dt
+        /// <br></br>
+        /// By luispedrofonseca
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 SmoothApproach(Vector4 pastPosition, Vector4 pastTargetPosition, Vector4 targetPosition, float speed, float deltaTime)
+        {
+            var t = deltaTime * speed;
+            var v = (targetPosition - pastTargetPosition) / t;
+            var f = pastPosition - pastTargetPosition + v;
+            return NanFallback(targetPosition - v + f * MathF.Exp(-t));
+        }
+
+        /// <summary>
+        /// Smoothly approaches a value to a target angle degrees given a speed and dt
+        /// <br></br>
+        /// By luispedrofonseca
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float SmoothAngleApproach(float pastPosition, float pastTargetPosition, float targetPosition, float speed, float deltaTime)
+        {
+            var t = deltaTime * speed;
+            var v = (DeltaAngle(pastTargetPosition, targetPosition)) / t;
+            var f = DeltaAngle(pastTargetPosition, pastPosition) + v;
+            return NanFallback(targetPosition - v + f * MathF.Exp(-t));
+        }
+
+        /// <summary>
+        /// Smoothly approaches a value to a target angle degrees given a speed and dt
+        /// <br></br>
+        /// By luispedrofonseca
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float SmoothAngleApproach(float pastPosition, float targetPosition, float speed, float deltaTime)
+        {
+            var t = deltaTime * speed;
+            return NanFallback(targetPosition + DeltaAngle(pastPosition, targetPosition) * MathF.Exp(-t));
+        }
+
+        /// <summary>
+        /// Smoothly approaches a value to a target value given a speed and dt
+        /// <br></br>
+        /// By luispedrofonseca
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float SmoothApproach(float pastPosition, float targetPosition, float speed, float deltaTime)
+        {
+            var t = deltaTime * speed;
+            return NanFallback(targetPosition + (pastPosition - targetPosition) * MathF.Exp(-t));
+        }
+
+        /// <summary>
+        /// Smoothly approaches a value to a target value given a speed and dt
+        /// <br></br>
+        /// By luispedrofonseca
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 SmoothApproach(Vector2 pastPosition, Vector2 targetPosition, float speed, float deltaTime)
+        {
+            var t = deltaTime * speed;
+            return NanFallback(targetPosition + (pastPosition - targetPosition) * MathF.Exp(-t));
+        }
+
+        /// <summary>
+        /// Smoothly approaches a value to a target value given a speed and dt
+        /// <br></br>
+        /// By luispedrofonseca
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 SmoothApproach(Vector3 pastPosition, Vector3 targetPosition, float speed, float deltaTime)
+        {
+            var t = deltaTime * speed;
+            return NanFallback(targetPosition + (pastPosition - targetPosition) * MathF.Exp(-t));
+        }
+
+        /// <summary>
+        /// Smoothly approaches a value to a target value given a speed and dt
+        /// <br></br>
+        /// By luispedrofonseca
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 SmoothApproach(Vector4 pastPosition, Vector4 targetPosition, float speed, float deltaTime)
+        {
+            var t = deltaTime * speed;
+            return NanFallback(targetPosition + (pastPosition - targetPosition) * MathF.Exp(-t));
+        }
 
         /// <summary>
         /// Returns the given fallback value (0 by default) if the given input value is NaN
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float NanFallback(float v, float fallback = 0) => float.IsNaN(v) ? fallback : v;
+
+        /// <summary>
+        /// Returns the given fallback value (0 by default) if the given input value is NaN
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 NanFallback(Vector2 v, float fallback = 0) => new Vector2(NanFallback(v.X), NanFallback(v.Y));
+
+        /// <summary>
+        /// Returns the given fallback value (0 by default) if the given input value is NaN
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector3 NanFallback(Vector3 v, float fallback = 0) => new Vector3(NanFallback(v.X), NanFallback(v.Y), NanFallback(v.Z));
+
+        /// <summary>
+        /// Returns the given fallback value (0 by default) if the given input value is NaN
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector4 NanFallback(Vector4 v, float fallback = 0) => new Vector4(NanFallback(v.X), NanFallback(v.Y), NanFallback(v.Z), NanFallback(v.W));
 
         /// <summary>
         /// Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Snap(float x, float snapSize) => MathF.Round(x / snapSize) * snapSize;
 
         /// <summary>
         /// Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int Snap(int x, int snapSize) => (int)(MathF.Round(x / snapSize) * snapSize);
 
         /// <summary>
         /// Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 Snap(Vector2 x, float snapSize) => new Vector2(Snap(x.X, snapSize), Snap(x.Y, snapSize));
 
         /// <summary>
         /// Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 Snap(Vector3 x, float snapSize) => new Vector3(Snap(x.X, snapSize), Snap(x.Y, snapSize), Snap(x.Z, snapSize));
 
         /// <summary>

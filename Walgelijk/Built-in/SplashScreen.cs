@@ -174,7 +174,7 @@ namespace Walgelijk
                         Audio.PlayOnce(sound);
 
                     transform.Scale = new Vector2(texture.Width, texture.Height);
-                    transform.RecalculateModelMatrix(Matrix4x4.Identity);
+                    transform.RecalculateModelMatrix(Matrix3x2.Identity);
                     rect.Material.SetUniform(ShaderDefaults.MainTextureUniform, texture);
                 }
             }

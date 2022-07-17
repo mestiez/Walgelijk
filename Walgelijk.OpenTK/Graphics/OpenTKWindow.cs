@@ -49,6 +49,7 @@ namespace Walgelijk.OpenTK
         protected override void OnUnload()
         {
             base.OnUnload();
+            EngineWindow.IsVisible = false;
             EngineWindow.OnWindowClose();
         }
     }

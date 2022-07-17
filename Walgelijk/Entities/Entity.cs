@@ -5,12 +5,12 @@ namespace Walgelijk
     /// <summary>
     /// An entity. Does nothing, simply holds an identity. Implicitly an integer.
     /// </summary>
-    public struct Entity
+    public struct Entity : IEquatable<Entity>
     {
         /// <summary>
         /// The identity of the entity
         /// </summary>
-        public int Identity { get; set; }
+        public int Identity;
 
         public override bool Equals(object? obj)
         {
@@ -44,5 +44,7 @@ namespace Walgelijk
         }
 
         public override string ToString() => $"Entity {Identity}";
+
+        public bool Equals(Entity other) => other.Identity == Identity;
     }
 }

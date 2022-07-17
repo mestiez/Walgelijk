@@ -22,7 +22,7 @@ namespace Walgelijk.SimpleDrawing
         /// <summary>
         /// The transformation matrix that is applied to drawings
         /// </summary>
-        public static Matrix4x4 TransformMatrix = Matrix4x4.Identity;
+        public static Matrix3x2 TransformMatrix = Matrix3x2.Identity;
 
         /// <summary>
         /// Are all given transformations in screen space?
@@ -160,7 +160,7 @@ namespace Walgelijk.SimpleDrawing
             Colour = Colors.White;
             OutlineWidth = 0;
             OutlineColour = default;
-            TransformMatrix = Matrix4x4.Identity;
+            TransformMatrix = Matrix3x2.Identity;
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace Walgelijk.SimpleDrawing
         /// <summary>
         /// Reset the transformation matrix.
         /// </summary>
-        public static void ResetTransformation() => TransformMatrix = Matrix4x4.Identity;
+        public static void ResetTransformation() => TransformMatrix = Matrix3x2.Identity;
 
         /// <summary>
         /// Reset the draw bounds to a disabled state.
