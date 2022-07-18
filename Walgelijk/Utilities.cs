@@ -23,6 +23,24 @@ namespace Walgelijk
         public const float DegToRad = MathF.PI / 180f;
 
         /// <summary>
+        /// Shader-style deterministic random value (0 - 1)
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Hash(float p)
+        {
+            p = Fract(p * .1031f);
+            p *= p + 33.33f;
+            p *= p + p;
+            return Fract(p);
+        }
+
+        /// <summary>
+        /// Get the fractional component
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Fract(float p) => p - MathF.Truncate(p);
+
+        /// <summary>
         /// Linearly interpolate between two angles in degrees
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -128,24 +146,6 @@ namespace Walgelijk
         {
             return new Color(RandomFloat(), RandomFloat(), RandomFloat(), alpha);
         }
-
-        /// <summary>
-        /// Shader-style deterministic random value (0 - 1)
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Hash(float p)
-        {
-            p = Fract(p * .1031f);
-            p *= p + 33.33f;
-            p *= p + p;
-            return Fract(p);
-        }        
-
-        /// <summary>
-        /// Get the fractional component
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Fract(float p) => p - MathF.Truncate(p);
 
         /// <summary>
         /// Clamp a value within a range
@@ -419,8 +419,7 @@ namespace Walgelijk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float SmoothAngleApproach(float pastPosition, float targetPosition, float speed, float deltaTime)
         {
-            var t = deltaTime * speed;
-            return NanFallback(targetPosition + DeltaAngle(pastPosition, targetPosition) * MathF.Exp(-t));
+            return SmoothAngleApproach(pastPosition, targetPosition, targetPosition, speed, deltaTime);
         }
 
         /// <summary>
@@ -431,8 +430,7 @@ namespace Walgelijk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float SmoothApproach(float pastPosition, float targetPosition, float speed, float deltaTime)
         {
-            var t = deltaTime * speed;
-            return NanFallback(targetPosition + (pastPosition - targetPosition) * MathF.Exp(-t));
+            return SmoothApproach(pastPosition, targetPosition, targetPosition, speed, deltaTime);
         }
 
         /// <summary>
@@ -443,8 +441,7 @@ namespace Walgelijk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 SmoothApproach(Vector2 pastPosition, Vector2 targetPosition, float speed, float deltaTime)
         {
-            var t = deltaTime * speed;
-            return NanFallback(targetPosition + (pastPosition - targetPosition) * MathF.Exp(-t));
+            return SmoothApproach(pastPosition, targetPosition, targetPosition, speed, deltaTime);
         }
 
         /// <summary>
@@ -455,8 +452,7 @@ namespace Walgelijk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 SmoothApproach(Vector3 pastPosition, Vector3 targetPosition, float speed, float deltaTime)
         {
-            var t = deltaTime * speed;
-            return NanFallback(targetPosition + (pastPosition - targetPosition) * MathF.Exp(-t));
+            return SmoothApproach(pastPosition, targetPosition, targetPosition, speed, deltaTime);
         }
 
         /// <summary>
@@ -467,8 +463,7 @@ namespace Walgelijk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 SmoothApproach(Vector4 pastPosition, Vector4 targetPosition, float speed, float deltaTime)
         {
-            var t = deltaTime * speed;
-            return NanFallback(targetPosition + (pastPosition - targetPosition) * MathF.Exp(-t));
+            return SmoothApproach(pastPosition, targetPosition, targetPosition, speed, deltaTime);
         }
 
         /// <summary>
