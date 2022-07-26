@@ -104,7 +104,7 @@ namespace Walgelijk.OpenTK
         }
 
         public OpenTKWindow Window { get; }
-        public GameWindow GameWindow => Window.window;
+        public NativeWindow GameWindow => Window.window;
         public InputState InputState { get => inputState; }
     }
 }

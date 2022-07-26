@@ -4657,6 +4657,16 @@
             Degrees to radians constant ratio
             </summary>
         </member>
+        <member name="M:Walgelijk.Utilities.Hash(System.Single)">
+            <summary>
+            Shader-style deterministic random value (0 - 1)
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Fract(System.Single)">
+            <summary>
+            Get the fractional component
+            </summary>
+        </member>
         <member name="M:Walgelijk.Utilities.LerpAngle(System.Single,System.Single,System.Single)">
             <summary>
             Linearly interpolate between two angles in degrees
@@ -4705,16 +4715,6 @@
         <member name="M:Walgelijk.Utilities.RandomColour(System.Single)">
             <summary>
             Returns a colour where the RGB components are random
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.Hash(System.Single)">
-            <summary>
-            Shader-style deterministic random value (0 - 1)
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.Fract(System.Single)">
-            <summary>
-            Get the fractional component
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.Clamp(System.Single,System.Single,System.Single)">
