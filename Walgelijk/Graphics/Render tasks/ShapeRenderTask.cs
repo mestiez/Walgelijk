@@ -35,6 +35,7 @@ namespace Walgelijk
         /// </summary>
         public bool ScreenSpace;
 
+        /// <inheritdoc/>
         public void Execute(IGraphics graphics)
         {
             if (ScreenSpace)
@@ -58,6 +59,7 @@ namespace Walgelijk
             target.ProjectionMatrix = proj;
         }
 
+        /// <inheritdoc/>
         protected virtual void Draw(IGraphics graphics)
         {
             graphics.CurrentTarget.ModelMatrix = new Matrix4x4(ModelMatrix);
