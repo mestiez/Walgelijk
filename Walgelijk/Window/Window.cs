@@ -54,11 +54,6 @@ namespace Walgelijk
         public abstract IGraphics Graphics { get; }
 
         /// <summary>
-        /// Time information
-        /// </summary>
-        public abstract Time Time { get; }
-
-        /// <summary>
         /// The window render queue. It stores the render tasks and is emptied and executed every render frame.
         /// </summary>
         public RenderQueue RenderQueue { get; } = new RenderQueue();
@@ -91,9 +86,19 @@ namespace Walgelijk
         public event EventHandler? OnClose;
 
         /// <summary>
-        /// Start the main game loop
+        /// Called by the game before the main loop starts
         /// </summary>
-        public abstract void StartLoop();
+        public abstract void Initialise();
+
+        /// <summary>
+        /// Called by the game when the game loop has ended
+        /// </summary>
+        public abstract void Deinitialise();
+
+        /// <summary>
+        /// Called every frame by the game
+        /// </summary>
+        public abstract void LoopCycle();
 
         /// <summary>
         /// Close the window and stop the game loop

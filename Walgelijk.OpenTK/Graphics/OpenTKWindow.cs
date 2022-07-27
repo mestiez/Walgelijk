@@ -18,7 +18,6 @@ public class OpenTKWindow : Window
     public override bool VSync { get => window.VSync == VSyncMode.On; set => window.VSync = (value ? VSyncMode.On : VSyncMode.Off); }
     public override bool IsOpen => window.Exists && !window.IsExiting;
     public override bool HasFocus => window.IsFocused;
-    public override Time Time => time;
     public override bool IsVisible { get => window.IsVisible; set => window.IsVisible = value; }
     public override bool Resizable { get => window.WindowBorder == WindowBorder.Resizable; set => window.WindowBorder = value ? WindowBorder.Resizable : WindowBorder.Fixed; }
     public override InputState InputState => inputHandler?.InputState ?? default;
@@ -30,7 +29,6 @@ public class OpenTKWindow : Window
         set => window.Size = new global::OpenTK.Mathematics.Vector2i((int)value.X, (int)value.Y);
     }
 
-    internal readonly Time time = new();
     internal readonly NativeWindow window;
     internal readonly OpenTKWindowRenderTarget renderTarget;
     internal readonly InputHandler inputHandler;
@@ -93,7 +91,7 @@ public class OpenTKWindow : Window
         window.Icon = new WindowIcon(new global::OpenTK.Windowing.Common.Input.Image(res, res, icon));
     }
 
-    public override void StartLoop()
+    public override void Initialise()
     {
         //window.Run();
         window.MakeCurrent();
@@ -103,41 +101,18 @@ public class OpenTKWindow : Window
         window.Move += OnWindowMove;
         window.Resize += OnWindowResize;
         clock.Start();
-        while (!window.IsExiting)
-        //while (!global::OpenTK.Windowing.GraphicsLibraryFramework.GLFW.WindowShouldClose(window.WindowPtr))
-        {
-            var elapsed = clock.Elapsed.TotalSeconds;
-            clock.Restart();
-            window.ProcessInputEvents();
-            NativeWindow.ProcessWindowEvents(window.IsEventDriven);
-            Update(elapsed);
-
-            if (TargetUpdateRate > float.Epsilon)
-            {
-                double toWait = (1d / TargetUpdateRate) - elapsed;
-                if (toWait > 0)
-                    global::System.Threading.Thread.Sleep(TimeSpan.FromSeconds(toWait ));
-            }
-        }
-        window.IsVisible = false;
-        OnWindowClose();
     }
 
-    internal void Update(double dt)
+    public override void LoopCycle()
     {
+        window.Context.SwapBuffers();
+
+        window.ProcessInputEvents();
+        NativeWindow.ProcessWindowEvents(window.IsEventDriven);
+
         //update
         {
-            var unscaledDt = (float)dt;
-            var scaledDt = (float)dt * Time.TimeScale;
-
-            time.DeltaTimeUnscaled = unscaledDt;
-            time.DeltaTime = scaledDt;
-
-            time.SecondsSinceSceneChange += unscaledDt;
-            time.SecondsSinceSceneChangeUnscaled += scaledDt;
-
-            time.SecondsSinceLoad += scaledDt;
-            time.SecondsSinceLoadUnscaled += unscaledDt;
+            HELP IK WEET HET ECHT NIET. DEZE HELE WINDOW SHIT IS FUCKED
 
             Game.AudioRenderer.UpdateTracks();
             Game.Console.Update();
@@ -158,8 +133,13 @@ public class OpenTKWindow : Window
             Graphics.CurrentTarget = RenderTarget;
             Game.Console.Render();
             RenderQueue.RenderAndReset(internalGraphics);
-            window.Context.SwapBuffers();
         }
+    }
+
+    public override void Deinitialise()
+    {
+        window.IsVisible = false;
+        OnWindowClose();
     }
 
     public override Vector2 ScreenToWindowPoint(Vector2 point)

@@ -78,9 +78,9 @@ public class Game
     public Profiler Profiling { get; }
 
     /// <summary>
-    /// Returns the <see cref="Walgelijk.Time"/> information that belongs to <see cref="Window"/>
+    /// Time information
     /// </summary>
-    public Time Time => Window.Time;
+    public Time Time { get; private set; }
 
     /// <summary>
     /// When set to true, safety checks will be done at runtime. This will degrade performance and should be turned off in release. <b>True by default</b>
@@ -99,7 +99,7 @@ public class Game
     {
         var entryAssembly = Assembly.GetEntryAssembly();
         if (entryAssembly == null)
-            throw new Exception("Could not gety entry assembly so a Game instance could not be created");
+            throw new Exception("Could not get entry assembly so a Game instance could not be created");
         ExecutableDirectory = Path.GetDirectoryName(entryAssembly.Location) + Path.DirectorySeparatorChar;
         global::System.Console.WriteLine(ExecutableDirectory);
         Window = window;
@@ -118,8 +118,29 @@ public class Game
     /// </summary>
     public void Start()
     {
-        if (Window == null) throw new InvalidOperationException("Window is null");
-        Window.StartLoop();
+        if (Window == null) 
+            throw new InvalidOperationException("Window is null");
+
+        Window.Initialise();
+        while (true)
+        {
+            var unscaledDt = (float)dt;
+            var scaledDt = (float)dt * Time.TimeScale;
+
+            Time.DeltaTimeUnscaled = unscaledDt;
+            Time.DeltaTime = scaledDt;
+            
+            Time.SecondsSinceSceneChange += unscaledDt;
+            Time.SecondsSinceSceneChangeUnscaled += scaledDt;
+            
+            Time.SecondsSinceLoad += scaledDt;
+            Time.SecondsSinceLoadUnscaled += unscaledDt;
+
+            Window.LoopCycle();
+            if (!Window.IsOpen)
+                break;
+        }
+        Window.Deinitialise();
     }
 
     /// <summary>
@@ -139,39 +160,13 @@ public class Game
     private static string Version()
     {
         var assemblyName = Assembly.GetAssembly(typeof(Game))?.GetName() ?? null;
-        return $"{assemblyName?.Name ?? "null assembly"} v{assemblyName?.Version ?? (new global::System.Version(0, 0, 0))}\n";
+#if DEBUG
+        const string config = "DEBUG mode";
+#elif RELEASE
+        const string config = "RELEASE mode";
+#endif
+        return $"{assemblyName?.Name ?? "null assembly"} ({config}) v{assemblyName?.Version ?? (new Version(0, 0, 0))}\n";
     }
-}
 
-internal struct FallbackScene
-{
-    private static Scene? fallbackScene;
-
-    public static Scene GetFallbackScene(Game game)
-    {
-        if (fallbackScene != null)
-            return fallbackScene;
-
-        fallbackScene = new Scene(game);
-
-        var camera = fallbackScene.CreateEntity();
-        fallbackScene.AttachComponent(camera, new TransformComponent());
-        fallbackScene.AttachComponent(camera, new CameraComponent
-        {
-            Clear = true,
-            ClearColour = Colors.Black,
-            OrthographicSize = 1,
-            PixelsPerUnit = 128,
-        });
-
-        var text = fallbackScene.CreateEntity();
-        fallbackScene.AttachComponent(text, new TransformComponent());
-        fallbackScene.AttachComponent(text, new TextComponent("No scene assigned"));
-
-        fallbackScene.AddSystem(new TransformSystem());
-        fallbackScene.AddSystem(new ShapeRendererSystem());
-        fallbackScene.AddSystem(new CameraSystem());
-
-        return fallbackScene;
-    }
+    public 
 }
