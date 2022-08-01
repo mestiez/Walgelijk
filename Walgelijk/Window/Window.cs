@@ -21,10 +21,6 @@ namespace Walgelijk
         /// </summary>
         public abstract Vector2 Size { get; set; }
         /// <summary>
-        /// Speed the game should update at
-        /// </summary>
-        public abstract int TargetUpdateRate { get; set; }
-        /// <summary>
         /// Should vertical synchronisation be enabled
         /// </summary>
         public abstract bool VSync { get; set; }
@@ -44,10 +40,6 @@ namespace Walgelijk
         /// Is the window resizable?
         /// </summary>
         public abstract bool Resizable { get; set; }
-        /// <summary>
-        /// The current input state
-        /// </summary>
-        public abstract InputState InputState { get; }
         /// <summary>
         /// Graphics functions
         /// </summary>

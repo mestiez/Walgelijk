@@ -13,14 +13,12 @@ namespace Walgelijk.OpenTK;
 public class OpenTKWindow : Window
 {
     public override string Title { get => window.Title; set => window.Title = value; }
-    public override Vector2 Position { get => new Vector2(window.Location.X, window.Location.Y); set => window.Location = new global::OpenTK.Mathematics.Vector2i((int)value.X, (int)value.Y); }
-    public override int TargetUpdateRate { get; set; }
+    public override Vector2 Position { get => new(window.Location.X, window.Location.Y); set => window.Location = new global::OpenTK.Mathematics.Vector2i((int)value.X, (int)value.Y); }
     public override bool VSync { get => window.VSync == VSyncMode.On; set => window.VSync = (value ? VSyncMode.On : VSyncMode.Off); }
     public override bool IsOpen => window.Exists && !window.IsExiting;
     public override bool HasFocus => window.IsFocused;
     public override bool IsVisible { get => window.IsVisible; set => window.IsVisible = value; }
     public override bool Resizable { get => window.WindowBorder == WindowBorder.Resizable; set => window.WindowBorder = value ? WindowBorder.Resizable : WindowBorder.Fixed; }
-    public override InputState InputState => inputHandler?.InputState ?? default;
     public override RenderTarget RenderTarget => renderTarget;
     public override IGraphics Graphics => internalGraphics;
     public override Vector2 Size
@@ -105,24 +103,13 @@ public class OpenTKWindow : Window
 
     public override void LoopCycle()
     {
-        window.Context.SwapBuffers();
+        inputHandler.Reset();
 
+        window.Context.SwapBuffers();
         window.ProcessInputEvents();
         NativeWindow.ProcessWindowEvents(window.IsEventDriven);
 
-        //update
-        {
-            HELP IK WEET HET ECHT NIET. DEZE HELE WINDOW SHIT IS FUCKED
-
-            Game.AudioRenderer.UpdateTracks();
-            Game.Console.Update();
-            if (!Game.Console.IsActive)
-                Game.Scene?.UpdateSystems();
-            Game.Profiling.Tick();
-            Game.AudioRenderer.Process(Game);
-
-            inputHandler.Reset();
-        }
+        Game.State.Input = inputHandler.InputState;
 
         //render
         {

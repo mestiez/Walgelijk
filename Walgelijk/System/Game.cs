@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -43,11 +44,11 @@ public class Game
             if (scene != null && scene.ShouldBeDisposedOnSceneChange)
                 scene.Dispose();
 
-            Time.SecondsSinceSceneChange = 0;
+            State.Time.SecondsSinceSceneChange = 0;
             scene = value;
             if (scene != null)
             {
-                Time.DeltaTime = 0;
+                State.Time.DeltaTime = 0;
                 scene.Game = this;
                 scene.HasBeenLoadedAlready = true;
                 Logger.Log("Scene changed", nameof(Game));
@@ -78,9 +79,9 @@ public class Game
     public Profiler Profiling { get; }
 
     /// <summary>
-    /// Time information
+    /// Game engine state information
     /// </summary>
-    public Time Time { get; private set; }
+    public GameState State { get; private set; } = new();
 
     /// <summary>
     /// When set to true, safety checks will be done at runtime. This will degrade performance and should be turned off in release. <b>True by default</b>
@@ -91,6 +92,17 @@ public class Game
     /// Event dispatched when the scene is changed. The new scene is passed to the receivers
     /// </summary>
     public readonly Hook<Scene> OnSceneChange = new();
+
+    /// <summary>
+    /// The fixed update rate in Hz
+    /// </summary>
+    public int FixedUpdateRate = 60;
+    /// <summary>
+    /// The update/render rate in Hz. Uncapped if zero or smaller.
+    /// </summary>
+    public int UpdateRate = 0;
+
+    private readonly Stopwatch clock = new();
 
     /// <summary>
     /// Create a game with a window and an optional audio renderer. If the audio renderer is not set, the game won't be able to play any sounds
@@ -118,28 +130,60 @@ public class Game
     /// </summary>
     public void Start()
     {
-        if (Window == null) 
+        if (Window == null)
             throw new InvalidOperationException("Window is null");
 
         Window.Initialise();
+        clock.Start();
+        double dt = 0;
+        double accumulator = 0;
+        double fixedUpdateClock = 0;
         while (true)
         {
             var unscaledDt = (float)dt;
-            var scaledDt = (float)dt * Time.TimeScale;
+            var scaledDt = (float)dt * State.Time.TimeScale;
 
-            Time.DeltaTimeUnscaled = unscaledDt;
-            Time.DeltaTime = scaledDt;
-            
-            Time.SecondsSinceSceneChange += unscaledDt;
-            Time.SecondsSinceSceneChangeUnscaled += scaledDt;
-            
-            Time.SecondsSinceLoad += scaledDt;
-            Time.SecondsSinceLoadUnscaled += unscaledDt;
+            State.Time.DeltaTimeUnscaled = unscaledDt;
+            State.Time.DeltaTime = scaledDt;
+
+            State.Time.SecondsSinceSceneChange += unscaledDt;
+            State.Time.SecondsSinceSceneChangeUnscaled += scaledDt;
+
+            State.Time.SecondsSinceLoad += scaledDt;
+            State.Time.SecondsSinceLoadUnscaled += unscaledDt;
+
+            AudioRenderer.UpdateTracks();
+            Console.Update();
+            AudioRenderer.Process(this);
+
+            double fixedUpdateInterval = 1d / FixedUpdateRate;
+            if (!Console.IsActive)
+            {
+                fixedUpdateClock += dt * State.Time.TimeScale;
+                accumulator += scaledDt;
+                while (accumulator > fixedUpdateInterval)
+                {
+                    Scene?.FixedUpdateSystems();
+                    fixedUpdateClock = 0;
+                    accumulator -= fixedUpdateInterval;
+                }
+
+                State.Time.Interpolation = (float)((fixedUpdateClock % fixedUpdateInterval) / fixedUpdateInterval);
+
+                Scene?.UpdateSystems();
+            }
+
+            Profiling.Tick();
 
             Window.LoopCycle();
+
             if (!Window.IsOpen)
                 break;
+
+            dt = clock.Elapsed.TotalSeconds;
+            clock.Restart();
         }
+        clock.Stop();
         Window.Deinitialise();
     }
 
@@ -167,6 +211,4 @@ public class Game
 #endif
         return $"{assemblyName?.Name ?? "null assembly"} ({config}) v{assemblyName?.Version ?? (new Version(0, 0, 0))}\n";
     }
-
-    public 
 }

@@ -23,7 +23,8 @@ public class Program
             new OpenALAudioRenderer()
             );
 
-        game.Window.TargetUpdateRate = 0;
+        game.UpdateRate = 0;
+        game.FixedUpdateRate = 25;
         game.Console.DrawConsoleNotification = true;
         game.Window.VSync = false;
 
@@ -37,7 +38,7 @@ public class Program
         Assets.Register("qoitest", static asset => Resources.Load<Texture>("qoitest.qoi"));
         Assets.Register("resources/textures/pride.png", Assets.TextureFileProvider);
 
-        game.Scene = ThreadedSystemsScene.Load(game);
+        game.Scene = TestScene2.Load(game);
 
 #if DEBUG
         game.DevelopmentMode = true;

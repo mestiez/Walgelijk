@@ -85,7 +85,7 @@ void main()
         /// </summary>
         public void Render()
         {
-            float t = game.Time.SecondsSinceLoad;
+            float t = game.State.Time.SecondsSinceLoad;
             foreach (var drawing in drawings)
             {
                 game.RenderQueue.Add(drawing.Task, drawing.Order);
@@ -182,7 +182,7 @@ void main()
         {
             drawings.Add(new Drawing
             {
-                ExpirationTime = game.Time.SecondsSinceLoad + GetDuration(duration),
+                ExpirationTime = game.State.Time.SecondsSinceLoad + GetDuration(duration),
                 Order = renderOrder,
                 Task = task
             });

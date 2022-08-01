@@ -101,7 +101,7 @@ namespace Walgelijk
             if (consoleSlideOffset > float.Epsilon)
                 RenderActiveConsole();
 
-            float consoleSpeed = debugConsole.Game.Time.DeltaTime / ConsoleSlideDuration;
+            float consoleSpeed = debugConsole.Game.State.Time.DeltaTime / ConsoleSlideDuration;
             consoleSlideOffset += debugConsole.IsActive ? consoleSpeed : -consoleSpeed;
             consoleSlideOffset = Utilities.Clamp(consoleSlideOffset);
 
@@ -111,7 +111,7 @@ namespace Walgelijk
 
         private void RenderOverlayConsole()
         {
-            overlayLife += debugConsole.Game.Time.DeltaTime;
+            overlayLife += debugConsole.Game.State.Time.DeltaTime;
 
             if (dirtyLog && debugConsole.Log.Count > 0)
             {

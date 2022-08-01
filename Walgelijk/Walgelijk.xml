@@ -541,7 +541,7 @@
         </member>
         <member name="F:Walgelijk.SeparateTransformMatrices.AfterTranslation">
             <summary>
-            3: The matrix after translating
+            3: The matrix after translating (local space)
             </summary>
         </member>
         <member name="F:Walgelijk.SeparateTransformMatrices.FinalModel">
@@ -1281,7 +1281,12 @@
         </member>
         <member name="M:Walgelijk.Scene.UpdateSystems">
             <summary>
-            Executes all systems. This is typically handled by the window implementation
+            Executes all systems
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.FixedUpdateSystems">
+            <summary>
+            Executes all systems
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.Initialise">
@@ -1376,7 +1381,12 @@
         </member>
         <member name="M:Walgelijk.System.Update">
             <summary>
-            Run the logic
+            Run logic at <see cref="F:Walgelijk.Game.UpdateRate"/> Hz
+            </summary>
+        </member>
+        <member name="M:Walgelijk.System.FixedUpdate">
+            <summary>
+            Run logic at <see cref="F:Walgelijk.Game.FixedUpdateRate"/> Hz
             </summary>
         </member>
         <member name="M:Walgelijk.System.PreRender">
@@ -2479,6 +2489,12 @@
             Should the task set the view matrix to <see cref="P:System.Numerics.Matrix4x4.Identity"/> 
             </summary>
         </member>
+        <member name="M:Walgelijk.ShapeRenderTask.Execute(Walgelijk.IGraphics)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.ShapeRenderTask.Draw(Walgelijk.IGraphics)">
+            <inheritdoc/>
+        </member>
         <member name="T:Walgelijk.TargetRenderTask">
             <summary>
             Task that sets the active render target
@@ -3283,7 +3299,6 @@
             <summary>
             Return an object to the pool when it's done, to allow it to be requested again
             </summary>
-            <param name="obj"></param>
         </member>
         <member name="M:Walgelijk.Pool`2.Prefill">
             <summary>
@@ -3294,8 +3309,6 @@
             <summary>
             Get an existing object from the pool guaranteeing never to create a new one. Can return null.
             </summary>
-            <param name="initialiser"></param>
-            <returns></returns>
         </member>
         <member name="M:Walgelijk.Pool`2.CreateFresh">
             <summary>
@@ -3308,6 +3321,67 @@
             </summary>
         </member>
         <member name="M:Walgelijk.Pool`2.GetOverCapacityFallback">
+            <summary>
+            What to return instead of null when the pool is at full capacity
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Pool`1">
+            <summary>
+            Abstract class for object pooling
+            </summary>
+            <typeparam name="T">The type to pool</typeparam>
+        </member>
+        <member name="F:Walgelijk.Pool`1.MaximumCapacity">
+            <summary>
+            The maximum amount of objects, active or inactive
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Pool`1.CreatedAmount">
+            <summary>
+            How many objects have been created
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.GetAllInUse">
+            <summary>
+            Enumerates through all objects currently in use
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.#ctor(System.Int32)">
+            <summary>
+            Create a pool with the given capacity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.RequestObject">
+            <summary>
+            Get an object from the pool. This will be ready for use or null, if the pool is at full capacity. 
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.ReturnToPool(`0)">
+            <summary>
+            Return an object to the pool when it's done, to allow it to be requested again
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.Prefill">
+            <summary>
+            Create a new available object and add it to the pool, waiting to be used
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.GetExistingFromPool">
+            <summary>
+            Get an existing object from the pool guaranteeing never to create a new one. Can return null.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.CreateFresh">
+            <summary>
+            Return a completely new instance of the poolable object
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.ResetObjectForNextUse(`0)">
+            <summary>
+            Reset the given object for its next use
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.GetOverCapacityFallback">
             <summary>
             What to return instead of null when the pool is at full capacity
             </summary>
@@ -3964,9 +4038,9 @@
             The game profiler
             </summary>
         </member>
-        <member name="P:Walgelijk.Game.Time">
+        <member name="P:Walgelijk.Game.State">
             <summary>
-            Returns the <see cref="T:Walgelijk.Time"/> information that belongs to <see cref="P:Walgelijk.Game.Window"/>
+            Game engine state information
             </summary>
         </member>
         <member name="P:Walgelijk.Game.DevelopmentMode">
@@ -3977,6 +4051,16 @@
         <member name="F:Walgelijk.Game.OnSceneChange">
             <summary>
             Event dispatched when the scene is changed. The new scene is passed to the receivers
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Game.FixedUpdateRate">
+            <summary>
+            The fixed update rate in Hz
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Game.UpdateRate">
+            <summary>
+            The update/render rate in Hz. Uncapped if zero or smaller.
             </summary>
         </member>
         <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window,Walgelijk.AudioRenderer)">
@@ -4229,6 +4313,11 @@
         <member name="P:Walgelijk.Time.TimeScale">
             <summary>
             Factor by which the time is multiplied
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Time.Interpolation">
+            <summary>
+            Interpolation weight factor. Between fixed updates, this value will start at 0 and gradually increase until it ends at 1
             </summary>
         </member>
         <member name="T:Walgelijk.Font">
@@ -5094,11 +5183,6 @@
             Size of the window in pixels
             </summary>
         </member>
-        <member name="P:Walgelijk.Window.TargetUpdateRate">
-            <summary>
-            Speed the game should update at
-            </summary>
-        </member>
         <member name="P:Walgelijk.Window.VSync">
             <summary>
             Should vertical synchronisation be enabled
@@ -5124,19 +5208,9 @@
             Is the window resizable?
             </summary>
         </member>
-        <member name="P:Walgelijk.Window.InputState">
-            <summary>
-            The current input state
-            </summary>
-        </member>
         <member name="P:Walgelijk.Window.Graphics">
             <summary>
             Graphics functions
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Window.Time">
-            <summary>
-            Time information
             </summary>
         </member>
         <member name="P:Walgelijk.Window.RenderQueue">
@@ -5174,9 +5248,19 @@
             Fires when the window is going to close
             </summary>
         </member>
-        <member name="M:Walgelijk.Window.StartLoop">
+        <member name="M:Walgelijk.Window.Initialise">
             <summary>
-            Start the main game loop
+            Called by the game before the main loop starts
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Window.Deinitialise">
+            <summary>
+            Called by the game when the game loop has ended
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Window.LoopCycle">
+            <summary>
+            Called every frame by the game
             </summary>
         </member>
         <member name="M:Walgelijk.Window.Close">

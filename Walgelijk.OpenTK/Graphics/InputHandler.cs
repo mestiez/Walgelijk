@@ -7,19 +7,11 @@ namespace Walgelijk.OpenTK
 {
     public class InputHandler
     {
-        private InputState inputState;
+        private InputState inputState = new();
 
         public InputHandler(OpenTKWindow window)
         {
             Window = window;
-
-            inputState.MouseButtonsDown = new HashSet<Button>();
-            inputState.MouseButtonsHeld = new HashSet<Button>();
-            inputState.MouseButtonsUp = new HashSet<Button>();
-
-            inputState.KeysDown = new HashSet<Key>();
-            inputState.KeysHeld = new HashSet<Key>();
-            inputState.KeysUp = new HashSet<Key>();
 
             GameWindow.TextInput += TextEnter;
             GameWindow.KeyDown += KeyDown;

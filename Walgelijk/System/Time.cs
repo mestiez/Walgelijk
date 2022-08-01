@@ -35,5 +35,10 @@
         /// Factor by which the time is multiplied
         /// </summary>
         public float TimeScale { get; set; } = 1;
+
+        /// <summary>
+        /// Interpolation weight factor. Between fixed updates, this value will start at 0 and gradually increase until it ends at 1
+        /// </summary>
+        public float Interpolation { get; set; } = 0;
     }
 }
