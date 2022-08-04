@@ -58,5 +58,7 @@ namespace Walgelijk
                 v.Entity
             );
         }
+
+        public static implicit operator T(EntityWith<T> v) => v.Component;
     }
 }
