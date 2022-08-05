@@ -84,7 +84,8 @@ public class Game
     public GameState State { get; private set; } = new();
 
     /// <summary>
-    /// When set to true, safety checks will be done at runtime. This will degrade performance and should be turned off in release. <b>True by default</b>
+    /// When set to true, safety checks will be done at runtime. 
+    /// This will degrade performance and should be turned off in release. <b>True by default</b>
     /// </summary>
     public bool DevelopmentMode { get; set; } = true;
 

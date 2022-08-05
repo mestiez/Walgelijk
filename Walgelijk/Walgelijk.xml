@@ -324,9 +324,44 @@
             Translational offset
             </summary>
         </member>
+        <member name="F:Walgelijk.Background.BackgroundComponent.Mode">
+            <summary>
+            Manner in which to draw the background 
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Background.BackgroundComponent.Size">
+            <summary>
+            Size of the texture
+            </summary>
+        </member>
         <member name="F:Walgelijk.Background.BackgroundComponent.RenderTask">
             <summary>
             Relevant render task
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Background.BackgroundMode">
+            <summary>
+            Manners in which to draw the background
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Background.BackgroundMode.Stretch">
+            <summary>
+            Fill the whole screen
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Background.BackgroundMode.Center">
+            <summary>
+            Original size, centered
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Background.BackgroundMode.Cover">
+            <summary>
+            Fill the whole screen while keeping the aspect ratio
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Background.BackgroundMode.Contain">
+            <summary>
+            Grow as large as possible without cropping
             </summary>
         </member>
         <member name="T:Walgelijk.CameraComponent">
@@ -599,7 +634,7 @@
             Utility struct that provides splash screen creation functionality
             </summary>
         </member>
-        <member name="M:Walgelijk.SplashScreen.CreateScene(Walgelijk.SplashScreen.Logo[],System.Action)">
+        <member name="M:Walgelijk.SplashScreen.CreateScene(Walgelijk.IReadableTexture,Walgelijk.SplashScreen.Logo[],System.Action,Walgelijk.SplashScreen.Transition,System.Boolean)">
             <summary>
             Create a splash screen scene
             </summary>
@@ -637,6 +672,36 @@
             What to do once all logos have been displayed
             </summary>
         </member>
+        <member name="F:Walgelijk.SplashScreen.SplashScreenComponent.Background">
+            <summary>
+            Optional background that is drawn under everything
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreen.SplashScreenComponent.Transition">
+            <summary>
+            Transition between logos
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreen.SplashScreenComponent.TransitionDuration">
+            <summary>
+            Amount of time the transition takes
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreen.SplashScreenComponent.CanSkip">
+            <summary>
+            Can the entire sequence be skipped by pushing any button (mouse or keyboard)? 
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreen.Transition.Cut">
+            <summary>
+            No transition. Just cut.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreen.Transition.FadeInOut">
+            <summary>
+            Let logos fade in and fade out before switching to the next logo. <b>This is not a crossfade</b>
+            </summary>
+        </member>
         <member name="T:Walgelijk.SplashScreen.Logo">
             <summary>
             Structure with information on how to display a logo
@@ -652,12 +717,17 @@
             How long the logo should appear for
             </summary>
         </member>
+        <member name="F:Walgelijk.SplashScreen.Logo.Offset">
+            <summary>
+            Translational offset
+            </summary>
+        </member>
         <member name="F:Walgelijk.SplashScreen.Logo.Sound">
             <summary>
             Sound to play
             </summary>
         </member>
-        <member name="M:Walgelijk.SplashScreen.Logo.#ctor(Walgelijk.IReadableTexture,System.Single,Walgelijk.Sound)">
+        <member name="M:Walgelijk.SplashScreen.Logo.#ctor(Walgelijk.IReadableTexture,System.Numerics.Vector2,System.Single,Walgelijk.Sound)">
             <summary>
             Create a logo with a texture and an optional sound
             </summary>
@@ -4045,7 +4115,8 @@
         </member>
         <member name="P:Walgelijk.Game.DevelopmentMode">
             <summary>
-            When set to true, safety checks will be done at runtime. This will degrade performance and should be turned off in release. <b>True by default</b>
+            When set to true, safety checks will be done at runtime. 
+            This will degrade performance and should be turned off in release. <b>True by default</b>
             </summary>
         </member>
         <member name="F:Walgelijk.Game.OnSceneChange">
