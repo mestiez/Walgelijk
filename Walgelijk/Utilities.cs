@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 namespace Walgelijk
 {
     /// <summary>
-    /// Utility struct full of useful function
+    /// Utility struct full of useful functions
     /// </summary>
     public struct Utilities
     {
@@ -517,16 +517,19 @@ namespace Walgelijk
         /// <summary>
         /// Are the two given character spans the same, regardless of casing? 
         /// </summary>
+        [Obsolete("Just use .Equals with StringComparison.InvariantCultureIgnoreCase")]
         public static bool TextEqualsCaseInsensitive(ReadOnlySpan<char> a, ReadOnlySpan<char> b)
         {
-            if (a.Length != b.Length)
-                return false;
+            return a.Equals(b, StringComparison.InvariantCultureIgnoreCase);
+        }
 
-            for (int i = 0; i < a.Length; i++)
-                if (char.ToLowerInvariant(a[i]) != char.ToLowerInvariant(b[i]))
-                    return false;
-
-            return true;
+        /// <summary>
+        /// Smoothstep function
+        /// </summary>
+        static float Smoothstep(float edge0, float edge1, float x)
+        {
+            var t = Clamp((x - edge0) / (edge1 - edge0), 0, 1);
+            return Clamp(t * t * (3f - 2f * t));
         }
     }
 }
