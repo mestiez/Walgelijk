@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.Physics", "Walgel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.SimpleDrawing", "Walgelijk.SimpleDrawing\Walgelijk.SimpleDrawing.csproj", "{1D800BA8-D9E5-4CE8-8685-8958E1814E61}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playgrounds", "Playgrounds\Playgrounds.csproj", "{74A9F0F2-435F-4078-8D26-44473D051C1E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{1D800BA8-D9E5-4CE8-8685-8958E1814E61}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D800BA8-D9E5-4CE8-8685-8958E1814E61}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D800BA8-D9E5-4CE8-8685-8958E1814E61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74A9F0F2-435F-4078-8D26-44473D051C1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74A9F0F2-435F-4078-8D26-44473D051C1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74A9F0F2-435F-4078-8D26-44473D051C1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74A9F0F2-435F-4078-8D26-44473D051C1E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

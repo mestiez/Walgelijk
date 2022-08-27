@@ -288,6 +288,21 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Linearly map a value in a range onto another range
+        /// </summary>
+        /// <param name="a1">Source lower bound</param>
+        /// <param name="a2">Source upper bound</param>
+        /// <param name="b1">Destination lower bound</param>
+        /// <param name="b2">Destination upper bound</param>
+        /// <param name="s">The value to remap</param>
+        /// <returns>Remapped value <paramref name="s"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double MapRange(double a1, double a2, double b1, double b2, double s)
+        {
+            return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
+        }
+
+        /// <summary>
         /// Apply a constant acceleration to the given 2D position and 2D velocity, considering a time step.
         /// </summary>
         /// <param name="acceleration">The acceleration</param>

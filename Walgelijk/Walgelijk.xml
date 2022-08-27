@@ -1789,6 +1789,12 @@
             Orange
             </summary>
         </member>
+        <member name="M:Walgelijk.Color.Clamped">
+            <summary>
+            Returns a copy of this colour with each value clamped between 0 and 1 
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Walgelijk.Color.WithAlpha(System.Single)">
             <summary>
             Return a copy of the colour with the given alpha
@@ -4804,7 +4810,7 @@
         </member>
         <member name="T:Walgelijk.Utilities">
             <summary>
-            Utility struct full of useful function
+            Utility struct full of useful functions
             </summary>
         </member>
         <member name="F:Walgelijk.Utilities.RadToDeg">
@@ -4942,6 +4948,17 @@
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.MapRange(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Linearly map a value in a range onto another range
+            </summary>
+            <param name="a1">Source lower bound</param>
+            <param name="a2">Source upper bound</param>
+            <param name="b1">Destination lower bound</param>
+            <param name="b2">Destination upper bound</param>
+            <param name="s">The value to remap</param>
+            <returns>Remapped value <paramref name="s"/></returns>
+        </member>
+        <member name="M:Walgelijk.Utilities.MapRange(System.Double,System.Double,System.Double,System.Double,System.Double)">
             <summary>
             Linearly map a value in a range onto another range
             </summary>
@@ -5092,6 +5109,11 @@
         <member name="M:Walgelijk.Utilities.TextEqualsCaseInsensitive(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char})">
             <summary>
             Are the two given character spans the same, regardless of casing? 
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Smoothstep(System.Single,System.Single,System.Single)">
+            <summary>
+            Smoothstep function
             </summary>
         </member>
         <member name="T:Walgelijk.DrawBounds">
