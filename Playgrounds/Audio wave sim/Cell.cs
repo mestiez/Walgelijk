@@ -7,6 +7,7 @@ public class Cell
     public float Velocity;
     public float Absorption = 1;
     public float VelocityAbsorption = 1;
+    public float ConductivityAdd = 0;
 
     public readonly int X, Y;
 
