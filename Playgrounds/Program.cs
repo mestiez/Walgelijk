@@ -266,6 +266,12 @@ public struct AudioWaveScene : ISceneCreator
 
             var transformPosition = Vector2.Transform(Input.WindowMousePosition, inverse);
 
+            if (Input.IsKeyPressed(Key.E))
+            {
+                world.ListenerPosition.x = Utilities.Clamp((int)transformPosition.X, 0, world.Width - 1);
+                world.ListenerPosition.y = Utilities.Clamp((int)transformPosition.Y, 0, world.Height - 1);
+            }
+
             if (Input.IsKeyPressed(Key.Space))
                 for (int x = 0; x < field.Width; x++)
                     for (int y = 0; y < field.Height; y++)
@@ -427,7 +433,7 @@ public struct AudioWaveScene : ISceneCreator
         private static float GetDelta(int x, int y, float value, AudioWaveWorldComponent world)
         {
             if (x < 0 || y < 0 || x >= world.Width || y >= world.Height)
-                return 0;//  (-value) * world.ValueTransferRate;
+                return  (-value) * world.ValueTransferRate;
 
             var o = world.Field.Get(x, y);
             return (o.Previous - value) * world.ValueTransferRate / o.Absorption;
@@ -438,10 +444,11 @@ public struct AudioWaveScene : ISceneCreator
     {
         const double timestep = 1d / 10000; //time resolution, 1 / [steps per second]
         const float visualTimescale = 1f / 6f; //x times slower than real time
+        var tex = Texture.Load("resources/world.png", false);
 
         var scene = new Scene(game);
 
-        var world = scene.AttachComponent(scene.CreateEntity(), new AudioWaveWorldComponent(1024, 128, "result.pcm", 12)
+        var world = scene.AttachComponent(scene.CreateEntity(), new AudioWaveWorldComponent(tex.Width, tex.Height, "result.pcm", 8)
         {
             TimeStep = timestep
         });
@@ -451,7 +458,7 @@ public struct AudioWaveScene : ISceneCreator
         world.ListenerPosition = (450, 110);
 
         world.Oscillators.Add(new FileOscillator("resources/james.raw", new Vector2(125, 92)) { Volume = 7 });
-        world.Oscillators.Add(new FileOscillator("resources/bf1942.raw", new Vector2(724, 80)) { Volume = 43 });
+        world.Oscillators.Add(new FileOscillator("resources/bf1942.raw", new Vector2(724, 80)) { Volume = 9 });
         // world.Oscillators.Add(new FileOscillator("resources/bf1942.raw", new Vector2(120, 120)) { Volume = 0.5f });
         //world.Oscillators.Add(new FileOscillator("resources/politie.raw", new Vector2(25,25)));
         //world.Oscillators.Add(new FileOscillator("resources/james.raw", new Vector2(15, 50)));
@@ -462,8 +469,6 @@ public struct AudioWaveScene : ISceneCreator
 
         // world.AddWall(new Rect(64, 0, 80, 128 - 10), 2f);
         // world.AddWall(new Rect(64, 128 + 10, 80, 256), 2f);
-
-        var tex = Texture.Load("resources/world.png", false);
 
         const int padding = 5;
         const float freq = 0.009f;
