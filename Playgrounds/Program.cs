@@ -90,8 +90,8 @@ public struct AudioWaveScene : ISceneCreator
         public readonly AudioWaveSystem.WorkGroupParams[] ThreadData;
         public readonly int ThreadCount ;
 
-        public float VelocityRetainment = .999999f;
-        public float ValueTransferRate = 0.2f;
+        public float VelocityRetainment = .99999f;
+        public float ValueTransferRate = 0.48f;
 
         public int SampleRate => (int)(1 / TimeStep);
 
@@ -193,19 +193,6 @@ public struct AudioWaveScene : ISceneCreator
             RenderTask.VertexBuffer.Dispose();
             RenderTask.Material.Dispose();
             ThreadReset.Dispose();
-        }
-
-        public void AddWall(Rect box, float absorption)
-        {
-            for (int x = (int)box.MinX; x < box.MaxX; x++)
-                for (int y = (int)box.MinY; y < box.MaxY; y++)
-                {
-                    if (x < 0 || y < 0 || x >= Field.Width || y >= Field.Height)
-                        continue;
-
-                    var cell = Field.Get(x, y);
-                    cell.Absorption = absorption;
-                }
         }
     }
 
@@ -341,8 +328,6 @@ public struct AudioWaveScene : ISceneCreator
             world.ThreadsRunning = world.ThreadCount;
             world.ThreadReset.Reset();
 
-           // Parallel.ForEach(world.ThreadData, ProcessGroup);
-
             foreach (var data in world.ThreadData)
                 ThreadPool.QueueUserWorkItem(ProcessGroup, data, true);
 
@@ -433,7 +418,7 @@ public struct AudioWaveScene : ISceneCreator
         private static float GetDelta(int x, int y, float value, AudioWaveWorldComponent world)
         {
             if (x < 0 || y < 0 || x >= world.Width || y >= world.Height)
-                return  (-value) * world.ValueTransferRate;
+                return  -value * 0.1f;
 
             var o = world.Field.Get(x, y);
             return (o.Previous - value) * world.ValueTransferRate / o.Absorption;
@@ -443,7 +428,7 @@ public struct AudioWaveScene : ISceneCreator
     public Scene Load(Game game)
     {
         const double timestep = 1d / 10000; //time resolution, 1 / [steps per second]
-        const float visualTimescale = 1f / 6f; //x times slower than real time
+        const float visualTimescale = 1f / 1f; //x times slower than real time
         var tex = Texture.Load("resources/world.png", false);
 
         var scene = new Scene(game);
@@ -455,10 +440,10 @@ public struct AudioWaveScene : ISceneCreator
         ThreadPool.SetMaxThreads(world.ThreadCount, 4);
         world.RenderTask.ModelMatrix = Matrix3x2.CreateScale(4);
 
-        world.ListenerPosition = (450, 110);
+        world.ListenerPosition = (5, 5);
 
-        world.Oscillators.Add(new FileOscillator("resources/james.raw", new Vector2(125, 92)) { Volume = 7 });
-        world.Oscillators.Add(new FileOscillator("resources/bf1942.raw", new Vector2(724, 80)) { Volume = 9 });
+        world.Oscillators.Add(new FileOscillator("resources/bf1942.raw", new Vector2(15, 26)) { Volume = 7 });
+        //world.Oscillators.Add(new FileOscillator("resources/bf1942.raw", new Vector2(724, 80)) { Volume = 9 });
         // world.Oscillators.Add(new FileOscillator("resources/bf1942.raw", new Vector2(120, 120)) { Volume = 0.5f });
         //world.Oscillators.Add(new FileOscillator("resources/politie.raw", new Vector2(25,25)));
         //world.Oscillators.Add(new FileOscillator("resources/james.raw", new Vector2(15, 50)));
@@ -475,8 +460,8 @@ public struct AudioWaveScene : ISceneCreator
         foreach (var (x, y, cell) in world.Field)
         {
             var p = tex.GetPixel(x, y);
-            cell.VelocityAbsorption = 0.5f * p.R + 1;
-            cell.Absorption = 0.1f * p.R + 1;
+            cell.VelocityAbsorption = 0.8f * p.R + 1;
+            cell.Absorption = 0.3f * p.R + 1;
             //cell.Absorption = 1 + (Noise.GetSimplex(x * freq, y * freq, 0) * 0.5f + 0.5f) * 0.002f;
             //if (x <= padding || x > world.Width - padding || y <= padding || y > world.Height - padding)
             //{
