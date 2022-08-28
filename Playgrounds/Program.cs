@@ -87,9 +87,11 @@ public struct AudioWaveScene : ISceneCreator
 
         public int ThreadsRunning = 0;
         public readonly ManualResetEvent ThreadReset;
+        public readonly AudioWaveSystem.WorkGroupParams[] ThreadData;
+        public readonly int ThreadCount ;
 
         public float VelocityRetainment = .999999f;
-        public float ValueTransferRate = 0.499f;
+        public float ValueTransferRate = 0.2f;
 
         public int SampleRate => (int)(1 / TimeStep);
 
@@ -107,21 +109,23 @@ public struct AudioWaveScene : ISceneCreator
         public string OutputFile;
         public List<byte> OutputFileData = new();
 
-        public AudioWaveWorldComponent(int width, int height, string outputPath)
+        public AudioWaveWorldComponent(int width, int height, string outputPath, int threadCount)
         {
             var data = new Cell[width * height];
             for (int i = 0; i < data.Length; i++)
-                data[i] = new Cell(0);
+            {
+                Grid<Cell>.GetCoordinatesFromIndex(i, width, out int x, out int y);
+                data[i] = new Cell(0, x, y);
+            }
 
             OutputFile = outputPath;
+            ThreadCount = threadCount;
             ListenerPosition = (width / 2, height - 2);
 
             Field = new(width, height, data);
 
             Width = width;
             Height = height;
-
-            ThreadReset = new ManualResetEvent(false);
 
             var mt = new Material(new Shader(
                 File.ReadAllText("resources/shaders/instanced-worldspace-vertex.vert"),
@@ -148,6 +152,20 @@ public struct AudioWaveScene : ISceneCreator
             {
                 Field.GetCoordinatesFromIndex(i, out var x, out var y);
                 positions.Data[i] = new Vector2(x, y);
+            }
+
+            ThreadReset = new ManualResetEvent(false);
+            ThreadData = new AudioWaveSystem.WorkGroupParams[ThreadCount];
+
+            int stride = Field.Flat.Length / ThreadCount;
+            int startIndex = 0;
+            int endIndex = 0;
+
+            for (int i = 0; i < ThreadCount; i++)
+            {
+                startIndex = endIndex;
+                endIndex = startIndex + stride;
+                ThreadData[i] = new AudioWaveSystem.WorkGroupParams(this, startIndex, endIndex - 1);
             }
         }
 
@@ -236,6 +254,7 @@ public struct AudioWaveScene : ISceneCreator
         {
             if (!Scene.FindAnyComponent<AudioWaveWorldComponent>(out var world))
                 return;
+
             var field = world.Field;
 
             if (Input.IsButtonReleased(Button.Middle))
@@ -252,11 +271,11 @@ public struct AudioWaveScene : ISceneCreator
                     for (int y = 0; y < field.Height; y++)
                     {
                         var dist = Vector2.Distance(transformPosition, new Vector2(x, y));
-                        if (dist < Utilities.RandomFloat(20, 21))
+                        if (dist < 20)
                         {
                             field.Get(x, y).ForceSet(-5);
                             if (dist < 4)
-                                field.Get(x, y).ForceSet(Utilities.RandomFloat(-1, 0));
+                                field.Get(x, y).ForceSet(40);
                         }
                     }
 
@@ -267,7 +286,8 @@ public struct AudioWaveScene : ISceneCreator
                         if (Vector2.Distance(transformPosition, new Vector2(x, y)) < 5)
                         {
                             var cell = field.Get(x, y);
-                            cell.Absorption = 1.5f;
+                            cell.Absorption = 231.5f;
+                            cell.VelocityAbsorption = 231.5f;
                         }
             }
 
@@ -279,6 +299,7 @@ public struct AudioWaveScene : ISceneCreator
                         {
                             var cell = field.Get(x, y);
                             cell.Absorption = 1;
+                            cell.VelocityAbsorption = 1;
                         }
             }
 
@@ -311,14 +332,23 @@ public struct AudioWaveScene : ISceneCreator
             foreach (var oscillator in world.Oscillators)
                 oscillator.Evaluate(world.Time, field);
 
-            Process(world, field, 8);
+            world.ThreadsRunning = world.ThreadCount;
+            world.ThreadReset.Reset();
+
+           // Parallel.ForEach(world.ThreadData, ProcessGroup);
+
+            foreach (var data in world.ThreadData)
+                ThreadPool.QueueUserWorkItem(ProcessGroup, data, true);
+
+            world.ThreadReset.WaitOne();
+
             SampleAudioAtListener(world);
         }
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         private void SampleAudioAtListener(AudioWaveWorldComponent world)
         {
-            const float gain = 4;
+            const float gain = 2;
             //const int kernelhsize = 1;
 
             //float avg = 0;
@@ -346,65 +376,42 @@ public struct AudioWaveScene : ISceneCreator
             }
         }
 
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-        private static void Process(AudioWaveWorldComponent world, Grid<Cell> field, int threads)
+        public class WorkGroupParams
         {
-            int stride = field.Flat.Length / threads;
+            public readonly AudioWaveWorldComponent World;
+            public readonly Grid<Cell> Field;
+            public readonly int Start;
+            public readonly int End;
+            public readonly Cell[] Data;
 
-            if (stride <= 0)
+            public WorkGroupParams(AudioWaveWorldComponent world, int start, int end)
             {
-                Logger.Warn("threads value invalid");
-                return;
-            }
+                this.World = world;
+                this.Field = world.Field;
+                this.Start = start;
+                this.End = end;
 
-            int startIndex = 0;
-            int endIndex = 0;
-
-            world.ThreadsRunning = threads;
-            world.ThreadReset.Reset();
-
-            for (int threadIndex = 0; threadIndex < threads; threadIndex++)
-            {
-                startIndex = endIndex;
-                endIndex = startIndex + stride;
-                ThreadPool.QueueUserWorkItem(ProcessGroup, new WorkGroupParams(world, field, startIndex, endIndex - 1), true);
-            }
-
-            world.ThreadReset.WaitOne();
-        }
-
-        private readonly struct WorkGroupParams
-        {
-            public readonly AudioWaveWorldComponent world;
-            public readonly Grid<Cell> field;
-            public readonly int start;
-            public readonly int end;
-
-            public WorkGroupParams(AudioWaveWorldComponent world, Grid<Cell> field, int start, int end)
-            {
-                this.world = world;
-                this.field = field;
-                this.start = start;
-                this.end = end;
+                Data = world.Field.Flat.AsSpan(start, end-start+1).ToArray();
             }
         }
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         private static void ProcessGroup(WorkGroupParams data)
         {
-            for (int i = data.start; i <= data.end; i++)
+            for (int i = 0; i < data.Data.Length; i++)
             {
-                data.field.GetCoordinatesFromIndex(i, out int x, out int y);
-                var cell = data.field.Flat[i];
+                var cell = data.Data[i];
 
                 //cell.Velocity += (0 - cell.Previous) * data.world.ValueDropRate;
+                int x = cell.X;
+                int y = cell.Y;
 
-                cell.Velocity += GetDelta(x - 1, y, cell.Previous, data.world);
-                cell.Velocity += GetDelta(x + 1, y, cell.Previous, data.world);
-                cell.Velocity += GetDelta(x, y - 1, cell.Previous, data.world);
-                cell.Velocity += GetDelta(x, y + 1, cell.Previous, data.world);
+                cell.Velocity += GetDelta(x - 1, y, cell.Previous, data.World);
+                cell.Velocity += GetDelta(x + 1, y, cell.Previous, data.World);
+                cell.Velocity += GetDelta(x, y - 1, cell.Previous, data.World);
+                cell.Velocity += GetDelta(x, y + 1, cell.Previous, data.World);
 
-                cell.Velocity *= data.world.VelocityRetainment;
+                cell.Velocity *= data.World.VelocityRetainment;
                 cell.Velocity /= cell.VelocityAbsorption;
 
                 cell.Current += cell.Velocity;
@@ -412,8 +419,8 @@ public struct AudioWaveScene : ISceneCreator
                 cell.Current /= cell.Absorption;
             }
 
-            if (Interlocked.Decrement(ref data.world.ThreadsRunning) == 0)
-                data.world.ThreadReset.Set();
+            if (Interlocked.Decrement(ref data.World.ThreadsRunning) == 0)
+                data.World.ThreadReset.Set();
         }
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -422,27 +429,30 @@ public struct AudioWaveScene : ISceneCreator
             if (x < 0 || y < 0 || x >= world.Width || y >= world.Height)
                 return 0;//  (-value) * world.ValueTransferRate;
 
-            return (world.Field.Get(x, y).Previous - value) * world.ValueTransferRate;
+            var o = world.Field.Get(x, y);
+            return (o.Previous - value) * world.ValueTransferRate / o.Absorption;
         }
     }
 
     public Scene Load(Game game)
     {
         const double timestep = 1d / 10000; //time resolution, 1 / [steps per second]
-        const float visualTimescale = 1f / 1f; //x times slower than real time
+        const float visualTimescale = 1f / 6f; //x times slower than real time
 
         var scene = new Scene(game);
 
-        var world = scene.AttachComponent(scene.CreateEntity(), new AudioWaveWorldComponent(128, 128, "result.pcm")
+        var world = scene.AttachComponent(scene.CreateEntity(), new AudioWaveWorldComponent(1024, 128, "result.pcm", 12)
         {
             TimeStep = timestep
         });
+        ThreadPool.SetMaxThreads(world.ThreadCount, 4);
+        world.RenderTask.ModelMatrix = Matrix3x2.CreateScale(4);
 
-        world.RenderTask.ModelMatrix = Matrix3x2.CreateScale(2);
+        world.ListenerPosition = (450, 110);
 
-        world.ListenerPosition = (32, 32);
-
-        world.Oscillators.Add(new FileOscillator("resources/bf1942.raw", new Vector2(5, 5)));
+        world.Oscillators.Add(new FileOscillator("resources/james.raw", new Vector2(125, 92)) { Volume = 7 });
+        world.Oscillators.Add(new FileOscillator("resources/bf1942.raw", new Vector2(724, 80)) { Volume = 43 });
+        // world.Oscillators.Add(new FileOscillator("resources/bf1942.raw", new Vector2(120, 120)) { Volume = 0.5f });
         //world.Oscillators.Add(new FileOscillator("resources/politie.raw", new Vector2(25,25)));
         //world.Oscillators.Add(new FileOscillator("resources/james.raw", new Vector2(15, 50)));
         //world.Oscillators.Add(new SineOscillator(500, new Vector2(64, 64)));
@@ -453,11 +463,16 @@ public struct AudioWaveScene : ISceneCreator
         // world.AddWall(new Rect(64, 0, 80, 128 - 10), 2f);
         // world.AddWall(new Rect(64, 128 + 10, 80, 256), 2f);
 
+        var tex = Texture.Load("resources/world.png", false);
+
         const int padding = 5;
         const float freq = 0.009f;
         foreach (var (x, y, cell) in world.Field)
         {
-            cell.Absorption = 1 + (Noise.GetSimplex(x * freq, y * freq, 0) * 0.5f + 0.5f) * 0.005f;
+            var p = tex.GetPixel(x, y);
+            cell.VelocityAbsorption = 0.5f * p.R + 1;
+            cell.Absorption = 0.1f * p.R + 1;
+            //cell.Absorption = 1 + (Noise.GetSimplex(x * freq, y * freq, 0) * 0.5f + 0.5f) * 0.002f;
             //if (x <= padding || x > world.Width - padding || y <= padding || y > world.Height - padding)
             //{
             //    cell.VelocityAbsorption = 5.25f;
@@ -554,6 +569,7 @@ public class FileOscillator : IOscillator
 {
     public (int x, int y) Position;
     public bool Loops = true;
+    public float Volume = 1;
 
     public readonly byte[] InputData;
 
@@ -571,6 +587,6 @@ public class FileOscillator : IOscillator
         //Position.y = (int)Utilities.Lerp(0, field.Height - 1, ((float)time * 0.5f) % 1);
         var b = InputData[Loops ? (i++ % InputData.Length) : Utilities.Clamp(i++, 0, InputData.Length - 1)];
         var v = Utilities.MapRange(0, 255, -1, 1, b);
-        field.Get(Position.x, Position.y).ForceSet(v);
+        field.Get(Position.x, Position.y).ForceSet(v * Volume);
     }
 }

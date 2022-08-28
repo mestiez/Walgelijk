@@ -8,9 +8,13 @@ public class Cell
     public float Absorption = 1;
     public float VelocityAbsorption = 1;
 
-    public Cell(float current)
+    public readonly int X, Y;
+
+    public Cell(float current, int x, int y)
     {
         Previous = Current = current;
+        X = x;
+        Y = y;
     }
 
     public void Sync()
