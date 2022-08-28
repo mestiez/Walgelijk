@@ -8,12 +8,12 @@ public struct AudioWaveScene : ISceneCreator
     public Scene Load(Game game)
     {
         const double timestep = 1d / 10000; //time resolution, 1 / [steps per second]
-        const float visualTimescale = 1f / 1f; //x times slower than real time
+        const float visualTimescale = 1f / 5f; //x times slower than real time
         var tex = Texture.Load("resources/world.png", false);
 
         var scene = new Scene(game);
 
-        var world = scene.AttachComponent(scene.CreateEntity(), new AudioWaveWorldComponent(tex.Width, tex.Height, "result.pcm", 8)
+        var world = scene.AttachComponent(scene.CreateEntity(), new AudioWaveWorldComponent(tex.Width, tex.Height, "result.pcm", 32)
         {
             TimeStep = timestep
         });
@@ -22,8 +22,8 @@ public struct AudioWaveScene : ISceneCreator
 
         world.ListenerPosition = (tex.Width / 2, tex.Height / 2);
 
-        world.Oscillators.Add(new PointFileOscillator("resources/daily_beat.raw", new Vector2(153, 35)) { Volume = 5 });
-        world.Oscillators.Add(new PointFileOscillator("resources/bf1942.raw", new Vector2(29, 56)) { Volume = 1f });
+        world.Oscillators.Add(new PointFileOscillator("resources/daily_beat.raw", new Vector2(18, 50)) { Volume = 27 });
+        //world.Oscillators.Add(new PointFileOscillator("resources/bf1942.raw", new Vector2(29, 56)) { Volume = 3 });
         // world.Oscillators.Add(new FileOscillator("resources/bf1942.raw", new Vector2(120, 120)) { Volume = 0.5f });
       //  world.Oscillators.Add(new AreaFileOscillator("resources/politie.raw", new Vector2(204, 0), new Vector2(204, 112)) { Volume = 0.04f });
         //world.Oscillators.Add(new FileOscillator("resources/james.raw", new Vector2(15, 50)));

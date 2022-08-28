@@ -14,7 +14,7 @@ public class AudioWaveWorldComponent : IDisposable
     public readonly AudioWaveSystem.WorkGroupParams[] ThreadData;
     public readonly int ThreadCount;
 
-    public float VelocityRetainment = .99f;
+    public float VelocityRetainment = .9999f;
     public float ValueTransferRate = 0.45f;
 
     public int SampleRate => (int)(1 / TimeStep);
@@ -38,7 +38,7 @@ public class AudioWaveWorldComponent : IDisposable
         var data = new Cell[width * height];
         for (int i = 0; i < data.Length; i++)
         {
-            Grid<Cell>.GetCoordinatesFromIndex(i, width, out int x, out int y);
+            Grid<Cell>.GetCoordinatesFromIndex(i, width, height, out int x, out int y);
             data[i] = new Cell(0, x, y);
         }
 
