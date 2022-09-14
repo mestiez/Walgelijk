@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿//#define HILBERT
+
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
 namespace TestWorld;
@@ -7,6 +9,7 @@ public class Grid<T> : IEnumerable<(int X, int Y, T Value)> where T : notnull
 {
     public readonly int Width, Height;
     public T[] Flat;
+    private int[] indexByPos;
 
     public Grid(int width, int height, T initialValue)
     {
@@ -14,7 +17,9 @@ public class Grid<T> : IEnumerable<(int X, int Y, T Value)> where T : notnull
         Height = height;
         Flat = new T[width * height];
         Array.Fill(Flat, initialValue);
+        InitGrid(width, height);
     }
+
 
     public Grid(int width, int height, T[] flat)
     {
@@ -23,6 +28,19 @@ public class Grid<T> : IEnumerable<(int X, int Y, T Value)> where T : notnull
         Width = width;
         Height = height;
         Flat = flat;
+        InitGrid(width, height);
+    }
+
+    private void InitGrid(int width, int height)
+    {
+        indexByPos = new int[width * height];
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                indexByPos[y * width + x] = GetIndexFrom(x, y);
+            }
+        }
     }
 
     public void Fill(T value)
@@ -33,7 +51,13 @@ public class Grid<T> : IEnumerable<(int X, int Y, T Value)> where T : notnull
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public T Get(int x, int y)
     {
-        return Flat[GetIndexFrom(x, y)];
+        return Flat[GetIndexFromCache(x, y)];
+    }
+
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private int GetIndexFromCache(int x, int y)
+    {
+        return indexByPos[y * Width + x];
     }
 
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -43,14 +67,14 @@ public class Grid<T> : IEnumerable<(int X, int Y, T Value)> where T : notnull
         if (x < 0 || x >= Width) return false;
         if (y < 0 || y >= Height) return false;
 
-        cell = Flat[GetIndexFrom(x, y)];
+        cell = Flat[GetIndexFromCache(x, y)];
         return true;
     }
 
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public void Set(int x, int y, T value)
     {
-        Flat[GetIndexFrom(x, y)] = value;
+        Flat[GetIndexFromCache(x, y)] = value;
     }
 
     public IEnumerator<(int X, int Y, T Value)> GetEnumerator()
@@ -113,6 +137,7 @@ public class Grid<T> : IEnumerable<(int X, int Y, T Value)> where T : notnull
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public static int IndexFromCoordinates(int x, int y, int width, int height)
     {
+#if HILBERT
         int n = height;
         int rx, ry, s, d = 0;
         for (s = n / 2; s > 0; s /= 2)
@@ -123,14 +148,16 @@ public class Grid<T> : IEnumerable<(int X, int Y, T Value)> where T : notnull
             HilbertRotate(n, ref x, ref y, rx, ry);
         }
         return d;
-
-       // return (height * width - 1) - (width * y + x);
+#else
+        return (width * y + x);
+#endif
     }
 
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public static void GetCoordinatesFromIndex(int d, int width, int height, out int x, out int y)
     {
-        var n  = height;
+#if HILBERT
+        var n = height;
 
         int rx, ry, s, t = d;
         x = y = 0;
@@ -143,9 +170,10 @@ public class Grid<T> : IEnumerable<(int X, int Y, T Value)> where T : notnull
             y += s * ry;
             t /= 4;
         }
-
-        //x = width - 1 - index % width;
-        //y = height - 1 - index / width;
+#else
+        x =  d % width;
+        y =  d / width;
+#endif
     }
 
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]

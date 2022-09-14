@@ -80,7 +80,7 @@ public class AudioWaveSystem : Walgelijk.System
                 for (int y = 0; y < field.Height; y++)
                 {
                     var dist = Vector2.Distance(transformPosition, new Vector2(x, y));
-                    if (dist < 20)
+                    if (dist < Utilities.RandomFloat(20, 5))
                     {
                         field.Get(x, y).ForceSet(-5);
                     }
@@ -133,18 +133,19 @@ public class AudioWaveSystem : Walgelijk.System
 
         world.Time += world.TimeStep;
 
-        for (int i = 0; i < field.Flat.Length; i++)
-            field.Flat[i].Sync();
+        world.ThreadsRunning = world.ThreadCount;
+        world.ThreadReset.Reset();
+        foreach (var data in world.ThreadData)
+            ThreadPool.QueueUserWorkItem(SyncField, data, true);
+        world.ThreadReset.WaitOne();
 
         foreach (var oscillator in world.Oscillators)
             oscillator.Evaluate(world.Time, field);
 
         world.ThreadsRunning = world.ThreadCount;
         world.ThreadReset.Reset();
-
         foreach (var data in world.ThreadData)
-            ThreadPool.QueueUserWorkItem(ProcessGroup, data, true);
-
+            ThreadPool.QueueUserWorkItem(StepSimulation, data, true);
         world.ThreadReset.WaitOne();
 
         SampleAudioAtListener(world);
@@ -154,45 +155,12 @@ public class AudioWaveSystem : Walgelijk.System
     private void SampleAudioAtListener(AudioWaveWorldComponent world)
     {
         const float gain = 1;
-        //const int kernelhsize = 4;
-
-        //float v = 0;
-        //int c = 0;
-
-        //for (int x = world.ListenerPosition.x - kernelhsize; x < world.ListenerPosition.x + kernelhsize; x++)
-        //    for (int y = world.ListenerPosition.y - kernelhsize; y < world.ListenerPosition.y + kernelhsize; y++)
-        //    {
-        //        c++;
-        //        v += world.Field.Get(x, y).Current * gain;
-        //    }
-
-        //v /= c;
-
-       var v = world.Field.Get(world.ListenerPosition.x, world.ListenerPosition.y).Current * gain;
-       // byte b = (byte)(Utilities.MapRange(-1, 1, 0, 255, v));
-
+        var v = world.Field.Get(world.ListenerPosition.x, world.ListenerPosition.y).Current * gain;
         var bb = BitConverter.GetBytes(v);
-
         world.OutputFileData.AddRange(bb);
-
         bufferedWaveProvider.AddSamples(bb, 0, bb.Length);
-
         if (bufferedWaveProvider.BufferedBytes >= bufferedWaveProvider.BufferLength)
             bufferedWaveProvider.ClearBuffer();
-
-        //buffer[bufferPos++] = bb[0];
-        //buffer[bufferPos++] = bb[1];
-        //buffer[bufferPos++] = bb[2];
-        //buffer[bufferPos++] = bb[3];
-
-        //if (bufferPos >= buffer.Length)
-        //{
-        //    if (bufferedWaveProvider.BufferedBytes >= bufferedWaveProvider.BufferLength)
-        //        bufferedWaveProvider.ClearBuffer();
-
-        //    bufferedWaveProvider.AddSamples(buffer, 0, buffer.Length);
-        //    bufferPos = 0;
-        //}
     }
 
     public class WorkGroupParams
@@ -201,7 +169,7 @@ public class AudioWaveSystem : Walgelijk.System
         public readonly Grid<Cell> Field;
         public readonly int Start;
         public readonly int End;
-        public readonly Cell[] Data;
+        //  public readonly Cell[] Data;
 
         public WorkGroupParams(AudioWaveWorldComponent world, int start, int end)
         {
@@ -209,50 +177,55 @@ public class AudioWaveSystem : Walgelijk.System
             this.Field = world.Field;
             this.Start = start;
             this.End = end;
-
-            Data = world.Field.Flat.AsSpan(start, end - start + 1).ToArray();
+            //  Data = world.Field.Flat.AsSpan(start, end - start).ToArray();
         }
     }
 
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private static void ProcessGroup(WorkGroupParams data)
+    private static void StepSimulation(WorkGroupParams data)
     {
-        for (int i = 0; i < data.Data.Length; i++)
+        for (int i = data.Start; i < data.End; i++)
         {
-            var cell = data.Data[i];
-
-            //cell.Velocity += (0 - cell.Previous) * data.world.ValueDropRate;
-            int x = cell.X;
-            int y = cell.Y;
+            var cell = data.Field.Flat[i];
 
             float tr = data.World.ValueTransferRate + cell.ConductivityAdd;
 
-            cell.Velocity += GetDelta(x - 1, y, cell.Previous, tr, data.World);
-            cell.Velocity += GetDelta(x + 1, y, cell.Previous, tr, data.World);
-            cell.Velocity += GetDelta(x, y - 1, cell.Previous, tr, data.World);
-            cell.Velocity += GetDelta(x, y + 1, cell.Previous, tr, data.World);
+            float d1 = GetDeltaCell(cell.Left, cell.Previous, tr);
+            float d2 = GetDeltaCell(cell.Right, cell.Previous, tr);
+            float d3 = GetDeltaCell(cell.Up, cell.Previous, tr);
+            float d4 = GetDeltaCell(cell.Down, cell.Previous, tr);
+            cell.Velocity += d1 + d2 + d3 + d4;
 
             cell.Velocity *= data.World.VelocityRetainment;
             cell.Velocity /= cell.VelocityAbsorption;
             cell.Current += cell.Velocity;
             cell.Current /= cell.Absorption;
 
-            // cell.Current *= random[vv++ % random.Length] * -0.01f + 1;
+            //global::OpenTK.Graphics.OpenGL.GL.DispatchCompute()
         }
 
         if (Interlocked.Decrement(ref data.World.ThreadsRunning) == 0)
             data.World.ThreadReset.Set();
     }
 
-    static int vv = 0;
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    private static void SyncField(WorkGroupParams data)
+    {
+        for (int i = data.Start; i < data.End; i++)
+        {
+            var cell = data.Field.Flat[i];
+            cell.Previous = cell.Current;
+        }
+
+        if (Interlocked.Decrement(ref data.World.ThreadsRunning) == 0)
+            data.World.ThreadReset.Set();
+    }
 
     [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-    private static float GetDelta(int x, int y, float value, float transferRate, AudioWaveWorldComponent world)
+    private static float GetDeltaCell(Cell o, float value, float transferRate)
     {
-        if (x < 0 || y < 0 || x >= world.Width || y >= world.Height)
+        if (o == null)
             return -value;
-
-        var o = world.Field.Get(x, y);
         return (o.Previous - value) * transferRate / o.Absorption;
     }
 }

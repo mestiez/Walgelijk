@@ -11,6 +11,11 @@ public class Cell
 
     public readonly int X, Y;
 
+    public Cell Left;
+    public Cell Up;
+    public Cell Down;
+    public Cell Right;
+
     public Cell(float current, int x, int y)
     {
         Previous = Current = current;
@@ -18,11 +23,7 @@ public class Cell
         Y = y;
     }
 
-    public void Sync()
-    {
-        Previous = Current;
-    }
-
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
     public void ForceSet(float v)
     {
         Previous = Current = v;

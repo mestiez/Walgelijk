@@ -14,7 +14,8 @@ public class AudioWaveWorldComponent : IDisposable
     public readonly AudioWaveSystem.WorkGroupParams[] ThreadData;
     public readonly int ThreadCount;
 
-    public float VelocityRetainment = .9999f;
+    public float VelocityDampening = 1;
+    public float VelocityRetainment = .99995f;
     public float ValueTransferRate = 0.45f;
 
     public int SampleRate => (int)(1 / TimeStep);
@@ -42,12 +43,19 @@ public class AudioWaveWorldComponent : IDisposable
             data[i] = new Cell(0, x, y);
         }
 
+
         OutputFile = outputPath;
         ThreadCount = threadCount;
         ListenerPosition = (width / 2, height - 2);
 
         Field = new(width, height, data);
-
+        foreach (var cell in data)
+        {
+            Field.TryGet(cell.X - 1, cell.Y, out cell.Left);
+            Field.TryGet(cell.X + 1, cell.Y, out cell.Right);
+            Field.TryGet(cell.X, cell.Y + 1, out cell.Up);
+            Field.TryGet(cell.X, cell.Y - 1, out cell.Down);
+        }
         Width = width;
         Height = height;
 
@@ -89,7 +97,7 @@ public class AudioWaveWorldComponent : IDisposable
         {
             startIndex = endIndex;
             endIndex = startIndex + stride;
-            ThreadData[i] = new AudioWaveSystem.WorkGroupParams(this, startIndex, endIndex - 1);
+            ThreadData[i] = new AudioWaveSystem.WorkGroupParams(this, startIndex, endIndex);
         }
     }
 
