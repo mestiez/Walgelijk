@@ -2929,6 +2929,29 @@
             8x8 red-black frowning face texture, usually used to indicate something has gone wrong
             </summary>
         </member>
+        <member name="T:Walgelijk.TexGen">
+            <summary>
+            Provides texture generation functions
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TexGen.Checkerboard(System.Int32,System.Int32,System.Int32,Walgelijk.Color,Walgelijk.Color)">
+            <summary>
+            Generate a simple checkerboard texture
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.TexGen.Noise(System.Int32,System.Int32,System.Single,System.Single,Walgelijk.Color,Walgelijk.Color)">
+            <summary>
+            Generate a simple noise texture
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.TexGen.Gradient(System.Int32,System.Int32,Walgelijk.TexGen.GradientType,Walgelijk.Color,Walgelijk.Color)">
+            <summary>
+            Generate a simple gradient texture
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Walgelijk.UniformDictionary">
             <summary>
             Dictionary collection for all valid uniform datatypes
