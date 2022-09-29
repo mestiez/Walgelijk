@@ -101,6 +101,8 @@ public class GuiSystem : Walgelijk.System
         windowIdentity.DrawBounds = new DrawBounds(windowIdentity.Size, windowIdentity.TopLeft, true);
     }
 
+    private static Identity?[] debugRaycastBuffer = new Identity?[32];
+
     private void EndFrame()
     {
         Gui.Context.EndControl();
@@ -110,6 +112,17 @@ public class GuiSystem : Walgelijk.System
 
         ControlInputStateResolver.SetIdentities(Gui.Context.GetIdentityBuffer());
         ControlInputStateResolver.UpdateInputStates(Gui.Input);
+
+        if (ControlInputStateResolver.RaycastAll(Input.WindowMousePosition, ref debugRaycastBuffer, out var count))
+        {
+            Logger.Log("####### START");
+            for (int i = 0; i < count; i++)
+            {
+                if (debugRaycastBuffer[i] != null)
+                    Logger.Log(debugRaycastBuffer[i].Raw.ToString());
+            }
+            Logger.Log("####### END");
+        }
 
         foreach (var item in Gui.Context.Identities)
         {
