@@ -24,7 +24,7 @@ public class OpenTKWindow : Window
         get
         {
             if (window.WindowBorder == WindowBorder.Hidden)
-                return window.IsFullscreen ? WindowType.BorderlessFullscreen : WindowType.Borderless;
+                return window.WindowState == WindowState.Fullscreen ? WindowType.BorderlessFullscreen : WindowType.Borderless;
 
             if (window.WindowState == WindowState.Fullscreen)
                 return WindowType.Fullscreen;
@@ -37,20 +37,20 @@ public class OpenTKWindow : Window
             switch (value)
             {
                 case WindowType.Normal:
-                    window.WindowState = window.WindowState == WindowState.Maximized ? WindowState.Maximized : WindowState.Normal;
-                    window.WindowBorder = Resizable ? WindowBorder.Resizable : WindowBorder.Fixed;
+                    window.WindowState = WindowState.Normal;
+                    window.WindowBorder = WindowBorder.Resizable;
                     break;
                 case WindowType.Borderless:
-                    window.WindowState = WindowState.Normal;
                     window.WindowBorder = WindowBorder.Hidden;
+                    window.WindowState = WindowState.Normal;
                     break;
                 case WindowType.BorderlessFullscreen:
-                    window.WindowState = WindowState.Fullscreen;
                     window.WindowBorder = WindowBorder.Hidden;
+                    window.WindowState = WindowState.Fullscreen;
                     break;
                 case WindowType.Fullscreen:
+                    window.WindowBorder = WindowBorder.Resizable;
                     window.WindowState = WindowState.Fullscreen;
-                    window.WindowBorder = Resizable ? WindowBorder.Resizable : WindowBorder.Fixed;
                     break;
             }
         }
