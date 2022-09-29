@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Walgelijk
 {
@@ -123,5 +124,17 @@ namespace Walgelijk
                 Utilities.Clamp(point.X, MinX, MaxX),
                 Utilities.Clamp(point.Y, MinY, MaxY)
                 );
+
+        /// <summary>
+        /// This will return a copy of this rectangle that is stretched just enough to contain the given point
+        /// </summary>
+        public readonly Rect StretchToContain(Vector2 point)
+        {
+            return new Rect(
+                MathF.Min(MinX, point.X),
+                MathF.Min(MinY, point.Y), 
+                MathF.Max(MaxX, point.X), 
+                MathF.Max(MaxY, point.Y));
+        }
     }
 }

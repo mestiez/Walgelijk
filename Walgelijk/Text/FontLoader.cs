@@ -39,6 +39,7 @@ namespace Walgelijk
             font.Italic = info.Italic;
             font.Width = info.Width;
             font.Height = info.Height;
+            font.Base = info.Base;
             font.LineHeight = info.LineHeight;
             font.Smooth = info.Smooth;
         }
@@ -147,7 +148,6 @@ namespace Walgelijk
             string info = GetLine("info");
             string common = GetLine("common");
 
-
             data.Name = GetStringFrom("face", info) ?? "Untitled";
             data.Size = GetIntFrom("size", info);
             data.Bold = GetBoolFrom("bold", info);
@@ -158,6 +158,7 @@ namespace Walgelijk
             data.Height = GetIntFrom("scaleH", common);
             data.PageCount = GetIntFrom("pages", common);
             data.LineHeight = GetIntFrom("lineHeight", common);
+            data.Base = GetIntFrom("base", common);
             data.GlyphCount = GetIntFrom("count", GetLine("chars"));
 
             var kerningsLine = GetLine("kernings");

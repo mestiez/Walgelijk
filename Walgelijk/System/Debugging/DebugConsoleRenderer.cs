@@ -23,7 +23,7 @@ namespace Walgelijk
         private float overlayLife;
         private float consoleSlideOffset;
 
-        private List<ColourInstruction> textColors = new List<ColourInstruction>();
+        private List<ColourInstruction> textColors = new();
 
         public string InputString { get; set; } = string.Empty;
         public Rect TextBounds => text.LocalBoundingBox;
@@ -35,11 +35,6 @@ namespace Walgelijk
         public const float ConsoleSlideDuration = 0.2f;
 
         public static Color DefaultTextColour = new Color("#D42C5E");
-
-        public struct LevelColours
-        {
-
-        }
 
         public DebugConsoleRenderer(DebugConsole debugConsole)
         {

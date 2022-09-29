@@ -19,6 +19,42 @@ public class OpenTKWindow : Window
     public override bool HasFocus => window.IsFocused;
     public override bool IsVisible { get => window.IsVisible; set => window.IsVisible = value; }
     public override bool Resizable { get => window.WindowBorder == WindowBorder.Resizable; set => window.WindowBorder = value ? WindowBorder.Resizable : WindowBorder.Fixed; }
+    public override WindowType WindowType
+    {
+        get
+        {
+            if (window.WindowBorder == WindowBorder.Hidden)
+                return window.IsFullscreen ? WindowType.BorderlessFullscreen : WindowType.Borderless;
+
+            if (window.WindowState == WindowState.Fullscreen)
+                return WindowType.Fullscreen;
+
+            return WindowType.Normal;
+        }
+
+        set
+        {
+            switch (value)
+            {
+                case WindowType.Normal:
+                    window.WindowState = window.WindowState == WindowState.Maximized ? WindowState.Maximized : WindowState.Normal;
+                    window.WindowBorder = Resizable ? WindowBorder.Resizable : WindowBorder.Fixed;
+                    break;
+                case WindowType.Borderless:
+                    window.WindowState = WindowState.Normal;
+                    window.WindowBorder = WindowBorder.Hidden;
+                    break;
+                case WindowType.BorderlessFullscreen:
+                    window.WindowState = WindowState.Fullscreen;
+                    window.WindowBorder = WindowBorder.Hidden;
+                    break;
+                case WindowType.Fullscreen:
+                    window.WindowState = WindowState.Fullscreen;
+                    window.WindowBorder = Resizable ? WindowBorder.Resizable : WindowBorder.Fixed;
+                    break;
+            }
+        }
+    }
     public override RenderTarget RenderTarget => renderTarget;
     public override IGraphics Graphics => internalGraphics;
     public override Vector2 Size

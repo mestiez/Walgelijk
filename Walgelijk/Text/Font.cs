@@ -37,9 +37,13 @@ namespace Walgelijk
         /// </summary>
         public int Height { get; internal set; }
         /// <summary>
-        /// Line height in pixels
+        /// This is the distance in pixels between each line of text
         /// </summary>
         public int LineHeight { get; internal set; }
+        /// <summary>
+        /// The number of pixels from the absolute top of the line to the base of the characters
+        /// </summary>
+        public int Base { get; internal set; }
         /// <summary>
         /// Array of texture pages this font uses
         /// </summary>
@@ -103,7 +107,7 @@ namespace Walgelijk
     /// <summary>
     /// The two characters a kerning amount applies to
     /// </summary>
-    public struct KerningPair
+    public struct KerningPair : IEquatable<KerningPair>
     {
         /// <summary>
         /// Previous character in the sequence
@@ -119,6 +123,12 @@ namespace Walgelijk
             return obj is KerningPair pair &&
                    PreviousChar == pair.PreviousChar &&
                    CurrentChar == pair.CurrentChar;
+        }
+
+        public bool Equals(KerningPair other)
+        {
+            return PreviousChar == other.PreviousChar &&
+                   CurrentChar == other.CurrentChar;
         }
 
         public override int GetHashCode()

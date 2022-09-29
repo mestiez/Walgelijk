@@ -2938,19 +2938,21 @@
             <summary>
             Generate a simple checkerboard texture
             </summary>
-            <returns></returns>
         </member>
         <member name="M:Walgelijk.TexGen.Noise(System.Int32,System.Int32,System.Single,System.Single,Walgelijk.Color,Walgelijk.Color)">
             <summary>
             Generate a simple noise texture
             </summary>
-            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.TexGen.Colour(System.Int32,System.Int32,Walgelijk.Color)">
+            <summary>
+            Generate a flat colour texture
+            </summary>
         </member>
         <member name="M:Walgelijk.TexGen.Gradient(System.Int32,System.Int32,Walgelijk.TexGen.GradientType,Walgelijk.Color,Walgelijk.Color)">
             <summary>
             Generate a simple gradient texture
             </summary>
-            <returns></returns>
         </member>
         <member name="T:Walgelijk.UniformDictionary">
             <summary>
@@ -3681,6 +3683,11 @@
         <member name="M:Walgelijk.Rect.ClosestPoint(System.Numerics.Vector2)">
             <summary>
             Returns the point on the rectangle that is closest to the given point
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.StretchToContain(System.Numerics.Vector2)">
+            <summary>
+            This will return a copy of this rectangle that is stretched just enough to contain the given point
             </summary>
         </member>
         <member name="T:Walgelijk.Asset">
@@ -4462,7 +4469,12 @@
         </member>
         <member name="P:Walgelijk.Font.LineHeight">
             <summary>
-            Line height in pixels
+            This is the distance in pixels between each line of text
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Base">
+            <summary>
+            The number of pixels from the absolute top of the line to the base of the characters
             </summary>
         </member>
         <member name="P:Walgelijk.Font.Pages">
@@ -4542,12 +4554,12 @@
         </member>
         <member name="F:Walgelijk.Glyph.Width">
             <summary>
-            Width of the page in pixels
+            Width of the glyph in pixels
             </summary>
         </member>
         <member name="F:Walgelijk.Glyph.Height">
             <summary>
-            Height of the page in pixels
+            Height of the glyph in pixels
             </summary>
         </member>
         <member name="F:Walgelijk.Glyph.XOffset">
@@ -4717,47 +4729,47 @@
             Utility class that provides text mesh generation functions 
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.Font">
+        <member name="F:Walgelijk.TextMeshGenerator.Font">
             <summary>
             Font to render with
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.Color">
+        <member name="F:Walgelijk.TextMeshGenerator.Color">
             <summary>
             Color to set the vertices with
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.TrackingMultiplier">
+        <member name="F:Walgelijk.TextMeshGenerator.TrackingMultiplier">
             <summary>
             Tracking multiplier
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.KerningMultiplier">
+        <member name="F:Walgelijk.TextMeshGenerator.KerningMultiplier">
             <summary>
             Kerning multiplier
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.LineHeightMultiplier">
+        <member name="F:Walgelijk.TextMeshGenerator.LineHeightMultiplier">
             <summary>
             Line height multiplier
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.WrappingWidth">
+        <member name="F:Walgelijk.TextMeshGenerator.WrappingWidth">
             <summary>
             The width at which the text needs to start wrapping. Infinity by default.
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.HorizontalAlign">
+        <member name="F:Walgelijk.TextMeshGenerator.HorizontalAlign">
             <summary>
             How to vertically align the text
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.VerticalAlign">
+        <member name="F:Walgelijk.TextMeshGenerator.VerticalAlign">
             <summary>
             How to vertically align the text
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.ParseRichText">
+        <member name="F:Walgelijk.TextMeshGenerator.ParseRichText">
             <summary>
             Parse rich text tags
             </summary>
@@ -4824,6 +4836,11 @@
         <member name="F:Walgelijk.TextMeshResult.LocalBounds">
             <summary>
             Resulting local bounding box of the text mesh
+            </summary>
+        </member>
+        <member name="F:Walgelijk.TextMeshResult.LocalTextBounds">
+            <summary>
+            Resulting local bounding box of the text, taking the line height and amount of lines into account
             </summary>
         </member>
         <member name="T:Walgelijk.VerticalTextAlign">
@@ -5324,6 +5341,11 @@
             Is the window resizable?
             </summary>
         </member>
+        <member name="P:Walgelijk.Window.WindowType">
+            <summary>
+            Determines window border type
+            </summary>
+        </member>
         <member name="P:Walgelijk.Window.Graphics">
             <summary>
             Graphics functions
@@ -5439,6 +5461,31 @@
         <member name="M:Walgelijk.Window.SetIcon(Walgelijk.IReadableTexture,System.Boolean)">
             <summary>
             Set the window icon
+            </summary>
+        </member>
+        <member name="T:Walgelijk.WindowType">
+            <summary>
+            The window border type
+            </summary>
+        </member>
+        <member name="F:Walgelijk.WindowType.Normal">
+            <summary>
+            Default window
+            </summary>
+        </member>
+        <member name="F:Walgelijk.WindowType.Borderless">
+            <summary>
+            Borderless window (why)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.WindowType.BorderlessFullscreen">
+            <summary>
+            Borderless fullscreen
+            </summary>
+        </member>
+        <member name="F:Walgelijk.WindowType.Fullscreen">
+            <summary>
+            Fullscreen
             </summary>
         </member>
         <member name="T:ComponentDisposalManager">

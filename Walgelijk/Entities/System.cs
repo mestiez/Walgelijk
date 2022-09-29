@@ -106,5 +106,9 @@
         /// Run post rendering code
         /// </summary>
         public virtual void PostRender() { }
+
+        public interface IDisposable
+        {
+        }
     }
 }
