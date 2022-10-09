@@ -73,7 +73,12 @@ namespace Walgelijk
         /// <summary>
         /// Returns the size of the rectangle. Calculated using (max - min)
         /// </summary>
-        public readonly Vector2 GetSize() => new(MaxX - MinX, MaxY - MinY);
+        public readonly Vector2 GetSize() => new(MaxX - MinX, MaxY - MinY);     
+        
+        /// <summary>
+        /// Returns a random point inside this rectangle
+        /// </summary>
+        public readonly Vector2 GetRandomPoint() => new(Utilities.RandomFloat(MinX, MaxX), Utilities.RandomFloat(MinY, MaxY));
 
         /// <summary>
         /// Create a rectangle

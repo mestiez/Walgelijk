@@ -124,6 +124,11 @@
             Play sound at a position in the world and let it overlap itself
             </summary>
         </member>
+        <member name="M:Walgelijk.AudioRenderer.SetPosition(Walgelijk.Sound,System.Numerics.Vector2)">
+            <summary>
+            Set world position of the sound (if it is spatial)
+            </summary>
+        </member>
         <member name="M:Walgelijk.AudioRenderer.Stop(Walgelijk.Sound)">
             <summary>
             Stop a specific sound
@@ -3653,6 +3658,11 @@
         <member name="M:Walgelijk.Rect.GetSize">
             <summary>
             Returns the size of the rectangle. Calculated using (max - min)
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.GetRandomPoint">
+            <summary>
+            Returns a random point inside this rectangle
             </summary>
         </member>
         <member name="M:Walgelijk.Rect.#ctor(System.Single,System.Single,System.Single,System.Single)">

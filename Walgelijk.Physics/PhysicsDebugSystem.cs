@@ -22,14 +22,14 @@ public class PhysicsDebugSystem : Walgelijk.System
             DebugDraw.Rectangle(bounds, 0, Colors.Yellow);
         }
 
-        var cSize = new Vector2(world.ChunkSize, world.ChunkSize);
+        var cSize = new Vector2(world.ChunkSize);
         var back = RenderOrder.Zero.WithOrder(-1);
         foreach (var item in world.ChunkDictionary)
         {
             var c = item.Value;
             var topleft = new Vector2(c.X, c.Y) * world.ChunkSize;
             DebugDraw.Rectangle(
-                topleft - cSize, cSize,
+                topleft + new Vector2(0, cSize.Y), cSize,
                 0,
                 c.IsEmpty ? Colors.Gray * .5f : Colors.Aqua * .5f,
                 renderOrder: c.IsEmpty ? back : RenderOrder.Zero);

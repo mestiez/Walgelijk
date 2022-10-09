@@ -63,5 +63,7 @@ namespace Walgelijk
         public override void SetTime(Sound sound, float seconds) { }
 
         public override float GetTime(Sound sound) => 0;
+
+        public override void SetPosition(Sound sound, Vector2 worldPosition) { }
     }
 }

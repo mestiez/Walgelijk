@@ -139,9 +139,9 @@ public class OpenALAudioRenderer : AudioRenderer
 
         try
         {
-            if (Utilities.TextEqualsCaseInsensitive(ext, ".wav"))
+            if (ext.Equals(".wav", StringComparison.InvariantCultureIgnoreCase))
                 data = WaveFileReader.Read(path);
-            else if (Utilities.TextEqualsCaseInsensitive(ext, ".ogg"))
+            else if (ext.Equals(".ogg", StringComparison.InvariantCultureIgnoreCase))
                 data = VorbisFileReader.Read(path);
             else
                 throw new Exception($"This is not a supported audio file. Only Microsoft WAV and Ogg Vorbis can be decoded.");
@@ -202,10 +202,10 @@ public class OpenALAudioRenderer : AudioRenderer
             AL.Source(source, ALSource3f.Position, worldPosition.X, 0, worldPosition.Y);
         AL.SourcePlay(source);
         temporarySources.RequestObject(new TemporarySourceArgs(
-            source, 
-            sound, 
-            (float)sound.Data.Duration.TotalSeconds, 
-            volume, 
+            source,
+            sound,
+            (float)sound.Data.Duration.TotalSeconds,
+            volume,
             track));
         return source;
     }
@@ -293,7 +293,7 @@ public class OpenALAudioRenderer : AudioRenderer
                 AL.DeleteSource(v.Source);
                 temporarySources.ReturnToPool(v);
             }
-            else 
+            else
                 v.CurrentLifetime += game.State.Time.DeltaTime;
         }
 
@@ -459,5 +459,14 @@ public class OpenALAudioRenderer : AudioRenderer
         UpdateIfRequired(sound, out var source);
         AL.GetSource(source, ALSourcef.SecOffset, out var offset);
         return offset;
+    }
+
+    public override void SetPosition(Sound sound, Vector2 worldPosition)
+    {
+        UpdateIfRequired(sound, out var source);
+        if (sound.Spatial)
+            AL.Source(source, ALSource3f.Position, worldPosition.X, 0, worldPosition.Y);
+        else
+            Logger.Error("Attempt to set position for non-spatial sound");
     }
 }

@@ -25,13 +25,11 @@ namespace Walgelijk.Physics
 
         public void RecalculateBounds()
         {
-            var a = this.PointToWorld(new Vector2(Offset.X - Size.X * 0.5f, Offset.Y - Size.Y * 0.5f));
-            var b = this.PointToWorld(new Vector2(Offset.X + Size.X * 0.5f, Offset.Y + Size.Y * 0.5f));
-
-            Bounds = new Rect(
-                MathF.Min(a.X, b.X), MathF.Min(a.Y, b.Y),
-                MathF.Max(a.X, b.X), MathF.Max(a.Y, b.Y)
-                );
+            var a = this.PointToWorld(Offset + new Vector2(-Size.X, -Size.Y) * 0.5f);
+            var b = this.PointToWorld(Offset + new Vector2(Size.X, Size.Y) * 0.5f);
+            var c = this.PointToWorld(Offset + new Vector2(-Size.X, Size.Y) * 0.5f);
+            var d = this.PointToWorld(Offset + new Vector2(Size.X, -Size.Y) * 0.5f);
+            Bounds = new Rect(a, Vector2.Zero).StretchToContain(b).StretchToContain(c).StretchToContain(d);
         }
 
         public bool IsPointInside(Vector2 point)

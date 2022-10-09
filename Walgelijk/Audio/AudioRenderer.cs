@@ -64,6 +64,11 @@ public abstract class AudioRenderer
     public abstract void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1, AudioTrack? track = null);
 
     /// <summary>
+    /// Set world position of the sound (if it is spatial)
+    /// </summary>
+    public abstract void SetPosition(Sound sound, Vector2 worldPosition);
+
+    /// <summary>
     /// Stop a specific sound
     /// </summary>
     public abstract void Stop(Sound sound);
