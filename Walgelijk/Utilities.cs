@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 namespace Walgelijk
 {
     /// <summary>
-    /// Utility struct full of useful function
+    /// Utility struct full of useful functions
     /// </summary>
     public struct Utilities
     {
@@ -21,6 +21,24 @@ namespace Walgelijk
         /// Degrees to radians constant ratio
         /// </summary>
         public const float DegToRad = MathF.PI / 180f;
+
+        /// <summary>
+        /// Shader-style deterministic random value (0 - 1)
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Hash(float p)
+        {
+            p = Fract(p * .1031f);
+            p *= p + 33.33f;
+            p *= p + p;
+            return Fract(p);
+        }
+
+        /// <summary>
+        /// Get the fractional component
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Fract(float p) => p - MathF.Truncate(p);
 
         /// <summary>
         /// Linearly interpolate between two angles in degrees
@@ -128,24 +146,6 @@ namespace Walgelijk
         {
             return new Color(RandomFloat(), RandomFloat(), RandomFloat(), alpha);
         }
-
-        /// <summary>
-        /// Shader-style deterministic random value (0 - 1)
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Hash(float p)
-        {
-            p = Fract(p * .1031f);
-            p *= p + 33.33f;
-            p *= p + p;
-            return Fract(p);
-        }        
-
-        /// <summary>
-        /// Get the fractional component
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float Fract(float p) => p - MathF.Truncate(p);
 
         /// <summary>
         /// Clamp a value within a range
@@ -288,6 +288,21 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Linearly map a value in a range onto another range
+        /// </summary>
+        /// <param name="a1">Source lower bound</param>
+        /// <param name="a2">Source upper bound</param>
+        /// <param name="b1">Destination lower bound</param>
+        /// <param name="b2">Destination upper bound</param>
+        /// <param name="s">The value to remap</param>
+        /// <returns>Remapped value <paramref name="s"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double MapRange(double a1, double a2, double b1, double b2, double s)
+        {
+            return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
+        }
+
+        /// <summary>
         /// Apply a constant acceleration to the given 2D position and 2D velocity, considering a time step.
         /// </summary>
         /// <param name="acceleration">The acceleration</param>
@@ -419,8 +434,7 @@ namespace Walgelijk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float SmoothAngleApproach(float pastPosition, float targetPosition, float speed, float deltaTime)
         {
-            var t = deltaTime * speed;
-            return NanFallback(targetPosition + DeltaAngle(pastPosition, targetPosition) * MathF.Exp(-t));
+            return SmoothAngleApproach(pastPosition, targetPosition, targetPosition, speed, deltaTime);
         }
 
         /// <summary>
@@ -431,8 +445,7 @@ namespace Walgelijk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float SmoothApproach(float pastPosition, float targetPosition, float speed, float deltaTime)
         {
-            var t = deltaTime * speed;
-            return NanFallback(targetPosition + (pastPosition - targetPosition) * MathF.Exp(-t));
+            return SmoothApproach(pastPosition, targetPosition, targetPosition, speed, deltaTime);
         }
 
         /// <summary>
@@ -443,8 +456,7 @@ namespace Walgelijk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 SmoothApproach(Vector2 pastPosition, Vector2 targetPosition, float speed, float deltaTime)
         {
-            var t = deltaTime * speed;
-            return NanFallback(targetPosition + (pastPosition - targetPosition) * MathF.Exp(-t));
+            return SmoothApproach(pastPosition, targetPosition, targetPosition, speed, deltaTime);
         }
 
         /// <summary>
@@ -455,8 +467,7 @@ namespace Walgelijk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 SmoothApproach(Vector3 pastPosition, Vector3 targetPosition, float speed, float deltaTime)
         {
-            var t = deltaTime * speed;
-            return NanFallback(targetPosition + (pastPosition - targetPosition) * MathF.Exp(-t));
+            return SmoothApproach(pastPosition, targetPosition, targetPosition, speed, deltaTime);
         }
 
         /// <summary>
@@ -467,8 +478,7 @@ namespace Walgelijk
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 SmoothApproach(Vector4 pastPosition, Vector4 targetPosition, float speed, float deltaTime)
         {
-            var t = deltaTime * speed;
-            return NanFallback(targetPosition + (pastPosition - targetPosition) * MathF.Exp(-t));
+            return SmoothApproach(pastPosition, targetPosition, targetPosition, speed, deltaTime);
         }
 
         /// <summary>
@@ -522,16 +532,19 @@ namespace Walgelijk
         /// <summary>
         /// Are the two given character spans the same, regardless of casing? 
         /// </summary>
+        [Obsolete("Just use .Equals with StringComparison.InvariantCultureIgnoreCase")]
         public static bool TextEqualsCaseInsensitive(ReadOnlySpan<char> a, ReadOnlySpan<char> b)
         {
-            if (a.Length != b.Length)
-                return false;
+            return a.Equals(b, StringComparison.InvariantCultureIgnoreCase);
+        }
 
-            for (int i = 0; i < a.Length; i++)
-                if (char.ToLowerInvariant(a[i]) != char.ToLowerInvariant(b[i]))
-                    return false;
-
-            return true;
+        /// <summary>
+        /// Smoothstep function
+        /// </summary>
+        static float Smoothstep(float edge0, float edge1, float x)
+        {
+            var t = Clamp((x - edge0) / (edge1 - edge0), 0, 1);
+            return Clamp(t * t * (3f - 2f * t));
         }
     }
 }

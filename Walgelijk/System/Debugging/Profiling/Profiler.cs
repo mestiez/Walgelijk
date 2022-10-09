@@ -85,7 +85,7 @@ public sealed class Profiler
 
     private void CalculateFPS()
     {
-        fpsCounter.Tick(game.Time.SecondsSinceLoad);
+        fpsCounter.Tick(game.State.Time.SecondsSinceLoad);
     }
 }
 

@@ -8,7 +8,7 @@ namespace Walgelijk
     /// </summary>
     public class Hook<T>
     {
-        private readonly List<Action<T>> listeners = new List<Action<T>>();
+        private readonly List<Action<T>> listeners = new ();
 
         /// <summary>
         /// Dispatch the event to all listeners

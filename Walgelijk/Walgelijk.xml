@@ -324,9 +324,44 @@
             Translational offset
             </summary>
         </member>
+        <member name="F:Walgelijk.Background.BackgroundComponent.Mode">
+            <summary>
+            Manner in which to draw the background 
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Background.BackgroundComponent.Size">
+            <summary>
+            Size of the texture
+            </summary>
+        </member>
         <member name="F:Walgelijk.Background.BackgroundComponent.RenderTask">
             <summary>
             Relevant render task
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Background.BackgroundMode">
+            <summary>
+            Manners in which to draw the background
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Background.BackgroundMode.Stretch">
+            <summary>
+            Fill the whole screen
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Background.BackgroundMode.Center">
+            <summary>
+            Original size, centered
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Background.BackgroundMode.Cover">
+            <summary>
+            Fill the whole screen while keeping the aspect ratio
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Background.BackgroundMode.Contain">
+            <summary>
+            Grow as large as possible without cropping
             </summary>
         </member>
         <member name="T:Walgelijk.CameraComponent">
@@ -541,7 +576,7 @@
         </member>
         <member name="F:Walgelijk.SeparateTransformMatrices.AfterTranslation">
             <summary>
-            3: The matrix after translating
+            3: The matrix after translating (local space)
             </summary>
         </member>
         <member name="F:Walgelijk.SeparateTransformMatrices.FinalModel">
@@ -599,7 +634,7 @@
             Utility struct that provides splash screen creation functionality
             </summary>
         </member>
-        <member name="M:Walgelijk.SplashScreen.CreateScene(Walgelijk.SplashScreen.Logo[],System.Action)">
+        <member name="M:Walgelijk.SplashScreen.CreateScene(Walgelijk.IReadableTexture,Walgelijk.SplashScreen.Logo[],System.Action,Walgelijk.SplashScreen.Transition,System.Boolean)">
             <summary>
             Create a splash screen scene
             </summary>
@@ -637,6 +672,36 @@
             What to do once all logos have been displayed
             </summary>
         </member>
+        <member name="F:Walgelijk.SplashScreen.SplashScreenComponent.Background">
+            <summary>
+            Optional background that is drawn under everything
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreen.SplashScreenComponent.Transition">
+            <summary>
+            Transition between logos
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreen.SplashScreenComponent.TransitionDuration">
+            <summary>
+            Amount of time the transition takes
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreen.SplashScreenComponent.CanSkip">
+            <summary>
+            Can the entire sequence be skipped by pushing any button (mouse or keyboard)? 
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreen.Transition.Cut">
+            <summary>
+            No transition. Just cut.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SplashScreen.Transition.FadeInOut">
+            <summary>
+            Let logos fade in and fade out before switching to the next logo. <b>This is not a crossfade</b>
+            </summary>
+        </member>
         <member name="T:Walgelijk.SplashScreen.Logo">
             <summary>
             Structure with information on how to display a logo
@@ -652,12 +717,17 @@
             How long the logo should appear for
             </summary>
         </member>
+        <member name="F:Walgelijk.SplashScreen.Logo.Offset">
+            <summary>
+            Translational offset
+            </summary>
+        </member>
         <member name="F:Walgelijk.SplashScreen.Logo.Sound">
             <summary>
             Sound to play
             </summary>
         </member>
-        <member name="M:Walgelijk.SplashScreen.Logo.#ctor(Walgelijk.IReadableTexture,System.Single,Walgelijk.Sound)">
+        <member name="M:Walgelijk.SplashScreen.Logo.#ctor(Walgelijk.IReadableTexture,System.Numerics.Vector2,System.Single,Walgelijk.Sound)">
             <summary>
             Create a logo with a texture and an optional sound
             </summary>
@@ -1281,7 +1351,12 @@
         </member>
         <member name="M:Walgelijk.Scene.UpdateSystems">
             <summary>
-            Executes all systems. This is typically handled by the window implementation
+            Executes all systems
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.FixedUpdateSystems">
+            <summary>
+            Executes all systems
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.Initialise">
@@ -1376,7 +1451,12 @@
         </member>
         <member name="M:Walgelijk.System.Update">
             <summary>
-            Run the logic
+            Run logic at <see cref="F:Walgelijk.Game.UpdateRate"/> Hz
+            </summary>
+        </member>
+        <member name="M:Walgelijk.System.FixedUpdate">
+            <summary>
+            Run logic at <see cref="F:Walgelijk.Game.FixedUpdateRate"/> Hz
             </summary>
         </member>
         <member name="M:Walgelijk.System.PreRender">
@@ -1708,6 +1788,12 @@
             <summary>
             Orange
             </summary>
+        </member>
+        <member name="M:Walgelijk.Color.Clamped">
+            <summary>
+            Returns a copy of this colour with each value clamped between 0 and 1 
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:Walgelijk.Color.WithAlpha(System.Single)">
             <summary>
@@ -2479,6 +2565,12 @@
             Should the task set the view matrix to <see cref="P:System.Numerics.Matrix4x4.Identity"/> 
             </summary>
         </member>
+        <member name="M:Walgelijk.ShapeRenderTask.Execute(Walgelijk.IGraphics)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.ShapeRenderTask.Draw(Walgelijk.IGraphics)">
+            <inheritdoc/>
+        </member>
         <member name="T:Walgelijk.TargetRenderTask">
             <summary>
             Task that sets the active render target
@@ -2835,6 +2927,31 @@
         <member name="P:Walgelijk.Texture.ErrorTexture">
             <summary>
             8x8 red-black frowning face texture, usually used to indicate something has gone wrong
+            </summary>
+        </member>
+        <member name="T:Walgelijk.TexGen">
+            <summary>
+            Provides texture generation functions
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TexGen.Checkerboard(System.Int32,System.Int32,System.Int32,Walgelijk.Color,Walgelijk.Color)">
+            <summary>
+            Generate a simple checkerboard texture
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TexGen.Noise(System.Int32,System.Int32,System.Single,System.Single,Walgelijk.Color,Walgelijk.Color)">
+            <summary>
+            Generate a simple noise texture
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TexGen.Colour(System.Int32,System.Int32,Walgelijk.Color)">
+            <summary>
+            Generate a flat colour texture
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TexGen.Gradient(System.Int32,System.Int32,Walgelijk.TexGen.GradientType,Walgelijk.Color,Walgelijk.Color)">
+            <summary>
+            Generate a simple gradient texture
             </summary>
         </member>
         <member name="T:Walgelijk.UniformDictionary">
@@ -3283,7 +3400,6 @@
             <summary>
             Return an object to the pool when it's done, to allow it to be requested again
             </summary>
-            <param name="obj"></param>
         </member>
         <member name="M:Walgelijk.Pool`2.Prefill">
             <summary>
@@ -3294,8 +3410,6 @@
             <summary>
             Get an existing object from the pool guaranteeing never to create a new one. Can return null.
             </summary>
-            <param name="initialiser"></param>
-            <returns></returns>
         </member>
         <member name="M:Walgelijk.Pool`2.CreateFresh">
             <summary>
@@ -3308,6 +3422,67 @@
             </summary>
         </member>
         <member name="M:Walgelijk.Pool`2.GetOverCapacityFallback">
+            <summary>
+            What to return instead of null when the pool is at full capacity
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Pool`1">
+            <summary>
+            Abstract class for object pooling
+            </summary>
+            <typeparam name="T">The type to pool</typeparam>
+        </member>
+        <member name="F:Walgelijk.Pool`1.MaximumCapacity">
+            <summary>
+            The maximum amount of objects, active or inactive
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Pool`1.CreatedAmount">
+            <summary>
+            How many objects have been created
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.GetAllInUse">
+            <summary>
+            Enumerates through all objects currently in use
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.#ctor(System.Int32)">
+            <summary>
+            Create a pool with the given capacity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.RequestObject">
+            <summary>
+            Get an object from the pool. This will be ready for use or null, if the pool is at full capacity. 
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.ReturnToPool(`0)">
+            <summary>
+            Return an object to the pool when it's done, to allow it to be requested again
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.Prefill">
+            <summary>
+            Create a new available object and add it to the pool, waiting to be used
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.GetExistingFromPool">
+            <summary>
+            Get an existing object from the pool guaranteeing never to create a new one. Can return null.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.CreateFresh">
+            <summary>
+            Return a completely new instance of the poolable object
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.ResetObjectForNextUse(`0)">
+            <summary>
+            Reset the given object for its next use
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Pool`1.GetOverCapacityFallback">
             <summary>
             What to return instead of null when the pool is at full capacity
             </summary>
@@ -3508,6 +3683,11 @@
         <member name="M:Walgelijk.Rect.ClosestPoint(System.Numerics.Vector2)">
             <summary>
             Returns the point on the rectangle that is closest to the given point
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.StretchToContain(System.Numerics.Vector2)">
+            <summary>
+            This will return a copy of this rectangle that is stretched just enough to contain the given point
             </summary>
         </member>
         <member name="T:Walgelijk.Asset">
@@ -3964,19 +4144,30 @@
             The game profiler
             </summary>
         </member>
-        <member name="P:Walgelijk.Game.Time">
+        <member name="P:Walgelijk.Game.State">
             <summary>
-            Returns the <see cref="T:Walgelijk.Time"/> information that belongs to <see cref="P:Walgelijk.Game.Window"/>
+            Game engine state information
             </summary>
         </member>
         <member name="P:Walgelijk.Game.DevelopmentMode">
             <summary>
-            When set to true, safety checks will be done at runtime. This will degrade performance and should be turned off in release. <b>True by default</b>
+            When set to true, safety checks will be done at runtime. 
+            This will degrade performance and should be turned off in release. <b>True by default</b>
             </summary>
         </member>
         <member name="F:Walgelijk.Game.OnSceneChange">
             <summary>
             Event dispatched when the scene is changed. The new scene is passed to the receivers
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Game.FixedUpdateRate">
+            <summary>
+            The fixed update rate in Hz
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Game.UpdateRate">
+            <summary>
+            The update/render rate in Hz. Uncapped if zero or smaller.
             </summary>
         </member>
         <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window,Walgelijk.AudioRenderer)">
@@ -4231,6 +4422,11 @@
             Factor by which the time is multiplied
             </summary>
         </member>
+        <member name="P:Walgelijk.Time.Interpolation">
+            <summary>
+            Interpolation weight factor. Between fixed updates, this value will start at 0 and gradually increase until it ends at 1
+            </summary>
+        </member>
         <member name="T:Walgelijk.Font">
             <summary>
             Object that holds font information and pages
@@ -4273,7 +4469,12 @@
         </member>
         <member name="P:Walgelijk.Font.LineHeight">
             <summary>
-            Line height in pixels
+            This is the distance in pixels between each line of text
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Base">
+            <summary>
+            The number of pixels from the absolute top of the line to the base of the characters
             </summary>
         </member>
         <member name="P:Walgelijk.Font.Pages">
@@ -4353,12 +4554,12 @@
         </member>
         <member name="F:Walgelijk.Glyph.Width">
             <summary>
-            Width of the page in pixels
+            Width of the glyph in pixels
             </summary>
         </member>
         <member name="F:Walgelijk.Glyph.Height">
             <summary>
-            Height of the page in pixels
+            Height of the glyph in pixels
             </summary>
         </member>
         <member name="F:Walgelijk.Glyph.XOffset">
@@ -4528,47 +4729,47 @@
             Utility class that provides text mesh generation functions 
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.Font">
+        <member name="F:Walgelijk.TextMeshGenerator.Font">
             <summary>
             Font to render with
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.Color">
+        <member name="F:Walgelijk.TextMeshGenerator.Color">
             <summary>
             Color to set the vertices with
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.TrackingMultiplier">
+        <member name="F:Walgelijk.TextMeshGenerator.TrackingMultiplier">
             <summary>
             Tracking multiplier
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.KerningMultiplier">
+        <member name="F:Walgelijk.TextMeshGenerator.KerningMultiplier">
             <summary>
             Kerning multiplier
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.LineHeightMultiplier">
+        <member name="F:Walgelijk.TextMeshGenerator.LineHeightMultiplier">
             <summary>
             Line height multiplier
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.WrappingWidth">
+        <member name="F:Walgelijk.TextMeshGenerator.WrappingWidth">
             <summary>
             The width at which the text needs to start wrapping. Infinity by default.
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.HorizontalAlign">
+        <member name="F:Walgelijk.TextMeshGenerator.HorizontalAlign">
             <summary>
             How to vertically align the text
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.VerticalAlign">
+        <member name="F:Walgelijk.TextMeshGenerator.VerticalAlign">
             <summary>
             How to vertically align the text
             </summary>
         </member>
-        <member name="P:Walgelijk.TextMeshGenerator.ParseRichText">
+        <member name="F:Walgelijk.TextMeshGenerator.ParseRichText">
             <summary>
             Parse rich text tags
             </summary>
@@ -4637,6 +4838,11 @@
             Resulting local bounding box of the text mesh
             </summary>
         </member>
+        <member name="F:Walgelijk.TextMeshResult.LocalTextBounds">
+            <summary>
+            Resulting local bounding box of the text, taking the line height and amount of lines into account
+            </summary>
+        </member>
         <member name="T:Walgelijk.VerticalTextAlign">
             <summary>
             Ways to align text vertically
@@ -4644,7 +4850,7 @@
         </member>
         <member name="T:Walgelijk.Utilities">
             <summary>
-            Utility struct full of useful function
+            Utility struct full of useful functions
             </summary>
         </member>
         <member name="F:Walgelijk.Utilities.RadToDeg">
@@ -4655,6 +4861,16 @@
         <member name="F:Walgelijk.Utilities.DegToRad">
             <summary>
             Degrees to radians constant ratio
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Hash(System.Single)">
+            <summary>
+            Shader-style deterministic random value (0 - 1)
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Fract(System.Single)">
+            <summary>
+            Get the fractional component
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.LerpAngle(System.Single,System.Single,System.Single)">
@@ -4705,16 +4921,6 @@
         <member name="M:Walgelijk.Utilities.RandomColour(System.Single)">
             <summary>
             Returns a colour where the RGB components are random
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.Hash(System.Single)">
-            <summary>
-            Shader-style deterministic random value (0 - 1)
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.Fract(System.Single)">
-            <summary>
-            Get the fractional component
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.Clamp(System.Single,System.Single,System.Single)">
@@ -4782,6 +4988,17 @@
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.MapRange(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Linearly map a value in a range onto another range
+            </summary>
+            <param name="a1">Source lower bound</param>
+            <param name="a2">Source upper bound</param>
+            <param name="b1">Destination lower bound</param>
+            <param name="b2">Destination upper bound</param>
+            <param name="s">The value to remap</param>
+            <returns>Remapped value <paramref name="s"/></returns>
+        </member>
+        <member name="M:Walgelijk.Utilities.MapRange(System.Double,System.Double,System.Double,System.Double,System.Double)">
             <summary>
             Linearly map a value in a range onto another range
             </summary>
@@ -4932,6 +5149,11 @@
         <member name="M:Walgelijk.Utilities.TextEqualsCaseInsensitive(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char})">
             <summary>
             Are the two given character spans the same, regardless of casing? 
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Smoothstep(System.Single,System.Single,System.Single)">
+            <summary>
+            Smoothstep function
             </summary>
         </member>
         <member name="T:Walgelijk.DrawBounds">
@@ -5094,11 +5316,6 @@
             Size of the window in pixels
             </summary>
         </member>
-        <member name="P:Walgelijk.Window.TargetUpdateRate">
-            <summary>
-            Speed the game should update at
-            </summary>
-        </member>
         <member name="P:Walgelijk.Window.VSync">
             <summary>
             Should vertical synchronisation be enabled
@@ -5124,19 +5341,14 @@
             Is the window resizable?
             </summary>
         </member>
-        <member name="P:Walgelijk.Window.InputState">
+        <member name="P:Walgelijk.Window.WindowType">
             <summary>
-            The current input state
+            Determines window border type
             </summary>
         </member>
         <member name="P:Walgelijk.Window.Graphics">
             <summary>
             Graphics functions
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Window.Time">
-            <summary>
-            Time information
             </summary>
         </member>
         <member name="P:Walgelijk.Window.RenderQueue">
@@ -5174,9 +5386,19 @@
             Fires when the window is going to close
             </summary>
         </member>
-        <member name="M:Walgelijk.Window.StartLoop">
+        <member name="M:Walgelijk.Window.Initialise">
             <summary>
-            Start the main game loop
+            Called by the game before the main loop starts
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Window.Deinitialise">
+            <summary>
+            Called by the game when the game loop has ended
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Window.LoopCycle">
+            <summary>
+            Called every frame by the game
             </summary>
         </member>
         <member name="M:Walgelijk.Window.Close">
@@ -5239,6 +5461,31 @@
         <member name="M:Walgelijk.Window.SetIcon(Walgelijk.IReadableTexture,System.Boolean)">
             <summary>
             Set the window icon
+            </summary>
+        </member>
+        <member name="T:Walgelijk.WindowType">
+            <summary>
+            The window border type
+            </summary>
+        </member>
+        <member name="F:Walgelijk.WindowType.Normal">
+            <summary>
+            Default window
+            </summary>
+        </member>
+        <member name="F:Walgelijk.WindowType.Borderless">
+            <summary>
+            Borderless window (why)
+            </summary>
+        </member>
+        <member name="F:Walgelijk.WindowType.BorderlessFullscreen">
+            <summary>
+            Borderless fullscreen
+            </summary>
+        </member>
+        <member name="F:Walgelijk.WindowType.Fullscreen">
+            <summary>
+            Fullscreen
             </summary>
         </member>
         <member name="T:ComponentDisposalManager">

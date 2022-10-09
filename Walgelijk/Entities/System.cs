@@ -16,12 +16,12 @@
         /// <summary>
         /// Current input state
         /// </summary>
-        protected InputState Input => Scene.Game.Window.InputState;
+        protected InputState Input => Scene.Game.State.Input;
 
         /// <summary>
         /// Current time information
         /// </summary>
-        protected Time Time => Scene.Game.Window.Time;
+        protected Time Time => Scene.Game.State.Time;
 
         /// <summary>
         /// Active render queue
@@ -83,9 +83,14 @@
         public virtual void Initialise() { }
 
         /// <summary>
-        /// Run the logic
+        /// Run logic at <see cref="Game.UpdateRate"/> Hz
         /// </summary>
-        public virtual void Update() { }
+        public virtual void Update() { }   
+        
+        /// <summary>
+        /// Run logic at <see cref="Game.FixedUpdateRate"/> Hz
+        /// </summary>
+        public virtual void FixedUpdate() { }
 
         /// <summary>
         /// Run pre rendering code
@@ -101,5 +106,9 @@
         /// Run post rendering code
         /// </summary>
         public virtual void PostRender() { }
+
+        public interface IDisposable
+        {
+        }
     }
 }

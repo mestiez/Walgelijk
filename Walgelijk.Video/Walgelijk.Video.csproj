@@ -4,7 +4,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>0.8</Version>
+		<Version>0.9</Version>
 		<Company>Studio Minus</Company>
 		<Authors>mestiez</Authors>
 		<Description>Video functionality for Walgelijk</Description>

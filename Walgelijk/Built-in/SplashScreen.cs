@@ -16,24 +16,24 @@ namespace Walgelijk
         /// <param name="logos">Array of logos</param>
         /// <param name="onEnd">What to do when the logo sequence ends. This is usually a scene change</param>
         /// <returns></returns>
-        public static Scene CreateScene(Logo[] logos, Action onEnd)
+        public static Scene CreateScene(IReadableTexture? background, Logo[] logos, Action onEnd, Transition transition = Transition.Cut, bool canSkip = true)
         {
             Scene scene = new Scene();
 
             var splash = scene.CreateEntity();
-            var shape = new RectangleShapeComponent
-            {
-                Material = new Material(Shader.Default)
-            };
-
             scene.AttachComponent(splash, new SplashScreenComponent
             {
+                Background = background,
                 Logos = logos,
-                OnEnd = onEnd
+                OnEnd = onEnd,
+                CanSkip = canSkip,
+                Transition = transition
             });
-
             scene.AttachComponent(splash, new TransformComponent());
-            scene.AttachComponent(splash, shape);
+            scene.AttachComponent(splash, new RectangleShapeComponent
+            {
+                Material = new Material(Shader.Default)
+            });
 
             var camera = scene.CreateEntity();
             scene.AttachComponent(camera, new TransformComponent());
@@ -47,6 +47,12 @@ namespace Walgelijk
             scene.AddSystem(new CameraSystem());
             scene.AddSystem(new SplashScreenSystem());
 
+            if (background != null)
+            {
+                var b = Background.CreateBackground(scene, background);
+                b.Component.Mode = Background.BackgroundMode.Contain;
+            }
+
             return scene;
         }
 
@@ -58,7 +64,7 @@ namespace Walgelijk
             /// <summary>
             /// Array of logos
             /// </summary>
-            public Logo[] Logos = { };
+            public Logo[] Logos = Array.Empty<Logo>();
 
             /// <summary>
             /// Current elapsed time since the last logo change
@@ -79,6 +85,38 @@ namespace Walgelijk
             /// What to do once all logos have been displayed
             /// </summary>
             public Action? OnEnd;
+
+            /// <summary>
+            /// Optional background that is drawn under everything
+            /// </summary>
+            public IReadableTexture? Background;
+
+            /// <summary>
+            /// Transition between logos
+            /// </summary>
+            public Transition Transition;
+
+            /// <summary>
+            /// Amount of time the transition takes
+            /// </summary>
+            public TimeSpan TransitionDuration = TimeSpan.FromSeconds(0.25f);
+
+            /// <summary>
+            /// Can the entire sequence be skipped by pushing any button (mouse or keyboard)? 
+            /// </summary>
+            public bool CanSkip;
+        }
+
+        public enum Transition
+        {
+            /// <summary>
+            /// No transition. Just cut.
+            /// </summary>
+            Cut,
+            /// <summary>
+            /// Let logos fade in and fade out before switching to the next logo. <b>This is not a crossfade</b>
+            /// </summary>
+            FadeInOut
         }
 
         /// <summary>
@@ -95,6 +133,10 @@ namespace Walgelijk
             /// </summary>
             public float Duration;
             /// <summary>
+            /// Translational offset
+            /// </summary>
+            public Vector2 Offset;
+            /// <summary>
             /// Sound to play
             /// </summary>
             public Sound? Sound;
@@ -102,9 +144,10 @@ namespace Walgelijk
             /// <summary>
             /// Create a logo with a texture and an optional sound
             /// </summary>
-            public Logo(IReadableTexture texture, float duration = 1f, Sound? sound = null)
+            public Logo(IReadableTexture texture, Vector2 offset = default, float duration = 1f, Sound? sound = null)
             {
                 Texture = texture;
+                Offset = offset;
                 Duration = duration;
                 Sound = sound;
             }
@@ -130,6 +173,18 @@ namespace Walgelijk
                 HandleSplash(splash);
             }
 
+            private static float GetAlphaForTransition(Transition transition, float time, float transitionDuration)
+            {
+                switch (transition)
+                {
+                    case Transition.FadeInOut:
+                        return Utilities.Clamp(MathF.Min(time / transitionDuration, 1 - (time - 1 + transitionDuration) / transitionDuration));
+                    default:
+                    case Transition.Cut:
+                        return 1;
+                }
+            }
+
             private void HandleSplash(EntityWith<SplashScreenComponent> splash)
             {
                 var entity = splash.Entity;
@@ -141,20 +196,31 @@ namespace Walgelijk
                 if (rect == null || transform == null)
                     return;
 
-                if (component.Lifetime == 0)
-                    setLogo(component.Logos[0]);
+                var duration = component.Logos[component.CurrentLogoIndex].Duration;
 
                 component.CurrentTime += Time.DeltaTime;
                 component.Lifetime += Time.DeltaTime;
 
-                if (component.CurrentTime > component.Logos[component.CurrentLogoIndex].Duration)
+                var progress = component.CurrentTime / duration;
+                rect.Color = new Color(1, 1, 1, GetAlphaForTransition(component.Transition, progress, (float)component.TransitionDuration.TotalSeconds / duration));
+
+                if (component.CanSkip && (Input.AnyKey || Input.AnyMouseButton))
+                {
+                    component.CurrentTime = float.MaxValue;
+                    component.CurrentLogoIndex = component.Logos.Length;
+                }
+
+                if (component.CurrentTime > duration)
                 {
                     component.CurrentTime = 0;
                     component.CurrentLogoIndex++;
                     if (component.CurrentLogoIndex >= component.Logos.Length)
                     {
                         if (component.OnEnd != null)
+                        {
+                            Audio.StopAll();
                             component.OnEnd?.Invoke();
+                        }
                         else
                             Scene.RemoveEntity(entity);
                         return;
@@ -163,17 +229,19 @@ namespace Walgelijk
                     setLogo(component.Logos[component.CurrentLogoIndex]);
                 }
 
+                if (component.Lifetime == 0)
+                    setLogo(component.Logos[0]);
+
                 void setLogo(Logo logo)
                 {
                     var texture = logo.Texture;
                     var sound = logo.Sound;
 
-                    Audio.StopAll();
-
                     if (sound != null)
                         Audio.PlayOnce(sound);
 
                     transform.Scale = new Vector2(texture.Width, texture.Height);
+                    transform.Position = logo.Offset;
                     transform.RecalculateModelMatrix(Matrix3x2.Identity);
                     rect.Material.SetUniform(ShaderDefaults.MainTextureUniform, texture);
                 }

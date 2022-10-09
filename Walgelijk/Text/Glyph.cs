@@ -5,7 +5,7 @@ namespace Walgelijk
     /// <summary>
     /// Structure with font glyph information
     /// </summary>
-    public struct Glyph
+    public struct Glyph : IEquatable<Glyph>
     {
         /// <summary>
         /// Character this glyph belongs to
@@ -22,11 +22,11 @@ namespace Walgelijk
         public int Y;
 
         /// <summary>
-        /// Width of the page in pixels
+        /// Width of the glyph in pixels
         /// </summary>
         public int Width;
         /// <summary>
-        /// Height of the page in pixels
+        /// Height of the glyph in pixels
         /// </summary>
         public int Height;
 
@@ -53,6 +53,19 @@ namespace Walgelijk
         {
             return obj is Glyph glyph &&
                    Identity == glyph.Identity &&
+                   X == glyph.X &&
+                   Y == glyph.Y &&
+                   Width == glyph.Width &&
+                   Height == glyph.Height &&
+                   XOffset == glyph.XOffset &&
+                   YOffset == glyph.YOffset &&
+                   Advance == glyph.Advance &&
+                   Page == glyph.Page;
+        }
+
+        public bool Equals(Glyph glyph)
+        {
+            return Identity == glyph.Identity &&
                    X == glyph.X &&
                    Y == glyph.Y &&
                    Width == glyph.Width &&

@@ -69,7 +69,7 @@ namespace Walgelijk
         private bool isActive;
         private ConsoleMessageType filter = ConsoleMessageType.All;
 
-        private InputState Input => Game.Window.InputState;
+        private InputState Input => Game.State.Input;
 
         public DebugConsole(Game game)
         {

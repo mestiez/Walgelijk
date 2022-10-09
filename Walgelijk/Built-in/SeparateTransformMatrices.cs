@@ -23,7 +23,7 @@ namespace Walgelijk
         public Matrix3x2 AfterRotation;
 
         /// <summary>
-        /// 3: The matrix after translating
+        /// 3: The matrix after translating (local space)
         /// </summary>
         public Matrix3x2 AfterTranslation;
 

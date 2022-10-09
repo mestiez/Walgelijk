@@ -7,7 +7,7 @@
 		<Authors>mestiez</Authors>
 		<Company>Studio Minus</Company>
 		<RepositoryType>https://github.com/mestiez/Walgelijk</RepositoryType>
-		<Version>0.1.75</Version>
+		<Version>0.4</Version>
 		<Description>OpenTK backend for Walgelijk</Description>
 		<DebugType>embedded</DebugType>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -31,7 +31,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="NVorbis" Version="0.10.4" />
-		<PackageReference Include="OpenTK" Version="4.7.2" />
+		<PackageReference Include="OpenTK" Version="4.7.5" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -82,11 +82,24 @@ namespace Walgelijk
             return CommandResult.Error($"Invalid filter value. Seperated by a space, you can only enter these values:\nAll\n{string.Join("\n", Enum.GetNames<ConsoleMessageType>())}");
         }
 
-        [Command(HelpString = "Sets the update rate cap. Expects an integer")]
-        private static CommandResult FpsCap(int target = 0)
+        [Command(HelpString = "Sets the update rate. Expects an integer. If a number smaller than 0 is given, this will just print the current rate.")]
+        private static CommandResult UpsRate(int target = -1)
         {
-            Game.Window.TargetUpdateRate = target;
-            return "Target frame render rate set to " + target;
+            if (target < 0)
+                return $"Update rate is {Game.UpdateRate} Hz";
+            Game.UpdateRate = target;
+            if (target <= 0)
+                return "Update rate set to infinite";
+            return "Update rate set to " + target;
+        }
+
+        [Command(HelpString = "Sets the fixed update rate. Expects an integer. If a number smaller than 0 is given, this will just print the current rate.")]
+        private static CommandResult FupsRate(int target = -1)
+        {
+            if (target < 0)
+                return $"Fixed update rate is {Game.FixedUpdateRate} Hz";
+            Game.FixedUpdateRate = target;
+            return "Fixed update rate set to " + target;
         }
 
         [Command(HelpString = "Lists all systems in the scene")]

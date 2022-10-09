@@ -24,5 +24,10 @@
         /// Resulting local bounding box of the text mesh
         /// </summary>
         public Rect LocalBounds;
+
+        /// <summary>
+        /// Resulting local bounding box of the text, taking the line height and amount of lines into account
+        /// </summary>
+        public Rect LocalTextBounds;
     }
 }

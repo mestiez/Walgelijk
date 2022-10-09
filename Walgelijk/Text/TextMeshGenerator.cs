@@ -12,47 +12,47 @@ public class TextMeshGenerator
     /// <summary>
     /// Font to render with
     /// </summary>
-    public Font Font { get; set; } = Font.Default;
+    public Font Font = Font.Default;
 
     /// <summary>
     /// Color to set the vertices with
     /// </summary>
-    public Color Color { get; set; } = Color.White;
+    public Color Color = Color.White;
 
     /// <summary>
     /// Tracking multiplier
     /// </summary>
-    public float TrackingMultiplier { get; set; } = 1;
+    public float TrackingMultiplier = 1;
 
     /// <summary>
     /// Kerning multiplier
     /// </summary>
-    public float KerningMultiplier { get; set; } = 1;
+    public float KerningMultiplier = 1;
 
     /// <summary>
     /// Line height multiplier
     /// </summary>
-    public float LineHeightMultiplier { get; set; } = 1;
+    public float LineHeightMultiplier = 1;
 
     /// <summary>
     /// The width at which the text needs to start wrapping. Infinity by default.
     /// </summary>
-    public float WrappingWidth { get; set; } = float.PositiveInfinity;
+    public float WrappingWidth = float.PositiveInfinity;
 
     /// <summary>
     /// How to vertically align the text
     /// </summary>
-    public HorizontalTextAlign HorizontalAlign { get; set; } = HorizontalTextAlign.Left;
+    public HorizontalTextAlign HorizontalAlign = HorizontalTextAlign.Left;
 
     /// <summary>
     /// How to vertically align the text
     /// </summary>
-    public VerticalTextAlign VerticalAlign { get; set; } = VerticalTextAlign.Top;
+    public VerticalTextAlign VerticalAlign = VerticalTextAlign.Top;
 
     /// <summary>
     /// Parse rich text tags
     /// </summary>
-    public bool ParseRichText { get; set; } = false;
+    public bool ParseRichText = false;
 
     private static ReadOnlySpan<char> GetTextUntilWhitespace(ReadOnlySpan<char> text)
     {
@@ -97,7 +97,7 @@ public class TextMeshGenerator
             Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
             lastChar = c;
 
-            pos += (glyph.Advance + glyph.XOffset) * TrackingMultiplier + kerning.Amount * KerningMultiplier;
+            pos += glyph.Advance * TrackingMultiplier + kerning.Amount * KerningMultiplier;
         }
         return pos;
     }
@@ -160,7 +160,7 @@ public class TextMeshGenerator
             Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
             var pos = new Vector3(cursor + glyph.XOffset + kerning.Amount * KerningMultiplier, -glyph.YOffset - (line * Font.LineHeight * LineHeightMultiplier), 0);
             glyphCountWithoutTags++;
-            cursor += (glyph.Advance + (pos.X - cursor)) * TrackingMultiplier;
+            cursor += glyph.Advance * TrackingMultiplier;
             lastChar = c;
         }
 
@@ -197,10 +197,8 @@ public class TextMeshGenerator
         float width = Font.Width;
         float height = Font.Height;
 
-        float minX = float.MaxValue;
-        float minY = float.MaxValue;
-        float maxX = float.MinValue;
-        float maxY = float.MinValue;
+        var geometryBounds = new Rect(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);
+        var textBounds = new Rect(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);
 
         float skew = 0;
 
@@ -266,13 +264,22 @@ public class TextMeshGenerator
 
             var glyph = Font.GetGlyph(c);
             Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
-            var pos = new Vector3(cursor + glyph.XOffset + kerning.Amount * KerningMultiplier, -glyph.YOffset - (line * Font.LineHeight * LineHeightMultiplier), 0);
+            var rawCursor = new Vector2(cursor, -(line * Font.LineHeight * LineHeightMultiplier));
+            var pos = new Vector3(
+                rawCursor.X + glyph.XOffset + kerning.Amount * KerningMultiplier, 
+                -glyph.YOffset + rawCursor.Y, 
+                0);
+
             GlyphUVInfo uvInfo = new(glyph.X / width, glyph.Y / height, glyph.Width / width, glyph.Height / height);
 
             if (colours != null)
                 foreach (var ce in colours)
                     if (ce.CharIndex == i)
                         colorToSet = ce.Colour * Color;
+
+            textBounds = textBounds.StretchToContain(pos.XY() with { Y = rawCursor.Y });
+            textBounds = textBounds.StretchToContain(pos.XY() with { Y = rawCursor.Y - Font.Base });
+            textBounds = textBounds.StretchToContain(pos.XY() with { X = rawCursor.X + glyph.Width });
 
             vertices[vertexIndex + 0] = appendVertex(pos, glyph, uvInfo, colorToSet, 0, 0);
             vertices[vertexIndex + 1] = appendVertex(pos, glyph, uvInfo, colorToSet, 1, 0);
@@ -292,7 +299,7 @@ public class TextMeshGenerator
 
             vertexIndex += 4;
             indexIndex += 6;
-            cursor += (glyph.Advance + (pos.X - cursor)) * TrackingMultiplier;
+            cursor += glyph.Advance * TrackingMultiplier;
 
             lastChar = c;
         }
@@ -301,37 +308,49 @@ public class TextMeshGenerator
             startNewLine(displayString.Length, displayString);
 
         //TODO dit is niet goed
-        for (int i = 0; i < vertexIndex; i++)
-        {
-            var pos = vertices[i].Position;
-
-            maxX = MathF.Max(pos.X, maxX);
-            maxY = MathF.Max(pos.Y, maxY);
-            minX = MathF.Min(pos.X, minX);
-            minY = MathF.Min(pos.Y, minY);
-        }
-
-        //TODO dit is niet goed
         if (VerticalAlign != VerticalTextAlign.Top)
         {
-            var totalHeight = (int)(maxY - minY);
-            var offset = VerticalAlign switch
-            {
-                VerticalTextAlign.Middle => totalHeight / 2,
-                VerticalTextAlign.Bottom => totalHeight,
-                _ => 0
-            };
+            var textBoundsOffset = textBounds.Height;
 
-            minY += offset;
-            maxY += offset;
+            switch (VerticalAlign)
+            {
+                case VerticalTextAlign.Middle:
+                    textBoundsOffset /= 2;
+                    break;
+            }
+
+            textBounds.MinY += textBoundsOffset;
+            textBounds.MaxY += textBoundsOffset;
+
+            geometryBounds.MinY += textBoundsOffset;
+            geometryBounds.MaxY += textBoundsOffset;
 
             for (int i = 0; i < vertexIndex; i++)
-                vertices[i].Position.Y += offset;
+                vertices[i].Position.Y += textBoundsOffset;
+        }
+
+        if (HorizontalAlign != HorizontalTextAlign.Left)
+        {
+            var textBoundsOffset = textBounds.Width;
+
+            switch (HorizontalAlign)
+            {
+                case HorizontalTextAlign.Center:
+                    textBoundsOffset /= 2;
+                    break;
+            }
+
+            textBounds.MinX -= textBoundsOffset;
+            textBounds.MaxX -= textBoundsOffset;
+
+            geometryBounds.MinX -= textBoundsOffset;
+            geometryBounds.MaxX -= textBoundsOffset;
         }
 
         return new TextMeshResult
         {
-            LocalBounds = new Rect(minX, minY, maxX, maxY),
+            LocalBounds = geometryBounds,
+            LocalTextBounds = textBounds,
             GlyphCount = glyphCountWithoutTags,
             VertexCount = glyphCountWithoutTags * 4,
             IndexCount = glyphCountWithoutTags * 6,
@@ -344,6 +363,8 @@ public class TextMeshGenerator
                 new Vector2(uvInfo.X + uvInfo.Width * xFactor, uvInfo.Y + uvInfo.Height * yFactor),
                 color
                 );
+
+            geometryBounds = geometryBounds.StretchToContain(vertex.Position.XY());
 
             return vertex;
         }

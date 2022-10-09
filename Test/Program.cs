@@ -23,9 +23,12 @@ public class Program
             new OpenALAudioRenderer()
             );
 
-        game.Window.TargetUpdateRate = 0;
+        game.UpdateRate = 0;
+        game.FixedUpdateRate = 25;
         game.Console.DrawConsoleNotification = true;
         game.Window.VSync = false;
+
+        TextureLoader.Settings.FilterMode = FilterMode.Linear;
 
         Resources.RegisterType(typeof(Gif), path => Gif.Load(path));
 
@@ -37,7 +40,13 @@ public class Program
         Assets.Register("qoitest", static asset => Resources.Load<Texture>("qoitest.qoi"));
         Assets.Register("resources/textures/pride.png", Assets.TextureFileProvider);
 
-        game.Scene = ThreadedSystemsScene.Load(game);
+        game.Scene = SplashScreen.CreateScene(Resources.Load<Texture>("opening_bg.png"), new[]
+        {
+            new SplashScreen.Logo(Resources.Load<Texture>("splash1.png"), new Vector2(180, 0), 5, new Sound(Resources.Load<AudioData>("opening.wav"), false, false)),
+            new SplashScreen.Logo(Resources.Load<Texture>("splash2.png"), new Vector2(180, 0), 3f),
+            new SplashScreen.Logo(Resources.Load<Texture>("splash3.png"), new Vector2(180, 0), 3f),
+
+        }, () => game.Scene = TestScene2.Load(game) , SplashScreen.Transition.FadeInOut);
 
 #if DEBUG
         game.DevelopmentMode = true;

@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Walgelijk
 {
@@ -22,7 +23,7 @@ namespace Walgelijk
             get => parent;
             set
             {
-                if (parent == value) 
+                if (parent == value)
                     return;
                 parent = value;
                 IsMatrixCached = false;
@@ -76,7 +77,7 @@ namespace Walgelijk
         /// </summary>
         public Vector2 LocalPivot
         {
-            get => new Vector2(pivot.X, pivot.Y);
+            get => pivot;
 
             set
             {
@@ -90,7 +91,7 @@ namespace Walgelijk
         /// </summary>
         public Vector2 LocalRotationPivot
         {
-            get => new(rotationPivot.X, rotationPivot.Y);
+            get => rotationPivot;
 
             set
             {
@@ -124,19 +125,23 @@ namespace Walgelijk
         /// </summary>
         public void RecalculateModelMatrix(Matrix3x2 containingMatrix)
         {
-            var matrix = Matrix3x2.CreateTranslation(-pivot.X, -pivot.Y);
+            var matrix = Matrix3x2.Identity;
+
+            if (MathF.Abs(pivot.X) > float.Epsilon || MathF.Abs(pivot.Y) > float.Epsilon)
+                matrix = Matrix3x2.CreateTranslation(-pivot.X, -pivot.Y);
             SeparateMatrices.AfterPivot = matrix;
 
-            matrix *= Matrix3x2.CreateScale(scale.X, scale.Y);
+            if (MathF.Abs(1 - scale.X) > float.Epsilon || MathF.Abs(1 - scale.Y) > float.Epsilon)
+                matrix *= Matrix3x2.CreateScale(scale.X, scale.Y);
             SeparateMatrices.AfterScale = matrix;
 
-            matrix *= Matrix3x2.CreateRotation(rotation * Utilities.DegToRad, new Vector2(rotationPivot.X * scale.X, rotationPivot.Y * scale.Y));
+            if (MathF.Abs(rotation) % 360 > float.Epsilon)
+                matrix *= Matrix3x2.CreateRotation(rotation * Utilities.DegToRad, new Vector2(rotationPivot.X * scale.X, rotationPivot.Y * scale.Y));
             SeparateMatrices.AfterRotation = matrix;
 
-            matrix *= Matrix3x2.CreateTranslation(position.X, position.Y);
+            if (MathF.Abs(position.X) > float.Epsilon || MathF.Abs(position.Y) > float.Epsilon)
+                matrix *= Matrix3x2.CreateTranslation(position.X, position.Y);
             SeparateMatrices.AfterTranslation = matrix;
-
-            //matrix *= Matrix4x4.CreateTranslation(-pivot);
 
             if (!containingMatrix.IsIdentity)
                 matrix *= containingMatrix;

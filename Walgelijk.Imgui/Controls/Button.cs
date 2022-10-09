@@ -16,7 +16,7 @@ namespace Walgelijk.Imgui.Controls
             Draw.DrawBounds = PositioningUtils.ApplyDrawBounds(Gui.Context, id, new DrawBounds(size, topLeft));
 
             var rect = new Rect(topLeft.X, topLeft.Y, topLeft.X + size.X, topLeft.Y + size.Y);
-            Gui.ProcessButtonLike(id, rect, out var result, out wasPressed, out wasReleased, false);
+            Gui.ProcessButtonLike(id, rect, out var result, out wasPressed, out wasReleased, true);
 
             State state = Gui.GetStateFor(id);
             Gui.PrepareDrawer();

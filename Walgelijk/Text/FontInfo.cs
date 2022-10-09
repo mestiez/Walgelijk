@@ -12,6 +12,7 @@
         public int Width;
         public int Height;
         public int LineHeight;
+        public int Base;
 
         public string[] PagePaths;
 

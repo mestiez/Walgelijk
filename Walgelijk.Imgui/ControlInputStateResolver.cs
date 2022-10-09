@@ -31,6 +31,26 @@ namespace Walgelijk.Imgui
             Array.Sort(sortedByDepth, Compare);
         }
 
+        public static bool RaycastAll(Vector2 mousePos, ref Identity?[] ids, out int count)
+        {
+            Array.Fill(ids, null);
+            count = 0;
+            for (int i = 0; i < sortedByDepth.Length; i++)
+            {
+                var item = sortedByDepth[i];
+                if (!Gui.Context.Identities.TryGetValue(item.Identity, out var id))
+                    continue;
+
+                if ((!id.Exists && !id.ExistedLastFrame) || !id.RaycastRectangle.HasValue)
+                    continue;
+
+                if (id.RaycastRectangle.Value.ContainsPoint(mousePos))
+                    ids[count++] = id;
+            }
+
+            return count > 0;
+        }
+
         public static int? Raycast(Vector2 mousePos)
         {
             for (int i = 0; i < sortedByDepth.Length; i++)

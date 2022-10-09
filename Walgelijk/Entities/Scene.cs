@@ -506,7 +506,7 @@ public sealed class Scene : IDisposable
     }
 
     /// <summary>
-    /// Executes all systems. This is typically handled by the window implementation
+    /// Executes all systems
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UpdateSystems()
@@ -527,12 +527,25 @@ public sealed class Scene : IDisposable
     }
 
     /// <summary>
+    /// Executes all systems
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void FixedUpdateSystems()
+    {
+        if (!HasBeenLoadedAlready)
+            Initialise();
+
+        foreach (var system in orderedSystemCollection)
+            system.FixedUpdate();
+    }
+
+    /// <summary>
     /// Prepares the scene for immediate activity. This is handled by the engine so there is no need to call this unless you know why you're calling it.
     /// </summary>
     public void Initialise()
     {
         if (Game != null)
-            Game.Time.DeltaTime = 0;
+            Game.State.Time.DeltaTime = 0;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

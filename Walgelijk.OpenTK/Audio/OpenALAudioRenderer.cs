@@ -294,7 +294,7 @@ public class OpenALAudioRenderer : AudioRenderer
                 temporarySources.ReturnToPool(v);
             }
             else 
-                v.CurrentLifetime += game.Time.DeltaTime;
+                v.CurrentLifetime += game.State.Time.DeltaTime;
         }
 
         Array.Clear(temporySourceBuffer);
