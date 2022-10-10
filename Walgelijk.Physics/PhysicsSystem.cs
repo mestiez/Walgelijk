@@ -332,8 +332,8 @@ public class PhysicsSystem : Walgelijk.System
 
         var center = new Vector2((minX + maxX) / 2, (minY + maxY) / 2);
         int i = 0;
-        var min = GetChunkPositionFrom(minX, maxX + world.ChunkSize, world.ChunkSize);
-        var max = GetChunkPositionFrom(maxY + world.ChunkSize, minY, world.ChunkSize);
+        var min = GetChunkPositionFrom(minX, maxY + world.ChunkSize, world.ChunkSize);
+        var max = GetChunkPositionFrom(maxX + world.ChunkSize, minY, world.ChunkSize);
 
         for (int x = Math.Min(min.X, max.X); x <= Math.Max(min.X, max.X); x++)
             for (int y = Math.Min(min.Y, max.Y); y <= Math.Max(min.Y, max.Y); y++)
@@ -355,7 +355,7 @@ public class PhysicsSystem : Walgelijk.System
                     if (GetChunkPositionFrom(nearest.X, nearest.Y, world.ChunkSize) != chunk)
                         continue;
 
-                    if (Geometry.IsPointInRect(nearest.X, nearest.Y, rectangle))
+                    if (rectangle.ContainsPoint(nearest))
                     {
                         results[i++] = new QueryResult(entity, bodyComponent, bodyComponent.Collider);
                         if (i >= results.Length)
