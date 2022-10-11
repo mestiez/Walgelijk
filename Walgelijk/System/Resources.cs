@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace Walgelijk;
@@ -130,6 +131,22 @@ public static class Resources
     {
         path = Path.Combine(BasePath, path);
         return path;
+    }
+
+    /// <summary>
+    /// Gets the base path for a specific type <b>without the BasePath</b>
+    /// </summary>
+    public static bool TryGetBasePathForType(Type type, [NotNullWhen(true)] out string? path)
+    {
+        return basePathByType.TryGetValue(type, out path);
+        //if (basePathByType.TryGetValue(type, out path))
+        //{
+        //    if (!Path.EndsInDirectorySeparator(BasePath) && (path.StartsWith(Path.DirectorySeparatorChar) || path.StartsWith(Path.AltDirectorySeparatorChar)))
+        //        path = '/' + path;
+        //    path = Path.Combine(BasePath, path);
+        //    return true;
+        //}
+        //return false;
     }
 
     /// <summary>

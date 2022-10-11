@@ -4284,6 +4284,11 @@
             Get the full path for a path, considering its type and set base paths
             </summary>
         </member>
+        <member name="M:Walgelijk.Resources.TryGetBasePathForType(System.Type,System.String@)">
+            <summary>
+            Gets the base path for a specific type <b>without the BasePath</b>
+            </summary>
+        </member>
         <member name="M:Walgelijk.Resources.SetBasePathForType(System.Type,System.String)">
             <summary>
             Sets the base path for a specific type. This will be combined with the <see cref="P:Walgelijk.Resources.BasePath"/> and the input path to create the full path
