@@ -69,7 +69,21 @@ namespace Walgelijk
         public readonly Vector2 GetCenter() => new(
                 (MinX + MaxX) * 0.5f,
                 (MinY + MaxY) * 0.5f
-                );
+                );     
+        
+        /// <summary>
+        /// Offset the rectangle such that the center is the given point
+        /// </summary>
+        public void SetCenter(Vector2 point)
+        {
+            var center = GetCenter();
+            var offset = point - center;
+            MaxX += offset.X;
+            MinX += offset.X;
+            MaxY += offset.Y;
+            MinY += offset.Y;
+        }
+
         /// <summary>
         /// Returns the size of the rectangle. Calculated using (max - min)
         /// </summary>

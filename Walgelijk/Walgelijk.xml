@@ -3655,6 +3655,11 @@
             Returns the center of the rectangle. Calculated using (min + max) * 0.5
             </summary>
         </member>
+        <member name="M:Walgelijk.Rect.SetCenter(System.Numerics.Vector2)">
+            <summary>
+            Offset the rectangle such that the center is the given point
+            </summary>
+        </member>
         <member name="M:Walgelijk.Rect.GetSize">
             <summary>
             Returns the size of the rectangle. Calculated using (max - min)
