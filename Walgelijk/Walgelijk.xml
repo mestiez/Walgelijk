@@ -3680,6 +3680,13 @@
             Create a rectangle given the center and the size
             </summary>
         </member>
+        <member name="M:Walgelijk.Rect.SignedDistanceTo(System.Numerics.Vector2)">
+            <summary>
+            Return signed distance from the edge of this rectangle to the given point 
+            <br></br>
+            <a href="https://iquilezles.org/articles/distfunctions2d/">https://iquilezles.org/articles/distfunctions2d/</a>
+            </summary>
+        </member>
         <member name="M:Walgelijk.Rect.ContainsPoint(System.Numerics.Vector2)">
             <summary>
             Does the rectangle contain the given point?
@@ -3703,6 +3710,11 @@
         <member name="M:Walgelijk.Rect.StretchToContain(System.Numerics.Vector2)">
             <summary>
             This will return a copy of this rectangle that is stretched just enough to contain the given point
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.StretchToContain(Walgelijk.Rect)">
+            <summary>
+            This will return a copy of this rectangle that is stretched just enough to contain the given rect
             </summary>
         </member>
         <member name="T:Walgelijk.Asset">
