@@ -186,6 +186,9 @@ namespace Walgelijk.SimpleDrawing
         /// <summary>
         /// Draw a <see cref="DrawingPrimitives.Quad"/>
         /// </summary>
+        public static void Quad(Rect rect, float degrees = 0, float roundness = 0) =>
+            Quad(ScreenSpace ? rect.BottomLeft : rect.TopLeft, rect.GetSize(), degrees, roundness);
+
         public static void Quad(Vector2 topLeft, Vector2 size, float degrees = 0, float roundness = 0)
         {
             //float ox = MathF.Min(0, size.X);
