@@ -1304,6 +1304,11 @@
             Get all components and entities of a certain type
             </summary>
         </member>
+        <member name="M:Walgelijk.Scene.GetAllComponentsOfType``1(Walgelijk.EntityWith{``0}[])">
+            <summary>
+            Get all components and entities of a certain type and put them into the given buffer, returning the relevant section of it
+            </summary>
+        </member>
         <member name="M:Walgelijk.Scene.CopyAllComponentsOfType``1(Walgelijk.EntityWith{``0}[])">
             <summary>
             Get all components and entities and add them into the given array. It returns the amount of items that were inserted.

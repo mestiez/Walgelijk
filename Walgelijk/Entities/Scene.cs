@@ -335,6 +335,32 @@ public sealed class Scene : IDisposable
             yield return new EntityWith<T>(item.Component, item.Entity);
     }
 
+
+    /// <summary>
+    /// Get all components and entities of a certain type and put them into the given buffer, returning the relevant section of it
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ReadOnlySpan<EntityWith<T>> GetAllComponentsOfType<T>(EntityWith<T>[] buffer) where T : class
+    {
+        int i = 0;
+        foreach (var item in componentsToAdd)
+            if (item.Component is T typed)
+            {
+                buffer[i++] = new EntityWith<T>(typed, item.Entity);
+                if (i >= buffer.Length)
+                    break;
+            }
+
+        foreach (var item in components.GetAllComponentsOfType<T>())
+        {
+            buffer[i++] = new EntityWith<T>(item.Component, item.Entity);
+            if (i >= buffer.Length)
+                break;
+        }
+
+        return buffer.AsSpan(0, i);
+    }
+
     /// <summary>
     /// Get all components and entities and add them into the given array. It returns the amount of items that were inserted.
     /// </summary>
