@@ -160,13 +160,21 @@ public class Game
             double fixedUpdateInterval = 1d / FixedUpdateRate;
             if (!Console.IsActive)
             {
+                const int maxPerFrame = 10;
                 fixedUpdateClock += dt * State.Time.TimeScale;
                 accumulator += scaledDt;
+                int iteration = 0;
                 while (accumulator > fixedUpdateInterval)
                 {
                     Scene?.FixedUpdateSystems();
                     fixedUpdateClock = 0;
                     accumulator -= fixedUpdateInterval;
+                    iteration++;
+                    if (iteration >= maxPerFrame)
+                    {
+                        Logger.Warn("Amount of FixedUpdates per frame has reached the limit of 10!");
+                        break;
+                    }
                 }
 
                 State.Time.Interpolation = (float)((fixedUpdateClock % fixedUpdateInterval) / fixedUpdateInterval);

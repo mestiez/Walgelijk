@@ -29,6 +29,11 @@ namespace Walgelijk
 
         private float timeStepAccumulator = 0;
 
+        public void Reset(float accumulatorValue = 0)
+        {
+            timeStepAccumulator = accumulatorValue;
+        }
+
         /// <summary>
         /// Calculate the amount of cycles to execute
         /// </summary>
