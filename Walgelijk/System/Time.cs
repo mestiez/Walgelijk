@@ -40,5 +40,10 @@
         /// Interpolation weight factor. Between fixed updates, this value will start at 0 and gradually increase until it ends at 1
         /// </summary>
         public float Interpolation { get; set; } = 0;
+
+        /// <summary>
+        /// Intended amount of time in seconds between fixed updates
+        /// </summary>
+        public float FixedInterval { get; set; } = 0;
     }
 }

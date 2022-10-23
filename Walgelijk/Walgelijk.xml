@@ -4464,6 +4464,11 @@
             Interpolation weight factor. Between fixed updates, this value will start at 0 and gradually increase until it ends at 1
             </summary>
         </member>
+        <member name="P:Walgelijk.Time.FixedInterval">
+            <summary>
+            Intended amount of time in seconds between fixed updates
+            </summary>
+        </member>
         <member name="T:Walgelijk.Font">
             <summary>
             Object that holds font information and pages
