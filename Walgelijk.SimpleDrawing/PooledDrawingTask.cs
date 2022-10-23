@@ -39,12 +39,16 @@ namespace Walgelijk.SimpleDrawing
                         Drawing.VertexBuffer.AmountOfIndicesToRender = 0;
                     else
                     {
-                        if (textFrequencyCounter.TryGetValue(text, out int count))
-                            textFrequencyCounter[text] = count + 1;
-                        else
+                        int count = -1;
+                        if (Draw.CacheTextMeshes >= 0)
                         {
-                            textFrequencyCounter.Add(text, 1);
-                            count = 1;
+                            if (textFrequencyCounter.TryGetValue(text, out count))
+                                textFrequencyCounter[text] = count + 1;
+                            else
+                            {
+                                textFrequencyCounter.Add(text, 1);
+                                count = 1;
+                            }
                         }
 
                         var cachable = new CachableTextDrawing
@@ -57,7 +61,7 @@ namespace Walgelijk.SimpleDrawing
                             TextBoxWidth = textDrawing.TextBoxWidth
                         };
 
-                        if (count > 240)
+                        if (count > Draw.CacheTextMeshes)
                             Drawing.VertexBuffer = Draw.TextMeshCache.Load(cachable); // this text is common! use cache
                         else
                             TextMeshCache.Prepare(cachable, Drawing.VertexBuffer, true); // this text has only appeared infrequently.

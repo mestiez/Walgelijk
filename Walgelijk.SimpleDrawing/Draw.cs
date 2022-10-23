@@ -73,6 +73,11 @@ namespace Walgelijk.SimpleDrawing
         public static readonly TextMeshGenerator TextMeshGenerator = new() { ParseRichText = true };
 
         /// <summary>
+        /// Amount of calls to generate a text mesh necessary for it to be cached. -1 means caching is disabled.
+        /// </summary>
+        public static int CacheTextMeshes = 200;
+
+        /// <summary>
         /// Calculate the pixel width of the given text considering the font and font size. This function doesn't care about wrapping.
         /// </summary>
         public static float CalculateTextWidth(ReadOnlySpan<char> text)
