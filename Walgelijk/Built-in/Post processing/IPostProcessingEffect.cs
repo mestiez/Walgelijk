@@ -3,6 +3,7 @@
     /// <summary>
     /// A post processing effect
     /// </summary>
+    [global::System.Obsolete]
     public interface IPostProcessingEffect
     {
         /// <summary>

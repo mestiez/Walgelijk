@@ -3,6 +3,7 @@
     /// <summary>
     /// A basic shader post processor. It applies a material to the entire image
     /// </summary>
+    [global::System.Obsolete]
     public class ShaderPostProcessor : IPostProcessingEffect
     {
         /// <summary>
