@@ -1976,7 +1976,7 @@
         </member>
         <member name="P:Walgelijk.QOIDecoder.IsLinearColorspace">
             <summary>Returns the color space information from the file header.</summary>
-            <remarks><see langword="false" /> = sRGB with linear alpha channel.<see langword="true" /> = all channels linear.</remarks>
+            <remarks><see langword="false" /> = sRGB with linear alpha channel.<br></br><see langword="true" /> = all channels linear.</remarks>
         </member>
         <member name="T:Walgelijk.TextureLoader">
             <summary>
@@ -2063,7 +2063,7 @@
             Extension methods for all implementations of <see cref="T:Walgelijk.IGraphics"/>
             </summary>
         </member>
-        <member name="M:Walgelijk.GraphicsExtensions.BlitFullscreenQuad(Walgelijk.IGraphics,Walgelijk.RenderTexture,Walgelijk.RenderTexture,Walgelijk.Material,System.String)">
+        <member name="M:Walgelijk.GraphicsExtensions.BlitFullscreenQuad(Walgelijk.IGraphics,Walgelijk.RenderTexture,Walgelijk.RenderTarget,System.Int32,System.Int32,Walgelijk.Material,System.String)">
             <summary>
             Blit the <paramref name="src"/> content to <paramref name="dst"/> using a fullscreen quad and the given material
             </summary>
@@ -4181,6 +4181,11 @@
             Game engine state information
             </summary>
         </member>
+        <member name="P:Walgelijk.Game.Compositor">
+            <summary>
+            The frame compositor. This is where post processing effects are applied
+            </summary>
+        </member>
         <member name="P:Walgelijk.Game.DevelopmentMode">
             <summary>
             When set to true, safety checks will be done at runtime. 
@@ -5356,6 +5361,16 @@
         <member name="P:Walgelijk.Window.Size">
             <summary>
             Size of the window in pixels
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.Width">
+            <summary>
+            Identical to (int)Size.X
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.Height">
+            <summary>
+            Identical to (int)Size.Y
             </summary>
         </member>
         <member name="P:Walgelijk.Window.VSync">

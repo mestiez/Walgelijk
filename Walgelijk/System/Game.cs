@@ -190,7 +190,7 @@ public class Game
             }
 
             Profiling.Tick();
-
+            Compositor.Render(Window.RenderQueue);
             Window.LoopCycle();
 
             if (!Window.IsOpen)

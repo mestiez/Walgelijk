@@ -30,7 +30,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="NVorbis" Version="0.10.4" />
+		<PackageReference Include="NVorbis" Version="0.10.5" />
 		<PackageReference Include="OpenTK" Version="4.7.5" />
 	</ItemGroup>
 

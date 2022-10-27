@@ -1,54 +1,73 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace Walgelijk;
 
 public class Compositor
 {
-    private Game game;
-    private RenderTexture? rt;
+    public IReadOnlyList<CompositorPass> Passes => passes.AsReadOnly();
 
-    public readonly List<CompositorPass> Passes = new();
+    public bool ForceUpdateTargets = true;
+
+    private readonly List<CompositorPass> passes = new();
+    private Game game;
 
     public Compositor(Game game)
     {
         this.game = game;
+        game.Window.OnResize += OnWindowResize;
     }
 
-    public void RegenerateRenderTexture(out RenderTarget target)
+    private void OnWindowResize(object? sender, global::System.Numerics.Vector2 e)
     {
-        if (rt != null)
-            rt.Dispose();
-
-        target = rt = new RenderTexture(game.Window.Width, game.Window.Height, hdr: true);
+        ForceUpdateTargets = true;
     }
 
-    public void StartPass(RenderQueue queue, int passIndex)
+    public void AddPass(CompositorPass pass)
     {
-        if (passIndex < 0 || passIndex >= Passes.Count)
-            throw new global::System.IndexOutOfRangeException();
+        if (passes.Contains(pass))
+            throw new Exception("This pass is already present in the pass list");
 
-        RenderTarget? target;
-        if (rt == null)
-            RegenerateRenderTexture(out target);
-        else 
-            target = rt;
-
-        queue.Add(new TargetRenderTask(target));
+        passes.Add(pass);
+        ForceUpdateTargets = true;
     }
 
-    public void EndPass()
+    public bool RemovePass(CompositorPass pass)
+    {
+        ForceUpdateTargets = true;
+        return passes.Remove(pass);
+    }
+
+    public void Render(RenderQueue queue)
+    {
+        foreach (var pass in passes)
+            if (pass.Enabled)
+            {
+                if (ForceUpdateTargets)
+                    pass.RegenerateRenderTexture(out _, game.Window.Width, game.Window.Height);
+                queue.Add(pass.PushTask, pass.InclusiveStart);
+                queue.Add(pass.PopTask, pass.ExclusiveEnd);
+            }
+
+        ForceUpdateTargets = false;
+    }
 }
 
-public class CompositorPass
+public class CompositorPass : IDisposable
 {
     public readonly string Name;
     public bool Enabled = true;
-
     public readonly RenderOrder InclusiveStart = new RenderOrder(0, 0);
     public readonly RenderOrder ExclusiveEnd = RenderOrder.UI;
-
     public readonly List<CompositorProcess> Steps = new();
+
+    private RenderTarget? previousRt;
+    private RenderTexture? rt;
+    private bool pushed;
+
+    public readonly IRenderTask PushTask;
+    public readonly IRenderTask PopTask;
 
     public CompositorPass(in string name, RenderOrder inclusiveStart, RenderOrder exclusiveEnd, params CompositorProcess[] steps)
     {
@@ -59,6 +78,52 @@ public class CompositorPass
         InclusiveStart = inclusiveStart;
         ExclusiveEnd = exclusiveEnd;
         Steps.AddRange(steps);
+
+        PushTask = new ActionRenderTask(Push);
+        PopTask = new ActionRenderTask(Pop);
+    }
+
+    public void RegenerateRenderTexture(out RenderTarget target, int width, int height)
+    {
+        if (rt != null)
+            rt.Dispose();
+
+        target = rt = new RenderTexture(width, height, hdr: true);
+    }
+
+    private void Push(IGraphics graphics)
+    {
+        pushed = rt != null && graphics.CurrentTarget != null;
+        if (rt != null)
+        {
+            previousRt = graphics.CurrentTarget;
+            graphics.CurrentTarget = rt;
+
+            graphics.Clear(Colors.Transparent);
+        }
+    }
+
+    private void Pop(IGraphics graphics)
+    {
+        if (pushed && rt != null && previousRt != null)
+        {
+            graphics.CurrentTarget = previousRt;
+
+            foreach (var step in Steps)
+            {
+                step.Process(graphics, rt, graphics.CurrentTarget);
+            }
+
+            previousRt = null;
+            pushed = false;
+        }
+    }
+
+    public void Dispose()
+    {
+        previousRt = null;
+        if (rt != null)
+            rt.Dispose();
     }
 }
 
@@ -71,7 +136,7 @@ public abstract class CompositorProcess
         Name = name;
     }
 
-    public abstract void Process(IGraphics graphics, RenderTexture src, RenderTexture dst);
+    public abstract void Process(IGraphics graphics, RenderTexture src, RenderTarget dst);
 }
 
 public abstract class ShaderProcess : CompositorProcess
@@ -80,9 +145,9 @@ public abstract class ShaderProcess : CompositorProcess
     {
     }
 
-    public override void Process(IGraphics graphics, RenderTexture src, RenderTexture dst)
+    public override void Process(IGraphics graphics, RenderTexture src, RenderTarget dst)
     {
-        graphics.BlitFullscreenQuad(src, dst, Material, MainTextureUniform);
+        graphics.BlitFullscreenQuad(src, dst, src.Width, src.Height, Material, MainTextureUniform);
     }
 
     protected abstract string MainTextureUniform { get; }
@@ -93,7 +158,7 @@ public class InvertProcess : ShaderProcess
 {
     private Material mat;
 
-    public InvertProcess(string name) : base(name)
+    public InvertProcess(string name = nameof(InvertProcess)) : base(name)
     {
         mat = new Material(new Shader(Shader.Default.VertexShader,
 @"#version 460
