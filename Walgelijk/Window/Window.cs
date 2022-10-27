@@ -21,6 +21,14 @@ public abstract class Window
     /// </summary>
     public abstract Vector2 Size { get; set; }
     /// <summary>
+    /// Identical to (int)Size.X
+    /// </summary>
+    public int Width => (int)Size.X;
+    /// <summary>
+    /// Identical to (int)Size.Y
+    /// </summary>
+    public int Height => (int)Size.Y;
+    /// <summary>
     /// Should vertical synchronisation be enabled
     /// </summary>
     public abstract bool VSync { get; set; }
