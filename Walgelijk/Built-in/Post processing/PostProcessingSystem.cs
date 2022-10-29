@@ -5,6 +5,7 @@ namespace Walgelijk
     /// <summary>
     /// System that handles post processing effects with <see cref="PostProcessingComponent"/> and <see cref="IPostProcessingEffect"/>
     /// </summary>
+    [global::System.Obsolete]
     public class PostProcessingSystem : System
     {
         private bool needsNewRT = true;

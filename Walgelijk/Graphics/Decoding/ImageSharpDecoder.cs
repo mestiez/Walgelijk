@@ -17,7 +17,7 @@ public class ImageSharpDecoder : IImageDecoder
         return new DecodedImage(image.Width, image.Height, colors);
     }
 
-    public DecodedImage Decode(in byte[] bytes, int count, bool flipY) => Decode(bytes.AsSpan()[0..count], flipY);
+    public DecodedImage Decode(in byte[] bytes, int count, bool flipY) => Decode(bytes.AsSpan(0, count), flipY);
 
     //TODO dit is lelijk
     /// <summary>

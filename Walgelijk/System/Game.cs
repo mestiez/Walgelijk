@@ -84,6 +84,11 @@ public class Game
     public GameState State { get; private set; } = new();
 
     /// <summary>
+    /// The frame compositor. This is where post processing effects are applied
+    /// </summary>
+    public Compositor Compositor { get; }
+
+    /// <summary>
     /// When set to true, safety checks will be done at runtime. 
     /// This will degrade performance and should be turned off in release. <b>True by default</b>
     /// </summary>
@@ -123,6 +128,7 @@ public class Game
         AudioRenderer = audioRenderer ?? new EmptyAudioRenderer();
         Profiling = new Profiler(this);
         DebugDraw = new DebugDraw(this);
+        Compositor = new Compositor(this);
         Logger.Log(Version());
     }
 
@@ -184,7 +190,7 @@ public class Game
             }
 
             Profiling.Tick();
-
+            Compositor.Render(Window.RenderQueue);
             Window.LoopCycle();
 
             if (!Window.IsOpen)

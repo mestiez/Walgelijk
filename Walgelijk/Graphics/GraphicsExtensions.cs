@@ -10,11 +10,11 @@ namespace Walgelijk
         /// <summary>
         /// Blit the <paramref name="src"/> content to <paramref name="dst"/> using a fullscreen quad and the given material
         /// </summary>
-        public static void BlitFullscreenQuad(this IGraphics graphics, RenderTexture src, RenderTexture dst, Material material, string textureUniform)
+        public static void BlitFullscreenQuad(this IGraphics graphics, RenderTexture src, RenderTarget dst, int targetWidth, int targetHeight, Material material, string textureUniform)
         {
             material.SetUniform(textureUniform, src);
 
-            dst.ModelMatrix = Matrix4x4.CreateTranslation(0, -1, 0) * Matrix4x4.CreateScale(dst.Width, -dst.Height, 1);
+            dst.ModelMatrix = Matrix4x4.CreateTranslation(0, -1, 0) * Matrix4x4.CreateScale(targetWidth, -targetHeight, 1);
 
             var view = dst.ViewMatrix;
             var proj = dst.ProjectionMatrix;

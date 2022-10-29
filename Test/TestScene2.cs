@@ -43,6 +43,7 @@ public struct TestScene2
         public override void Update()
         {
             Draw.Reset();
+            Draw.Order = new RenderOrder(50, 0);
             Draw.ScreenSpace = true;
             Draw.Colour = Colors.Purple;
             Draw.Circle(Vector2.Lerp(last, target, Time.Interpolation), new Vector2(25));

@@ -5,6 +5,7 @@ namespace Walgelijk
     /// <summary>
     /// A post processing effect container
     /// </summary>
+    [global::System.Obsolete]
     public class PostProcessingComponent
     {
         /// <summary>

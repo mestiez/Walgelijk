@@ -56,6 +56,8 @@ public class Program
         game.Window.SetIcon(Resources.Load<Texture>("icon.png"));
         game.Profiling.DrawQuickProfiler = false;
 
+        game.Compositor.AddPass(new CompositorPass("Effects", RenderOrder.Zero, new RenderOrder(100,0), new InvertProcess()));
+
         game.Start();
     }
 }

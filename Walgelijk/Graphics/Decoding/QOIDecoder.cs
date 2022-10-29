@@ -135,7 +135,7 @@ public class QOIDecoder : IImageDecoder
         }
     }
 
-    public DecodedImage Decode(in byte[] bytes, int count, bool flipY) => Decode(bytes.AsSpan()[0..count], flipY);
+    public DecodedImage Decode(in byte[] bytes, int count, bool flipY) => Decode(bytes.AsSpan(0, count), flipY);
 
     public bool CanDecode(in string filename) => filename.EndsWith(".qoi", StringComparison.InvariantCultureIgnoreCase);
 
@@ -149,6 +149,6 @@ public class QOIDecoder : IImageDecoder
     public bool HasAlpha => this.alpha;
 
     /// <summary>Returns the color space information from the file header.</summary>
-    /// <remarks><see langword="false" /> = sRGB with linear alpha channel.<see langword="true" /> = all channels linear.</remarks>
+    /// <remarks><see langword="false" /> = sRGB with linear alpha channel.<br></br><see langword="true" /> = all channels linear.</remarks>
     public bool IsLinearColorspace => this.linearColorspace;
 }
