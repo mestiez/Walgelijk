@@ -41,7 +41,10 @@ namespace Walgelijk.Imgui.Controls
             Gui.PrepareDrawer();
             var padding = Gui.GetPadding(style, State.Inactive);
 
-            var rect = new Rect(topLeft.X, topLeft.Y, topLeft.X + size.X, topLeft.Y + size.Y);
+            var rect = new Rect(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue)
+                .StretchToContain(topLeft)
+                .StretchToContain(topLeft + size);
+
             Draw.Colour = Colors.White;
             //Draw.Quad(topLeft, size, roundness: Gui.GetRoundness(style, State.Inactive));
 
@@ -51,7 +54,7 @@ namespace Walgelijk.Imgui.Controls
             if (texture != null)
             {
                 Draw.Colour = Colors.White;
-                padding *= 5;
+               // padding *= 5;
                 Draw.Image(texture, new Rect(rect.MinX + padding, rect.MinY + padding, rect.MaxX - padding, rect.MaxY - padding), containmentMode);
             }
 

@@ -25,6 +25,7 @@ namespace Walgelijk.Imgui.Controls
             Draw.OutlineColour = Gui.GetOutlineColour(style, state);
             Draw.Quad(topLeft, size, roundness: Gui.GetRoundness(style, state));
             Draw.Font = Gui.GetFont(style);
+            //Gui.TextBox(text, rect.BottomLeft, rect.Width, rect.Height, false, HorizontalTextAlign.Center, VerticalTextAlign.Middle, style, optionalId: id.Raw);
             Gui.DrawTextInRect(rect, text, Gui.GetTextColour(style, state), Gui.GetFontSize(style, state), halign, valign);
 
             Gui.Context.EndControl();
