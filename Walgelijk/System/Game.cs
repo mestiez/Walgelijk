@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 
 namespace Walgelijk;
 
@@ -195,6 +196,13 @@ public class Game
 
             if (!Window.IsOpen)
                 break;
+
+            if (UpdateRate != 0)
+            {
+                var timeToSleep = TimeSpan.FromSeconds(1d / UpdateRate - dt);
+                if (timeToSleep > TimeSpan.Zero)
+                    Thread.Sleep(timeToSleep);
+            }
 
             dt = clock.Elapsed.TotalSeconds;
             clock.Restart();

@@ -984,6 +984,26 @@
             Remaps a linear value from 0 to 1 to an ease-out quadractic curve
             </summary>
         </member>
+        <member name="T:Walgelijk.Easings.Expo">
+            <summary>
+            Exponential easing functions
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Expo.InOut(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in ease-out exponential curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Expo.In(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in exponential curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Expo.Out(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-out exponential curve
+            </summary>
+        </member>
         <member name="T:Walgelijk.BasicComponentCollection">
             <summary>
             A collection of components

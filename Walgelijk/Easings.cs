@@ -1,4 +1,6 @@
-﻿namespace Walgelijk;
+﻿using System;
+
+namespace Walgelijk;
 
 /// <summary>
 /// Utility struct full of easing curve functions
@@ -53,5 +55,35 @@ public struct Easings
         /// Remaps a linear value from 0 to 1 to an ease-out quadractic curve
         /// </summary>
         public static float Out(float x) => 1 - (1 - x) * (1 - x);
+    }
+
+    /// <summary>
+    /// Exponential easing functions
+    /// </summary>
+    public struct Expo
+    {
+        /// <summary>
+        /// Remaps a linear value from 0 to 1 to an ease-in ease-out exponential curve
+        /// </summary>
+        public static float InOut(float x)
+        {
+            return x == 0
+              ? 0
+              : x == 1
+              ? 1
+              : x < 0.5 ? MathF.Pow(2, 20 * x - 10) / 2
+              : (2 - MathF.Pow(2, -20 * x + 10)) / 2;
+        }
+
+        /// <summary>
+        /// Remaps a linear value from 0 to 1 to an ease-in exponential curve
+        /// </summary>
+        public static float In(float x) => x == 0 ? 0 : MathF.Pow(2, 10 * x - 10);
+
+        /// <summary>
+        /// Remaps a linear value from 0 to 1 to an ease-out exponential curve
+        /// </summary>
+        public static float Out(float x) => x == 1 ? 1 : 1 - MathF.Pow(2, -10 * x);
+
     }
 }

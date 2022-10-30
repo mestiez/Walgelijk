@@ -43,7 +43,7 @@ namespace Walgelijk.Imgui
             public static Vector2 CenterOffset(Identity parent, Identity identity, Vector2 currentPosition, Style? style = null)
             {
                 float padding = Gui.GetPadding(style, Gui.GetStateFor(parent));
-                var v = parent.TopLeft + new Vector2(padding, parent.LayoutCursorPosition + parent.Size.Y / 2 - (parent.ChildSizeSum.Y + padding * parent.PreviousChildCount) / 2);
+                var v = parent.TopLeft + new Vector2(padding, parent.LayoutCursorPosition + parent.Size.Y / 2 - (parent.ChildSizeSum.Y + padding * parent.PreviousChildCount) / 2 + padding * 2);
                 parent.LayoutCursorPosition += identity.Size.Y + padding;
                 return v;
             }
@@ -111,7 +111,10 @@ namespace Walgelijk.Imgui
             public static Vector2 CenterOffset(Identity parent, Identity identity, Vector2 currentPosition, Style? style = null)
             {
                 float padding = Gui.GetPadding(style, Gui.GetStateFor(parent));
-                var v = parent.TopLeft + new Vector2(parent.LayoutCursorPosition + parent.Size.X / 2 - (parent.ChildSizeSum.X + padding * parent.PreviousChildCount) / 2, padding);
+                var v = parent.TopLeft + new Vector2(
+                    parent.LayoutCursorPosition + parent.Size.X / 2 - (parent.ChildSizeSum.X + padding * parent.PreviousChildCount) / 2 + padding * 2f, 
+                    padding
+                    );
                 parent.LayoutCursorPosition += identity.Size.X + padding;
                 return v;
             }
@@ -120,7 +123,7 @@ namespace Walgelijk.Imgui
             {
                 float padding = Gui.GetPadding(style, Gui.GetStateFor(parent));
                 float offset = parent.MaxLayoutCursorPosition - parent.ChildSizeSum.X - padding * Math.Max(1, parent.PreviousChildCount - 1);
-                var v = parent.TopLeft + new Vector2(parent.LayoutCursorPosition + offset - padding, padding);
+                var v = parent.TopLeft + new Vector2(parent.LayoutCursorPosition + offset, padding);
                 parent.LayoutCursorPosition += identity.Size.X + padding;
                 return v;
             }

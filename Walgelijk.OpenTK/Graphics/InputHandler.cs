@@ -88,7 +88,7 @@ namespace Walgelijk.OpenTK
         public void Reset()
         {
             InputState.Reset(ref inputState);
-            inputState.MouseScrollDelta = GameWindow.MouseState.ScrollDelta.Y;
+            inputState.MouseScrollDelta = 0;// GameWindow.MouseState.ScrollDelta.Y;
 
             var n = Window.WindowToWorldPoint(inputState.WindowMousePosition);
             inputState.WorldMouseDelta = n - inputState.WorldMousePosition;
