@@ -4217,6 +4217,11 @@
             Event dispatched when the scene is changed. The new scene is passed to the receivers
             </summary>
         </member>
+        <member name="F:Walgelijk.Game.BeforeExit">
+            <summary>
+            Event dispatched when the game is about to close but hasn't yet done any cleanup
+            </summary>
+        </member>
         <member name="F:Walgelijk.Game.FixedUpdateRate">
             <summary>
             The fixed update rate in Hz
@@ -4251,7 +4256,6 @@
             <summary>
             Dispatch the event to all listeners
             </summary>
-            <param name="args"></param>
         </member>
         <member name="M:Walgelijk.Hook`1.AddListener(System.Action{`0})">
             <summary>
@@ -4274,6 +4278,41 @@
             </summary>
         </member>
         <member name="P:Walgelijk.Hook`1.ListenerCount">
+            <summary>
+            Amount of listeners
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Hook">
+            <summary>
+            Event that can be dispatched and listened to
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Hook.Dispatch">
+            <summary>
+            Dispatch the event to all listeners
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Hook.AddListener(System.Action)">
+            <summary>
+            Adds the given action to the listeners list
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Hook.RemoveListener(System.Action)">
+            <summary>
+            Remove the given action from the listeners list
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Hook.HasListener(System.Action)">
+            <summary>
+            Returns if the given action will be invoked when the event is dispatched
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Hook.ClearListeners">
+            <summary>
+            Clear all listeners
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Hook.ListenerCount">
             <summary>
             Amount of listeners
             </summary>

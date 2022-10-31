@@ -101,6 +101,11 @@ public class Game
     public readonly Hook<Scene> OnSceneChange = new();
 
     /// <summary>
+    /// Event dispatched when the game is about to close but hasn't yet done any cleanup
+    /// </summary>
+    public readonly Hook BeforeExit = new();
+
+    /// <summary>
     /// The fixed update rate in Hz
     /// </summary>
     public int FixedUpdateRate = 60;
@@ -216,6 +221,8 @@ public class Game
     /// </summary>
     public void Stop()
     {
+        BeforeExit?.Dispatch();
+
         if (Window == null)
             throw new InvalidOperationException("Window is null");
 
