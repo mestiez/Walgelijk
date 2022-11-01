@@ -76,7 +76,7 @@ public class OpenTKWindow : Window
             Size = new global::OpenTK.Mathematics.Vector2i((int)size.X, (int)size.Y),
             Title = title,
             StartVisible = false,
-            NumberOfSamples = 0,
+            NumberOfSamples = 16,
         });
 
         if (position.X >= 0 && position.Y >= 0)
