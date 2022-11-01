@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -31,7 +32,7 @@ namespace Walgelijk.Imgui.Controls
         {
             var selectedText = options == null ? string.Empty : options.ElementAt(selectedIndex);
 
-            Identity id = Gui.Context.StartControl(IdGen.Hash(nameof(Dropdown).GetHashCode(), options?.GetHashCode() ?? 300, site, optionalId));
+            Identity id = Gui.Context.StartControl(IdGen.Hash(nameof(Dropdown).GetHashCode(), site, optionalId));
             PositioningUtils.ApplyCurrentLayout(Gui.Context, id, ref topLeft, ref size, style);
             PositioningUtils.ApplyCurrentAnchors(Gui.Context, id, ref topLeft, ref size, style);
             PositioningUtils.ApplyAbsoluteTranslation(Gui.Context, id, ref topLeft);
@@ -121,6 +122,24 @@ namespace Walgelijk.Imgui.Controls
             }
 
             protected override void DisposeOf((string[], Array) loaded) { }
+        }
+
+        public static bool Process<T>(Vector2 topLeft, Vector2 size, (string, T)[] options, ref T? selected, int maxItemsBeforeScrolling, Style? style, int site, int optionalId) where T : notnull
+        {
+            int index = -1;
+            for (int i = 0; i < options.Length; i++)
+                if (options[i].Item2.Equals(selected))
+                {
+                    index = i;
+                    break;
+                }
+
+            if (Process(topLeft, size, options.Select(static s => s.Item1), ref index, maxItemsBeforeScrolling, style, site, optionalId))
+            {
+                selected = options[index].Item2;
+                return true;
+            }
+            return false;
         }
     }
 }

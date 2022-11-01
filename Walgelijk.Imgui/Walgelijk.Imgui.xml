@@ -385,6 +385,11 @@
             An enum dropdown control. Returns true when the control is interacted with.
             </summary>
         </member>
+        <member name="M:Walgelijk.Imgui.Gui.Dropdown``1(System.Numerics.Vector2,System.Numerics.Vector2,System.ValueTuple{System.String,``0}[],``0@,System.Int32,System.Nullable{Walgelijk.Imgui.Style},System.Int32,System.Int32)">
+            <summary>
+            A dropdown control that works with a string-value collections. Returns true when the control is interacted with.
+            </summary>
+        </member>
         <member name="M:Walgelijk.Imgui.Gui.Checkbox(System.String,System.Numerics.Vector2,System.Numerics.Vector2,System.Boolean@,System.Nullable{Walgelijk.Imgui.Style},System.Int32,System.Int32)">
             <summary>
             A checkbox control. Returns true when the control is interacted with.

@@ -435,6 +435,12 @@ public static class Gui
     /// </summary>
     public static bool DropdownEnum<T>(Vector2 topLeft, Vector2 size, ref T selected, int maxItemsBeforeScrolling = 5, Style? style = null, [CallerLineNumber] int site = 0, int optionalId = 0) where T : notnull, global::System.Enum
         => Controls.Dropdown.ProcessEnumDropdown(topLeft, size, ref selected, maxItemsBeforeScrolling, style, site, optionalId);
+    
+    /// <summary>
+    /// A dropdown control that works with a string-value collections. Returns true when the control is interacted with.
+    /// </summary>
+    public static bool Dropdown<T>(Vector2 topLeft, Vector2 size, (string, T)[] options, ref T? selected, int maxItemsBeforeScrolling = 5, Style? style = null, [CallerLineNumber] int site = 0, int optionalId = 0) where T:notnull
+        => Controls.Dropdown.Process(topLeft, size, options, ref selected, maxItemsBeforeScrolling, style, site, optionalId);
 
     /// <summary>
     /// A checkbox control. Returns true when the control is interacted with.
