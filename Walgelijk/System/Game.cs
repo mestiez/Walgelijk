@@ -204,7 +204,7 @@ public class Game
 
             if (UpdateRate != 0)
             {
-                var timeToSleep = TimeSpan.FromSeconds(1d / UpdateRate - dt);
+                var timeToSleep = TimeSpan.FromSeconds(1d / UpdateRate - clock.Elapsed.TotalSeconds);
                 if (timeToSleep > TimeSpan.Zero)
                     Thread.Sleep(timeToSleep);
             }
