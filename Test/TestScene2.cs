@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Numerics;
 using Walgelijk;
+using Walgelijk.Imgui;
 using Walgelijk.SimpleDrawing;
 
 namespace TestWorld;
@@ -15,6 +16,7 @@ public struct TestScene2
         scene.AddSystem(new TransformSystem());
         scene.AddSystem(new CameraSystem() { ExecutionOrder = -1 });
         scene.AddSystem(new TestSystem());
+        scene.AddSystem(new GuiSystem());
 
         var camera = scene.CreateEntity();
         scene.AttachComponent(camera, new TransformComponent());
@@ -51,12 +53,19 @@ public struct TestScene2
             Draw.Colour = Colors.Aqua;
             Draw.Circle(target, new Vector2(15));
 
+            Draw.Order = new RenderOrder(25, 0);
+            Draw.Colour = Colors.Blue;
+            Draw.Circle(new Vector2((Time.SecondsSinceLoad * 45) % 512), new Vector2(32));
+
             if (sw.Elapsed.TotalSeconds >= 1d)
             {
                 Logger.Debug($"{fixedPerSecond} fixed updates per second");
                 fixedPerSecond = 0;
                 sw.Restart();
             }
+
+            if (Input.IsKeyHeld(Key.Space))
+                Gui.Label("test", new Vector2(64), style: new Style() { Text = Colors.WhiteSmoke });
         }
 
         public override void FixedUpdate()

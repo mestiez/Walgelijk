@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -36,7 +37,17 @@ namespace Walgelijk
                 console.Print($"There is no command that matches \"{cmd}\"", Colors.Red);
             else
             {
-                bool success = InvokeMethod(action, arguments, console);
+                bool success;
+                try
+                {
+                    success = InvokeMethod(action, arguments, console);
+                }
+                catch (global::System.Exception e)
+                {
+                    success = false;
+                    var message = e.InnerException != null ? e.InnerException.Message : e.Message;
+                    console.Print("Command error: " + message, Colors.Red, ConsoleMessageType.Error);
+                }
                 if (!success && !string.IsNullOrWhiteSpace(action.cmd.HelpString))
                     console.Print(action.cmd.HelpString, Colors.Cyan);
             }

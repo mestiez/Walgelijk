@@ -40,13 +40,15 @@ public class Program
         Assets.Register("qoitest", static asset => Resources.Load<Texture>("qoitest.qoi"));
         Assets.Register("resources/textures/pride.png", Assets.TextureFileProvider);
 
-        game.Scene = SplashScreen.CreateScene(Resources.Load<Texture>("opening_bg.png"), new[]
-        {
-            new SplashScreen.Logo(Resources.Load<Texture>("splash1.png"), new Vector2(180, 0), 5, new Sound(Resources.Load<AudioData>("opening.wav"), false, false)),
-            new SplashScreen.Logo(Resources.Load<Texture>("splash2.png"), new Vector2(180, 0), 3f),
-            new SplashScreen.Logo(Resources.Load<Texture>("splash3.png"), new Vector2(180, 0), 3f),
+        //game.Scene = SplashScreen.CreateScene(Resources.Load<Texture>("opening_bg.png"), new[]
+        //{
+        //    new SplashScreen.Logo(Resources.Load<Texture>("splash1.png"), new Vector2(180, 0), 5, new Sound(Resources.Load<AudioData>("opening.wav"), false, false)),
+        //    new SplashScreen.Logo(Resources.Load<Texture>("splash2.png"), new Vector2(180, 0), 3f),
+        //    new SplashScreen.Logo(Resources.Load<Texture>("splash3.png"), new Vector2(180, 0), 3f),
 
-        }, () => game.Scene = TestScene2.Load(game) , SplashScreen.Transition.FadeInOut);
+        //}, () => game.Scene = TestScene2.Load(game) , SplashScreen.Transition.FadeInOut);
+
+        game.Scene = TestScene2.Load(game);
 
 #if DEBUG
         game.DevelopmentMode = true;
@@ -56,7 +58,8 @@ public class Program
         game.Window.SetIcon(Resources.Load<Texture>("icon.png"));
         game.Profiling.DrawQuickProfiler = false;
 
-        game.Compositor.AddPass(new CompositorPass("Effects", RenderOrder.Zero, new RenderOrder(100,0), new InvertProcess()));
+        game.Compositor.AddPass(new CompositorPass("Invert", RenderOrder.Zero, new RenderOrder(100,0), new InvertProcess()));
+        game.Compositor.AddPass(new CompositorPass("Blink", new RenderOrder(20, 0), new RenderOrder(30,0), new BlinkProcess()));
 
         game.Start();
     }

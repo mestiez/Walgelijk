@@ -105,13 +105,14 @@ public class CompositorPass : IDisposable
 
     private void Pop(IGraphics graphics)
     {
+        var state = Game.Main.State; //TODO dit is niet al te best
         if (pushed && rt != null && previousRt != null)
         {
             graphics.CurrentTarget = previousRt;
 
             foreach (var step in Steps)
             {
-                step.Process(graphics, rt, graphics.CurrentTarget);
+                step.Process(graphics, rt, graphics.CurrentTarget, state);
             }
 
             previousRt = null;
@@ -136,21 +137,26 @@ public abstract class CompositorProcess
         Name = name;
     }
 
-    public abstract void Process(IGraphics graphics, RenderTexture src, RenderTarget dst);
+    public abstract void Process(IGraphics graphics, RenderTexture src, RenderTarget dst, GameState state);
 }
 
 public abstract class ShaderProcess : CompositorProcess
 {
+
     protected ShaderProcess(string name) : base(name)
     {
     }
 
-    public override void Process(IGraphics graphics, RenderTexture src, RenderTarget dst)
+    public override void Process(IGraphics graphics, RenderTexture src, RenderTarget dst, GameState state)
     {
+        if (!string.IsNullOrEmpty(TimeFloatUniform))
+            Material.SetUniform(TimeFloatUniform, state.Time.SecondsSinceLoad);
+
         graphics.BlitFullscreenQuad(src, dst, src.Width, src.Height, Material, MainTextureUniform);
     }
 
     protected abstract string MainTextureUniform { get; }
+    protected abstract string? TimeFloatUniform { get; }
     protected abstract Material Material { get; }
 }
 
@@ -181,4 +187,36 @@ void main()
 
     protected override Material Material => mat;
     protected override string MainTextureUniform => "mainTex";
+    protected override string? TimeFloatUniform => null;
+}
+
+public class BlinkProcess : ShaderProcess
+{
+    private Material mat;
+
+    public BlinkProcess(string name = nameof(BlinkProcess)) : base(name)
+    {
+        mat = new Material(new Shader(Shader.Default.VertexShader,
+@"#version 460
+
+in vec2 uv;
+in vec4 vertexColor;
+
+out vec4 color;
+
+uniform sampler2D mainTex;
+uniform float time;
+
+void main()
+{
+    vec4 c = texture(mainTex, uv);
+    c *= mod(time + uv.x, 1) > 0.5 ? 0 : 1;
+    color = vertexColor * c;
+}"
+));
+    }
+
+    protected override Material Material => mat;
+    protected override string MainTextureUniform => "mainTex";
+    protected override string? TimeFloatUniform => "time";
 }

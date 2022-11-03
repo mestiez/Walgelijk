@@ -234,12 +234,16 @@ public class Game
     [Command]
     private static string Version()
     {
-        var assemblyName = Assembly.GetAssembly(typeof(Game))?.GetName() ?? null;
 #if DEBUG
         const string config = "DEBUG mode";
 #elif RELEASE
         const string config = "RELEASE mode";
 #endif
-        return $"{assemblyName?.Name ?? "null assembly"} ({config}) v{assemblyName?.Version ?? (new Version(0, 0, 0))}\n";
+        var walgelijk = Assembly.GetAssembly(typeof(Game)) ?? throw new Exception("Walgelijk assembly not found");
+        var game = Assembly.GetEntryAssembly() ?? throw new Exception("Game assembly not found");
+
+        var a = $"\tENGINE: {walgelijk.GetName()?.Name ?? "null assembly"} {walgelijk.GetName()?.Version ?? (new Version(0, 0, 0))}\n";
+        var b = $"\tGAME: {game.GetName()?.Name ?? "null assembly"} {game.GetName()?.Version ?? (new Version(0, 0, 0))}\n";
+        return $"{config} mode\n" + a + b;
     }
 }
