@@ -134,6 +134,7 @@ public class OpenTKWindow : Window
         OnWindowResize(new ResizeEventArgs(window.Size));
         window.Move += OnWindowMove;
         window.Resize += OnWindowResize;
+        window.FileDrop += OnFileDropped;
         clock.Start();
     }
 
