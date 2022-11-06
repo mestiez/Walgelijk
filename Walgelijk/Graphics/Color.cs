@@ -6,7 +6,7 @@ namespace Walgelijk;
 /// <summary>
 /// Colour with 4 floating point components ranging from 0-1
 /// </summary>
-public struct Color
+public struct Color : IEquatable<Color>
 {
     /// <summary>
     /// Size of an instance of this struct in bytes
@@ -121,6 +121,68 @@ public struct Color
         return $"({R},{G},{B},{A})";
     }
 
+    /// <summary>
+    /// Get HSV all of which are in range 0 to 1
+    /// </summary>
+    public void GetHsv(out float h, out float s, out float v)
+    {
+        float rabs, gabs, babs, rr, gg, bb, diff;
+        h = 0;
+        s = 0;
+        v = 0;
+
+        rabs = R;
+        gabs = G;
+        babs = B;
+        v = MathF.Max(rabs, MathF.Max(gabs, babs));
+        diff = v - MathF.Min(rabs, MathF.Min(gabs, babs));
+
+        static float diffc(float c, float v, float diff) => (v - c) / 6f / diff + 1 / 2f;
+
+        if (diff == 0)
+            h = s = 0;
+        else
+        {
+            s = diff / v;
+            rr = diffc(rabs, v, diff);
+            gg = diffc(gabs, v, diff);
+            bb = diffc(babs, v, diff);
+
+            if (rabs == v)
+                h = bb - gg;
+            else if (gabs == v)
+                h = (1 / 3) + rr - bb;
+            else if (babs == v)
+                h = (2 / 3) + gg - rr;
+            if (h < 0)
+                h += 1;
+            else if (h > 1)
+                h -= 1;
+        }
+    }
+
+    /// <summary>
+    /// Get the perceived luminance
+    /// </summary>
+    public float GetLuminance() => (R + R + B + G + G + G) / 6f;
+
+    /// <summary>
+    /// Create an RGBA colour from the given HSV values in the range 0 to 1
+    /// </summary>
+    /// <returns></returns>
+    public static Color FromHsv(float h, float s, float v, float alpha = 1)
+    {
+        h *= 360;
+
+        static float f(float n, float h, float s, float v)
+        {
+            float k = (n + h / 60) % 6;
+            return v - v * s * MathF.Max(MathF.Min(k, MathF.Min(4 - k, 1)), 0);
+        }
+
+        return new Vector4(f(5, h, s, v), f(3, h, s, v), f(1, h, s, v), alpha);
+    }
+
     public override bool Equals(object? obj)
     {
         return obj is Color color &&
@@ -133,6 +195,14 @@ public struct Color
     public override int GetHashCode()
     {
         return HashCode.Combine(R, G, B, A);
+    }
+
+    public bool Equals(Color other)
+    {
+        return R == other.R &&
+               G == other.G &&
+               B == other.B &&
+               A == other.A;
     }
 
     public static bool operator ==(Color left, Color right)

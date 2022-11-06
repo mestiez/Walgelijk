@@ -133,8 +133,24 @@ public struct Rect
     public readonly float SignedDistanceTo(Vector2 p)
     {
         p -= GetCenter();
-        var d = Vector2.Abs(p) - GetSize();
+        var d = Vector2.Abs(p) - GetSize() / 2;
         return Vector2.Max(d, default).Length() + MathF.Min(MathF.Max(d.X, d.Y), 0f);
+    }
+
+    /// <summary>
+    /// Return a copy of the rectangle but translated by the given amount
+    /// </summary>
+    public readonly Rect Translate(Vector2 offset)
+    {
+        return new Rect(MinX + offset.X, MinY + offset.Y, MaxX + offset.X, MaxY + offset.Y);
+    }
+
+    /// <summary>
+    /// Return a copy of the rectangle expanded in all directions by the given amount
+    /// </summary>
+    public readonly Rect Expand(float f)
+    {
+        return new Rect(MinX - f, MinY - f, MaxX + f, MaxY + f);
     }
 
     /// <summary>

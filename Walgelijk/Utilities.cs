@@ -148,6 +148,15 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// Returns a colour with a random hue
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Color RandomHue(float saturation = 1, float value = 1, float alpha = 1)
+        {
+            return Color.FromHsv(RandomFloat(), saturation, value, alpha);
+        }
+
+        /// <summary>
         /// Clamp a value within a range
         /// </summary>
         /// <returns></returns>

@@ -29,6 +29,16 @@ namespace Walgelijk
             Position = position;
             Enabled = enabled;
         }
+             
+        /// <summary>
+        /// Construct draw bounds settings
+        /// </summary>
+        public DrawBounds(Rect rect, bool enabled = true)
+        {
+            Size = rect.GetSize();
+            Position = rect.TopLeft;
+            Enabled = enabled;
+        }
 
         /// <summary>
         /// Returns an instance that disables the drawbounds

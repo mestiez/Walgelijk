@@ -134,5 +134,25 @@ namespace Walgelijk
 
             return new VertexBuffer(vertices, indices) { PrimitiveType = Primitive.TriangleStrip };
         }
+
+        /// <summary>
+        /// Generate quad into the given arrays. Offset is the per-quad offset which is 4 for vertices and 6 for indices
+        /// </summary>
+        public static void GenerateQuad(Vertex[] vertices, uint[] indices, in Rect rect, int offset = 0)
+        {
+            int ii = offset * 4;
+            vertices[0 + ii] = new Vertex(rect.MinX, rect.MinY) { TexCoords = new Vector2(0, 0) };
+            vertices[1 + ii] = new Vertex(rect.MaxX, rect.MinY) { TexCoords = new Vector2(1, 0) };
+            vertices[2 + ii] = new Vertex(rect.MaxX, rect.MaxY) { TexCoords = new Vector2(1, 1) };
+            vertices[3 + ii] = new Vertex(rect.MinX, rect.MaxY) { TexCoords = new Vector2(0, 1) };
+
+            int io = offset * 6;
+            indices[0 + io] = 0 + (uint)ii;
+            indices[1 + io] = 1 + (uint)ii;
+            indices[2 + io] = 2 + (uint)ii;
+            indices[3 + io] = 0 + (uint)ii;
+            indices[4 + io] = 3 + (uint)ii;
+            indices[5 + io] = 2 + (uint)ii;
+        }
     }
 }

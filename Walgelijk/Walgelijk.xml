@@ -1835,6 +1835,22 @@
             Returns a tuple where each element corresponds with a component of the colour
             </summary>
         </member>
+        <member name="M:Walgelijk.Color.GetHsv(System.Single@,System.Single@,System.Single@)">
+            <summary>
+            Get HSV all of which are in range 0 to 1
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Color.GetLuminance">
+            <summary>
+            Get the perceived luminance
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Color.FromHsv(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Create an RGBA colour from the given HSV values in the range 0 to 1
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Walgelijk.Colors">
             <summary>
             Collection of predefined, commonly used colours
@@ -2467,6 +2483,11 @@
         <member name="M:Walgelijk.PrimitiveMeshes.GenerateCircle(System.Int32,System.Single)">
             <summary>
             Generates a centered circle vertex buffer
+            </summary>
+        </member>
+        <member name="M:Walgelijk.PrimitiveMeshes.GenerateQuad(Walgelijk.Vertex[],System.UInt32[],Walgelijk.Rect@,System.Int32)">
+            <summary>
+            Generate quad into the given arrays. Offset is the per-quad offset which is 4 for vertices and 6 for indices
             </summary>
         </member>
         <member name="T:Walgelijk.ActionRenderTask">
@@ -3710,6 +3731,16 @@
             Return signed distance from the edge of this rectangle to the given point 
             <br></br>
             <a href="https://iquilezles.org/articles/distfunctions2d/">https://iquilezles.org/articles/distfunctions2d/</a>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.Translate(System.Numerics.Vector2)">
+            <summary>
+            Return a copy of the rectangle but translated by the given amount
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.Expand(System.Single)">
+            <summary>
+            Return a copy of the rectangle expanded in all directions by the given amount
             </summary>
         </member>
         <member name="M:Walgelijk.Rect.ContainsPoint(System.Numerics.Vector2)">
@@ -5029,6 +5060,11 @@
             Returns a colour where the RGB components are random
             </summary>
         </member>
+        <member name="M:Walgelijk.Utilities.RandomHue(System.Single,System.Single,System.Single)">
+            <summary>
+            Returns a colour with a random hue
+            </summary>
+        </member>
         <member name="M:Walgelijk.Utilities.Clamp(System.Single,System.Single,System.Single)">
             <summary>
             Clamp a value within a range
@@ -5283,6 +5319,11 @@
             </summary>
         </member>
         <member name="M:Walgelijk.DrawBounds.#ctor(System.Numerics.Vector2,System.Numerics.Vector2,System.Boolean)">
+            <summary>
+            Construct draw bounds settings
+            </summary>
+        </member>
+        <member name="M:Walgelijk.DrawBounds.#ctor(Walgelijk.Rect,System.Boolean)">
             <summary>
             Construct draw bounds settings
             </summary>

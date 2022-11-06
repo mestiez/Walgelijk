@@ -266,8 +266,8 @@ public class TextMeshGenerator
             Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
             var rawCursor = new Vector2(cursor, -(line * Font.LineHeight * LineHeightMultiplier));
             var pos = new Vector3(
-                rawCursor.X + glyph.XOffset + kerning.Amount * KerningMultiplier, 
-                -glyph.YOffset + rawCursor.Y, 
+                rawCursor.X + glyph.XOffset + kerning.Amount * KerningMultiplier,
+                -glyph.YOffset + rawCursor.Y,
                 0);
 
             GlyphUVInfo uvInfo = new(glyph.X / width, glyph.Y / height, glyph.Width / width, glyph.Height / height);
@@ -322,9 +322,6 @@ public class TextMeshGenerator
             textBounds.MinY += textBoundsOffset;
             textBounds.MaxY += textBoundsOffset;
 
-            geometryBounds.MinY += textBoundsOffset;
-            geometryBounds.MaxY += textBoundsOffset;
-
             for (int i = 0; i < vertexIndex; i++)
                 vertices[i].Position.Y += textBoundsOffset;
         }
@@ -342,10 +339,11 @@ public class TextMeshGenerator
 
             textBounds.MinX -= textBoundsOffset;
             textBounds.MaxX -= textBoundsOffset;
-
-            geometryBounds.MinX -= textBoundsOffset;
-            geometryBounds.MaxX -= textBoundsOffset;
         }
+
+        geometryBounds = new Rect(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);
+        for (int i = 0; i < vertexIndex; i++)
+            geometryBounds = geometryBounds.StretchToContain(vertices[i].Position.XY());
 
         return new TextMeshResult
         {
@@ -363,8 +361,6 @@ public class TextMeshGenerator
                 new Vector2(uvInfo.X + uvInfo.Width * xFactor, uvInfo.Y + uvInfo.Height * yFactor),
                 color
                 );
-
-            geometryBounds = geometryBounds.StretchToContain(vertex.Position.XY());
 
             return vertex;
         }
