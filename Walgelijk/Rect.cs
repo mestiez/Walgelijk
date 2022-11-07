@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Numerics;
 
 namespace Walgelijk;
@@ -49,33 +50,46 @@ public struct Rect
     /// The top right of the rectangle
     /// </summary>
     [Newtonsoft.Json.JsonIgnore]
-    public readonly Vector2 TopRight => new(MaxX, MaxY);
+    public Vector2 TopRight
+    {
+        get => new(MaxX, MaxY);
+        set { MaxX = value.X; MaxY = value.Y; }
+    }
 
     /// <summary>
     /// The bottom right of the rectangle
     /// </summary>
     [Newtonsoft.Json.JsonIgnore]
-    public readonly Vector2 BottomRight => new(MaxX, MinY);
+    public Vector2 BottomRight
+    {
+        get => new(MaxX, MinY);
+        set { MaxX = value.X; MinY = value.Y; }
+    }
 
     /// <summary>
     /// The top left of the rectangle
     /// </summary>
     [Newtonsoft.Json.JsonIgnore]
-    public readonly Vector2 TopLeft => new(MinX, MaxY);
+    public Vector2 TopLeft
+    {
+        get => new(MinX, MaxY);
+        set { MinX = value.X; MaxY = value.Y; }
+    }
 
     /// <summary>
     /// The bottom left of the rectangle
     /// </summary>
     [Newtonsoft.Json.JsonIgnore]
-    public readonly Vector2 BottomLeft => new(MinX, MinY);
+    public Vector2 BottomLeft
+    {
+        get => new(MinX, MinY);
+        set { MinX = value.X; MinY = value.Y; }
+    }
 
     /// <summary>
     /// Returns the center of the rectangle. Calculated using (min + max) * 0.5
     /// </summary>
-    public readonly Vector2 GetCenter() => new(
-            (MinX + MaxX) * 0.5f,
-            (MinY + MaxY) * 0.5f
-            );
+    public readonly Vector2 GetCenter() => new((MinX + MaxX) * 0.5f,(MinY + MaxY) * 0.5f);
 
     /// <summary>
     /// Offset the rectangle such that the center is the given point
