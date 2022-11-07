@@ -419,6 +419,11 @@
             Main camera transform component
             </summary>
         </member>
+        <member name="F:Walgelijk.CameraSystem.SetMatricesPreRender">
+            <summary>
+            Set the correct matrices even before the RenderQueue is executed. This makes sure the Window point mapping functions don't lag behind 1 frame at the negligable cost of performance.
+            </summary>
+        </member>
         <member name="M:Walgelijk.CameraSystem.SetMainCamera(Walgelijk.Entity)">
             <summary>
             Set the main camera for this system
@@ -4510,6 +4515,71 @@
             </summary>
         </member>
         <member name="M:Walgelijk.Selection.SelectionManager`1.DeselectAll">
+            <summary>
+            Deselect everything
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Selection.MultiSelectionManager`1">
+            <summary>
+            Generic ordered selectable object manager
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Selection.MultiSelectionManager`1.Selectables">
+            <summary>
+            List of selectables
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Selection.MultiSelectionManager`1.SelectedObjects">
+            <summary>
+            Currently selected object
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Selection.MultiSelectionManager`1.ActiveObject">
+            <summary>
+            Currently active object
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Selection.MultiSelectionManager`1.HoveringObject">
+            <summary>
+            The object that is currently being hovered over
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.MultiSelectionManager`1.UpdateState(System.Numerics.Vector2,System.Boolean,System.Boolean)">
+            <summary>
+            Update the selection manager given a mouse position and whether it is pressed
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.MultiSelectionManager`1.GetAllIndicesAt(System.Numerics.Vector2)">
+            <summary>
+            Get all the selection indices (indices in the <see cref="F:Walgelijk.Selection.MultiSelectionManager`1.Selectables"/> list) that overlap the given point
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.MultiSelectionManager`1.UpdateOrder">
+            <summary>
+            Should call every time the list changes (something added, something removed)
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.MultiSelectionManager`1.IsSelected(`0)">
+            <summary>
+            Returns true if the given object is selected
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.MultiSelectionManager`1.IsHovering(`0)">
+            <summary>
+            Returns true if the mouse position (given in <see cref="!:UpdateState(Vector2, bool)"/>) is hovering over the given object
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.MultiSelectionManager`1.PullToFront(`0)">
+            <summary>
+            Pull the given object to the front
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.MultiSelectionManager`1.Select(`0,System.Boolean)">
+            <summary>
+            Select the given object
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.MultiSelectionManager`1.DeselectAll">
             <summary>
             Deselect everything
             </summary>

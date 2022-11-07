@@ -26,6 +26,11 @@ namespace Walgelijk
         /// </summary>
         public TransformComponent? MainCameraTransform { get; private set; }
 
+        /// <summary>
+        /// Set the correct matrices even before the RenderQueue is executed. This makes sure the Window point mapping functions don't lag behind 1 frame at the negligable cost of performance.
+        /// </summary>
+        public bool SetMatricesPreRender = true;
+
         private bool mainCameraSet;
 
         public override void Initialise()
@@ -81,6 +86,9 @@ namespace Walgelijk
             }
 
             RenderQueue.Add(renderTask, RenderOrder.CameraOperations);
+
+            if (SetMatricesPreRender)
+                renderTask.Execute(Graphics);
         }
 
         private void SetRenderTask()

@@ -101,7 +101,7 @@ public class OpenTKWindow : Window
     {
         if (texture.Width != texture.Height || texture.Width != 32)
             throw new Exception("The window icon resolution has to be 32x32");
-
+        
         const int res = 32;
         var icon = new byte[res * res * 4];
 
