@@ -7,7 +7,7 @@ namespace Walgelijk.OpenTK
 {
     public class InputHandler
     {
-        private InputState inputState = new();
+        public InputState InputState = new();
 
         public InputHandler(OpenTKWindow window)
         {
@@ -23,38 +23,38 @@ namespace Walgelijk.OpenTK
             GameWindow.MouseMove += MouseMove;
             GameWindow.MouseWheel += MouseWheel;
 
-            inputState.TextEntered = "";
+            InputState.TextEntered = "";
         }
 
         private void MouseWheel(MouseWheelEventArgs e)
         {
-            inputState.MouseScrollDelta = /*GameWindow.MouseState.ScrollDelta.Y */e.OffsetY;
+            InputState.MouseScrollDelta = /*GameWindow.MouseState.ScrollDelta.Y */e.OffsetY;
         }
 
         private void MouseMove(MouseMoveEventArgs e)
         {
             var n = new Vector2(e.X, e.Y);
-            inputState.WindowMouseDelta = n - inputState.WindowMousePosition;
-            inputState.WindowMousePosition = n;
+            InputState.WindowMouseDelta = n - InputState.WindowMousePosition;
+            InputState.WindowMousePosition = n;
         }
 
         private void MouseUp(MouseButtonEventArgs e)
         {
-            inputState.MouseButtonsUp.Add(TypeConverter.Convert(e.Button));
-            inputState.MouseButtonsHeld.Remove(TypeConverter.Convert(e.Button));
+            InputState.MouseButtonsUp.Add(TypeConverter.Convert(e.Button));
+            InputState.MouseButtonsHeld.Remove(TypeConverter.Convert(e.Button));
         }
 
         private void MouseDown(MouseButtonEventArgs e)
         {
-            inputState.MouseButtonsDown.Add(TypeConverter.Convert(e.Button));
-            inputState.MouseButtonsHeld.Add(TypeConverter.Convert(e.Button));
-            inputState.AnyMouseButton = true;
+            InputState.MouseButtonsDown.Add(TypeConverter.Convert(e.Button));
+            InputState.MouseButtonsHeld.Add(TypeConverter.Convert(e.Button));
+            InputState.AnyMouseButton = true;
         }
 
         private void KeyUp(KeyboardKeyEventArgs e)
         {
-            inputState.KeysUp.Add(TypeConverter.Convert(e.Key));
-            inputState.KeysHeld.Remove(TypeConverter.Convert(e.Key));
+            InputState.KeysUp.Add(TypeConverter.Convert(e.Key));
+            InputState.KeysHeld.Remove(TypeConverter.Convert(e.Key));
         }
 
         private void KeyDown(KeyboardKeyEventArgs e)
@@ -62,41 +62,40 @@ namespace Walgelijk.OpenTK
             switch (e.Key)
             {
                 case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Backspace:
-                    inputState.TextEntered += '\b';
+                    InputState.TextEntered += '\b';
                     break;
                 case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Enter:
                 case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.KeyPadEnter:
-                    inputState.TextEntered += '\n';
+                    InputState.TextEntered += '\n';
                     break;
                 case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Tab:
-                    inputState.TextEntered += '\t';
+                    InputState.TextEntered += '\t';
                     break;
             }
 
             if (e.IsRepeat) return;
 
-            inputState.KeysDown.Add(TypeConverter.Convert(e.Key));
-            inputState.KeysHeld.Add(TypeConverter.Convert(e.Key));
-            inputState.AnyKey = true;
+            InputState.KeysDown.Add(TypeConverter.Convert(e.Key));
+            InputState.KeysHeld.Add(TypeConverter.Convert(e.Key));
+            InputState.AnyKey = true;
         }
 
         private void TextEnter(TextInputEventArgs e)
         {
-            inputState.TextEntered += e.AsString;
+            InputState.TextEntered += e.AsString;
         }
 
         public void Reset()
         {
-            InputState.Reset(ref inputState);
-            inputState.MouseScrollDelta = 0;// GameWindow.MouseState.ScrollDelta.Y;
+            InputState.Reset(ref InputState);
+            InputState.MouseScrollDelta = 0;// GameWindow.MouseState.ScrollDelta.Y;
 
-            var n = Window.WindowToWorldPoint(inputState.WindowMousePosition);
-            inputState.WorldMouseDelta = n - inputState.WorldMousePosition;
-            inputState.WorldMousePosition = n;
+            var n = Window.WindowToWorldPoint(InputState.WindowMousePosition);
+            InputState.WorldMouseDelta = n - InputState.WorldMousePosition;
+            InputState.WorldMousePosition = n;
         }
 
         public OpenTKWindow Window { get; }
         public NativeWindow GameWindow => Window.window;
-        public InputState InputState { get => inputState; }
     }
 }

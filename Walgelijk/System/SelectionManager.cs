@@ -274,6 +274,8 @@ public class MultiSelectionManager<T> where T : class, ISelectable
     /// </summary>
     public void PullToFront(T obj)
     {
+        if (!Selectables.Any())
+            return;
         obj.RaycastOrder = Selectables.Max(static o => o.RaycastOrder) + 1;
         UpdateOrder();
     }
