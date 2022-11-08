@@ -4484,6 +4484,11 @@
             Update the selection manager given a mouse position and whether it is pressed
             </summary>
         </member>
+        <member name="M:Walgelijk.Selection.SelectionManager`1.Raycast(System.Numerics.Vector2,`0@)">
+            <summary>
+            Outputs the first instance of <typeparamref name="T"/> found at the given point. Returns true if successful.
+            </summary>
+        </member>
         <member name="M:Walgelijk.Selection.SelectionManager`1.GetAllIndicesAt(System.Numerics.Vector2)">
             <summary>
             Get all the selection indices (indices in the <see cref="F:Walgelijk.Selection.SelectionManager`1.Selectables"/> list) that overlap the given point
@@ -4554,6 +4559,11 @@
             Get all the selection indices (indices in the <see cref="F:Walgelijk.Selection.MultiSelectionManager`1.Selectables"/> list) that overlap the given point
             </summary>
         </member>
+        <member name="M:Walgelijk.Selection.MultiSelectionManager`1.Raycast(System.Numerics.Vector2,`0@)">
+            <summary>
+            Outputs the first instance of <typeparamref name="T"/> found at the given point. Returns true if successful.
+            </summary>
+        </member>
         <member name="M:Walgelijk.Selection.MultiSelectionManager`1.UpdateOrder">
             <summary>
             Should call every time the list changes (something added, something removed)
@@ -4577,6 +4587,11 @@
         <member name="M:Walgelijk.Selection.MultiSelectionManager`1.Select(`0,System.Boolean)">
             <summary>
             Select the given object
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Selection.MultiSelectionManager`1.Select(System.Collections.Generic.IEnumerable{`0},System.Boolean)">
+            <summary>
+            Select the given objects
             </summary>
         </member>
         <member name="M:Walgelijk.Selection.MultiSelectionManager`1.DeselectAll">

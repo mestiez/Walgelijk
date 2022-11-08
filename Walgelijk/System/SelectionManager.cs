@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace Walgelijk.Selection;
 
@@ -88,6 +90,27 @@ public class SelectionManager<T> where T : class, ISelectable
         if (isMouseButtonPressed)
             DeselectAll();
     }
+
+    /// <summary>
+    /// Outputs the first instance of <typeparamref name="T"/> found at the given point. Returns true if successful.
+    /// </summary>
+    public bool Raycast(Vector2 point, [NotNullWhen(true)] out T? hit)
+    {
+        for (int i = 0; i < Selectables.Count; i++)
+        {
+            var item = Selectables[i];
+            if (item.Disabled)
+                continue;
+            if (item.ContainsPoint(point))
+            {
+                hit = item;
+                return true;
+            }
+        }
+        hit = null;
+        return false;
+    }
+
 
     /// <summary>
     /// Get all the selection indices (indices in the <see cref="Selectables"/> list) that overlap the given point
@@ -249,6 +272,26 @@ public class MultiSelectionManager<T> where T : class, ISelectable
     }
 
     /// <summary>
+    /// Outputs the first instance of <typeparamref name="T"/> found at the given point. Returns true if successful.
+    /// </summary>
+    public bool Raycast(Vector2 point, [NotNullWhen(true)] out T? hit)
+    {
+        for (int i = 0; i < Selectables.Count; i++)
+        {
+            var item = Selectables[i];
+            if (item.Disabled)
+                continue;
+            if (item.ContainsPoint(point))
+            {
+                hit = item;
+                return true;
+            }
+        }
+        hit = null;
+        return false;
+    }
+
+    /// <summary>
     /// Should call every time the list changes (something added, something removed)
     /// </summary>
     public void UpdateOrder()
@@ -290,6 +333,18 @@ public class MultiSelectionManager<T> where T : class, ISelectable
             SelectedObjects.Clear();
 
         SelectedObjects.Add(obj);
+    } 
+    
+    /// <summary>
+    /// Select the given objects
+    /// </summary>
+    public void Select(IEnumerable<T> coll, bool additive)
+    {
+        ActiveObject = coll.First();
+        if (!additive)
+            SelectedObjects.Clear();
+
+        SelectedObjects.AddRange(coll);
     }
 
     /// <summary>
