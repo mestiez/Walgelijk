@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Walgelijk.Imgui;
 
@@ -51,6 +52,11 @@ public class Identity
     /// Min and max edges of every child in local space
     /// </summary>
     public Rect InnerContentBounds;
+
+    /// <summary>
+    /// Amount of time this identity has existed
+    /// </summary>
+    public TimeSpan Lifetime;
 
 #if false
     /// <summary>

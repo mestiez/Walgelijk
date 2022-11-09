@@ -2039,6 +2039,11 @@
             Loads texture from file
             </summary>
         </member>
+        <member name="M:Walgelijk.TextureLoader.FromBytes(System.ReadOnlySpan{System.Byte},System.Boolean,System.Boolean)">
+            <summary>
+            Loads texture from file
+            </summary>
+        </member>
         <member name="T:Walgelijk.ImportSettings">
             <summary>
             Import settings options
@@ -2077,6 +2082,11 @@
         <member name="M:Walgelijk.IImageDecoder.CanDecode(System.String@)">
             <summary>
             Returns true for files this decoder can decode based on their filename
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IImageDecoder.CanDecode(System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Returns true for files this decoder can decode based on its raw data
             </summary>
         </member>
         <member name="T:Walgelijk.DecodedImage">

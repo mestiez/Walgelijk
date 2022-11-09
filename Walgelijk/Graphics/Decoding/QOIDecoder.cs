@@ -139,6 +139,8 @@ public class QOIDecoder : IImageDecoder
 
     public bool CanDecode(in string filename) => filename.EndsWith(".qoi", StringComparison.InvariantCultureIgnoreCase);
 
+    public bool CanDecode(ReadOnlySpan<byte> raw) => raw.StartsWith("qoif"u8);
+
     /// <summary>Returns the width of the decoded image in pixels.</summary>
     public int Width => this.width;
 

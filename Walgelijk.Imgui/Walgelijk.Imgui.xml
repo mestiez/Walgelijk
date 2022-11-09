@@ -475,6 +475,11 @@
             Min and max edges of every child in local space
             </summary>
         </member>
+        <member name="F:Walgelijk.Imgui.Identity.Lifetime">
+            <summary>
+            Amount of time this identity has existed
+            </summary>
+        </member>
         <member name="F:Walgelijk.Imgui.Identity.InnerScrollOffset">
             <summary>
             How much to offset all children

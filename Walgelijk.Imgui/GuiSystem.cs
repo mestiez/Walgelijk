@@ -50,9 +50,13 @@ public class GuiSystem : Walgelijk.System
         Gui.Context.UnscaledTime = Time.SecondsSinceLoadUnscaled;
         ProcessRenderFrameInputState(Gui.Input);
 
+        var dt = TimeSpan.FromSeconds(Time.DeltaTime);
         foreach (var item in Gui.Context.Identities)
         {
-            item.Value.ExistedLastFrame = item.Value.Exists;
+            if (item.Value.ExistedLastFrame = item.Value.Exists)
+                item.Value.Lifetime += dt;
+            else
+                item.Value.Lifetime = TimeSpan.Zero;
             item.Value.Exists = false;
             item.Value.WantsToEatScrollInput = false;
         }

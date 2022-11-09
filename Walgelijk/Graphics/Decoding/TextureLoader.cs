@@ -73,6 +73,45 @@ public struct TextureLoader
 
         //return FromImageSharpImage(image, flipY, generateMipMaps);
     }
+
+    /// <summary>
+    /// Loads texture from file
+    /// </summary>
+    public static Texture FromBytes(ReadOnlySpan<byte> bytes, bool flipY = true, bool generateMipMaps = false)
+    {
+        foreach (var item in Decoders)
+        {
+            if (!item.CanDecode(bytes))
+                continue;
+
+            Texture? t = null;
+
+            try
+            {
+                var img = item.Decode(bytes, flipY);
+                t = new Texture(img.Width, img.Height, img.Colors, generateMipMaps, false);
+                t.FilterMode = Settings.FilterMode;
+                t.WrapMode = Settings.WrapMode;
+                return t;
+            }
+            catch (Exception e)
+            {
+                t?.DisposeLocalCopy();
+
+                if (Game.Main?.DevelopmentMode ?? true)
+                    throw;
+                Logger.Error("Image decoder failure:" + e.Message);
+                continue;
+            }
+        }
+
+        if (Game.Main?.DevelopmentMode ?? true)
+            throw new Exception("No suitable decoder found for raw texture data");
+        else
+            Logger.Error("No suitable decoder found for raw texture data");
+
+        return Texture.ErrorTexture;
+    }
 }
 
 
@@ -115,6 +154,11 @@ public interface IImageDecoder
     /// Returns true for files this decoder can decode based on their filename
     /// </summary>
     public bool CanDecode(in string filename);
+
+    /// <summary>
+    /// Returns true for files this decoder can decode based on its raw data
+    /// </summary>
+    public bool CanDecode(ReadOnlySpan<byte> raw);
 }
 
 /// <summary>
