@@ -18,7 +18,7 @@ public static class Localisation
     public static string Get(in string key, string? fallback = null)
     {
         var lang = CurrentLanguage ?? FallbackLanguage;
-        if (lang == null || !lang.Table.TryGetValue(key, out var value))
+        if (lang == null || (!lang.Table.TryGetValue(key, out var value) && !(FallbackLanguage?.Table.TryGetValue(key, out value) ?? false)))
             return fallback ?? key;
         return value;
     }
