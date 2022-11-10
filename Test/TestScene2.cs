@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
 using Walgelijk;
 using Walgelijk.Imgui;
+using Walgelijk.Localisation;
 using Walgelijk.SimpleDrawing;
 
 namespace TestWorld;
@@ -36,6 +38,7 @@ public struct TestScene2
         int fixedPerSecond = 0;
         Vector2 last;
         Vector2 target;
+        private readonly (string, Language)[] langs = Languages.All.Select(static l => (l.DisplayName, l)).ToArray();
 
         public override void Initialise()
         {
@@ -66,6 +69,17 @@ public struct TestScene2
 
             if (Input.IsKeyHeld(Key.Space))
                 Gui.Label("test", new Vector2(64), style: new Style() { Text = Colors.WhiteSmoke });
+
+            Draw.Order = new RenderOrder(120, 0);
+
+            Draw.Colour = Colors.White;
+            Draw.Text(Localisation.Get("greeting"), new Vector2(256, 256), Vector2.One);
+            Draw.Text(Localisation.Get("solitary"), new Vector2(256, 276), Vector2.One);
+            Draw.Image(Localisation.CurrentLanguage.Flag, new Rect(new Vector2(256 - 32, 266), new Vector2(48, 32)), ImageContainmentMode.Stretch);
+
+            Draw.Image(Resources.Load<Texture>(Localisation.Get("advert")), new Rect(new Vector2(612,256), new Vector2(256)), ImageContainmentMode.Stretch);
+
+            Gui.Dropdown<Language>(new Vector2(256, 32), new Vector2(256, 32), langs, ref Localisation.CurrentLanguage);
         }
 
         public override void FixedUpdate()

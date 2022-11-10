@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using Newtonsoft.Json;
+using System.Globalization;
 
 namespace Walgelijk.Localisation;
 
@@ -13,7 +14,6 @@ public static class Localisation
     /// Language to display
     /// </summary>
     public static Language? FallbackLanguage;
-    public static readonly HashSet<Language> Languages = new();
 
     public static string Get(in string key, string? fallback = null)
     {
@@ -30,7 +30,7 @@ public class Language
     public readonly CultureInfo Culture;
     public IReadableTexture Flag = Flags.Unknown;
 
-    public readonly Dictionary<string, string> Table = new();
+    public Dictionary<string, string> Table = new();
 
     public Language(string displayName, CultureInfo culture, IReadableTexture flag)
     {
@@ -40,6 +40,27 @@ public class Language
     }
 
     public override string ToString() => DisplayName;
+
+    public static Language Load(string filePath)
+    {
+        var data = File.ReadAllText(filePath);
+        var s = JsonConvert.DeserializeObject<Serialisable>(data);
+        return new Language(
+            s.DisplayName ?? Path.GetFileNameWithoutExtension(filePath),
+            string.IsNullOrWhiteSpace(s.Culture) ? CultureInfo.InvariantCulture : new CultureInfo(s.Culture),
+            string.IsNullOrWhiteSpace(s.Flag) ? Flags.Unknown : Resources.Load<Texture>(Path.GetFullPath(s.Flag, Path.GetDirectoryName(filePath) ?? Environment.CurrentDirectory), true))
+            {
+                Table = s.Table ?? new Dictionary<string, string>()
+            };
+    }
+
+    private struct Serialisable
+    {
+        public string? DisplayName;
+        public string? Culture;
+        public string? Flag;
+        public Dictionary<string, string>? Table;
+    }
 }
 
 public readonly struct Flags

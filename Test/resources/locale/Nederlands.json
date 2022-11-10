@@ -1,0 +1,9 @@
+{
+  "DisplayName": "Nederlands",
+  "Culture": "nl-NL",
+  "Flag": "nl.png",
+  "Table": {
+    "greeting": "Hallo! Dit is een begroeting :)",
+    "advert": "dutch-asset.png"
+  }
+}

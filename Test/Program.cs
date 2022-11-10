@@ -1,16 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using Walgelijk;
 using Walgelijk.Imgui;
+using Walgelijk.Localisation;
 using Walgelijk.OpenTK;
 using Walgelijk.ParticleSystem;
 using Walgelijk.SimpleDrawing;
 using Walgelijk.Video;
 
 namespace TestWorld;
+
+public readonly struct Languages
+{
+    public static readonly Language English = Resources.Load<Language>("English.json");
+    public static readonly Language Dutch = Resources.Load<Language>("Nederlands.json");
+
+    public static readonly Language[] All =
+    {
+        English,
+        Dutch
+    };
+}
 
 public class Program
 {
@@ -30,12 +44,14 @@ public class Program
 
         TextureLoader.Settings.FilterMode = FilterMode.Linear;
 
-        Resources.RegisterType(typeof(Gif), path => Gif.Load(path));
+        Resources.RegisterType(typeof(Language), Language.Load);
+        Resources.RegisterType(typeof(Gif), Gif.Load);
 
         Resources.SetBasePathForType<AudioData>("audio");
         Resources.SetBasePathForType<Prefab>("prefabs");
         Resources.SetBasePathForType<Texture>("textures");
         Resources.SetBasePathForType<Font>("fonts");
+        Resources.SetBasePathForType<Language>("locale");
 
         Assets.Register("qoitest", static asset => Resources.Load<Texture>("qoitest.qoi"));
         Assets.Register("resources/textures/pride.png", Assets.TextureFileProvider);
@@ -47,6 +63,9 @@ public class Program
         //    new SplashScreen.Logo(Resources.Load<Texture>("splash3.png"), new Vector2(180, 0), 3f),
 
         //}, () => game.Scene = TestScene2.Load(game) , SplashScreen.Transition.FadeInOut);
+
+        Localisation.FallbackLanguage = Languages.English;
+        Localisation.CurrentLanguage = Languages.English;
 
         game.Scene = TestScene2.Load(game);
 
