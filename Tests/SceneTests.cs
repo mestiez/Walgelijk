@@ -1,26 +1,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Net.Http.Headers;
 using Walgelijk;
-using Walgelijk.Localisation;
 
 namespace Tests;
-
-[TestClass]
-public class LocalisationTests
-{
-    [TestInitialize]
-    public void Initialise()
-    {
-        Localisation.Languages.Clear();
-        Localisation.FallbackLanguage =
-    }
-
-    [TestMethod]
-    public void SimpleTranslation()
-    {
-        
-    }
-}
 
 [TestClass]
 public class SceneTests
