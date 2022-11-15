@@ -5538,6 +5538,51 @@
             Reset the given <see cref="T:Walgelijk.InputState"/>
             </summary>
         </member>
+        <member name="T:Walgelijk.DefaultCursor">
+            <summary>
+            System cursor textures
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultCursor.Default">
+            <summary>
+            Default cursor 🖱
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultCursor.Pointer">
+            <summary>
+            When a thing is clickable 👆
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultCursor.Text">
+            <summary>
+            When editing text
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultCursor.Crosshair">
+            <summary>
+            ✙
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultCursor.Hand">
+            <summary>
+            🤚
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultCursor.HorizontalResize">
+            <summary>
+            ↔
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultCursor.VerticalResize">
+            <summary>
+            ↕
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultCursor.Invisible">
+            <summary>
+            Invisible cursor
+            </summary>
+        </member>
         <member name="T:Walgelijk.Window">
             <summary>
             A game window
@@ -5601,6 +5646,21 @@
         <member name="P:Walgelijk.Window.Graphics">
             <summary>
             Graphics functions
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.IsCursorLocked">
+            <summary>
+            If true, the cursor will be hidden and prevented from interacting with anything outside the window.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.CursorAppearance">
+            <summary>
+            If <see cref="P:Walgelijk.Window.CustomCursor"/> is null, this will be used to determine the appearance of the cursor.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.CustomCursor">
+            <summary>
+            If not null, the cursor will be rendered as the given texture
             </summary>
         </member>
         <member name="P:Walgelijk.Window.RenderQueue">

@@ -4,6 +4,45 @@ using System.Numerics;
 namespace Walgelijk;
 
 /// <summary>
+/// System cursor textures
+/// </summary>
+public enum DefaultCursor
+{
+    /// <summary>
+    /// Default cursor 🖱
+    /// </summary>
+    Default,
+    /// <summary>
+    /// When a thing is clickable 👆
+    /// </summary>
+    Pointer,
+    /// <summary>
+    /// When editing text
+    /// </summary>
+    Text,
+    /// <summary>
+    /// ✙
+    /// </summary>
+    Crosshair,
+    /// <summary>
+    /// 🤚
+    /// </summary>
+    Hand,
+    /// <summary>
+    /// ↔
+    /// </summary>
+    HorizontalResize,
+    /// <summary>
+    /// ↕
+    /// </summary>
+    VerticalResize,
+    /// <summary>
+    /// Invisible cursor
+    /// </summary>
+    Invisible
+}
+
+/// <summary>
 /// A game window
 /// </summary>
 public abstract class Window
@@ -57,7 +96,20 @@ public abstract class Window
     /// </summary>
     public abstract IGraphics Graphics { get; }
 
+    /// <summary>
+    /// If true, the cursor will be hidden and prevented from interacting with anything outside the window.
+    /// </summary>
     public abstract bool IsCursorLocked { get; set; }
+
+    /// <summary>
+    /// If <see cref="CustomCursor"/> is null, this will be used to determine the appearance of the cursor.
+    /// </summary>
+    public abstract DefaultCursor CursorAppearance { get; set; }
+
+    /// <summary>
+    /// If not null, the cursor will be rendered as the given texture
+    /// </summary>
+    public abstract IReadableTexture? CustomCursor { get; set; }
 
     /// <summary>
     /// The window render queue. It stores the render tasks and is emptied and executed every render frame.

@@ -50,6 +50,16 @@ public struct TestScene2
             if (Input.IsKeyReleased(Key.O))
                 Window.IsCursorLocked = !Window.IsCursorLocked;
 
+            if (Input.IsKeyReleased(Key.D1))
+                Window.CursorAppearance = DefaultCursor.Default;
+            if (Input.IsKeyReleased(Key.D2))
+                Window.CursorAppearance = DefaultCursor.Pointer;    
+            if (Input.IsKeyReleased(Key.D3))
+                Window.CursorAppearance = DefaultCursor.Crosshair;      
+            
+            if (Input.IsKeyReleased(Key.D4))
+                Window.CustomCursor = TexGen.Noise(64,64,0.7f, 2.354f, Colors.Magenta, Colors.Cyan);
+
             Draw.Reset();
             Draw.Order = new RenderOrder(50, 0);
             Draw.ScreenSpace = true;

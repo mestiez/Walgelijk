@@ -64,12 +64,79 @@ public class OpenTKWindow : Window
         set => window.Size = new global::OpenTK.Mathematics.Vector2i((int)value.X, (int)value.Y);
     }
     public override bool IsCursorLocked { get => window.CursorState == CursorState.Grabbed; set => window.CursorState = value ? CursorState.Grabbed : CursorState.Normal; }
+    public override DefaultCursor CursorAppearance
+    {
+        get => cursorAppearance;
+        set
+        {
+            if (cursorAppearance != value)
+                SetCursorAppearance(value);
+
+            customCursor = null;
+            cursorAppearance = value;
+        }
+    }
+
+    private void SetCursorAppearance(DefaultCursor value)
+    {
+        window.Cursor = value switch
+        {
+            DefaultCursor.Pointer => MouseCursor.Hand,
+            DefaultCursor.Text => MouseCursor.IBeam,
+            DefaultCursor.Crosshair => MouseCursor.Crosshair,
+            DefaultCursor.Hand => MouseCursor.Hand,
+            DefaultCursor.HorizontalResize => MouseCursor.HResize,
+            DefaultCursor.VerticalResize => MouseCursor.VResize,
+            _ => MouseCursor.Default,
+        };
+    }
+
+    public override IReadableTexture CustomCursor
+    {
+        get => customCursor;
+        set
+        {
+            if (customCursor == value)
+                return;
+
+            customCursor = value;
+
+            if (value == null)
+                SetCursorAppearance(cursorAppearance);
+            else
+            {
+                const bool flipY = true;
+                var icon = new byte[value.Width * value.Height * 4];
+
+                for (int i = 0; i < icon.Length; i += 4)
+                {
+                    getCoords(i / 4, out int x, out int y);
+                    var pixel = value.GetPixel(x, flipY ? value.Height - 1 - y : y);
+                    var bytes = pixel.ToBytes();
+                    icon[i + 0] = bytes.r;
+                    icon[i + 1] = bytes.g;
+                    icon[i + 2] = bytes.b;
+                    icon[i + 3] = bytes.a;
+                }
+
+                void getCoords(int index, out int x, out int y)
+                {
+                    x = index % value.Width;
+                    y = (int)MathF.Floor(index / value.Width);
+                }
+
+                window.Cursor = new MouseCursor(0, 0, value.Width, value.Height, icon);
+            }
+        }
+    }
 
     internal readonly NativeWindow window;
     internal readonly OpenTKWindowRenderTarget renderTarget;
     internal readonly InputHandler inputHandler;
     internal readonly OpenTKGraphics internalGraphics;
     private readonly Stopwatch clock = new();
+    private DefaultCursor cursorAppearance;
+    private IReadableTexture customCursor;
 
     public OpenTKWindow(string title, Vector2 position, Vector2 size)
     {
@@ -139,6 +206,8 @@ public class OpenTKWindow : Window
         window.FileDrop += OnFileDropped;
         window.FocusedChanged += FocusedChanged;
         clock.Start();
+
+        window.Cursor = MouseCursor.Default;
     }
 
     private void FocusedChanged(FocusedChangedEventArgs obj)
