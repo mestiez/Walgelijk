@@ -57,6 +57,8 @@ public abstract class Window
     /// </summary>
     public abstract IGraphics Graphics { get; }
 
+    public abstract bool IsCursorLocked { get; set; }
+
     /// <summary>
     /// The window render queue. It stores the render tasks and is emptied and executed every render frame.
     /// </summary>

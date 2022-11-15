@@ -47,6 +47,9 @@ public struct TestScene2
 
         public override void Update()
         {
+            if (Input.IsKeyReleased(Key.O))
+                Window.IsCursorLocked = !Window.IsCursorLocked;
+
             Draw.Reset();
             Draw.Order = new RenderOrder(50, 0);
             Draw.ScreenSpace = true;

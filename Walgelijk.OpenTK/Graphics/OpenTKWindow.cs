@@ -2,6 +2,7 @@
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Diagnostics;
 using System.Numerics;
@@ -62,6 +63,7 @@ public class OpenTKWindow : Window
         get => new(window.Size.X, window.Size.Y);
         set => window.Size = new global::OpenTK.Mathematics.Vector2i((int)value.X, (int)value.Y);
     }
+    public override bool IsCursorLocked { get => window.CursorState == CursorState.Grabbed; set => window.CursorState = value ? CursorState.Grabbed : CursorState.Normal; }
 
     internal readonly NativeWindow window;
     internal readonly OpenTKWindowRenderTarget renderTarget;
@@ -101,7 +103,7 @@ public class OpenTKWindow : Window
     {
         if (texture.Width != texture.Height || texture.Width != 32)
             throw new Exception("The window icon resolution has to be 32x32");
-        
+
         const int res = 32;
         var icon = new byte[res * res * 4];
 
@@ -135,7 +137,14 @@ public class OpenTKWindow : Window
         window.Move += OnWindowMove;
         window.Resize += OnWindowResize;
         window.FileDrop += OnFileDropped;
+        window.FocusedChanged += FocusedChanged;
         clock.Start();
+    }
+
+    private void FocusedChanged(FocusedChangedEventArgs obj)
+    {
+        if (!obj.IsFocused)
+            IsCursorLocked = false;
     }
 
     public override void LoopCycle()
