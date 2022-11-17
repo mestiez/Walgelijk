@@ -1117,56 +1117,6 @@
             Generate a new identity value
             </summary>
         </member>
-        <member name="T:Walgelijk.Prefab">
-            <summary>
-            Structure that holds an entity and its components. Meant for serialisation.
-            </summary>
-        </member>
-        <member name="F:Walgelijk.Prefab.EntityID">
-            <summary>
-            The entity
-            </summary>
-        </member>
-        <member name="F:Walgelijk.Prefab.Components">
-            <summary>
-            Attached components
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Prefab.#ctor(Walgelijk.Entity,System.Object[])">
-            <summary>
-            Construct a prefab
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Prefab.#ctor(Walgelijk.Entity,Walgelijk.Scene)">
-            <summary>
-            Construct a prefab from an existing entity
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Prefab.CopyTo(Walgelijk.Scene)">
-            <summary>
-            Unpack the prefab in the scene. This <b>will ignore the stored <see cref="F:Walgelijk.Prefab.EntityID"/></b> and assign a new ID instead
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Prefab.UnpackTo(Walgelijk.Scene)">
-            <summary>
-            Unpack the prefab in the scene. This will keep the stored ID and will fail when the ID collides.
-            </summary>
-        </member>
-        <member name="T:Walgelijk.PrefabLoader">
-            <summary>
-            Entity (de)serialisation utility struct
-            </summary>
-        </member>
-        <member name="M:Walgelijk.PrefabLoader.Load(System.String)">
-            <summary>
-            Deserialise a JSON representation of <see cref="T:Walgelijk.Prefab"/> from a file
-            </summary>
-        </member>
-        <member name="M:Walgelijk.PrefabLoader.Save(Walgelijk.Prefab,System.String)">
-            <summary>
-            Serialise a <see cref="T:Walgelijk.Prefab"/> to a file
-            </summary>
-        </member>
         <member name="T:Walgelijk.RequiresComponents">
             <summary>
             Attribute that lets the <see cref="T:Walgelijk.Scene"/> know that something needs something else.
@@ -1190,11 +1140,6 @@
         <member name="F:Walgelijk.Scene.ShouldBeDisposedOnSceneChange">
             <summary>
             Should the game dispose of this scene when it is made inactive by setting <see cref="P:Walgelijk.Game.Scene"/> to something else?
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Scene.ComponentDisposal">
-            <summary>
-            Manages the disposal of components
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.#ctor(Walgelijk.Game)">
@@ -1401,17 +1346,17 @@
         </member>
         <member name="M:Walgelijk.Scene.Dispose">
             <summary>
-            Unload all entities and components in the scene. You are responsible for registering custom <see cref="T:IComponentDisposer"/>s for your components.
-            </summary>
-        </member>
-        <member name="T:Walgelijk.ShapeRendererDisposer">
-            <summary>
-            Disposes of the vertex buffers in shape components, excluding the Quad component because it uses a shared primitive
+            Unload all entities and components in the scene.
             </summary>
         </member>
         <member name="T:Walgelijk.System">
             <summary>
             Holds game logic
+            </summary>
+        </member>
+        <member name="F:Walgelijk.System.Enabled">
+            <summary>
+            Should this be updated and rendered? 
             </summary>
         </member>
         <member name="P:Walgelijk.System.Scene">
@@ -5818,37 +5763,6 @@
         <member name="F:Walgelijk.WindowType.Fullscreen">
             <summary>
             Fullscreen
-            </summary>
-        </member>
-        <member name="T:ComponentDisposalManager">
-            <summary>
-            A container for <see cref="T:IComponentDisposer"/>s. It deals with disposing specific resources used by components.
-            </summary>
-        </member>
-        <member name="M:ComponentDisposalManager.RegisterDisposer(IComponentDisposer)">
-            <summary>
-            Add a disposer instance to the disposer collection
-            </summary>
-            <param name="disposer"></param>
-        </member>
-        <member name="M:ComponentDisposalManager.DisposeOf(System.Object)">
-            <summary>
-            Dispose of the component object using all registered components
-            </summary>
-        </member>
-        <member name="T:IComponentDisposer">
-            <summary>
-            A disposer for a component. Contains a method that is meant to free all resources used up by the given component. Register a custom component disposer using <see cref="T:ComponentDisposalManager"/>
-            </summary>
-        </member>
-        <member name="M:IComponentDisposer.DisposeOf(System.Object)">
-            <summary>
-            Dispose of the given component
-            </summary>
-        </member>
-        <member name="M:IComponentDisposer.CanDisposeOf(System.Object)">
-            <summary>
-            Returns true if the disposer can deal with the given object
             </summary>
         </member>
     </members>

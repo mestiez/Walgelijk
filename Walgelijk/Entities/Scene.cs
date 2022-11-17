@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -21,11 +22,6 @@ public sealed class Scene : IDisposable
     /// Should the game dispose of this scene when it is made inactive by setting <see cref="Game.Scene"/> to something else?
     /// </summary>
     public bool ShouldBeDisposedOnSceneChange = false;
-
-    /// <summary>
-    /// Manages the disposal of components
-    /// </summary>
-    public ComponentDisposalManager ComponentDisposal => components.DisposalManager;
 
     private readonly Dictionary<int, Entity> entities = new();
     private readonly IComponentCollection components = new BasicComponentCollection();
@@ -51,7 +47,6 @@ public sealed class Scene : IDisposable
     public Scene(Game game)
     {
         Game = game;
-        ComponentDisposal.RegisterDisposer(new ShapeRendererDisposer());
     }
 
     /// <summary>
@@ -200,9 +195,8 @@ public sealed class Scene : IDisposable
     public IEnumerable<Entity> GetEntitiesWithTag(Tag tag)
     {
         if (entitiesByTag.TryGetValue(tag, out var coll))
-            foreach (var entity in coll)
-                yield return entity;
-        yield break;
+            return coll;
+        return Array.Empty<Entity>();
     }
 
     /// <summary>
@@ -311,14 +305,16 @@ public sealed class Scene : IDisposable
     /// Get all components attached to the given entity
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public IEnumerable<object> GetAllComponentsFrom(Entity entity)
+    public IEnumerable GetAllComponentsFrom(Entity entity)
     {
-        foreach (var item in componentsToAdd)
-            if (item.Entity == entity)
-                yield return item.Component;
+        //foreach (var item in componentsToAdd)
+        //    if (item.Entity == entity)
+        //        yield return item.Component;
 
-        foreach (var component in components.GetAllComponentsFrom(entity))
-            yield return component;
+        //foreach (var component in components.GetAllComponentsFrom(entity))
+        //    yield return component;
+
+        return components.GetAllComponentsFrom(entity);
     }
 
     /// <summary>
@@ -327,12 +323,14 @@ public sealed class Scene : IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IEnumerable<EntityWith<T>> GetAllComponentsOfType<T>() where T : class
     {
-        foreach (var item in componentsToAdd)
-            if (item.Component is T typed)
-                yield return new EntityWith<T>(typed, item.Entity);
+        //foreach (var item in componentsToAdd)
+        //    if (item.Component is T typed)
+        //        yield return new EntityWith<T>(typed, item.Entity);
 
-        foreach (var item in components.GetAllComponentsOfType<T>())
-            yield return new EntityWith<T>(item.Component, item.Entity);
+        //foreach (var item in components.GetAllComponentsOfType<T>())
+        //    yield return new EntityWith<T>(item.Component, item.Entity);
+
+        return components.GetAllComponentsOfType<T>();
     }
 
 
@@ -513,13 +511,21 @@ public sealed class Scene : IDisposable
     {
         RequiresComponents[] requirements = ReflectionCache.GetAttributes<RequiresComponents, T>();
         if (requirements.Length == 0) return;
-        IEnumerable<object> existing = GetAllComponentsFrom(entity);
 
         foreach (var requirement in requirements)
             if (requirement.Types != null)
                 foreach (var type in requirement.Types)
-                    if (!(existing.Any(e => type.IsAssignableFrom(e.GetType()))))
+                {
+                    bool isOk = false;
+                    foreach (var e in GetAllComponentsFrom(entity))
+                        if (type.IsAssignableFrom(e.GetType()))
+                        {
+                            isOk = true;
+                            break;
+                        }
+                    if (!isOk)
                         throw new InvalidOperationException($"{component.GetType()} requires a {type}");
+                }
     }
 
     /// <summary>
@@ -640,7 +646,7 @@ public sealed class Scene : IDisposable
     }
 
     /// <summary>
-    /// Unload all entities and components in the scene. You are responsible for registering custom <see cref="IComponentDisposer"/>s for your components.
+    /// Unload all entities and components in the scene.
     /// </summary>
     public void Dispose()
     {

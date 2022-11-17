@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -17,8 +18,11 @@ public class BasicComponentCollection : IComponentCollection
     private readonly Dictionary<Entity, List<object>> byEntity = new();
     private readonly Dictionary<Entity, Dictionary<Type, object>> byEntityByType = new();
 
-    private readonly ComponentDisposalManager disposalManager = new();
-    public ComponentDisposalManager DisposalManager => disposalManager;
+    private void DisposeOf<T>(T obj)
+    {
+        if (obj is global::System.IDisposable disposable)
+            disposable.Dispose();
+    }
 
     /// <summary>
     /// Add a component to the collection
@@ -144,7 +148,7 @@ public class BasicComponentCollection : IComponentCollection
             for (int i = l.Count - 1; i >= 0; i--)
                 if (l[i].Entity == entity)
                 {
-                    DisposalManager.DisposeOf(l[i].Component);
+                    DisposeOf(l[i].Component);
                     l.RemoveAt(i);
                 }
         }
@@ -174,10 +178,10 @@ public class BasicComponentCollection : IComponentCollection
         bool success = true;
 
         foreach (var item in allComponents)
-            if (shouldRemove(item))
-                DisposalManager.DisposeOf(item.Component);
+            if (ShouldRemove(item, type, entity))
+                DisposeOf(item.Component);
 
-        success &= allComponents.RemoveWhere(shouldRemove) > 0;
+        success &= allComponents.RemoveWhere(t => ShouldRemove(t, type, entity)) > 0;
 
         if (byType.ContainsKey(type))
         {
@@ -210,11 +214,9 @@ public class BasicComponentCollection : IComponentCollection
             throw new Exception("FAILED TO REMOVE");
 
         return success;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool shouldRemove(EntityWithAnything t) =>
-            type.IsInstanceOfType(t.Component) && t.Entity == entity;
     }
+
+    private static bool ShouldRemove(EntityWithAnything t, Type type, Entity entity) => type.IsInstanceOfType(t.Component) && t.Entity == entity;
 
     private bool TryCreateNewTypeList(Type type, out List<EntityWithAnything>? list)
     {

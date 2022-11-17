@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Walgelijk
 {
@@ -6,7 +7,7 @@ namespace Walgelijk
     /// <summary>
     /// Basic rectangle renderer data
     /// </summary>
-    public class RectangleShapeComponent : ShapeComponent
+    public class RectangleShapeComponent : ShapeComponent, IDisposable
     {
         private Vector2 size = Vector2.One;
         private Color color = Color.White;
@@ -107,6 +108,11 @@ namespace Walgelijk
                 3u,
                 2u,
             };
+        }
+
+        public void Dispose()
+        {
+            VertexBuffer.Dispose();
         }
     }
 }

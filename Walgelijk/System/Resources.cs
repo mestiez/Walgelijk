@@ -40,7 +40,6 @@ public static class Resources
         RegisterType(typeof(string), File.ReadAllText);
         RegisterType(typeof(string[]), File.ReadAllLines);
         RegisterType(typeof(byte[]), File.ReadAllBytes);
-        RegisterType(typeof(Prefab), (string path) => PrefabLoader.Load(path));
     }
 
     /// <summary>

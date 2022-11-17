@@ -147,7 +147,7 @@ namespace Walgelijk
                 return "No matching entity found";
 
             var components = Game.Scene.GetAllComponentsFrom(entityID);
-            return string.Join("\n", components.Select(s => ">" + s.GetType().Name));
+            return string.Join("\n", components.OfType<object>().Select(s => ">" + s.GetType().Name));
         }
 
         [Command(HelpString = "Remove a component from an entity. Expects an integer and a string")]
@@ -159,7 +159,7 @@ namespace Walgelijk
             if (!Game.Scene.HasEntity(entityID))
                 return CommandResult.Error("No matching entity found");
 
-            var component = Game.Scene.GetAllComponentsFrom(entityID).FirstOrDefault(s => s.GetType().Name == componentType);
+            var component = Game.Scene.GetAllComponentsFrom(entityID).OfType<object>().FirstOrDefault(s => s.GetType().Name == componentType);
             if (component == null)
                 return CommandResult.Error($"{entityID} has no component that matches \"{componentType}\"");
             var type = component.GetType();

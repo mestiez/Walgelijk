@@ -16,6 +16,4 @@ public interface IComponentCollection
     bool RemoveComponentOfType(Type type, Entity entity);
     bool RemoveComponentOfType<T>(Entity entity);
     bool TryGetComponentFrom<T>(Entity entity, [NotNullWhen(true)] out T? component) where T : class;
-
-    ComponentDisposalManager DisposalManager { get; }
 }

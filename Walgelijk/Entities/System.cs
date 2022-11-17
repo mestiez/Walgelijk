@@ -9,6 +9,11 @@
         internal bool ExecutionOrderChanged { get; set; }
 
         /// <summary>
+        /// Should this be updated and rendered? 
+        /// </summary>
+        public bool Enabled = true;
+
+        /// <summary>
         /// Containing scene
         /// </summary>
         public Scene Scene { get; internal set; }
@@ -106,9 +111,5 @@
         /// Run post rendering code
         /// </summary>
         public virtual void PostRender() { }
-
-        public interface IDisposable
-        {
-        }
     }
 }

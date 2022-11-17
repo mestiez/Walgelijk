@@ -48,7 +48,6 @@ public class Program
         Resources.RegisterType(typeof(Gif), Gif.Load);
 
         Resources.SetBasePathForType<AudioData>("audio");
-        Resources.SetBasePathForType<Prefab>("prefabs");
         Resources.SetBasePathForType<Texture>("textures");
         Resources.SetBasePathForType<Font>("fonts");
         Resources.SetBasePathForType<Language>("locale");

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using static Walgelijk.TextMeshGenerator;
 
@@ -7,7 +8,7 @@ namespace Walgelijk
     /// <summary>
     /// IShapeComponent that holds the information necessary to draw text
     /// </summary>
-    public class TextComponent : ShapeComponent
+    public class TextComponent : ShapeComponent, IDisposable
     {
         private string displayString;
         private Font font;
@@ -223,6 +224,11 @@ namespace Walgelijk
             LocalBoundingBox = LastGenerationResult.LocalBounds;
             VertexBuffer.AmountOfIndicesToRender = LastGenerationResult.IndexCount;
             VertexBuffer.HasChanged = true;
+        }
+
+        public void Dispose()
+        {
+            VertexBuffer.Dispose();
         }
     }
 }
