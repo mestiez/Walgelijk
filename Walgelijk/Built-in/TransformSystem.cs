@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 
@@ -12,24 +13,23 @@ namespace Walgelijk
         /// <summary>
         /// Should the system use multithreading to calculate transform matrices?
         /// </summary>
-        public bool Multithreading = false;
+        //public bool Multithreading = false;
 
         /// <summary>
         /// Enable transform parenting?
         /// </summary>
         public bool Parenting = true;
 
+        private readonly EntityWith<TransformComponent>[] transforms = new EntityWith<TransformComponent>[4096];
+
         public override void Update()
         {
-            var pairs = Scene.GetAllComponentsOfType<TransformComponent>();
+            var pairs = Scene.GetAllComponentsOfType(transforms);
 
-            if (Multithreading)
-                Parallel.ForEach(pairs, calc);
-            else
-                foreach (var pair in pairs)
-                    calc(pair);
-
-            void calc(EntityWith<TransformComponent> pair)
+            //if (Multithreading)
+            //    Parallel.ForEach(pairs, calc);
+            //else
+            foreach (var pair in pairs)
             {
                 if (Parenting)
                     CascadeMatrixCalculation(pair, pairs);
@@ -47,7 +47,7 @@ namespace Walgelijk
                 transform.RecalculateModelMatrix(Matrix3x2.Identity);
         }
 
-        private void CascadeMatrixCalculation(EntityWith<TransformComponent> current, IEnumerable<EntityWith<TransformComponent>> collection, TransformComponent? up = null)
+        private void CascadeMatrixCalculation(EntityWith<TransformComponent> current, ReadOnlySpan<EntityWith<TransformComponent>> collection, TransformComponent? up = null)
         {
             var transform = current.Component;
             bool shouldRecalculate = !transform.IsMatrixCached;

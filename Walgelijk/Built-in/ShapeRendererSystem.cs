@@ -9,9 +9,7 @@ namespace Walgelijk
     {
         public override void Render()
         {
-            var basicShapes = Scene.GetAllComponentsOfType<ShapeComponent>();
-
-            foreach (var pair in basicShapes)
+            foreach (var pair in Scene.GetAllComponentsOfType<ShapeComponent>())
             {
                 RenderShape(pair);
             }

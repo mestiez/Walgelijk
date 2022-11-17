@@ -812,11 +812,6 @@
             The system responsible for processing transforms
             </summary>
         </member>
-        <member name="F:Walgelijk.TransformSystem.Multithreading">
-            <summary>
-            Should the system use multithreading to calculate transform matrices?
-            </summary>
-        </member>
         <member name="F:Walgelijk.TransformSystem.Parenting">
             <summary>
             Enable transform parenting?
