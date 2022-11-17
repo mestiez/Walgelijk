@@ -119,6 +119,11 @@
             Volume from 0 to 1 (inclusive) that the UI audio should be played at
             </summary>
         </member>
+        <member name="F:Walgelijk.Imgui.Gui.SetCursorStack">
+            <summary>
+            Set the window cursor to the computed result of the <see cref="F:Walgelijk.Window.CursorStack"/>. This can also be done manually every update.
+            </summary>
+        </member>
         <member name="M:Walgelijk.Imgui.Gui.PlayHoverSound">
             <summary>
             Play hover sound
@@ -478,6 +483,11 @@
         <member name="F:Walgelijk.Imgui.Identity.Lifetime">
             <summary>
             Amount of time this identity has existed
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Imgui.Identity.Cursor">
+            <summary>
+            Cursor to set when it is hovering over the control
             </summary>
         </member>
         <member name="F:Walgelijk.Imgui.Identity.InnerScrollOffset">

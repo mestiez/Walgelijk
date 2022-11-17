@@ -22,6 +22,9 @@ namespace Walgelijk.Imgui.Controls
                 value = !value;
 
             State state = Gui.GetStateFor(id);
+
+            id.Cursor = ImguiUtils.GetCursorForState(state);
+
             Gui.PrepareDrawer();
             Draw.Colour = Gui.GetBackgroundColour(style, state);
             Draw.OutlineWidth = Gui.GetOutlineWidth(style, state);

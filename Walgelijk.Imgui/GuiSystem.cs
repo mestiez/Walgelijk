@@ -118,6 +118,8 @@ public class GuiSystem : Walgelijk.System
 
         foreach (var item in Gui.Context.Identities)
         {
+            if (item.Value.Cursor.HasValue && item.Value.Exists)
+                Window.CursorStack.SetCursor(item.Value.Cursor.Value, item.Key);
             if (item.Value.ChildCount > 0)
                 PositioningUtils.ForceCalculateInnerBounds(Gui.Context, item.Value, out _, out _);
         }
@@ -172,6 +174,9 @@ public class GuiSystem : Walgelijk.System
                     Draw.Quad(rect.BottomLeft, rect.GetSize());
             }
         }
+
+        if (Gui.SetCursorStack)
+            Window.CursorAppearance = Window.CursorStack.ProcessRequests();
     }
 
     public override void Update()

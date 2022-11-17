@@ -58,6 +58,11 @@ public class Identity
     /// </summary>
     public TimeSpan Lifetime;
 
+    /// <summary>
+    /// Cursor to set when it is hovering over the control
+    /// </summary>
+    public DefaultCursor? Cursor;
+
 #if false
     /// <summary>
     /// The calculated scroll bounds. (lowerX, upperX, lowerY, upperY)

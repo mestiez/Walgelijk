@@ -19,6 +19,9 @@ namespace Walgelijk.Imgui.Controls
             Gui.ProcessButtonLike(id, rect, out var result, out wasPressed, out wasReleased, true);
 
             State state = Gui.GetStateFor(id);
+
+            id.Cursor = ImguiUtils.GetCursorForState(state);
+
             Gui.PrepareDrawer();
             Draw.Colour = Gui.GetBackgroundColour(style, state);
             Draw.OutlineWidth = Gui.GetOutlineWidth(style, state);

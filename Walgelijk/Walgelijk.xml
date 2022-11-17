@@ -5398,6 +5398,66 @@
             Smoothstep function
             </summary>
         </member>
+        <member name="T:Walgelijk.CursorStack">
+            <summary>
+            Controls the cursor with a last-come-first-serve priority
+            </summary>
+        </member>
+        <member name="F:Walgelijk.CursorStack.Fallthrough">
+            <summary>
+            The cursor to consider as "overwritable"
+            </summary>
+        </member>
+        <member name="P:Walgelijk.CursorStack.ComputedCursor">
+            <summary>
+            The final computer cursor appearance
+            </summary>
+        </member>
+        <member name="T:Walgelijk.DefaultCursor">
+            <summary>
+            System cursor textures
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultCursor.Default">
+            <summary>
+            Default cursor 🖱
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultCursor.Pointer">
+            <summary>
+            When a thing is clickable 👆
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultCursor.Text">
+            <summary>
+            When editing text
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultCursor.Crosshair">
+            <summary>
+            ✙
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultCursor.Hand">
+            <summary>
+            🤚
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultCursor.HorizontalResize">
+            <summary>
+            ↔
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultCursor.VerticalResize">
+            <summary>
+            ↕
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DefaultCursor.Invisible">
+            <summary>
+            Invisible cursor
+            </summary>
+        </member>
         <member name="T:Walgelijk.DrawBounds">
             <summary>
             Drawing bounds structure
@@ -5543,56 +5603,6 @@
             Reset the given <see cref="T:Walgelijk.InputState"/>
             </summary>
         </member>
-        <member name="T:Walgelijk.DefaultCursor">
-            <summary>
-            System cursor textures
-            </summary>
-        </member>
-        <member name="F:Walgelijk.DefaultCursor.Default">
-            <summary>
-            Default cursor 🖱
-            </summary>
-        </member>
-        <member name="F:Walgelijk.DefaultCursor.Pointer">
-            <summary>
-            When a thing is clickable 👆
-            </summary>
-        </member>
-        <member name="F:Walgelijk.DefaultCursor.Text">
-            <summary>
-            When editing text
-            </summary>
-        </member>
-        <member name="F:Walgelijk.DefaultCursor.Crosshair">
-            <summary>
-            ✙
-            </summary>
-        </member>
-        <member name="F:Walgelijk.DefaultCursor.Hand">
-            <summary>
-            🤚
-            </summary>
-        </member>
-        <member name="F:Walgelijk.DefaultCursor.HorizontalResize">
-            <summary>
-            ↔
-            </summary>
-        </member>
-        <member name="F:Walgelijk.DefaultCursor.VerticalResize">
-            <summary>
-            ↕
-            </summary>
-        </member>
-        <member name="F:Walgelijk.DefaultCursor.Invisible">
-            <summary>
-            Invisible cursor
-            </summary>
-        </member>
-        <member name="T:Walgelijk.CursorStack">
-            <summary>
-            Controls the cursor with a last-come-first-serve priority
-            </summary>
-        </member>
         <member name="T:Walgelijk.Window">
             <summary>
             A game window
@@ -5726,6 +5736,11 @@
         <member name="M:Walgelijk.Window.Close">
             <summary>
             Close the window and stop the game loop
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Window.CursorStack">
+            <summary>
+            Provides a way for many sources to request a cursor appearance with a defined order of priority (last come first serve)
             </summary>
         </member>
         <member name="M:Walgelijk.Window.ScreenToWindowPoint(System.Numerics.Vector2)">

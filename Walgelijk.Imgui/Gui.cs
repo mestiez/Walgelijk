@@ -54,6 +54,11 @@ public static class Gui
     /// </summary>
     public static float SoundVolume = 1;
 
+    /// <summary>
+    /// Set the window cursor to the computed result of the <see cref="Window.CursorStack"/>. This can also be done manually every update.
+    /// </summary>
+    public static bool SetCursorStack = true;
+
     internal static Sound? SoundToPlay;
 
     /// <summary>

@@ -9,7 +9,7 @@ namespace Walgelijk.Imgui
             return new Rect(bounds.Position.X, bounds.Position.Y, bounds.Position.X + bounds.Size.X, bounds.Position.Y + bounds.Size.Y);
         }
 
-        public static bool ContainsPoint(this ref DrawBounds bounds, Vector2 point)
+        public static bool ContainsPoint(this in DrawBounds bounds, Vector2 point)
         {
             if (!bounds.Enabled)
                 return false;

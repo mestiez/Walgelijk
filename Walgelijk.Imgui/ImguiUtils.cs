@@ -14,6 +14,17 @@ namespace Walgelijk.Imgui
             return c;
         }
 
+        public static DefaultCursor GetCursorForState(State state)
+        {
+            return state switch
+            {
+                State.Inactive => DefaultCursor.Default,
+                State.Hover => DefaultCursor.Pointer,
+                State.Active => DefaultCursor.Pointer,
+                _ => DefaultCursor.Default,
+            };
+        }
+
         /// <summary>
         /// Makes sure the given size vector is not negative, NaN, or infinite
         /// </summary>

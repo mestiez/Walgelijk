@@ -43,6 +43,9 @@ namespace Walgelijk.Imgui.Controls
             PositioningUtils.ApplyRaycastRect(id, rect, true);
 
             State state = Gui.GetStateFor(id);
+
+            id.Cursor = ImguiUtils.GetCursorForState(state);
+
             Gui.PrepareDrawer();
             Draw.Colour = Gui.GetBackgroundColour(style, state);
             Draw.OutlineWidth = Gui.GetOutlineWidth(style, state);

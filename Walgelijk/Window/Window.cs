@@ -1,83 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Walgelijk;
-
-/// <summary>
-/// System cursor textures
-/// </summary>
-public enum DefaultCursor
-{
-    /// <summary>
-    /// Default cursor 🖱
-    /// </summary>
-    Default,
-    /// <summary>
-    /// When a thing is clickable 👆
-    /// </summary>
-    Pointer,
-    /// <summary>
-    /// When editing text
-    /// </summary>
-    Text,
-    /// <summary>
-    /// ✙
-    /// </summary>
-    Crosshair,
-    /// <summary>
-    /// 🤚
-    /// </summary>
-    Hand,
-    /// <summary>
-    /// ↔
-    /// </summary>
-    HorizontalResize,
-    /// <summary>
-    /// ↕
-    /// </summary>
-    VerticalResize,
-    /// <summary>
-    /// Invisible cursor
-    /// </summary>
-    Invisible
-}
-
-/// <summary>
-/// Controls the cursor with a last-come-first-serve priority
-/// </summary>
-public class CursorStack
-{
-    public class Requester
-    {
-        public int Id;
-        public DefaultCursor Cursor;
-
-        public Requester(int id, DefaultCursor cursor)
-        {
-            Id = id;
-            Cursor = cursor;
-        }
-    }
-
-    //public readonly OrderedDictionary<int, Requester> Requests = new(); //kut
-
-    //public void SetCursor(DefaultCursor cursor, [CallerLineNumber] int callId = -1, int optionalid = 0)
-    //{
-    //    var id = HashCode.Combine(callId, optionalid);
-
-    //    var r = Requests.Try(v => v.Id == id);
-    //    if (r == null)
-    //    {
-    //        r = new Requester(id, cursor);
-    //        Requests.Add(r);
-    //    }
-    //}
-}
 
 /// <summary>
 /// A game window
@@ -199,6 +126,11 @@ public abstract class Window
     /// Close the window and stop the game loop
     /// </summary>
     public abstract void Close();
+
+    /// <summary>
+    /// Provides a way for many sources to request a cursor appearance with a defined order of priority (last come first serve)
+    /// </summary>
+    public readonly CursorStack CursorStack = new();
 
     /// <summary>
     /// Turn screen coordinates into window coordinates

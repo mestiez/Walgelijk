@@ -40,6 +40,9 @@ namespace Walgelijk.Imgui.Controls
             float progressRatio = Utilities.Clamp(Utilities.MapRange(min, max, 0, 1, value));
 
             State state = Gui.GetStateFor(id);
+
+            id.Cursor = ImguiUtils.GetCursorForState(state);
+
             float roundness = Gui.GetRoundness(style, state);
 
             Gui.PrepareDrawer();

@@ -9,7 +9,7 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Authors>mestiez</Authors>
 		<Company>Studio Minus</Company>
-		<Version>0.10.17</Version>
+		<Version>0.11.0</Version>
 		<Nullable>enable</Nullable>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<DebugType>embedded</DebugType>
