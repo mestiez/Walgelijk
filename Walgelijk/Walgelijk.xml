@@ -3354,6 +3354,11 @@
             Get a vertex attribute array. Returns null if nothing is found. This is a reference value.
             </summary>
         </member>
+        <member name="M:Walgelijk.VertexBuffer.GetAttribute``1(System.Int32)">
+            <summary>
+            Get a vertex attribute array. Returns null if nothing is found. This is a reference value.
+            </summary>
+        </member>
         <member name="P:Walgelijk.VertexBuffer.ExtraAttributeCount">
             <summary>
             Returns the amount of extra attributes. The total amount of attributes equals this value + 3
@@ -5581,6 +5586,11 @@
         <member name="F:Walgelijk.DefaultCursor.Invisible">
             <summary>
             Invisible cursor
+            </summary>
+        </member>
+        <member name="T:Walgelijk.CursorStack">
+            <summary>
+            Controls the cursor with a last-come-first-serve priority
             </summary>
         </member>
         <member name="T:Walgelijk.Window">

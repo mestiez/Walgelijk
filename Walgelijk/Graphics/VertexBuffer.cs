@@ -151,6 +151,22 @@ namespace Walgelijk
             return extraAttributes[location];
         }
 
+        /// <summary>
+        /// Get a vertex attribute array. Returns null if nothing is found. This is a reference value.
+        /// </summary>
+        public T? GetAttribute<T>(int location) where T : VertexAttributeArray
+        {
+            if (extraAttributes == null)
+                return null;
+
+            if (location < 0 || location >= ExtraAttributeCount)
+                return null;
+
+            if (extraAttributes[location] is T vv)
+                return vv;
+            return null;
+        }
+
         public void Dispose()
         {
             Game.Main?.Window?.Graphics?.Delete(this);

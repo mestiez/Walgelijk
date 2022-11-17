@@ -64,19 +64,19 @@ public class CursorStack
         }
     }
 
-    public readonly OrderedDictionary<int, Requester> Requests = new(); //kut
+    //public readonly OrderedDictionary<int, Requester> Requests = new(); //kut
 
-    public void SetCursor(DefaultCursor cursor, [CallerLineNumber] int callId = -1, int optionalid = 0)
-    {
-        var id = HashCode.Combine(callId, optionalid);
+    //public void SetCursor(DefaultCursor cursor, [CallerLineNumber] int callId = -1, int optionalid = 0)
+    //{
+    //    var id = HashCode.Combine(callId, optionalid);
 
-        var r = Requests.Try(v => v.Id == id);
-        if (r == null)
-        {
-            r = new Requester(id, cursor);
-            Requests.Add(r);
-        }
-    }
+    //    var r = Requests.Try(v => v.Id == id);
+    //    if (r == null)
+    //    {
+    //        r = new Requester(id, cursor);
+    //        Requests.Add(r);
+    //    }
+    //}
 }
 
 /// <summary>

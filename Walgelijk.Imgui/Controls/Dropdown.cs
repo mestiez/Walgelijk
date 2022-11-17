@@ -134,6 +134,8 @@ namespace Walgelijk.Imgui.Controls
                     break;
                 }
 
+            if (index == -1)
+                index = 0;
             if (Process(topLeft, size, options.Select(static s => s.Item1), ref index, maxItemsBeforeScrolling, style, site, optionalId))
             {
                 selected = options[index].Item2;
