@@ -24,6 +24,12 @@ public class Compositor
         ForceUpdateTargets = true;
     }
 
+    public void Reset()
+    {
+        passes.Clear();
+        ForceUpdateTargets = true;
+    }
+
     public void AddPass(CompositorPass pass)
     {
         if (passes.Contains(pass))
@@ -97,6 +103,11 @@ public class CompositorPass : IDisposable
         if (rt != null)
         {
             previousRt = graphics.CurrentTarget;
+            if (previousRt != null)
+            {
+                rt.ViewMatrix = previousRt.ViewMatrix;
+                rt.ProjectionMatrix = previousRt.ProjectionMatrix;
+            }
             graphics.CurrentTarget = rt;
 
             graphics.Clear(Colors.Transparent);
