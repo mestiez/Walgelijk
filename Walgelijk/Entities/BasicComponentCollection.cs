@@ -18,9 +18,14 @@ public class BasicComponentCollection : IComponentCollection
     private readonly Dictionary<Entity, List<object>> byEntity = new();
     private readonly Dictionary<Entity, Dictionary<Type, object>> byEntityByType = new();
 
-    private void DisposeOf<T>(T obj)
+    private Dictionary<Type, object> entityWithCache = new Dictionary<Type, object>();
+
+    private void DisposeOf<T>(T obj) where T : class
     {
-        if (obj is global::System.IDisposable disposable)
+        if (entityWithCache.TryGetValue(obj.GetType(), out var list) && list is List<EntityWith<T>> bb)
+            bb.Clear();
+
+        if (obj is IDisposable disposable)
             disposable.Dispose();
     }
 
@@ -75,9 +80,34 @@ public class BasicComponentCollection : IComponentCollection
             TryCreateNewTypeList(t, out list);
 
         if (list != null)
-            foreach (var item in list)
-                if (item.Component is T typed)
-                    yield return new EntityWith<T>(typed, item.Entity);
+        {
+            if (!entityWithCache.TryGetValue(t, out var vv))
+            {
+                var result = new List<EntityWith<T>>(list.Count);
+                vv = result;
+                entityWithCache.Add(t, result);
+            }
+
+            if (vv is not List<EntityWith<T>> final)
+                throw new Exception("List in BasicComponentCollection is not an EntityWith<T> list");
+
+            if (final.Count != list.Count)
+            {
+                final.Clear();
+                foreach (var item in list)
+                    final.Add(new EntityWith<T>((T)item.Component, item.Entity));
+            }
+            else
+            {
+                int i = 0;
+                foreach (var item in list)
+                    final[i++] = new EntityWith<T>((T)item.Component, item.Entity);
+            }
+
+            return final;
+        }
+
+        return Array.Empty<EntityWith<T>>();
     }
 
     /// <summary>
@@ -110,9 +140,9 @@ public class BasicComponentCollection : IComponentCollection
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IEnumerable GetAllComponentsFrom(Entity entity)
     {
-        if (byEntity.ContainsKey(entity))
-            foreach (var a in byEntity[entity])
-                yield return a;
+        if (byEntity.TryGetValue(entity, out var value))
+            return value;
+        return Array.Empty<object>();
     }
 
     /// <summary>
