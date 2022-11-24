@@ -12,6 +12,7 @@ public class QOIDecoder : IImageDecoder
     private bool linearColorspace;
     private int[]? pixels = null;
     private static readonly int[] index = new int[64];
+    private static readonly byte[] magic = "qoif".ToByteArray();
 
     /// <summary>Decodes the given QOI file contents.</summary>
     /// <remarks>Returns <see langword="true" /> if decoded successfully.</remarks>
@@ -139,7 +140,7 @@ public class QOIDecoder : IImageDecoder
 
     public bool CanDecode(in string filename) => filename.EndsWith(".qoi", StringComparison.InvariantCultureIgnoreCase);
 
-    public bool CanDecode(ReadOnlySpan<byte> raw) => raw.StartsWith("qoif"u8);
+    public bool CanDecode(ReadOnlySpan<byte> raw) => raw.StartsWith(magic);
 
     /// <summary>Returns the width of the decoded image in pixels.</summary>
     public int Width => this.width;

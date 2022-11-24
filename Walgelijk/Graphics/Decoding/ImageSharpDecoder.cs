@@ -11,17 +11,17 @@ public class ImageSharpDecoder : IImageDecoder
 {
     private static readonly byte[][] supportedHeaders =
     {
-        "BM"u8.ToArray(),//BPM
-        "GIF"u8.ToArray(),
-        "GIF8"u8.ToArray(),
-        "P1"u8.ToArray(),//PBM
+        "BM".ToByteArray(),//BPM
+        "GIF".ToByteArray(),
+        "GIF8".ToByteArray(),
+        "P1".ToByteArray(),//PBM
         new byte[]{ 0xFF, 0xD8 },//JPEG
         new byte[]{ 137, 80, 78, 71, 13, 10, 26, 10 },//PNG
         new byte[]{ 0x89, 0x50, 0x4e, 0x47 },//PNG
         new byte[]{ 0x4d, 0x4d, 0x00, 0x2a },//TIFF
         new byte[]{ 0x49, 0x49, 0x2a, 0x00 },//TIFF
         new byte[]{ 0x00, 0x00 },//TGA (success lol)
-        "RIFF"u8.ToArray(),//WebP (RIFF)
+        "RIFF".ToByteArray(),//WebP (RIFF)
     };
 
     public DecodedImage Decode(in ReadOnlySpan<byte> bytes, bool flipY)

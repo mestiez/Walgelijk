@@ -3733,6 +3733,11 @@
             This will return a copy of this rectangle that is stretched just enough to contain the given rect
             </summary>
         </member>
+        <member name="M:Walgelijk.StringExtension.ToByteArray(System.String)">
+            <summary>
+            Returns an array where each entry is a byte that corresponds to the given string in ASCII
+            </summary>
+        </member>
         <member name="T:Walgelijk.Asset">
             <summary>
             An asset ID. This is actually just a signed 32 bit integer.
