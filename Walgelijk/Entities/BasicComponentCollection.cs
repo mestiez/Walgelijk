@@ -216,11 +216,7 @@ public class BasicComponentCollection : IComponentCollection
         if (byType.ContainsKey(type))
         {
             if (byType.TryGetValue(type, out var allComponentsOfThisType))
-            {
                 success &= allComponentsOfThisType.RemoveAll(a => a.Entity == entity) > 0;
-                if (!allComponentsOfThisType.Any())
-                    byType.Remove(type);
-            }
             else success = false;
         }
 

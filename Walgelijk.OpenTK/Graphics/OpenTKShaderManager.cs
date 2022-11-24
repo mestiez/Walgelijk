@@ -1,6 +1,9 @@
 ﻿using OpenTK.Graphics.OpenGL;
+using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Vector2 = System.Numerics.Vector2;
 using Vector3 = System.Numerics.Vector3;
 using Vector4 = System.Numerics.Vector4;
@@ -12,10 +15,6 @@ namespace Walgelijk.OpenTK
         public static ShaderManager Instance { get; } = new ShaderManager();
 
         private readonly float[] matrixBuffer = new float[16];
-
-        //TODO dit is geen goede oplossing
-        private readonly MatrixArrayCache matrixArrayCache = new();
-        private readonly Vector3ArrayCache v3ArrayCache = new();
 
         public void SetUniform<T>(Material material, string uniformName, T data)
         {
@@ -70,8 +69,18 @@ namespace Walgelijk.OpenTK
                     GL.ProgramUniform1(prog, loc, v.Length, v);
                     break;
                 case Vector3[] v:
-                    var arr = v3ArrayCache.GetAndUpdate(v);
-                    GL.ProgramUniform3(prog, loc, v.Length, arr);
+                    {
+                        var a = ArrayPool<float>.Shared.Rent(v.Length * 3);
+                        int ii = 0;
+                        for (int i = 0; i < v.Length; i++)
+                        {
+                            a[ii++] = v[i].X;
+                            a[ii++] = v[i].Y;
+                            a[ii++] = v[i].Z;
+                        }
+                        GL.ProgramUniform3(prog, loc, v.Length, a);
+                        ArrayPool<float>.Shared.Return(a);
+                    }
                     break;
                 //TODO vector arrays
                 case Matrix4x4 v:
@@ -79,8 +88,35 @@ namespace Walgelijk.OpenTK
                     GL.ProgramUniformMatrix4(prog, loc, 1, false, matrixBuffer);
                     break;
                 case Matrix4x4[] v:
-                    var a = matrixArrayCache.Load(v);
-                    GL.ProgramUniformMatrix4(prog, loc, v.Length, false, a);
+                    {
+                        var a = ArrayPool<float>.Shared.Rent(v.Length * 16);
+                        int ii = 0;
+                        for (int i = 0; i < v.Length; i++)
+                        {
+                            var vv = v[i];
+                            a[ii++] = vv.M11;
+                            a[ii++] = vv.M12;
+                            a[ii++] = vv.M13;
+                            a[ii++] = vv.M14;
+
+                            a[ii++] = vv.M21;
+                            a[ii++] = vv.M22;
+                            a[ii++] = vv.M23;
+                            a[ii++] = vv.M24;
+
+                            a[ii++] = vv.M31;
+                            a[ii++] = vv.M32;
+                            a[ii++] = vv.M33;
+                            a[ii++] = vv.M34;
+
+                            a[ii++] = vv.M41;
+                            a[ii++] = vv.M42;
+                            a[ii++] = vv.M43;
+                            a[ii++] = vv.M44;
+                        }
+                        GL.ProgramUniformMatrix4(prog, loc, v.Length, false, a);
+                        ArrayPool<float>.Shared.Return(a);
+                    }
                     break;
                 default:
                     Logger.Error("Invalid uniform datatype!");
@@ -97,9 +133,9 @@ namespace Walgelijk.OpenTK
             //}
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SetMatrixBuffer(Matrix4x4 v)
         {
-            //Ja dankjewel System.Numerics voor deze shitshow. hartelijk bedankt
             matrixBuffer[0] = v.M11;
             matrixBuffer[1] = v.M12;
             matrixBuffer[2] = v.M13;
@@ -121,81 +157,10 @@ namespace Walgelijk.OpenTK
             matrixBuffer[15] = v.M44;
         }
 
-        public void ForceLoadTexture(IReadableTexture texture)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ForceLoadTexture(IReadableTexture texture)
         {
             GPUObjects.TextureCache.Load(texture);
-        }
-    }
-
-    internal class Vector3ArrayCache
-    {
-        private const int length = 3;
-        private Dictionary<Vector3[], float[]> dict = new();
-
-        public float[] GetAndUpdate(Vector3[] raw)
-        {
-            if (!dict.TryGetValue(raw, out var floatArray))
-            {
-                floatArray = new float[length * raw.Length];
-                dict.Add(raw, floatArray);
-            }
-
-            Update(ref raw, ref floatArray);
-
-            return floatArray;
-        }
-
-        private void Update(ref Vector3[] source, ref float[] target)
-        {
-            for (int i = 0; i < target.Length; i += length)
-            {
-                var v = source[i / length];
-                target[i + 0] = v.X;
-                target[i + 1] = v.Y;
-                target[i + 2] = v.Z;
-            }
-        }
-    }
-
-    internal class MatrixArrayCache : Cache<Matrix4x4[], float[]>
-    {
-        private const int MatrixLength = 16;
-
-        protected override float[] CreateNew(Matrix4x4[] raw)
-        {
-            var array = new float[MatrixLength * raw.Length];
-            for (int i = 0; i < raw.Length; i++)
-            {
-                var v = raw[i];
-                int index = i * MatrixLength;
-
-                array[index + 0] = v.M11;
-                array[index + 1] = v.M12;
-                array[index + 2] = v.M13;
-                array[index + 3] = v.M14;
-
-                array[index + 4] = v.M21;
-                array[index + 5] = v.M22;
-                array[index + 6] = v.M23;
-                array[index + 7] = v.M24;
-
-                array[index + 8] = v.M31;
-                array[index + 9] = v.M32;
-                array[index + 10] = v.M33;
-                array[index + 11] = v.M34;
-
-                array[index + 12] = v.M41;
-                array[index + 13] = v.M42;
-                array[index + 14] = v.M43;
-                array[index + 15] = v.M44;
-            }
-
-            return array;
-        }
-
-        protected override void DisposeOf(float[] loaded)
-        {
-
         }
     }
 }

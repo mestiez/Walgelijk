@@ -2,7 +2,7 @@
 
 namespace Walgelijk.OpenTK
 {
-    public struct MaterialTexturePair
+    public struct MaterialTexturePair : IEquatable<MaterialTexturePair>
     {
         public LoadedMaterial Material;
         public LoadedTexture Texture;
@@ -21,6 +21,13 @@ namespace Walgelijk.OpenTK
                    pair.Material.ProgramHandle == Material.ProgramHandle &&
                    pair.UniformLocation == UniformLocation &&
                    pair.Texture.Index == Texture.Index;
+        }
+
+        public bool Equals(MaterialTexturePair other)
+        {
+            return other.Material.ProgramHandle == Material.ProgramHandle &&
+                   other.UniformLocation == UniformLocation &&
+                   other.Texture.Index == Texture.Index;
         }
 
         public override int GetHashCode()
