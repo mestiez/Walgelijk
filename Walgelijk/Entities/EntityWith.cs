@@ -50,15 +50,15 @@ namespace Walgelijk
             return !(left == right);
         }
 
-        //public static implicit operator EntityWithAnything(EntityWith<T> v)
-        //{
-        //    return new EntityWithAnything
-        //    (
-        //        v.Component,
-        //        v.Entity
-        //    );
-        //}
+        public static implicit operator EntityWithAnything(EntityWith<T> v)
+        {
+            return new EntityWithAnything
+            (
+                v.Component,
+                v.Entity
+            );
+        }
 
-        //public static implicit operator T(EntityWith<T> v) => v.Component;
+        public static implicit operator T(EntityWith<T> v) => v.Component;
     }
 }
