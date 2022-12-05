@@ -144,23 +144,7 @@ public struct Rect
     /// <br></br>
     /// <a href="https://iquilezles.org/articles/distfunctions2d/">https://iquilezles.org/articles/distfunctions2d/</a>
     /// </summary>
-    public readonly float SignedDistanceTo(Vector2 p)
-    {
-        return SDF(p, GetCenter(), MaxX - MinX, MaxY - MinY);
-
-        static float SDF(Vector2 point, Vector2 center, float width, float height)
-        {
-            float halfWidth = width / 2;
-            float halfHeight = height / 2;
-
-            var pointRelativeToCenter = new Vector2(point.X - center.X, point.Y - center.Y);
-
-            float dx = MathF.Max(MathF.Abs(pointRelativeToCenter.X) - halfWidth, 0);
-            float dy = MathF.Max(MathF.Abs(pointRelativeToCenter.Y) - halfHeight, 0);
-
-            return MathF.Min(MathF.Sqrt(dx * dx + dy * dy), Math.Min(MathF.Min(MathF.Abs(pointRelativeToCenter.X), MathF.Abs(pointRelativeToCenter.Y)), 0));
-        }
-    }
+    public readonly float SignedDistanceTo(Vector2 p) => SDF.Rectangle(p, GetCenter(), GetSize());
 
     /// <summary>
     /// Return a copy of the rectangle but translated by the given amount
