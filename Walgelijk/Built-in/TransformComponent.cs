@@ -23,8 +23,7 @@ namespace Walgelijk
             get => parent;
             set
             {
-                if (parent == value)
-                    return;
+                if (parent == value) return;
                 parent = value;
                 IsMatrixCached = false;
             }
@@ -39,8 +38,8 @@ namespace Walgelijk
 
             set
             {
+                IsMatrixCached &= position == value;
                 position = value;
-                IsMatrixCached = false;
             }
         }
 
@@ -53,8 +52,8 @@ namespace Walgelijk
 
             set
             {
+                IsMatrixCached &= rotation == value;
                 rotation = value;
-                IsMatrixCached = false;
             }
         }
 
@@ -67,8 +66,8 @@ namespace Walgelijk
 
             set
             {
+                IsMatrixCached &= scale == value;
                 scale = value;
-                IsMatrixCached = false;
             }
         }
 
@@ -81,8 +80,8 @@ namespace Walgelijk
 
             set
             {
+                IsMatrixCached &= value == pivot;
                 pivot = new(value.X, value.Y);
-                IsMatrixCached = false;
             }
         }
 
@@ -95,8 +94,8 @@ namespace Walgelijk
 
             set
             {
+                IsMatrixCached &= value == rotationPivot;
                 rotationPivot = new(value.X, value.Y);
-                IsMatrixCached = false;
             }
         }
 
@@ -127,19 +126,19 @@ namespace Walgelijk
         {
             var matrix = Matrix3x2.Identity;
 
-            if (MathF.Abs(pivot.X) > float.Epsilon || MathF.Abs(pivot.Y) > float.Epsilon)
+            if (pivot != Vector2.Zero)
                 matrix = Matrix3x2.CreateTranslation(-pivot.X, -pivot.Y);
             SeparateMatrices.AfterPivot = matrix;
 
-            if (MathF.Abs(1 - scale.X) > float.Epsilon || MathF.Abs(1 - scale.Y) > float.Epsilon)
+            if (scale != Vector2.One)
                 matrix *= Matrix3x2.CreateScale(scale.X, scale.Y);
             SeparateMatrices.AfterScale = matrix;
 
-            if (MathF.Abs(rotation) % 360 > float.Epsilon)
+            if (rotation % 360 != 0)
                 matrix *= Matrix3x2.CreateRotation(rotation * Utilities.DegToRad, new Vector2(rotationPivot.X * scale.X, rotationPivot.Y * scale.Y));
             SeparateMatrices.AfterRotation = matrix;
 
-            if (MathF.Abs(position.X) > float.Epsilon || MathF.Abs(position.Y) > float.Epsilon)
+            if (position != Vector2.Zero)
                 matrix *= Matrix3x2.CreateTranslation(position.X, position.Y);
             SeparateMatrices.AfterTranslation = matrix;
 
@@ -153,7 +152,7 @@ namespace Walgelijk
             if (Matrix3x2.Invert(LocalToWorldMatrix, out var result))
                 WorldToLocalMatrix = result;
             else
-                WorldToLocalMatrix = LocalToWorldMatrix * -1;
+                Logger.Warn("transform matrix could not be inverted");
 
             IsMatrixCached = true;
         }

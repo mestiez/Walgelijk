@@ -591,7 +591,7 @@
         </member>
         <member name="F:Walgelijk.SeparateTransformMatrices.FinalModel">
             <summary>
-            4: The final model matrix
+            4: The final model matrix (parent matrix applied)
             </summary>
         </member>
         <member name="T:Walgelijk.ShapeComponent">
@@ -1369,6 +1369,171 @@
             Unload all entities and components in the scene.
             </summary>
         </member>
+        <member name="P:Walgelijk.BasicSystemCollection.Count">
+            <inheritdoc/>
+        </member>
+        <member name="P:Walgelijk.BasicSystemCollection.Scene">
+            <inheritdoc/>
+        </member>
+        <member name="E:Walgelijk.BasicSystemCollection.OnSystemAdded">
+            <inheritdoc/>
+        </member>
+        <member name="E:Walgelijk.BasicSystemCollection.OnSystemRemoved">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.#ctor(Walgelijk.Scene,System.Int32)">
+            <summary>
+            Create a new <see cref="T:Walgelijk.BasicSystemCollection"/> with the given scene
+            </summary>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.#ctor(System.Int32)">
+            <summary>
+            Create a new <see cref="T:Walgelijk.BasicSystemCollection"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.Add``1(``0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.Get``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.Get(System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.GetAll(Walgelijk.System[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.GetAll(System.Span{Walgelijk.System})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.GetAll">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.Has``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.Has(System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.TryGet``1(``0@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.TryGet(System.Type,Walgelijk.System@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.GetEnumerator">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.System#Collections#IEnumerable#GetEnumerator">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.SyncBuffers">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.Sort">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.Remove``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.Remove(System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="P:Walgelijk.ISystemCollection.Scene">
+            <summary>
+            Scene that this collection belongs to
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ISystemCollection.Add``1(``0)">
+            <summary>
+            Adds a system of type T to the collection.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ISystemCollection.Remove``1">
+            <summary>
+            Remove a system of type T from the collection.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ISystemCollection.Remove(System.Type)">
+            <summary>
+            Remove a system of the given type from the collection.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ISystemCollection.Get``1">
+            <summary>
+            Retrieves a system of type T from the collection.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ISystemCollection.Get(System.Type)">
+            <summary>
+            Retrieves a system from the collection.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ISystemCollection.TryGet``1(``0@)">
+            <summary>
+            Attempts to retrieve a system of type T from the collection.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ISystemCollection.TryGet(System.Type,Walgelijk.System@)">
+            <summary>
+            Attempts to retrieve a system from the collection.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ISystemCollection.Has``1">
+            <summary>
+            Determines whether the collection contains a system of the specified type.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ISystemCollection.Has(System.Type)">
+            <summary>
+            Determines whether the collection contains a system of the specified type.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ISystemCollection.Count">
+            <summary>
+            Gets the number of systems in the collection.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ISystemCollection.GetAll(Walgelijk.System[],System.Int32,System.Int32)">
+            <summary>
+            Puts all systems in the collection into the specified array given an offset and maximum amount
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ISystemCollection.GetAll(System.Span{Walgelijk.System})">
+            <summary>
+            Puts all systems in the collection into the specified span
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ISystemCollection.GetAll">
+            <summary>
+            Returns a span with all systems
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ISystemCollection.SyncBuffers">
+            <summary>
+            Called when a frame has ended. 
+            The collection will empty its add and destroy buffers and update the main system collection.
+            It will sort the collection if necessary so do not call <see cref="M:Walgelijk.ISystemCollection.Sort"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ISystemCollection.Sort">
+            <summary>
+            Called after the collection is edited to sort it based on ExecutionOrder
+            </summary>
+        </member>
+        <member name="E:Walgelijk.ISystemCollection.OnSystemAdded">
+            <summary>
+            Fired right after a system is added
+            </summary>
+        </member>
+        <member name="E:Walgelijk.ISystemCollection.OnSystemRemoved">
+            <summary>
+            Fired right before a system is removed
+            </summary>
+        </member>
         <member name="T:Walgelijk.System">
             <summary>
             Holds game logic
@@ -1421,7 +1586,7 @@
         </member>
         <member name="P:Walgelijk.System.ExecutionOrder">
             <summary>
-            The order of execution relative to other systems
+            The order of execution relative to other systems. The lower, the earlier it gets executed.
             </summary>
         </member>
         <member name="P:Walgelijk.System.DevelopmentMode">

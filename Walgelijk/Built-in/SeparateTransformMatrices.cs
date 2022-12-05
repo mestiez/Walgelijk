@@ -28,7 +28,7 @@ namespace Walgelijk
         public Matrix3x2 AfterTranslation;
 
         /// <summary>
-        /// 4: The final model matrix
+        /// 4: The final model matrix (parent matrix applied)
         /// </summary>
         public Matrix3x2 FinalModel;
     }

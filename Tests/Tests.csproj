@@ -18,7 +18,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ImageDecoder\ImageDecoder.csproj" />
+    <ProjectReference Include="..\Walgelijk.Imgui\Walgelijk.Imgui.csproj" />
     <ProjectReference Include="..\Walgelijk.Localisation\Walgelijk.Localisation.csproj" />
+    <ProjectReference Include="..\Walgelijk.ParticleSystem\Walgelijk.ParticleSystem.csproj" />
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
   </ItemGroup>
 

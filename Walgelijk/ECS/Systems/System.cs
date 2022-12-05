@@ -54,7 +54,7 @@
         protected IGraphics Graphics => Window.Graphics;
 
         /// <summary>
-        /// The order of execution relative to other systems
+        /// The order of execution relative to other systems. The lower, the earlier it gets executed.
         /// </summary>
         public int ExecutionOrder
         {
