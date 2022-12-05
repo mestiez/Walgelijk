@@ -11,15 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.OpenTK", "Walgeli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.ParticleSystem", "Walgelijk.ParticleSystem\Walgelijk.ParticleSystem.csproj", "{5FD74DF4-F720-4D60-9E0E-F93DF437152D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{09F5F9AB-C0D9-4034-89D4-36CDE0697066}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.Tests", "Tests\Walgelijk.Tests.csproj", "{09F5F9AB-C0D9-4034-89D4-36CDE0697066}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.Video", "Walgelijk.Video\Walgelijk.Video.csproj", "{B7D36A10-26DC-4739-A05D-BF70CB32DE3D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TemplateProject", "TemplateProject\TemplateProject.csproj", "{6E4B4D84-D4FC-4FD7-BE0C-281E8E3B78B6}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Benchmarks", "Benchmarks\Benchmarks.csproj", "{7C0A18B0-E532-487E-9E73-AB79AF0977B8}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageDecoder", "ImageDecoder\ImageDecoder.csproj", "{81C5C34A-7E08-4F23-B396-1F2A16B2C721}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.Imgui", "Walgelijk.Imgui\Walgelijk.Imgui.csproj", "{815B1786-A974-4DE1-8F67-96E58C10EB4F}"
 EndProject
@@ -29,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.SimpleDrawing", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Playgrounds", "Playgrounds\Playgrounds.csproj", "{74A9F0F2-435F-4078-8D26-44473D051C1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Walgelijk.Localisation", "Walgelijk.Localisation\Walgelijk.Localisation.csproj", "{A21BDC35-81DA-4F03-AA96-AD0F3897EC50}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.Localisation", "Walgelijk.Localisation\Walgelijk.Localisation.csproj", "{A21BDC35-81DA-4F03-AA96-AD0F3897EC50}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,18 +55,6 @@ Global
 		{B7D36A10-26DC-4739-A05D-BF70CB32DE3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7D36A10-26DC-4739-A05D-BF70CB32DE3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7D36A10-26DC-4739-A05D-BF70CB32DE3D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6E4B4D84-D4FC-4FD7-BE0C-281E8E3B78B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6E4B4D84-D4FC-4FD7-BE0C-281E8E3B78B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6E4B4D84-D4FC-4FD7-BE0C-281E8E3B78B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6E4B4D84-D4FC-4FD7-BE0C-281E8E3B78B6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7C0A18B0-E532-487E-9E73-AB79AF0977B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7C0A18B0-E532-487E-9E73-AB79AF0977B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7C0A18B0-E532-487E-9E73-AB79AF0977B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7C0A18B0-E532-487E-9E73-AB79AF0977B8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{81C5C34A-7E08-4F23-B396-1F2A16B2C721}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{81C5C34A-7E08-4F23-B396-1F2A16B2C721}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{81C5C34A-7E08-4F23-B396-1F2A16B2C721}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{81C5C34A-7E08-4F23-B396-1F2A16B2C721}.Release|Any CPU.Build.0 = Release|Any CPU
 		{815B1786-A974-4DE1-8F67-96E58C10EB4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{815B1786-A974-4DE1-8F67-96E58C10EB4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{815B1786-A974-4DE1-8F67-96E58C10EB4F}.Release|Any CPU.ActiveCfg = Release|Any CPU

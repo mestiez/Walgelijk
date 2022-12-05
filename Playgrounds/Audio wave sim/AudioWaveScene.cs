@@ -7,7 +7,7 @@ public struct AudioWaveScene : ISceneCreator
 {
     public Scene Load(Game game)
     {
-        const double timestep = 1d / 10000; //time resolution, 1 / [steps per second]
+        const double timestep = 1d / 1000; //time resolution, 1 / [steps per second]
         const float visualTimescale = 1f / 3f; //x times slower than real time
         var tex = Texture.Load("resources/world.png", false);
 
