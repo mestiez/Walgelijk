@@ -89,7 +89,7 @@ public struct Rect
     /// <summary>
     /// Returns the center of the rectangle. Calculated using (min + max) * 0.5
     /// </summary>
-    public readonly Vector2 GetCenter() => new((MinX + MaxX) * 0.5f,(MinY + MaxY) * 0.5f);
+    public readonly Vector2 GetCenter() => new((MinX + MaxX) * 0.5f, (MinY + MaxY) * 0.5f);
 
     /// <summary>
     /// Offset the rectangle such that the center is the given point
@@ -146,9 +146,20 @@ public struct Rect
     /// </summary>
     public readonly float SignedDistanceTo(Vector2 p)
     {
-        p -= GetCenter();
-        var d = Vector2.Abs(p) - GetSize() / 2;
-        return Vector2.Max(d, default).Length() + MathF.Min(MathF.Max(d.X, d.Y), 0f);
+        return SDF(p, GetCenter(), MaxX - MinX, MaxY - MinY);
+
+        static float SDF(Vector2 point, Vector2 center, float width, float height)
+        {
+            float halfWidth = width / 2;
+            float halfHeight = height / 2;
+
+            var pointRelativeToCenter = new Vector2(point.X - center.X, point.Y - center.Y);
+
+            float dx = MathF.Max(MathF.Abs(pointRelativeToCenter.X) - halfWidth, 0);
+            float dy = MathF.Max(MathF.Abs(pointRelativeToCenter.Y) - halfHeight, 0);
+
+            return MathF.Min(MathF.Sqrt(dx * dx + dy * dy), Math.Min(MathF.Min(MathF.Abs(pointRelativeToCenter.X), MathF.Abs(pointRelativeToCenter.Y)), 0));
+        }
     }
 
     /// <summary>

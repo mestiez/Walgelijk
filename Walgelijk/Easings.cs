@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.Intrinsics.X86;
+using System.Security.Cryptography;
 
 namespace Walgelijk;
 
@@ -85,5 +87,31 @@ public struct Easings
         /// </summary>
         public static float Out(float x) => x == 1 ? 1 : 1 - MathF.Pow(2, -10 * x);
 
+    }
+
+    /// <summary>
+    /// Circular easing functions
+    /// </summary>
+    public struct Circ
+    {
+        /// <summary>
+        /// Remaps a linear value from 0 to 1 to an ease-in ease-out circular curve
+        /// </summary>
+        public static float InOut(float x)
+        {
+            if (x < 0.5)
+                return (1 - MathF.Sqrt(1 - (2 * x * 2 * x))) / 2;
+            return (MathF.Sqrt(1 - ((-2 * x + 2) * (-2 * x + 2))) + 1) / 2;
+        }
+
+        /// <summary>
+        /// Remaps a linear value from 0 to 1 to an ease-in circular curve
+        /// </summary>
+        public static float In(float x) => 1 - MathF.Sqrt(1 - x * x);
+
+        /// <summary>
+        /// Remaps a linear value from 0 to 1 to an ease-out circular curve
+        /// </summary>
+        public static float Out(float x) => MathF.Sqrt(1 - (1 - x) * (1 - x));
     }
 }

@@ -1004,6 +1004,26 @@
             Remaps a linear value from 0 to 1 to an ease-out exponential curve
             </summary>
         </member>
+        <member name="T:Walgelijk.Easings.Circ">
+            <summary>
+            Circular easing functions
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Circ.InOut(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in ease-out circular curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Circ.In(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in circular curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Circ.Out(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-out circular curve
+            </summary>
+        </member>
         <member name="T:Walgelijk.BasicComponentCollection">
             <summary>
             A collection of components
@@ -3733,9 +3753,19 @@
             This will return a copy of this rectangle that is stretched just enough to contain the given rect
             </summary>
         </member>
+        <member name="T:Walgelijk.SDF">
+            <summary>
+            Utility struct full of SDF functions
+            </summary>
+        </member>
         <member name="M:Walgelijk.StringExtension.ToByteArray(System.String)">
             <summary>
             Returns an array where each entry is a byte that corresponds to the given string in ASCII
+            </summary>
+        </member>
+        <member name="M:Walgelijk.StringExtension.ToByteArray(System.String,System.Span{System.Byte})">
+            <summary>
+            Populates an array where each entry is a byte that corresponds to the given string in ASCII
             </summary>
         </member>
         <member name="T:Walgelijk.Asset">
