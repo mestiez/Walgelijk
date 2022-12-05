@@ -13,7 +13,7 @@ public class Chunk
         ContainingEntities = new Entity[capacity];
     }
 
-    public void Add(Entity e)
+    public void Add(in Entity e)
     {
         if (BodyCount >= ContainingEntities.Length)
         {
@@ -21,8 +21,7 @@ public class Chunk
             return;
         }
 
-        ContainingEntities[BodyCount] = e;
-        BodyCount++;
+        ContainingEntities[BodyCount++] = e;
     }
 
     public void Clear()
