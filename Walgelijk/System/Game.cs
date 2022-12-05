@@ -190,7 +190,8 @@ public class Game
                 }
 
                 State.Time.FixedInterval = (float)fixedUpdateInterval;
-                State.Time.Interpolation = (float)((fixedUpdateClock % fixedUpdateInterval) / fixedUpdateInterval);
+                State.Time.Interpolation = (float)(accumulator / fixedUpdateInterval);
+                //State.Time.Interpolation = (float)((fixedUpdateClock % fixedUpdateInterval) / fixedUpdateInterval);
 
                 Scene?.UpdateSystems();
             }
