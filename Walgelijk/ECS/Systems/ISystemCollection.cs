@@ -4,6 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Walgelijk;
 
+/// <summary>
+/// Represents a thread safe collection of systems
+/// </summary>
 public interface ISystemCollection : IEnumerable<System>, IDisposable
 {
     /// <summary>

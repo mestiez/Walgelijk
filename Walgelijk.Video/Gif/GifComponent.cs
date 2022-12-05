@@ -1,9 +1,11 @@
-﻿namespace Walgelijk.Video
+﻿using System;
+
+namespace Walgelijk.Video
 {
     /// <summary>
     /// Component that contains a gif and some options
     /// </summary>
-    public class GifComponent
+    public class GifComponent : Component, IDisposable
     {
         /// <summary>
         /// Reference to the gif
@@ -63,6 +65,11 @@
         {
             IsPlaying = false;
             PlaybackTime = 0;
+        }
+
+        public void Dispose()
+        {
+            Gif.Dispose();
         }
     }
 }

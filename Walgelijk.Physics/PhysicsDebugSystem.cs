@@ -6,19 +6,18 @@ public class PhysicsDebugSystem : Walgelijk.System
 {
     public override void Render()
     {
-        if (!Scene.FindAnyComponent<PhysicsWorldComponent>(out var world, out _))
+        if (!Scene.FindAnyComponent<PhysicsWorldComponent>(out var world))
         {
             Logger.Warn("PhysicsSystem without PhysicsWorld...");
             return;
         }
 
-        var bodies = Scene.GetAllComponentsOfType<PhysicsBodyComponent>();
-        foreach (var item in bodies)
+        foreach (var item in Scene.GetAllComponentsOfType<PhysicsBodyComponent>())
         {
-            if (item.Component.Collider == null)
+            if (item.Collider == null)
                 continue;
 
-            var bounds = item.Component.Collider.Bounds;
+            var bounds = item.Collider.Bounds;
             DebugDraw.Rectangle(bounds, 0, Colors.Yellow);
         }
 

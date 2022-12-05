@@ -10,7 +10,7 @@ namespace Walgelijk
         /// <summary>
         /// Creates a background for the scene. Also creates the necessary systems if they are not already present. By default, backgrounds are rendered at render order (-1000, 0)
         /// </summary>
-        public static EntityWith<BackgroundComponent> CreateBackground(Scene scene, IReadableTexture texture)
+        public static BackgroundComponent CreateBackground(Scene scene, IReadableTexture texture)
         {
             if (!scene.HasSystem<BackgroundSystem>())
                 scene.AddSystem(new BackgroundSystem());
@@ -26,7 +26,7 @@ namespace Walgelijk
                 RenderTask = new ShapeRenderTask(PrimitiveMeshes.Quad) { ScreenSpace = true }
             });
 
-            return new EntityWith<BackgroundComponent>(bg, ent);
+            return bg;
         }
 
         /// <summary>
@@ -39,9 +39,8 @@ namespace Walgelijk
                 var windowSize = Scene.Game.Window.Size;
                 var stretch = Matrix3x2.CreateScale(1, -1) * Matrix3x2.CreateTranslation(0, windowSize.Y);
 
-                foreach (var item in Scene.GetAllComponentsOfType<BackgroundComponent>())
+                foreach (var bg in Scene.GetAllComponentsOfType<BackgroundComponent>())
                 {
-                    var bg = item.Component;
                     if (!bg.Visible || bg.Material == null || bg.RenderTask == null)
                         continue;
 
@@ -94,7 +93,7 @@ namespace Walgelijk
         /// <summary>
         /// Contains the texture to render and what properties the background has
         /// </summary>
-        public class BackgroundComponent
+        public class BackgroundComponent : Component
         {
             /// <summary>
             /// Material to draw with

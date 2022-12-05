@@ -5,11 +5,15 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using System.Threading;
 
 namespace Walgelijk;
 
+/// <summary>
+/// Represents a thread safe collection of systems
+/// </summary>
 public class BasicSystemCollection : ISystemCollection
 {
     private int systemCount;
@@ -21,9 +25,15 @@ public class BasicSystemCollection : ISystemCollection
     private readonly ConcurrentBag<System> systemsToDestroy = new();
 
     private readonly Mutex mut = new();
+    private readonly SystemComparer systemComparer = new SystemComparer();
 
     /// <inheritdoc/>
     public int Count => systemCount;
+
+    /// <summary>
+    /// Maximum system amount. Can only be set on creation
+    /// </summary>
+    public readonly int Capacity;
 
     /// <inheritdoc/>
     public Scene? Scene { get; }
@@ -39,6 +49,7 @@ public class BasicSystemCollection : ISystemCollection
     public BasicSystemCollection(Scene scene, int capacity = ushort.MaxValue)
     {
         Scene = scene;
+        this.Capacity = capacity;
         systemCount = 0;
         systems = new System[capacity];
     }
@@ -53,11 +64,11 @@ public class BasicSystemCollection : ISystemCollection
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T Add<T>(T s) where T : System
     {
         if (systemCount >= systems.Length)
             throw new Exception("Capacity exceeded");
-
         if (systemsByType.ContainsKey(typeof(T)))
             throw new DuplicateSystemException($"A system of type {typeof(T)} already exists");
         if (Scene != null)
@@ -67,6 +78,7 @@ public class BasicSystemCollection : ISystemCollection
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T Get<T>() where T : System
     {
         if (systemsByType[typeof(T)].TryGetTarget(out var sys) && sys is T tsys)
@@ -75,6 +87,7 @@ public class BasicSystemCollection : ISystemCollection
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public System Get(Type t)
     {
         if (systemsByType[t].TryGetTarget(out var sys))
@@ -83,6 +96,7 @@ public class BasicSystemCollection : ISystemCollection
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetAll(System[] syss, int offset, int count)
     {
         int index = 0;
@@ -92,6 +106,7 @@ public class BasicSystemCollection : ISystemCollection
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetAll(Span<System> syss)
     {
         int index = 0;
@@ -101,18 +116,22 @@ public class BasicSystemCollection : ISystemCollection
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReadOnlySpan<System> GetAll() => systems.AsSpan(0, systemCount);
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Has<T>() where T : System => Has(typeof(T));
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Has(Type t)
     {
         return systemsByType.ContainsKey(t);
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryGet<T>([NotNullWhen(true)] out T? system) where T : System
     {
         if (systemsByType.TryGetValue(typeof(T), out var reference) && reference.TryGetTarget(out var sys) && sys is T tsys)
@@ -125,6 +144,7 @@ public class BasicSystemCollection : ISystemCollection
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryGet(Type t, [NotNullWhen(true)] out System? system)
     {
         if (systemsByType.TryGetValue(t, out var reference) && reference.TryGetTarget(out var sys))
@@ -158,22 +178,23 @@ public class BasicSystemCollection : ISystemCollection
     }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SyncBuffers()
     {
+        mut.WaitOne();
+
         bool shouldSort = systemsToAdd.Any() || systemsToDestroy.Any();
 
-        foreach (var system in systemsToAdd)
+        while (systemsToAdd.TryTake(out var system))
         {
             OnSystemAdded?.Invoke(system);
             var type = system.GetType();
             systems[systemCount++] = system;
             systemsByType.TryAdd(type, new WeakReference<System>(system));
-            system.ExecutionOrderChanged = false;
             system.Initialise();
         }
-        systemsToAdd.Clear();
 
-        foreach (var system in systemsToDestroy)
+        while (systemsToDestroy.TryTake(out var system))
         {
             int index = Array.IndexOf(systems, system);
             if (index >= 0)
@@ -184,19 +205,29 @@ public class BasicSystemCollection : ISystemCollection
                 systemCount--;
             }
         }
-        systemsToDestroy.Clear();
 
         if (shouldSort)
             Sort();
+
+        mut.ReleaseMutex();
     }
 
     /// <inheritdoc/>
-    public void Sort() => Array.Sort(systems, 0, systemCount, new SystemComparer());
+    public void Sort()
+    {
+        mut.WaitOne();
+        Array.Sort(systems, 0, systemCount, systemComparer);
+        foreach (var item in GetAll())
+            item.ExecutionOrderChanged = false;
+        mut.ReleaseMutex();
+    }
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Remove<T>() where T : System => Remove(typeof(T));
 
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Remove(Type t)
     {
         if (TryGet(t, out var sys))

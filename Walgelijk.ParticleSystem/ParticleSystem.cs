@@ -8,10 +8,9 @@ namespace Walgelijk.ParticleSystem
         public override void Update()
         {
             var s = Scene.GetAllComponentsOfType<ParticlesComponent>();
-            foreach (var item in s)
+            foreach (var particles in s)
             {
-                var transform = Scene.GetComponentFast<TransformComponent>(item.Entity);
-                var particles = item.Component;
+                var transform = Scene.GetComponentFrom<TransformComponent>(particles.Entity);
 
                 HandleEmission(particles, transform);
                 UpdateParticleSystem(particles, transform);
@@ -21,10 +20,9 @@ namespace Walgelijk.ParticleSystem
         public override void Render()
         {
             var s = Scene.GetAllComponentsOfType<ParticlesComponent>();
-            foreach (var item in s)
+            foreach (var particles in s)
             {
-                var transform = Scene.GetComponentFast<TransformComponent>(item.Entity);
-                var particles = item.Component;
+                var transform = Scene.GetComponentFrom<TransformComponent>(particles.Entity);
 
                 RenderParticleSystem(particles, transform);
             }

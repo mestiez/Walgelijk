@@ -67,8 +67,8 @@ namespace Walgelijk
 
             if (rt0TargetTask != null)
                 foreach (var item in containers)
-                    if (item.Component.Enabled)
-                        RenderQueue.Add(rt0TargetTask, item.Component.Begin);
+                    if (item.Enabled)
+                        RenderQueue.Add(rt0TargetTask, item.Begin);
         }
 
         public override void PostRender()
@@ -78,12 +78,10 @@ namespace Walgelijk
 
             var containers = Scene.GetAllComponentsOfType<PostProcessingComponent>();
 
-            foreach (var item in containers)
+            foreach (var container in containers)
             {
-                if (!item.Component.Enabled)
+                if (!container.Enabled)
                     continue;
-
-                var container = item.Component;
 
                 if (container.EffectTask == null)
                     container.EffectTask = new ActionRenderTask((g) => { ApplyEffects(container, g); });

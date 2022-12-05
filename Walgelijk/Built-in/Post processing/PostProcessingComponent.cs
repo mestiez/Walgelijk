@@ -6,7 +6,7 @@ namespace Walgelijk
     /// A post processing effect container
     /// </summary>
     [global::System.Obsolete]
-    public class PostProcessingComponent
+    public class PostProcessingComponent : Component
     {
         /// <summary>
         /// Should this post processing component be processed at all?

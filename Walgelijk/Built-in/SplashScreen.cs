@@ -49,7 +49,7 @@ namespace Walgelijk
             if (background != null)
             {
                 var b = Background.CreateBackground(scene, background);
-                b.Component.Mode = Background.BackgroundMode.Contain;
+                b.Mode = Background.BackgroundMode.Contain;
             }
 
             return scene;
@@ -58,7 +58,7 @@ namespace Walgelijk
         /// <summary>
         /// Component with splash screen information
         /// </summary>
-        public class SplashScreenComponent
+        public class SplashScreenComponent : Component
         {
             /// <summary>
             /// Array of logos
@@ -184,10 +184,9 @@ namespace Walgelijk
                 }
             }
 
-            private void HandleSplash(EntityWith<SplashScreenComponent> splash)
+            private void HandleSplash(SplashScreenComponent splash)
             {
                 var entity = splash.Entity;
-                var component = splash.Component;
 
                 var rect = Scene.GetComponentFrom<RectangleShapeComponent>(entity);
                 var transform = Scene.GetComponentFrom<TransformComponent>(entity);
@@ -195,41 +194,41 @@ namespace Walgelijk
                 if (rect == null || transform == null)
                     return;
 
-                var duration = component.Logos[component.CurrentLogoIndex].Duration;
+                var duration = splash.Logos[splash.CurrentLogoIndex].Duration;
 
-                component.CurrentTime += Time.DeltaTime;
-                component.Lifetime += Time.DeltaTime;
+                splash.CurrentTime += Time.DeltaTime;
+                splash.Lifetime += Time.DeltaTime;
 
-                var progress = component.CurrentTime / duration;
-                rect.Color = new Color(1, 1, 1, GetAlphaForTransition(component.Transition, progress, (float)component.TransitionDuration.TotalSeconds / duration));
+                var progress = splash.CurrentTime / duration;
+                rect.Color = new Color(1, 1, 1, GetAlphaForTransition(splash.Transition, progress, (float)splash.TransitionDuration.TotalSeconds / duration));
 
-                if (component.CanSkip && (Input.AnyKey || Input.AnyMouseButton))
+                if (splash.CanSkip && (Input.AnyKey || Input.AnyMouseButton))
                 {
-                    component.CurrentTime = float.MaxValue;
-                    component.CurrentLogoIndex = component.Logos.Length;
+                    splash.CurrentTime = float.MaxValue;
+                    splash.CurrentLogoIndex = splash.Logos.Length;
                 }
 
-                if (component.CurrentTime > duration)
+                if (splash.CurrentTime > duration)
                 {
-                    component.CurrentTime = 0;
-                    component.CurrentLogoIndex++;
-                    if (component.CurrentLogoIndex >= component.Logos.Length)
+                    splash.CurrentTime = 0;
+                    splash.CurrentLogoIndex++;
+                    if (splash.CurrentLogoIndex >= splash.Logos.Length)
                     {
-                        if (component.OnEnd != null)
+                        if (splash.OnEnd != null)
                         {
                             Audio.StopAll();
-                            component.OnEnd?.Invoke();
+                            splash.OnEnd?.Invoke();
                         }
                         else
                             Scene.RemoveEntity(entity);
                         return;
                     }
 
-                    setLogo(component.Logos[component.CurrentLogoIndex]);
+                    setLogo(splash.Logos[splash.CurrentLogoIndex]);
                 }
 
-                if (component.Lifetime == 0)
-                    setLogo(component.Logos[0]);
+                if (splash.Lifetime == 0)
+                    setLogo(splash.Logos[0]);
 
                 void setLogo(Logo logo)
                 {

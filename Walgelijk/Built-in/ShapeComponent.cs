@@ -4,7 +4,7 @@
     /// Provides a <see cref="VertexBuffer"/> and <see cref="ShapeRenderTask"/>
     /// </summary>
     [RequiresComponents(typeof(TransformComponent))]
-    public abstract class ShapeComponent
+    public abstract class ShapeComponent : Component
     {
         /// <summary>
         /// VertexBuffer that is generated. It's best not to edit this unless you really need to.

@@ -15,7 +15,7 @@ public class PhysicsSystem : Walgelijk.System
 
     public override void Update()
     {
-        if (!Scene.FindAnyComponent<PhysicsWorldComponent>(out var world, out _))
+        if (!Scene.FindAnyComponent<PhysicsWorldComponent>(out var world))
         {
             Logger.Warn("PhysicsSystem without PhysicsWorld...");
             return;
@@ -50,7 +50,7 @@ public class PhysicsSystem : Walgelijk.System
         yield break;
     }
 
-    private void CalculateCollisionChunks(PhysicsWorldComponent world, IEnumerable<EntityWith<PhysicsBodyComponent>> bodies)
+    private void CalculateCollisionChunks(PhysicsWorldComponent world, IEnumerable<PhysicsBodyComponent> bodies)
     {
         Profiler.StartTask("collision chunk calculation");
         var dict = world.ChunkDictionary;
@@ -60,7 +60,7 @@ public class PhysicsSystem : Walgelijk.System
 
         foreach (var item in bodies)
         {
-            var pos = item.Component.Collider.Bounds;
+            var pos = item.Collider.Bounds;
 
             IntVector2 min = new(
                 GetChunkComponentFrom(pos.MinX, world.ChunkSize),
@@ -88,7 +88,7 @@ public class PhysicsSystem : Walgelijk.System
         Profiler.EndTask();
     }
 
-    private void CalculateWorldBounds(PhysicsWorldComponent world, IEnumerable<EntityWith<PhysicsBodyComponent>> bodies)
+    private void CalculateWorldBounds(PhysicsWorldComponent world, IEnumerable<PhysicsBodyComponent> bodies)
     {
         Profiler.StartTask("world bounds calculation");
         float minX = float.MaxValue;
@@ -99,8 +99,8 @@ public class PhysicsSystem : Walgelijk.System
 
         foreach (var body in bodies)
         {
-            body.Component.Collider.RecalculateBounds();
-            var bounds = body.Component.Collider.Bounds;
+            body.Collider.RecalculateBounds();
+            var bounds = body.Collider.Bounds;
 
             minX = MathF.Min(bounds.MinX, minX);
             minY = MathF.Min(bounds.MinY, minY);
@@ -122,7 +122,7 @@ public class PhysicsSystem : Walgelijk.System
     {
         result = default;
 
-        if (!Scene.FindAnyComponent<PhysicsWorldComponent>(out var world, out _))
+        if (!Scene.FindAnyComponent<PhysicsWorldComponent>(out var world))
         {
             Logger.Warn("PhysicsSystem without PhysicsWorld...");
             return false;
@@ -235,7 +235,7 @@ public class PhysicsSystem : Walgelijk.System
     /// </summary>
     public int QueryPoint(Vector2 point, ref QueryResult[] results, uint filter = uint.MaxValue)
     {
-        if (!Scene.FindAnyComponent<PhysicsWorldComponent>(out var world, out _))
+        if (!Scene.FindAnyComponent<PhysicsWorldComponent>(out var world))
         {
             Logger.Warn("PhysicsSystem without PhysicsWorld...");
             return 0;
@@ -267,7 +267,7 @@ public class PhysicsSystem : Walgelijk.System
     /// </summary>
     public int QueryCircle(Vector2 center, float radius, ref QueryResult[] results, uint filter = uint.MaxValue)
     {
-        if (!Scene.FindAnyComponent<PhysicsWorldComponent>(out var world, out _))
+        if (!Scene.FindAnyComponent<PhysicsWorldComponent>(out var world))
         {
             Logger.Warn("PhysicsSystem without PhysicsWorld...");
             return 0;
@@ -316,7 +316,7 @@ public class PhysicsSystem : Walgelijk.System
     /// </summary>
     public int QueryRectangle(Rect rectangle, ref QueryResult[] results, uint filter = uint.MaxValue)
     {
-        if (!Scene.FindAnyComponent<PhysicsWorldComponent>(out var world, out _))
+        if (!Scene.FindAnyComponent<PhysicsWorldComponent>(out var world))
         {
             Logger.Warn("PhysicsSystem without PhysicsWorld...");
             return 0;

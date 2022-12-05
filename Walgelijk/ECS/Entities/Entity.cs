@@ -12,6 +12,11 @@ namespace Walgelijk
         /// </summary>
         public int Identity;
 
+        public Entity(int id)
+        {
+            Identity = id;
+        }
+
         public override bool Equals(object? obj)
         {
             return obj is Entity entity &&

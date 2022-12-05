@@ -817,280 +817,6 @@
             Enable transform parenting?
             </summary>
         </member>
-        <member name="T:Walgelijk.Cache`2">
-            <summary>
-            A generic cache object that provides a way to load heavy objects based on a lighter key
-            </summary>
-            <typeparam name="UnloadedType">The key. This object is usually light and cheap to create</typeparam>
-            <typeparam name="LoadedType">The loaded object. This object is usually heavy and expensive to create</typeparam>
-        </member>
-        <member name="M:Walgelijk.Cache`2.Load(`0)">
-            <summary>
-            Load or create a <typeparamref name="LoadedType"/> from an <typeparamref name="UnloadedType"/>
-            </summary>
-            <param name="obj"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Walgelijk.Cache`2.CreateNew(`0)">
-            <summary>
-            Determines what must be done when an entirely new <typeparamref name="LoadedType"/> is created
-            </summary>
-            <param name="raw"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Walgelijk.Cache`2.DisposeOf(`1)">
-            <summary>
-            Dispose of any resources attached to the loaded type. This is invoked when an entry is unloaded.
-            </summary>
-            <param name="loaded"></param>
-        </member>
-        <member name="M:Walgelijk.Cache`2.Unload(`0)">
-            <summary>
-            Unload an entry and dispose of all attached resources
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Cache`2.Has(`0)">
-            <summary>
-            Returns if an entry is in the cache
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Cache`2.UnloadAll">
-            <summary>
-            Clear the cache
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Cache`2.GetAllLoaded">
-            <summary>
-            Returns every loaded item in the cache
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Cache`2.GetAllUnloaded">
-            <summary>
-            Returns every unloaded item ever loaded
-            </summary>
-        </member>
-        <member name="T:Walgelijk.Curve`1">
-            <summary>
-            Linear curve
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Curve`1.Keys">
-            <summary>
-            Value keys
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Curve`1.#ctor(Walgelijk.Curve{`0}.Key[])">
-            <summary>
-            Construct a curve and sort the given keys
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Curve`1.Evaluate(System.Single)">
-            <summary>
-            Get value at a position in the curve using linear interpolation
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Curve`1.Lerp(`0,`0,System.Single)">
-            <summary>
-            Linear interpolation implementation for type <typeparamref name="T"/>
-            </summary>
-        </member>
-        <member name="T:Walgelijk.Curve`1.Key">
-            <summary>
-            Key with a position and value of type <typeparamref name="T"/>
-            </summary>
-        </member>
-        <member name="F:Walgelijk.Curve`1.Key.Value">
-            <summary>
-            Value
-            </summary>
-        </member>
-        <member name="F:Walgelijk.Curve`1.Key.Position">
-            <summary>
-            Position in range 0, 1
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Curve`1.Key.#ctor(`0,System.Single)">
-            <summary>
-            Construct a Key
-            </summary>
-        </member>
-        <member name="T:Walgelijk.FloatCurve">
-            <summary>
-            <see cref="T:System.Single"/> curve
-            </summary>
-        </member>
-        <member name="T:Walgelijk.ColorCurve">
-            <summary>
-            <see cref="T:Walgelijk.Color"/> curve
-            </summary>
-        </member>
-        <member name="T:Walgelijk.Vec4Curve">
-            <summary>
-            <see cref="T:System.Numerics.Vector4"/> curve
-            </summary>
-        </member>
-        <member name="T:Walgelijk.Vec2Curve">
-            <summary>
-            <see cref="T:System.Numerics.Vector2"/> curve
-            </summary>
-        </member>
-        <member name="T:Walgelijk.Vec3Curve">
-            <summary>
-            <see cref="T:System.Numerics.Vector3"/> curve
-            </summary>
-        </member>
-        <member name="T:Walgelijk.Easings">
-            <summary>
-            Utility struct full of easing curve functions
-            </summary>
-        </member>
-        <member name="T:Walgelijk.Easings.Cubic">
-            <summary>
-            Cubic easing functions
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Easings.Cubic.InOut(System.Single)">
-            <summary>
-            Remaps a linear value from 0 to 1 to an ease-in ease-out cubic curve
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Easings.Cubic.In(System.Single)">
-            <summary>
-            Remaps a linear value from 0 to 1 to an ease-in cubic curve
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Easings.Cubic.Out(System.Single)">
-            <summary>
-            Remaps a linear value from 0 to 1 to an ease-out cubic curve
-            </summary>
-        </member>
-        <member name="T:Walgelijk.Easings.Quad">
-            <summary>
-            Quadtratic easing functions
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Easings.Quad.InOut(System.Single)">
-            <summary>
-            Remaps a linear value from 0 to 1 to an ease-in ease-out quadractic curve
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Easings.Quad.In(System.Single)">
-            <summary>
-            Remaps a linear value from 0 to 1 to an ease-in quadractic curve
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Easings.Quad.Out(System.Single)">
-            <summary>
-            Remaps a linear value from 0 to 1 to an ease-out quadractic curve
-            </summary>
-        </member>
-        <member name="T:Walgelijk.Easings.Expo">
-            <summary>
-            Exponential easing functions
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Easings.Expo.InOut(System.Single)">
-            <summary>
-            Remaps a linear value from 0 to 1 to an ease-in ease-out exponential curve
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Easings.Expo.In(System.Single)">
-            <summary>
-            Remaps a linear value from 0 to 1 to an ease-in exponential curve
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Easings.Expo.Out(System.Single)">
-            <summary>
-            Remaps a linear value from 0 to 1 to an ease-out exponential curve
-            </summary>
-        </member>
-        <member name="T:Walgelijk.Easings.Circ">
-            <summary>
-            Circular easing functions
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Easings.Circ.InOut(System.Single)">
-            <summary>
-            Remaps a linear value from 0 to 1 to an ease-in ease-out circular curve
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Easings.Circ.In(System.Single)">
-            <summary>
-            Remaps a linear value from 0 to 1 to an ease-in circular curve
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Easings.Circ.Out(System.Single)">
-            <summary>
-            Remaps a linear value from 0 to 1 to an ease-out circular curve
-            </summary>
-        </member>
-        <member name="T:Walgelijk.BasicComponentCollection">
-            <summary>
-            A collection of components
-            </summary>
-        </member>
-        <member name="M:Walgelijk.BasicComponentCollection.Add(System.Object,Walgelijk.Entity)">
-            <summary>
-            Add a component to the collection
-            </summary>
-        </member>
-        <member name="M:Walgelijk.BasicComponentCollection.GetAllComponentsOfType``1">
-            <summary>
-            Iterates over components by type
-            </summary>
-        </member>
-        <member name="M:Walgelijk.BasicComponentCollection.GetComponentFrom``1(Walgelijk.Entity)">
-            <summary>
-            Get the component of the <b>exact</b> type that is given
-            </summary>
-        </member>
-        <member name="M:Walgelijk.BasicComponentCollection.TryGetComponentFrom``1(Walgelijk.Entity,``0@)">
-            <summary>
-            Try to get the component of the <b>exact</b> type that is given
-            </summary>
-        </member>
-        <member name="M:Walgelijk.BasicComponentCollection.GetAllComponentsFrom(Walgelijk.Entity)">
-            <summary>
-            Iterate over all components attached to an entity
-            </summary>
-        </member>
-        <member name="M:Walgelijk.BasicComponentCollection.GetEntityFromComponent(System.Object,Walgelijk.Entity@)">
-            <summary>
-            Get the entity that the given component is attached to
-            </summary>
-        </member>
-        <member name="M:Walgelijk.BasicComponentCollection.DeleteEntity(Walgelijk.Entity)">
-            <summary>
-            Delete all components belonging to the given entity
-            </summary>
-        </member>
-        <member name="M:Walgelijk.BasicComponentCollection.RemoveComponentOfType``1(Walgelijk.Entity)">
-            <summary>
-            Detach a component of a type from an entity
-            </summary>
-            <returns>True if anything was removed</returns>
-        </member>
-        <member name="M:Walgelijk.BasicComponentCollection.RemoveComponentOfType(System.Type,Walgelijk.Entity)">
-            <summary>
-            Detach a component of a type from an entity
-            </summary>
-            <returns>True if anything was removed</returns>
-        </member>
-        <member name="T:Walgelijk.EntityWithAnything">
-            <summary>
-            Entity and object tuple
-            </summary>
-        </member>
-        <member name="F:Walgelijk.EntityWithAnything.Component">
-            <summary>
-            Related component
-            </summary>
-        </member>
-        <member name="F:Walgelijk.EntityWithAnything.Entity">
-            <summary>
-            Entity that the component is attached to
-            </summary>
-        </member>
         <member name="T:Walgelijk.ComponentRelationAttribute">
             <summary>
             Base class for attributes that indicate a component relationship
@@ -1099,6 +825,221 @@
         <member name="P:Walgelijk.ComponentRelationAttribute.Types">
             <summary>
             Relevant component types
+            </summary>
+        </member>
+        <member name="T:Walgelijk.BasicComponentCollection">
+            <summary>
+            Represents a thread safe collection of components and their entities
+            </summary>
+        </member>
+        <member name="P:Walgelijk.BasicComponentCollection.Count">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.Attach``1(Walgelijk.Entity,``0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.Contains``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.GetAll">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.GetAll(System.Span{Walgelijk.Component})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.GetAll(Walgelijk.Component[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.GetAllFrom(Walgelijk.Entity)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.GetAllFrom(Walgelijk.Entity,System.Span{Walgelijk.Component})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.GetAllFrom(Walgelijk.Entity,Walgelijk.Component[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.GetAllOfType``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.GetAllOfType``1(System.Span{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.GetAllOfType``1(``0[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.GetFrom``1(Walgelijk.Entity)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.TryGetFrom``1(Walgelijk.Entity,``0@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.Has``1(Walgelijk.Entity)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.HasEntity(Walgelijk.Entity)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.Remove``1(Walgelijk.Entity)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.Remove(System.Type,Walgelijk.Entity)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicComponentCollection.SyncBuffers">
+            <inheritdoc/>
+        </member>
+        <member name="T:Walgelijk.Component">
+            <summary>
+            Component base class. Contains a reference to the entity that is attached.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Component.Entity">
+            <summary>
+            The entity that this component is attached to
+            </summary>
+        </member>
+        <member name="T:Walgelijk.IComponentCollection">
+            <summary>
+            Represents a thread safe collection of components and their entities
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.Attach``1(Walgelijk.Entity,``0)">
+            <summary>
+            Attach component to entity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.Remove``1(Walgelijk.Entity)">
+            <summary>
+            Detach component from entity and dispose
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.Remove(System.Type,Walgelijk.Entity)">
+            <summary>
+            Detach component from entity and dispose
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.Remove(Walgelijk.Entity)">
+            <summary>
+            Remove all components from the entity 
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.GetAllFrom(Walgelijk.Entity)">
+            <summary>
+            Get all components attached to an entity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.GetAllFrom(Walgelijk.Entity,System.Span{Walgelijk.Component})">
+            <summary>
+            Get all components attached to an entity and put it in the given span. 
+            Returns actual amount that was put in.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.GetAllFrom(Walgelijk.Entity,Walgelijk.Component[],System.Int32,System.Int32)">
+            <summary>
+            Get all components attached to an entity and put it int the given array at the given position. 
+            Returns actual amount that was put in.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.GetFrom``1(Walgelijk.Entity)">
+            <summary>
+            Get a component from an entity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.TryGetFrom``1(Walgelijk.Entity,``0@)">
+            <summary>
+            Try to get a component from an entity. 
+            Returns true if the retrieval was succesful
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.GetAllOfType``1">
+            <summary>
+            Get all components by type
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.GetAllOfType``1(System.Span{``0})">
+            <summary>
+            Get all components by type and put it in the given span. 
+            Returns actual amount that was put in.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.GetAllOfType``1(``0[],System.Int32,System.Int32)">
+            <summary>
+            Get all components by type and put it int the given array at the given position. 
+            Returns actual amount that was put in.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.GetAll">
+            <summary>
+            Get all components
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.GetAll(System.Span{Walgelijk.Component})">
+            <summary>
+            Get all components and put it in the given span
+            Returns actual amount that was put in.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.GetAll(Walgelijk.Component[],System.Int32,System.Int32)">
+            <summary>
+            Get all components and put it in the given array at the given position
+            Returns actual amount that was put in.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.Has``1(Walgelijk.Entity)">
+            <summary>
+            Returns true if the entity has a component of the given type
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.HasEntity(Walgelijk.Entity)">
+            <summary>
+            Returns true if the entity was found in the cache
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.Contains``1">
+            <summary>
+            Returns true if there exists a component of this type
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IComponentCollection.SyncBuffers">
+            <summary>
+            Called when a frame has ended. 
+            The collection will empty its add and destroy buffers and update the main component collection.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IComponentCollection.Count">
+            <summary>
+            Amount of components in total
+            </summary>
+        </member>
+        <member name="M:Walgelijk.BasicEntityCollection.SetTag(Walgelijk.Entity,Walgelijk.Tag)">
+            <summary>
+            Attaches a tag to an entity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.BasicEntityCollection.HasTag(Walgelijk.Entity,Walgelijk.Tag)">
+            <summary>
+            Returns true if the entity has the given tag
+            </summary>
+        </member>
+        <member name="M:Walgelijk.BasicEntityCollection.ClearTag(Walgelijk.Entity)">
+            <summary>
+            Detaches a tag from an entity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.BasicEntityCollection.TryGetTag(Walgelijk.Entity,Walgelijk.Tag@)">
+            <summary>
+            Returns true if the given entity has a tag attached. The tag is returned in the output parameter <paramref name="tag"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.BasicEntityCollection.GetEntitiesWithTag(Walgelijk.Tag)">
+            <summary>
+            Returns all entities with the given tag
+            </summary>
+        </member>
+        <member name="M:Walgelijk.BasicEntityCollection.TryGetEntityWithTag(Walgelijk.Tag,Walgelijk.Entity@)">
+            <summary>
+            Returns true if any entity with a given tag is found. The entity is returned in the output parameter <paramref name="entity"/>
             </summary>
         </member>
         <member name="T:Walgelijk.Entity">
@@ -1111,22 +1052,6 @@
             The identity of the entity
             </summary>
         </member>
-        <member name="T:Walgelijk.EntityWith`1">
-            <summary>
-            Struct that holds a component and its entity
-            </summary>
-            <typeparam name="T"></typeparam>
-        </member>
-        <member name="P:Walgelijk.EntityWith`1.Component">
-            <summary>
-            The component of type <typeparamref name="T"/>
-            </summary>
-        </member>
-        <member name="P:Walgelijk.EntityWith`1.Entity">
-            <summary>
-            The entity that <see cref="P:Walgelijk.EntityWith`1.Component"/> is attached to
-            </summary>
-        </member>
         <member name="T:Walgelijk.IdentityGenerator">
             <summary>
             Generates entity identities
@@ -1135,6 +1060,22 @@
         <member name="M:Walgelijk.IdentityGenerator.Generate">
             <summary>
             Generate a new identity value
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IEntityCollection.SyncBuffers">
+            <summary>
+            Called when a frame has ended. 
+            The collection will empty its add and destroy buffers and update the main entity collection.
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Tag">
+            <summary>
+            A tag that can be connected to an entity. Multiple objects can share the same tag.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Tag.Value">
+            <summary>
+            The tag value
             </summary>
         </member>
         <member name="T:Walgelijk.RequiresComponents">
@@ -1202,34 +1143,9 @@
             Retrieve a system
             </summary>
         </member>
-        <member name="M:Walgelijk.Scene.SetTag(Walgelijk.Entity,Walgelijk.Tag)">
+        <member name="M:Walgelijk.Scene.GetSystem(System.Type)">
             <summary>
-            Attaches a tag to an entity
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Scene.HasTag(Walgelijk.Entity,Walgelijk.Tag)">
-            <summary>
-            Returns true if the entity has the given tag
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Scene.ClearTag(Walgelijk.Entity)">
-            <summary>
-            Detaches a tag from an entity
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Scene.TryGetTag(Walgelijk.Entity,Walgelijk.Tag@)">
-            <summary>
-            Returns true if the given entity has a tag attached. The tag is returned in the output parameter <paramref name="tag"/>
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Scene.GetEntitiesWithTag(Walgelijk.Tag)">
-            <summary>
-            Returns all entities with the given tag
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Scene.TryGetEntityWithTag(Walgelijk.Tag,Walgelijk.Entity@)">
-            <summary>
-            Returns true if any entity with a given tag is found. The entity is returned in the output parameter <paramref name="entity"/>
+            Retrieve a system
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.HasSystem``1">
@@ -1241,7 +1157,6 @@
             <summary>
             Remove system from the list. Getting rid of any references to it is not handled, so the object might remain in memory.
             </summary>
-            <returns>if the operation was successful</returns>
         </member>
         <member name="M:Walgelijk.Scene.GetSystems">
             <summary>
@@ -1253,18 +1168,13 @@
             Register a new entity to the scene
             </summary>
         </member>
-        <member name="M:Walgelijk.Scene.RegisterExistingEntity(Walgelijk.Entity)">
-            <summary>
-            Register an existing Entity ID to the scene. This should not be used if you are to create a new entity. Use <see cref="M:Walgelijk.Scene.CreateEntity"/> instead. <see cref="E:Walgelijk.Scene.OnCreateEntity"/> will not be invoked.
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Scene.RemoveEntity(System.Int32)">
+        <member name="M:Walgelijk.Scene.RemoveEntity(Walgelijk.Entity)">
             <summary>
             Removes the entity from the list. Also removes all attached components. Any references to the entity will become useless as they will point to nothing. References to any attached components are not handled, so they may remain in memory.
             </summary>
             <param name="identity"></param>
         </member>
-        <member name="M:Walgelijk.Scene.HasEntity(System.Int32)">
+        <member name="M:Walgelijk.Scene.HasEntity(Walgelijk.Entity)">
             <summary>
             Get if an entity lives in the scene
             </summary>
@@ -1289,12 +1199,12 @@
             Get all components and entities of a certain type
             </summary>
         </member>
-        <member name="M:Walgelijk.Scene.GetAllComponentsOfType``1(Walgelijk.EntityWith{``0}[])">
+        <member name="M:Walgelijk.Scene.GetAllComponentsOfType``1(``0[])">
             <summary>
             Get all components and entities of a certain type and put them into the given buffer, returning the relevant section of it
             </summary>
         </member>
-        <member name="M:Walgelijk.Scene.CopyAllComponentsOfType``1(Walgelijk.EntityWith{``0}[])">
+        <member name="M:Walgelijk.Scene.CopyAllComponentsOfType``1(``0[])">
             <summary>
             Get all components and entities and add them into the given array. It returns the amount of items that were inserted.
             </summary>
@@ -1304,24 +1214,9 @@
             Returns the first found instance of the given type.
             </summary>
         </member>
-        <member name="M:Walgelijk.Scene.FindAnyComponent``1(``0@,Walgelijk.Entity@)">
-            <summary>
-            Returns the first found instance of the given type.
-            </summary>
-        </member>
         <member name="M:Walgelijk.Scene.GetComponentFrom``1(Walgelijk.Entity)">
             <summary>
             Retrieve the first component of the specified type on the given entity, otherwise returns default
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Scene.GetComponentFast``1(Walgelijk.Entity)">
-            <summary>
-            Gets the component of the <b>exact</b> given type from the given entity. Use this is you are absolutely sure that the entity has the component you're asking for and that it refers to a component of that exact type. Inheritance is supported here but it's discouraged as it can lead to ambiguity.
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Scene.TryGetEntityWith(System.Object,Walgelijk.Entity@)">
-            <summary>
-            Get the <see cref="T:Walgelijk.Entity"/> connected to the given component
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.TryGetComponentFrom``1(Walgelijk.Entity,``0@)">
@@ -1369,8 +1264,18 @@
             Unload all entities and components in the scene.
             </summary>
         </member>
+        <member name="T:Walgelijk.BasicSystemCollection">
+            <summary>
+            Represents a thread safe collection of systems
+            </summary>
+        </member>
         <member name="P:Walgelijk.BasicSystemCollection.Count">
             <inheritdoc/>
+        </member>
+        <member name="F:Walgelijk.BasicSystemCollection.Capacity">
+            <summary>
+            Maximum system amount. Can only be set on creation
+            </summary>
         </member>
         <member name="P:Walgelijk.BasicSystemCollection.Scene">
             <inheritdoc/>
@@ -1441,6 +1346,11 @@
         </member>
         <member name="M:Walgelijk.BasicSystemCollection.Remove(System.Type)">
             <inheritdoc/>
+        </member>
+        <member name="T:Walgelijk.ISystemCollection">
+            <summary>
+            Represents a thread safe collection of systems
+            </summary>
         </member>
         <member name="P:Walgelijk.ISystemCollection.Scene">
             <summary>
@@ -1633,181 +1543,6 @@
             <summary>
             Run post rendering code
             </summary>
-        </member>
-        <member name="T:Walgelijk.Tag">
-            <summary>
-            A tag that can be connected to an entity. Multiple objects can share the same tag.
-            </summary>
-        </member>
-        <member name="F:Walgelijk.Tag.Value">
-            <summary>
-            The tag value
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.#ctor(System.Int32)">
-            <summary>
-            Create new FastNoise object with optional seed
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetSeed(System.Int32)">
-            <summary>
-            Sets seed used for all noise types
-            </summary>
-            <remarks>
-            Default: 1337
-            </remarks>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetFrequency(System.Single)">
-            <summary>
-            Sets frequency for all noise types
-            </summary>
-            <remarks>
-            Default: 0.01
-            </remarks>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetNoiseType(Walgelijk.Auburn.FastNoiseLite.NoiseType)">
-            <summary>
-            Sets noise algorithm used for GetNoise(...)
-            </summary>
-            <remarks>
-            Default: OpenSimplex2
-            </remarks>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetRotationType3D(Walgelijk.Auburn.FastNoiseLite.RotationType3D)">
-            <summary>
-            Sets domain rotation type for 3D Noise and 3D DomainWarp.
-            Can aid in reducing directional artifacts when sampling a 2D plane in 3D
-            </summary>
-            <remarks>
-            Default: None
-            </remarks>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetFractalType(Walgelijk.Auburn.FastNoiseLite.FractalType)">
-            <summary>
-            Sets method for combining octaves in all fractal noise types
-            </summary>
-            <remarks>
-            Default: None
-            Note: FractalType.DomainWarp... only affects DomainWarp(...)
-            </remarks>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetFractalOctaves(System.Int32)">
-            <summary>
-            Sets octave count for all fractal noise types 
-            </summary>
-            <remarks>
-            Default: 3
-            </remarks>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetFractalLacunarity(System.Single)">
-            <summary>
-            Sets octave lacunarity for all fractal noise types
-            </summary>
-            <remarks>
-            Default: 2.0
-            </remarks>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetFractalGain(System.Single)">
-            <summary>
-            Sets octave gain for all fractal noise types
-            </summary>
-            <remarks>
-            Default: 0.5
-            </remarks>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetFractalWeightedStrength(System.Single)">
-            <summary>
-            Sets octave weighting for all none DomainWarp fratal types
-            </summary>
-            <remarks>
-            Default: 0.0
-            Note: Keep between 0...1 to maintain -1...1 output bounding
-            </remarks>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetFractalPingPongStrength(System.Single)">
-            <summary>
-            Sets strength of the fractal ping pong effect
-            </summary>
-            <remarks>
-            Default: 2.0
-            </remarks>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetCellularDistanceFunction(Walgelijk.Auburn.FastNoiseLite.CellularDistanceFunction)">
-            <summary>
-            Sets distance function used in cellular noise calculations
-            </summary>
-            <remarks>
-            Default: Distance
-            </remarks>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetCellularReturnType(Walgelijk.Auburn.FastNoiseLite.CellularReturnType)">
-            <summary>
-            Sets return type from cellular noise calculations
-            </summary>
-            <remarks>
-            Default: EuclideanSq
-            </remarks>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetCellularJitter(System.Single)">
-            <summary>
-            Sets the maximum distance a cellular point can move from it's grid position
-            </summary>
-            <remarks>
-            Default: 1.0
-            Note: Setting this higher than 1 will cause artifacts
-            </remarks> 
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetDomainWarpType(Walgelijk.Auburn.FastNoiseLite.DomainWarpType)">
-            <summary>
-            Sets the warp algorithm when using DomainWarp(...)
-            </summary>
-            <remarks>
-            Default: OpenSimplex2
-            </remarks>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetDomainWarpAmp(System.Single)">
-            <summary>
-            Sets the maximum warp distance from original position when using DomainWarp(...)
-            </summary>
-            <remarks>
-            Default: 1.0
-            </remarks>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.GetNoise(System.Single,System.Single)">
-            <summary>
-            2D noise at given position using current settings
-            </summary>
-            <returns>
-            Noise output bounded between -1...1
-            </returns>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.GetNoise(System.Single,System.Single,System.Single)">
-            <summary>
-            3D noise at given position using current settings
-            </summary>
-            <returns>
-            Noise output bounded between -1...1
-            </returns>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.DomainWarp(System.Single@,System.Single@)">
-            <summary>
-            2D warps the input position using current domain warp settings
-            </summary>
-            <example>
-            Example usage with GetNoise
-            <code>DomainWarp(ref x, ref y)
-            noise = GetNoise(x, y)</code>
-            </example>
-        </member>
-        <member name="M:Walgelijk.Auburn.FastNoiseLite.DomainWarp(System.Single@,System.Single@,System.Single@)">
-            <summary>
-            3D warps the input position using current domain warp settings
-            </summary>
-            <example>
-            Example usage with GetNoise
-            <code>DomainWarp(ref x, ref y, ref z)
-            noise = GetNoise(x, y, z)</code>
-            </example>
         </member>
         <member name="T:Walgelijk.AttributeType">
             <summary>
@@ -3509,6 +3244,378 @@
             Mirrors the UV
             </summary>
         </member>
+        <member name="T:Walgelijk.Cache`2">
+            <summary>
+            A generic cache object that provides a way to load heavy objects based on a lighter key
+            </summary>
+            <typeparam name="UnloadedType">The key. This object is usually light and cheap to create</typeparam>
+            <typeparam name="LoadedType">The loaded object. This object is usually heavy and expensive to create</typeparam>
+        </member>
+        <member name="M:Walgelijk.Cache`2.Load(`0)">
+            <summary>
+            Load or create a <typeparamref name="LoadedType"/> from an <typeparamref name="UnloadedType"/>
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Cache`2.CreateNew(`0)">
+            <summary>
+            Determines what must be done when an entirely new <typeparamref name="LoadedType"/> is created
+            </summary>
+            <param name="raw"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Cache`2.DisposeOf(`1)">
+            <summary>
+            Dispose of any resources attached to the loaded type. This is invoked when an entry is unloaded.
+            </summary>
+            <param name="loaded"></param>
+        </member>
+        <member name="M:Walgelijk.Cache`2.Unload(`0)">
+            <summary>
+            Unload an entry and dispose of all attached resources
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Cache`2.Has(`0)">
+            <summary>
+            Returns if an entry is in the cache
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Cache`2.UnloadAll">
+            <summary>
+            Clear the cache
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Cache`2.GetAllLoaded">
+            <summary>
+            Returns every loaded item in the cache
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Cache`2.GetAllUnloaded">
+            <summary>
+            Returns every unloaded item ever loaded
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Curve`1">
+            <summary>
+            Linear curve
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Curve`1.Keys">
+            <summary>
+            Value keys
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Curve`1.#ctor(Walgelijk.Curve{`0}.Key[])">
+            <summary>
+            Construct a curve and sort the given keys
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Curve`1.Evaluate(System.Single)">
+            <summary>
+            Get value at a position in the curve using linear interpolation
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Curve`1.Lerp(`0,`0,System.Single)">
+            <summary>
+            Linear interpolation implementation for type <typeparamref name="T"/>
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Curve`1.Key">
+            <summary>
+            Key with a position and value of type <typeparamref name="T"/>
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Curve`1.Key.Value">
+            <summary>
+            Value
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Curve`1.Key.Position">
+            <summary>
+            Position in range 0, 1
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Curve`1.Key.#ctor(`0,System.Single)">
+            <summary>
+            Construct a Key
+            </summary>
+        </member>
+        <member name="T:Walgelijk.FloatCurve">
+            <summary>
+            <see cref="T:System.Single"/> curve
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ColorCurve">
+            <summary>
+            <see cref="T:Walgelijk.Color"/> curve
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Vec4Curve">
+            <summary>
+            <see cref="T:System.Numerics.Vector4"/> curve
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Vec2Curve">
+            <summary>
+            <see cref="T:System.Numerics.Vector2"/> curve
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Vec3Curve">
+            <summary>
+            <see cref="T:System.Numerics.Vector3"/> curve
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Easings">
+            <summary>
+            Utility struct full of easing curve functions
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Easings.Cubic">
+            <summary>
+            Cubic easing functions
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Cubic.InOut(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in ease-out cubic curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Cubic.In(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in cubic curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Cubic.Out(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-out cubic curve
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Easings.Quad">
+            <summary>
+            Quadtratic easing functions
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Quad.InOut(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in ease-out quadractic curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Quad.In(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in quadractic curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Quad.Out(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-out quadractic curve
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Easings.Expo">
+            <summary>
+            Exponential easing functions
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Expo.InOut(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in ease-out exponential curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Expo.In(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in exponential curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Expo.Out(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-out exponential curve
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Easings.Circ">
+            <summary>
+            Circular easing functions
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Circ.InOut(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in ease-out circular curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Circ.In(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-in circular curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Easings.Circ.Out(System.Single)">
+            <summary>
+            Remaps a linear value from 0 to 1 to an ease-out circular curve
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.#ctor(System.Int32)">
+            <summary>
+            Create new FastNoise object with optional seed
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetSeed(System.Int32)">
+            <summary>
+            Sets seed used for all noise types
+            </summary>
+            <remarks>
+            Default: 1337
+            </remarks>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetFrequency(System.Single)">
+            <summary>
+            Sets frequency for all noise types
+            </summary>
+            <remarks>
+            Default: 0.01
+            </remarks>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetNoiseType(Walgelijk.Auburn.FastNoiseLite.NoiseType)">
+            <summary>
+            Sets noise algorithm used for GetNoise(...)
+            </summary>
+            <remarks>
+            Default: OpenSimplex2
+            </remarks>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetRotationType3D(Walgelijk.Auburn.FastNoiseLite.RotationType3D)">
+            <summary>
+            Sets domain rotation type for 3D Noise and 3D DomainWarp.
+            Can aid in reducing directional artifacts when sampling a 2D plane in 3D
+            </summary>
+            <remarks>
+            Default: None
+            </remarks>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetFractalType(Walgelijk.Auburn.FastNoiseLite.FractalType)">
+            <summary>
+            Sets method for combining octaves in all fractal noise types
+            </summary>
+            <remarks>
+            Default: None
+            Note: FractalType.DomainWarp... only affects DomainWarp(...)
+            </remarks>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetFractalOctaves(System.Int32)">
+            <summary>
+            Sets octave count for all fractal noise types 
+            </summary>
+            <remarks>
+            Default: 3
+            </remarks>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetFractalLacunarity(System.Single)">
+            <summary>
+            Sets octave lacunarity for all fractal noise types
+            </summary>
+            <remarks>
+            Default: 2.0
+            </remarks>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetFractalGain(System.Single)">
+            <summary>
+            Sets octave gain for all fractal noise types
+            </summary>
+            <remarks>
+            Default: 0.5
+            </remarks>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetFractalWeightedStrength(System.Single)">
+            <summary>
+            Sets octave weighting for all none DomainWarp fratal types
+            </summary>
+            <remarks>
+            Default: 0.0
+            Note: Keep between 0...1 to maintain -1...1 output bounding
+            </remarks>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetFractalPingPongStrength(System.Single)">
+            <summary>
+            Sets strength of the fractal ping pong effect
+            </summary>
+            <remarks>
+            Default: 2.0
+            </remarks>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetCellularDistanceFunction(Walgelijk.Auburn.FastNoiseLite.CellularDistanceFunction)">
+            <summary>
+            Sets distance function used in cellular noise calculations
+            </summary>
+            <remarks>
+            Default: Distance
+            </remarks>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetCellularReturnType(Walgelijk.Auburn.FastNoiseLite.CellularReturnType)">
+            <summary>
+            Sets return type from cellular noise calculations
+            </summary>
+            <remarks>
+            Default: EuclideanSq
+            </remarks>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetCellularJitter(System.Single)">
+            <summary>
+            Sets the maximum distance a cellular point can move from it's grid position
+            </summary>
+            <remarks>
+            Default: 1.0
+            Note: Setting this higher than 1 will cause artifacts
+            </remarks> 
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetDomainWarpType(Walgelijk.Auburn.FastNoiseLite.DomainWarpType)">
+            <summary>
+            Sets the warp algorithm when using DomainWarp(...)
+            </summary>
+            <remarks>
+            Default: OpenSimplex2
+            </remarks>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.SetDomainWarpAmp(System.Single)">
+            <summary>
+            Sets the maximum warp distance from original position when using DomainWarp(...)
+            </summary>
+            <remarks>
+            Default: 1.0
+            </remarks>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.GetNoise(System.Single,System.Single)">
+            <summary>
+            2D noise at given position using current settings
+            </summary>
+            <returns>
+            Noise output bounded between -1...1
+            </returns>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.GetNoise(System.Single,System.Single,System.Single)">
+            <summary>
+            3D noise at given position using current settings
+            </summary>
+            <returns>
+            Noise output bounded between -1...1
+            </returns>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.DomainWarp(System.Single@,System.Single@)">
+            <summary>
+            2D warps the input position using current domain warp settings
+            </summary>
+            <example>
+            Example usage with GetNoise
+            <code>DomainWarp(ref x, ref y)
+            noise = GetNoise(x, y)</code>
+            </example>
+        </member>
+        <member name="M:Walgelijk.Auburn.FastNoiseLite.DomainWarp(System.Single@,System.Single@,System.Single@)">
+            <summary>
+            3D warps the input position using current domain warp settings
+            </summary>
+            <example>
+            Example usage with GetNoise
+            <code>DomainWarp(ref x, ref y, ref z)
+            noise = GetNoise(x, y, z)</code>
+            </example>
+        </member>
         <member name="T:Walgelijk.IExternal`1">
             <summary>
             Objects that have data on the local side that is eventually uploaded somewhere else (usually the GPU)
@@ -3931,6 +4038,319 @@
         <member name="M:Walgelijk.StringExtension.ToByteArray(System.String,System.Span{System.Byte})">
             <summary>
             Populates an array where each entry is a byte that corresponds to the given string in ASCII
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Utilities">
+            <summary>
+            Utility struct full of useful functions
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Utilities.RadToDeg">
+            <summary>
+            Radians to degrees constant ratio
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Utilities.DegToRad">
+            <summary>
+            Degrees to radians constant ratio
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Hash(System.Single)">
+            <summary>
+            Shader-style deterministic random value (0 - 1)
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Fract(System.Single)">
+            <summary>
+            Get the fractional component
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.LerpAngle(System.Single,System.Single,System.Single)">
+            <summary>
+            Linearly interpolate between two angles in degrees
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Lerp(System.Single,System.Single,System.Single)">
+            <summary>
+            Linearly interpolate between two floats
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Lerp(System.Numerics.Vector4,System.Numerics.Vector4,System.Single)">
+            <summary>
+            Linearly interpolate between two colors or 4 dimensional vectors
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Lerp(System.Numerics.Vector2,System.Numerics.Vector2,System.Single)">
+            <summary>
+            Linearly interpolate between two vectors
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Lerp(System.Numerics.Vector3,System.Numerics.Vector3,System.Single)">
+            <summary>
+            Linearly interpolate between two vectors
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.RandomFloat(System.Single,System.Single)">
+            <summary>
+            Returns a random float in a range
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.RandomPointInCircle(System.Single,System.Single)">
+            <summary>
+            Returns a random point in a circle
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.RandomInt(System.Int32,System.Int32)">
+            <summary>
+            Returns a random int in a range (inclusive min, exclusive max)
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.RandomByte">
+            <summary>
+            Returns a random byte
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.RandomColour(System.Single)">
+            <summary>
+            Returns a colour where the RGB components are random
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.RandomHue(System.Single,System.Single,System.Single)">
+            <summary>
+            Returns a colour with a random hue
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Clamp(System.Single,System.Single,System.Single)">
+            <summary>
+            Clamp a value within a range
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Utilities.Clamp(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Clamp a value within a range
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Utilities.Mod(System.Single,System.Single)">
+            <summary>
+            Modulus
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.DeltaAngle(System.Single,System.Single)">
+            <summary>
+            Smallest difference between two angles in degrees
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.PickRandom``1(System.Collections.Generic.IList{``0})">
+            <summary>
+            Return a random entry in a <see cref="T:System.Collections.Generic.ICollection`1"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.PickRandom``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Return a random entry in a <see cref="T:System.Collections.Generic.IEnumerable`1"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.PickRandom``1(``0,``0)">
+            <summary>
+            Return a random value from the given parameters
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.PickRandom``1(``0,``0,``0)">
+            <summary>
+            Return a random value from the given parameters
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.PickRandom``1(``0,``0,``0,``0)">
+            <summary>
+            Return a random value from the given parameters
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.PickRandom``1(``0,``0,``0,``0,``0)">
+            <summary>
+            Return a random value from the given parameters
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.AngleToVector(System.Single)">
+            <summary>
+            Returns a normalised <see cref="T:System.Numerics.Vector2"/> corresponding to the given angle in degrees. 
+            0° gives (1, 0). 90° gives (0, 1)
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.VectorToAngle(System.Numerics.Vector2)">
+            <summary>
+            Returns an angle in degrees corresponding to the given normalised <see cref="T:System.Numerics.Vector2"/>. 
+            (1, 0) gives 0°. (0, 1) gives 90° 
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.MapRange(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Linearly map a value in a range onto another range
+            </summary>
+            <param name="a1">Source lower bound</param>
+            <param name="a2">Source upper bound</param>
+            <param name="b1">Destination lower bound</param>
+            <param name="b2">Destination upper bound</param>
+            <param name="s">The value to remap</param>
+            <returns>Remapped value <paramref name="s"/></returns>
+        </member>
+        <member name="M:Walgelijk.Utilities.MapRange(System.Double,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Linearly map a value in a range onto another range
+            </summary>
+            <param name="a1">Source lower bound</param>
+            <param name="a2">Source upper bound</param>
+            <param name="b1">Destination lower bound</param>
+            <param name="b2">Destination upper bound</param>
+            <param name="s">The value to remap</param>
+            <returns>Remapped value <paramref name="s"/></returns>
+        </member>
+        <member name="M:Walgelijk.Utilities.ApplyAcceleration(System.Numerics.Vector2,System.Numerics.Vector2,System.Numerics.Vector2,System.Single,System.Single)">
+            <summary>
+            Apply a constant acceleration to the given 2D position and 2D velocity, considering a time step.
+            </summary>
+            <param name="acceleration">The acceleration</param>
+            <param name="currentPos">The initial position</param>
+            <param name="currentVelocity">The initial velocity</param>
+            <param name="deltaTime">The time step</param>
+            <param name="dampening">Optional dampening parameter (0 - 1)</param>
+            <returns>A struct with the new position and new velocity</returns>
+        </member>
+        <member name="M:Walgelijk.Utilities.ApplyAcceleration(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Apply a constant acceleration to the given 1D position and 1D velocity, considering a time step.
+            </summary>
+            <param name="acceleration">The acceleration</param>
+            <param name="currentPos">The initial position</param>
+            <param name="currentVelocity">The initial velocity</param>
+            <param name="deltaTime">The time step</param>
+            <param name="dampening">Optional dampening parameter (0 - 1)</param>
+            <returns>A struct with the new position and new velocity</returns>
+        </member>
+        <member name="M:Walgelijk.Utilities.LerpDt(System.Single,System.Single)">
+            <summary>
+            Returns the lerp factor adjusted for the given time step
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector2,System.Numerics.Vector2,System.Numerics.Vector2,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector3,System.Numerics.Vector3,System.Numerics.Vector3,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector4,System.Numerics.Vector4,System.Numerics.Vector4,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothAngleApproach(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target angle degrees given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothAngleApproach(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target angle degrees given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector2,System.Numerics.Vector2,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector3,System.Numerics.Vector3,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector4,System.Numerics.Vector4,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.NanFallback(System.Single,System.Single)">
+            <summary>
+            Returns the given fallback value (0 by default) if the given input value is NaN
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.NanFallback(System.Numerics.Vector2,System.Single)">
+            <summary>
+            Returns the given fallback value (0 by default) if the given input value is NaN
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.NanFallback(System.Numerics.Vector3,System.Single)">
+            <summary>
+            Returns the given fallback value (0 by default) if the given input value is NaN
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.NanFallback(System.Numerics.Vector4,System.Single)">
+            <summary>
+            Returns the given fallback value (0 by default) if the given input value is NaN
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Snap(System.Single,System.Single)">
+            <summary>
+            Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Snap(System.Int32,System.Int32)">
+            <summary>
+            Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Snap(System.Numerics.Vector2,System.Single)">
+            <summary>
+            Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Snap(System.Numerics.Vector3,System.Single)">
+            <summary>
+            Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.TextEqualsCaseInsensitive(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char})">
+            <summary>
+            Are the two given character spans the same, regardless of casing? 
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Smoothstep(System.Single,System.Single,System.Single)">
+            <summary>
+            Smoothstep function
             </summary>
         </member>
         <member name="T:Walgelijk.Asset">
@@ -5223,319 +5643,6 @@
         <member name="T:Walgelijk.VerticalTextAlign">
             <summary>
             Ways to align text vertically
-            </summary>
-        </member>
-        <member name="T:Walgelijk.Utilities">
-            <summary>
-            Utility struct full of useful functions
-            </summary>
-        </member>
-        <member name="F:Walgelijk.Utilities.RadToDeg">
-            <summary>
-            Radians to degrees constant ratio
-            </summary>
-        </member>
-        <member name="F:Walgelijk.Utilities.DegToRad">
-            <summary>
-            Degrees to radians constant ratio
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.Hash(System.Single)">
-            <summary>
-            Shader-style deterministic random value (0 - 1)
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.Fract(System.Single)">
-            <summary>
-            Get the fractional component
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.LerpAngle(System.Single,System.Single,System.Single)">
-            <summary>
-            Linearly interpolate between two angles in degrees
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.Lerp(System.Single,System.Single,System.Single)">
-            <summary>
-            Linearly interpolate between two floats
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.Lerp(System.Numerics.Vector4,System.Numerics.Vector4,System.Single)">
-            <summary>
-            Linearly interpolate between two colors or 4 dimensional vectors
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.Lerp(System.Numerics.Vector2,System.Numerics.Vector2,System.Single)">
-            <summary>
-            Linearly interpolate between two vectors
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.Lerp(System.Numerics.Vector3,System.Numerics.Vector3,System.Single)">
-            <summary>
-            Linearly interpolate between two vectors
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.RandomFloat(System.Single,System.Single)">
-            <summary>
-            Returns a random float in a range
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.RandomPointInCircle(System.Single,System.Single)">
-            <summary>
-            Returns a random point in a circle
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.RandomInt(System.Int32,System.Int32)">
-            <summary>
-            Returns a random int in a range (inclusive min, exclusive max)
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.RandomByte">
-            <summary>
-            Returns a random byte
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.RandomColour(System.Single)">
-            <summary>
-            Returns a colour where the RGB components are random
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.RandomHue(System.Single,System.Single,System.Single)">
-            <summary>
-            Returns a colour with a random hue
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.Clamp(System.Single,System.Single,System.Single)">
-            <summary>
-            Clamp a value within a range
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Walgelijk.Utilities.Clamp(System.Int32,System.Int32,System.Int32)">
-            <summary>
-            Clamp a value within a range
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Walgelijk.Utilities.Mod(System.Single,System.Single)">
-            <summary>
-            Modulus
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.DeltaAngle(System.Single,System.Single)">
-            <summary>
-            Smallest difference between two angles in degrees
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.PickRandom``1(System.Collections.Generic.IList{``0})">
-            <summary>
-            Return a random entry in a <see cref="T:System.Collections.Generic.ICollection`1"/>
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.PickRandom``1(System.Collections.Generic.IEnumerable{``0})">
-            <summary>
-            Return a random entry in a <see cref="T:System.Collections.Generic.IEnumerable`1"/>
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.PickRandom``1(``0,``0)">
-            <summary>
-            Return a random value from the given parameters
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.PickRandom``1(``0,``0,``0)">
-            <summary>
-            Return a random value from the given parameters
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.PickRandom``1(``0,``0,``0,``0)">
-            <summary>
-            Return a random value from the given parameters
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.PickRandom``1(``0,``0,``0,``0,``0)">
-            <summary>
-            Return a random value from the given parameters
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.AngleToVector(System.Single)">
-            <summary>
-            Returns a normalised <see cref="T:System.Numerics.Vector2"/> corresponding to the given angle in degrees. 
-            0° gives (1, 0). 90° gives (0, 1)
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.VectorToAngle(System.Numerics.Vector2)">
-            <summary>
-            Returns an angle in degrees corresponding to the given normalised <see cref="T:System.Numerics.Vector2"/>. 
-            (1, 0) gives 0°. (0, 1) gives 90° 
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.MapRange(System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Linearly map a value in a range onto another range
-            </summary>
-            <param name="a1">Source lower bound</param>
-            <param name="a2">Source upper bound</param>
-            <param name="b1">Destination lower bound</param>
-            <param name="b2">Destination upper bound</param>
-            <param name="s">The value to remap</param>
-            <returns>Remapped value <paramref name="s"/></returns>
-        </member>
-        <member name="M:Walgelijk.Utilities.MapRange(System.Double,System.Double,System.Double,System.Double,System.Double)">
-            <summary>
-            Linearly map a value in a range onto another range
-            </summary>
-            <param name="a1">Source lower bound</param>
-            <param name="a2">Source upper bound</param>
-            <param name="b1">Destination lower bound</param>
-            <param name="b2">Destination upper bound</param>
-            <param name="s">The value to remap</param>
-            <returns>Remapped value <paramref name="s"/></returns>
-        </member>
-        <member name="M:Walgelijk.Utilities.ApplyAcceleration(System.Numerics.Vector2,System.Numerics.Vector2,System.Numerics.Vector2,System.Single,System.Single)">
-            <summary>
-            Apply a constant acceleration to the given 2D position and 2D velocity, considering a time step.
-            </summary>
-            <param name="acceleration">The acceleration</param>
-            <param name="currentPos">The initial position</param>
-            <param name="currentVelocity">The initial velocity</param>
-            <param name="deltaTime">The time step</param>
-            <param name="dampening">Optional dampening parameter (0 - 1)</param>
-            <returns>A struct with the new position and new velocity</returns>
-        </member>
-        <member name="M:Walgelijk.Utilities.ApplyAcceleration(System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Apply a constant acceleration to the given 1D position and 1D velocity, considering a time step.
-            </summary>
-            <param name="acceleration">The acceleration</param>
-            <param name="currentPos">The initial position</param>
-            <param name="currentVelocity">The initial velocity</param>
-            <param name="deltaTime">The time step</param>
-            <param name="dampening">Optional dampening parameter (0 - 1)</param>
-            <returns>A struct with the new position and new velocity</returns>
-        </member>
-        <member name="M:Walgelijk.Utilities.LerpDt(System.Single,System.Single)">
-            <summary>
-            Returns the lerp factor adjusted for the given time step
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Smoothly approaches a value to a target value given a speed and dt
-            <br></br>
-            By luispedrofonseca
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector2,System.Numerics.Vector2,System.Numerics.Vector2,System.Single,System.Single)">
-            <summary>
-            Smoothly approaches a value to a target value given a speed and dt
-            <br></br>
-            By luispedrofonseca
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector3,System.Numerics.Vector3,System.Numerics.Vector3,System.Single,System.Single)">
-            <summary>
-            Smoothly approaches a value to a target value given a speed and dt
-            <br></br>
-            By luispedrofonseca
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector4,System.Numerics.Vector4,System.Numerics.Vector4,System.Single,System.Single)">
-            <summary>
-            Smoothly approaches a value to a target value given a speed and dt
-            <br></br>
-            By luispedrofonseca
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.SmoothAngleApproach(System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Smoothly approaches a value to a target angle degrees given a speed and dt
-            <br></br>
-            By luispedrofonseca
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.SmoothAngleApproach(System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Smoothly approaches a value to a target angle degrees given a speed and dt
-            <br></br>
-            By luispedrofonseca
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Single,System.Single,System.Single,System.Single)">
-            <summary>
-            Smoothly approaches a value to a target value given a speed and dt
-            <br></br>
-            By luispedrofonseca
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector2,System.Numerics.Vector2,System.Single,System.Single)">
-            <summary>
-            Smoothly approaches a value to a target value given a speed and dt
-            <br></br>
-            By luispedrofonseca
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector3,System.Numerics.Vector3,System.Single,System.Single)">
-            <summary>
-            Smoothly approaches a value to a target value given a speed and dt
-            <br></br>
-            By luispedrofonseca
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.SmoothApproach(System.Numerics.Vector4,System.Numerics.Vector4,System.Single,System.Single)">
-            <summary>
-            Smoothly approaches a value to a target value given a speed and dt
-            <br></br>
-            By luispedrofonseca
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.NanFallback(System.Single,System.Single)">
-            <summary>
-            Returns the given fallback value (0 by default) if the given input value is NaN
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.NanFallback(System.Numerics.Vector2,System.Single)">
-            <summary>
-            Returns the given fallback value (0 by default) if the given input value is NaN
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.NanFallback(System.Numerics.Vector3,System.Single)">
-            <summary>
-            Returns the given fallback value (0 by default) if the given input value is NaN
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.NanFallback(System.Numerics.Vector4,System.Single)">
-            <summary>
-            Returns the given fallback value (0 by default) if the given input value is NaN
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.Snap(System.Single,System.Single)">
-            <summary>
-            Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.Snap(System.Int32,System.Int32)">
-            <summary>
-            Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.Snap(System.Numerics.Vector2,System.Single)">
-            <summary>
-            Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.Snap(System.Numerics.Vector3,System.Single)">
-            <summary>
-            Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.TextEqualsCaseInsensitive(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char})">
-            <summary>
-            Are the two given character spans the same, regardless of casing? 
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.Smoothstep(System.Single,System.Single,System.Single)">
-            <summary>
-            Smoothstep function
             </summary>
         </member>
         <member name="T:Walgelijk.CursorStack">

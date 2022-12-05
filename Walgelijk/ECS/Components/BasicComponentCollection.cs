@@ -2,294 +2,303 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Walgelijk;
 
 /// <summary>
-/// A collection of components
+/// Represents a thread safe collection of components and their entities
 /// </summary>
 public class BasicComponentCollection : IComponentCollection
 {
-    private readonly HashSet<EntityWithAnything> allComponents = new();
+    private readonly ConcurrentDictionary<Type, LinkedList<Component>> components;
+    private readonly ConcurrentDictionary<Entity, LinkedList<Component>> byEntity = new();
 
-    private readonly Dictionary<Type, List<EntityWithAnything>> byType = new();
-    private readonly Dictionary<Entity, List<object>> byEntity = new();
-    private readonly Dictionary<Entity, Dictionary<Type, object>> byEntityByType = new();
+    private readonly ConcurrentBag<Component> componentsToAdd = new();
+    private readonly ConcurrentBag<Component> componentsToDestroy = new();
 
-    private Dictionary<Type, object> entityWithCache = new Dictionary<Type, object>();
+    public readonly int CapacityPerType;
+    public readonly int TypeCapacity;
 
-    private void DisposeOf<T>(T obj) where T : class
+    private int totalCount;
+
+    /// <inheritdoc/>
+    public int Count => totalCount;
+
+    public BasicComponentCollection(int capacityPerType = 4096, int typeCapacity = 1024)
     {
-        if (entityWithCache.TryGetValue(obj.GetType(), out var list) && list is List<EntityWith<T>> bb)
-            bb.Clear();
-
-        if (obj is IDisposable disposable)
-            disposable.Dispose();
+        CapacityPerType = capacityPerType;
+        TypeCapacity = typeCapacity;
+        components = new ConcurrentDictionary<Type, LinkedList<Component>>(2, typeCapacity);
     }
 
-    /// <summary>
-    /// Add a component to the collection
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Add(object component, Entity entity)
+    /// <inheritdoc/>
+    public T Attach<T>(Entity entity, T component) where T : Component
     {
-        var a = new EntityWithAnything(component, entity);
-        var componentType = component.GetType();
-        allComponents.Add(a);
-
-        if (byEntity.TryGetValue(entity, out var list))
-            list.Add(component);
-        else
+        component.Entity = entity;
+        componentsToAdd.Add(component);
+        if (!byEntity.TryGetValue(entity, out var coll))
         {
-            var l = new List<object>
-            {
-                component
-            };
-            byEntity.Add(entity, l);
+            coll = new LinkedList<Component>();
+            if (!byEntity.TryAdd(entity, coll))
+                throw new Exception("Failed to create component list for entity");
         }
-
-        if (byEntityByType.TryGetValue(entity, out var dict))
-            dict.Add(componentType, component);
-        else
-        {
-            byEntityByType.Add(entity, new Dictionary<Type, object>() {
-                {componentType,  component}
-            });
-        }
-
-        foreach (var item in byType)
-        {
-            var target = item.Key;
-
-            if (componentType.IsAssignableTo(target))
-                item.Value.Add(a);
-        }
+        coll.AddLast(component);
+        return component;
     }
 
-    /// <summary>
-    /// Iterates over components by type
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public IEnumerable<EntityWith<T>> GetAllComponentsOfType<T>() where T : class
+    /// <inheritdoc/>
+    public bool Contains<T>() where T : Component
     {
-        var t = typeof(T);
+        if (components.TryGetValue(typeof(T), out var coll))
+            return coll.Count > 0;
+        return false;
+    }
 
-        if (!byType.TryGetValue(t, out var list))
-            TryCreateNewTypeList(t, out list);
+    /// <inheritdoc/>
+    public IEnumerable<Component> GetAll()
+    {
+        foreach (var components in components.Values)
+            foreach (var c in components)
+                yield return c;
+    }
 
-        if (list != null)
+    /// <inheritdoc/>
+    public int GetAll(Span<Component> span)
+    {
+        int i = 0;
+        foreach (var item in GetAll())
         {
-            if (!entityWithCache.TryGetValue(t, out var vv))
+            span[i++] = item;
+            if (i >= span.Length)
+                break;
+        }
+        return i;
+    }
+
+    /// <inheritdoc/>
+    public int GetAll(Component[] arr, int offset, int count)
+    {
+        int i = 0;
+        foreach (var item in GetAll())
+        {
+            arr[offset + i++] = item;
+            if (i + offset >= arr.Length || i >= count)
+                break;
+        }
+        return i;
+    }
+
+    /// <inheritdoc/>
+    public IEnumerable<Component> GetAllFrom(Entity entity)
+    {
+        if (byEntity.TryGetValue(entity, out var coll))
+            foreach (var comp in coll)
+                yield return comp;
+    }
+
+    /// <inheritdoc/>
+    public int GetAllFrom(Entity entity, Span<Component> span)
+    {
+        int i = 0;
+        if (byEntity.TryGetValue(entity, out var coll))
+            foreach (var comp in coll)
             {
-                var result = new List<EntityWith<T>>(list.Count);
-                vv = result;
-                entityWithCache.Add(t, result);
+                span[i++] = comp;
+                if (i >= span.Length)
+                    break;
             }
-
-            if (vv is not List<EntityWith<T>> final)
-                throw new Exception("List in BasicComponentCollection is not an EntityWith<T> list");
-
-            if (final.Count != list.Count)
-            {
-                final.Clear();
-                foreach (var item in list)
-                    final.Add(new EntityWith<T>((T)item.Component, item.Entity));
-            }
-            else
-            {
-                int i = 0;
-                foreach (var item in list)
-                    final[i++] = new EntityWith<T>((T)item.Component, item.Entity);
-            }
-
-            return final;
-        }
-
-        return Array.Empty<EntityWith<T>>();
+        return i;
     }
 
-    /// <summary>
-    /// Get the component of the <b>exact</b> type that is given
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public T GetComponentFrom<T>(Entity entity) where T : class
+    /// <inheritdoc/>
+    public int GetAllFrom(Entity entity, Component[] arr, int offset, int count)
     {
-        return byEntityByType[entity][typeof(T)] as T ?? throw new Exception("Component is not of the expected type");
+        int i = 0;
+        if (byEntity.TryGetValue(entity, out var coll))
+            foreach (var comp in coll)
+            {
+                arr[offset + i++] = comp;
+                if (i >= count || offset + i >= arr.Length)
+                    break;
+            }
+        return i;
     }
 
-    /// <summary>
-    /// Try to get the component of the <b>exact</b> type that is given
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TryGetComponentFrom<T>(Entity entity, [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out T? component) where T : class
+    /// <inheritdoc/>
+    public IEnumerable<T> GetAllOfType<T>() where T : Component
     {
-        if (byEntityByType.TryGetValue(entity, out var dict) && dict.TryGetValue(typeof(T), out var untyped) && untyped is T typed)
-        {
-            component = typed;
-            return true;
-        }
+        if (components.TryGetValue(typeof(T), out var coll))
+            foreach (var item in coll)
+                if (item is T typed)
+                    yield return typed;
+    }
+
+    /// <inheritdoc/>
+    public int GetAllOfType<T>(Span<T> span) where T : Component
+    {
+        int i = 0;
+        if (components.TryGetValue(typeof(T), out var coll))
+            foreach (var item in coll)
+                if (item is T typed)
+                {
+                    span[i++] = typed;
+                    if (i >= span.Length)
+                        break;
+                }
+        return i;
+    }
+
+    /// <inheritdoc/>
+    public int GetAllOfType<T>(T[] arr, int offset, int count) where T : Component
+    {
+        int i = 0;
+        if (components.TryGetValue(typeof(T), out var coll))
+            foreach (var item in coll)
+                if (item is T typed)
+                {
+                    arr[offset + i++] = typed;
+                    if (i >= count || offset + i >= arr.Length)
+                        break;
+                }
+        return i;
+    }
+
+    /// <inheritdoc/>
+    public T GetFrom<T>(Entity entity) where T : Component
+    {
+        if (byEntity.TryGetValue(entity, out var coll))
+            foreach (var comp in coll)
+                if (comp is T typed)
+                    return typed;
+
+        throw new Exception($"There is no component of that type in entity {entity}");
+    }
+
+    /// <inheritdoc/>
+    public bool TryGetFrom<T>(Entity entity, [NotNullWhen(true)] out T? component) where T : Component
+    {
+        if (byEntity.TryGetValue(entity, out var coll))
+            foreach (var comp in coll)
+                if (comp is T typed)
+                {
+                    component = typed;
+                    return true;
+                }
+
         component = null;
         return false;
     }
 
-    /// <summary>
-    /// Iterate over all components attached to an entity
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public IEnumerable GetAllComponentsFrom(Entity entity)
+    /// <inheritdoc/>
+    public bool Has<T>(Entity entity) where T : Component
     {
-        if (byEntity.TryGetValue(entity, out var value))
-            return value;
-        return Array.Empty<object>();
+        if (byEntity.TryGetValue(entity, out var coll))
+            foreach (var comp in coll)
+                if (comp is T)
+                    return true;
+        return false;
     }
 
-    /// <summary>
-    /// Get the entity that the given component is attached to
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool GetEntityFromComponent(object comp, out Entity entity)
+    /// <inheritdoc/>
+    public bool HasEntity(Entity entity)
     {
-        entity = 0;
-        foreach (var c in allComponents)
-            if (c.Component == comp)
-            {
-                entity = c.Entity;
-                return true;
-            }
+        if (byEntity.TryGetValue(entity, out var list))
+            return list.Any();
+        return false;
+    }
+
+    /// <inheritdoc/>
+    public bool Remove<T>(Entity entity) where T : Component
+    {
+        if (TryGetFrom<T>(entity, out var comp))
+        {
+            componentsToDestroy.Add(comp);
+            return true;
+        }
+        return false;
+    }
+
+    /// <inheritdoc/>
+    public bool Remove(Type type, Entity entity)
+    {
+        if (byEntity.TryGetValue(entity, out var coll))
+            foreach (var comp in coll)
+                if (comp.GetType().IsAssignableTo(type))
+                {
+                    componentsToDestroy.Add(comp);
+                    return true;
+                }
 
         return false;
     }
 
-    /// <summary>
-    /// Delete all components belonging to the given entity
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool DeleteEntity(Entity entity)
+    /// <inheritdoc/>
+    public void SyncBuffers()
     {
-        bool c = true;
-
-        c &= allComponents.RemoveWhere(t => t.Entity == entity) > 0;
-
-        foreach (var listPair in byType)
+        while (componentsToAdd.TryTake(out var component))
         {
-            var l = listPair.Value;
-            for (int i = l.Count - 1; i >= 0; i--)
-                if (l[i].Entity == entity)
+            var type = component.GetType();
+
+            LinkedList<Component>? list;
+
+            if (!components.TryGetValue(type, out list))
+            {
+                list = new LinkedList<Component>();
+                if (!components.TryAdd(type, list))
+                    throw new Exception("Failed to add component list to dictionary");
+            }
+
+            list.AddLast(component);
+            totalCount++;
+        }
+
+        while (componentsToDestroy.TryTake(out var component))
+        {
+            var type = component.GetType();
+
+            if (byEntity.TryGetValue(component.Entity, out var coll))
+                coll.Remove(component);
+
+            if (components.TryGetValue(type, out var list))
+            {
+                if (list.Remove(component))
                 {
-                    DisposeOf(l[i].Component);
-                    l.RemoveAt(i);
+                    if (component is IDisposable disp)
+                        disp.Dispose();
+                    totalCount--;
                 }
+                else
+                    throw new Exception("Failed to remove component from list");
+            }
         }
-
-        c &= byEntityByType.Remove(entity);
-        c &= byEntity.Remove(entity);
-
-        return c;
     }
 
-    /// <summary>
-    /// Detach a component of a type from an entity
-    /// </summary>
-    /// <returns>True if anything was removed</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool RemoveComponentOfType<T>(Entity entity)
+    public bool Remove(Entity entity)
     {
-        return RemoveComponentOfType(typeof(T), entity);
-    }
+        byEntity.TryRemove(entity, out var coll);
+        coll?.Clear();
 
-    /// <summary>
-    /// Detach a component of a type from an entity
-    /// </summary>
-    /// <returns>True if anything was removed</returns>
-    public bool RemoveComponentOfType(Type type, Entity entity)
-    {
-        bool success = true;
-
-        foreach (var item in allComponents)
-            if (ShouldRemove(item, type, entity))
-                DisposeOf(item.Component);
-
-        success &= allComponents.RemoveWhere(t => ShouldRemove(t, type, entity)) > 0;
-
-        if (byType.ContainsKey(type))
-        {
-            if (byType.TryGetValue(type, out var allComponentsOfThisType))
-                success &= allComponentsOfThisType.RemoveAll(a => a.Entity == entity) > 0;
-            else success = false;
-        }
-
-        if (byEntity.TryGetValue(entity, out var allComponentsOnThisEntity))
-        {
-            success &= allComponentsOnThisEntity.RemoveAll(a => type.IsAssignableTo(a.GetType())) > 0;
-            if (!allComponentsOnThisEntity.Any())
-                byEntity.Remove(entity);
-        }
-        else success = false;
-
-        if (byEntityByType.TryGetValue(entity, out var componentsByType))
-        {
-            success &= componentsByType.Remove(type);
-            if (!componentsByType.Any())
-                byEntityByType.Remove(entity);
-        }
-        else success = false;
-
-        if (!success)
-            throw new Exception("FAILED TO REMOVE");
-
-        return success;
-    }
-
-    private static bool ShouldRemove(EntityWithAnything t, Type type, Entity entity) => type.IsInstanceOfType(t.Component) && t.Entity == entity;
-
-    private bool TryCreateNewTypeList(Type type, out List<EntityWithAnything>? list)
-    {
-        list = null;
-
-        if (byType.ContainsKey(type))
-            return false;
-
-        list = new List<EntityWithAnything>();
-
-        foreach (var comp in allComponents)
-            if (comp.Component.GetType().IsAssignableTo(type))
-                list.Add(comp);
-
-        byType.Add(type, list);
-
+        foreach (var item in GetAllFrom(entity))
+            componentsToDestroy.Add(item);
         return true;
     }
-}
 
-/// <summary>
-/// Entity and object tuple
-/// </summary>
-public class EntityWithAnything
-{
-    /// <summary>
-    /// Related component
-    /// </summary>
-    public object Component;
-    /// <summary>
-    /// Entity that the component is attached to
-    /// </summary>
-    public Entity Entity;
-
-    public EntityWithAnything(object component, Entity entity)
+    public void Dispose()
     {
-        Component = component;
-        Entity = entity;
-    }
-
-    public static explicit operator EntityWithAnything((object, Entity) v)
-    {
-        return new EntityWithAnything
-        (
-            v.Item1,
-            v.Item2
-        );
+        foreach (var list in components.Values)
+        {
+            foreach (var c in list)
+                if (c is IDisposable d)
+                    d.Dispose();
+            list.Clear();
+        }
+        components.Clear();
+        byEntity.Clear();
+        componentsToAdd.Clear();
+        componentsToDestroy.Clear();
     }
 }
-

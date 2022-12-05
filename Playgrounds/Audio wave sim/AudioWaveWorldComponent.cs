@@ -3,7 +3,7 @@ using Walgelijk;
 
 namespace TestWorld;
 
-public class AudioWaveWorldComponent : IDisposable
+public class AudioWaveWorldComponent : Component, IDisposable
 {
     public readonly int Width, Height;
 

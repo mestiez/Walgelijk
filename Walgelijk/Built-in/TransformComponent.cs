@@ -6,7 +6,7 @@ namespace Walgelijk
     /// <summary>
     /// Basic component that holds transformation data
     /// </summary>
-    public class TransformComponent
+    public class TransformComponent : Component
     {
         private Vector2 position;
         private float rotation;

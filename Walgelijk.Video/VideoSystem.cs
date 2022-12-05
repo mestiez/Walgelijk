@@ -12,9 +12,8 @@
 
         private void UpdateGifs()
         {
-            foreach (var item in Scene.GetAllComponentsOfType<GifComponent>())
+            foreach (var gifComponent in Scene.GetAllComponentsOfType<GifComponent>())
             {
-                var gifComponent = item.Component;
                 if (gifComponent.Gif == null)
                     continue;
 

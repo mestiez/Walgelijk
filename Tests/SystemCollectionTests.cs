@@ -8,6 +8,27 @@ using Walgelijk.ParticleSystem;
 namespace Tests;
 
 [TestClass]
+public class ComponentCollectionTests
+{
+    [TestMethod]
+    public void AddRemove()
+    {
+        IComponentCollection coll = new BasicComponentCollection();
+        Assert.AreEqual(0, coll.Count);
+
+        Entity ent1 = IdentityGenerator.Generate();
+        Entity ent2 = IdentityGenerator.Generate();
+        Entity ent3 = IdentityGenerator.Generate();
+
+        var transform = coll.Attach(ent1, new TransformComponent());
+
+        Assert.AreEqual(0, coll.Count);
+        coll.SyncBuffers();
+        Assert.AreEqual(1, coll.Count);
+    }
+}
+
+[TestClass]
 public class SystemCollectionTests
 {
     [TestMethod]

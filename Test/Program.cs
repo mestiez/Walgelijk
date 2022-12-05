@@ -407,7 +407,7 @@ namespace Test
     }
 
     [RequiresComponents(typeof(TransformComponent))]
-    public class WaveMovementComponent
+    public class WaveMovementComponent : Component
     {
         public float Amplitude = 25;
         public float Frequency = 2;

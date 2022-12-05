@@ -4,7 +4,7 @@
     /// Component that holds camera data
     /// </summary>
     [RequiresComponents(typeof(TransformComponent))]
-    public class CameraComponent
+    public class CameraComponent : Component
     {
         /// <summary>
         /// The orthographic size of this camera

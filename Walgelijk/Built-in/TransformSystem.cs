@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -20,36 +21,30 @@ namespace Walgelijk
         /// </summary>
         public bool Parenting = true;
 
-        private readonly EntityWith<TransformComponent>[] transforms = new EntityWith<TransformComponent>[4096];
-
         public override void Update()
         {
-            var pairs = Scene.GetAllComponentsOfType(transforms);
+            var arr = ArrayPool<TransformComponent>.Shared.Rent(4096);
+            var all = Scene.GetAllComponentsOfType(arr);
 
-            //if (Multithreading)
-            //    Parallel.ForEach(pairs, calc);
-            //else
-            foreach (var pair in pairs)
+            foreach (var transform in all)
             {
                 if (Parenting)
-                    CascadeMatrixCalculation(pair, pairs);
-                else if (!pair.Component.Parent.HasValue)
-                    CalculateMatrix(pair);
+                    CascadeMatrixCalculation(transform, all);
+                else if (!transform.Parent.HasValue)
+                    CalculateMatrix(transform);
             }
         }
 
-        private void CalculateMatrix(EntityWith<TransformComponent> pair)
+        private void CalculateMatrix(TransformComponent transform)
         {
-            var transform = pair.Component;
             bool shouldRecalculate = !transform.IsMatrixCached;
 
             if (shouldRecalculate)
                 transform.RecalculateModelMatrix(Matrix3x2.Identity);
         }
 
-        private void CascadeMatrixCalculation(EntityWith<TransformComponent> current, ReadOnlySpan<EntityWith<TransformComponent>> collection, TransformComponent? up = null)
+        private void CascadeMatrixCalculation(TransformComponent transform, ReadOnlySpan<TransformComponent> collection, TransformComponent? up = null)
         {
-            var transform = current.Component;
             bool shouldRecalculate = !transform.IsMatrixCached;
 
             if (shouldRecalculate)
@@ -57,12 +52,12 @@ namespace Walgelijk
 
             foreach (var e in collection)
             {
-                var myParent = e.Component.Parent;
+                var myParent = e.Parent;
 
-                if (myParent.HasValue && myParent.Value != e.Entity && myParent.Value == current.Entity)
+                if (myParent.HasValue && myParent.Value != e.Entity && myParent.Value == transform.Entity)
                 {
-                    e.Component.IsMatrixCached &= !shouldRecalculate;
-                    CascadeMatrixCalculation(e, collection, current.Component);
+                    e.IsMatrixCached &= !shouldRecalculate;
+                    CascadeMatrixCalculation(e, collection, transform);
                 }
             }
         }

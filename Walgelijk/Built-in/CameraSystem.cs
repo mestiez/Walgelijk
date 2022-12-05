@@ -41,8 +41,8 @@ namespace Walgelijk
 
         private void FallbackToFirstCamera()
         {
-            if (Scene.FindAnyComponent<CameraComponent>(out _, out var entity))
-                SetMainCamera(entity);
+            if (Scene.FindAnyComponent<CameraComponent>(out var camera))
+                SetMainCamera(camera.Entity);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Walgelijk
         /// </summary>
         public void SetMainCamera(Entity cameraEntity)
         {
-            CameraComponent camera = GetCameraFrom(cameraEntity);
+            var camera = GetCameraFrom(cameraEntity);
 
             MainCameraEntity = cameraEntity;
             MainCameraComponent = camera;

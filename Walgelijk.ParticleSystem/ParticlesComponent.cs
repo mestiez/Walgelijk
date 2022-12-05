@@ -3,7 +3,7 @@
 namespace Walgelijk.ParticleSystem
 {
     [RequiresComponents(typeof(TransformComponent))]
-    public class ParticlesComponent
+    public class ParticlesComponent : Component
     {
         public readonly int MaxParticleCount = 1000;
         public int CurrentParticleCount = 0;

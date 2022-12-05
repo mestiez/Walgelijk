@@ -15,13 +15,11 @@ namespace Walgelijk
             }
         }
 
-        private void RenderShape(EntityWith<ShapeComponent> pair)
+        private void RenderShape(ShapeComponent shape)
         {
-            var shape = pair.Component;
-
             if (shape.Visible && shape.RenderTask.VertexBuffer != null)
             {
-                var transform = Scene.GetComponentFast<TransformComponent>(pair.Entity);
+                var transform = Scene.GetComponentFrom<TransformComponent>(shape.Entity);
                 shape.RenderTask.ScreenSpace = shape.ScreenSpace;
 
                 if (shape.HorizontalFlip || shape.VerticalFlip)

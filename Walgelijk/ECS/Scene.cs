@@ -1,12 +1,12 @@
-﻿using System;
+﻿using SixLabors.ImageSharp.Memory;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace Walgelijk;
-
 /// <summary>
 /// Stores and manages components and systems
 /// </summary>
@@ -22,21 +22,10 @@ public sealed class Scene : IDisposable
     /// </summary>
     public bool ShouldBeDisposedOnSceneChange = false;
 
-    private readonly Dictionary<int, Entity> entities = new();
+    private readonly IEntityCollection entities = new BasicEntityCollection();
     private readonly IComponentCollection components = new BasicComponentCollection();
-    private readonly Dictionary<Type, System> systems = new();
+    private readonly ISystemCollection systems;
 
-    private readonly List<System> orderedSystemCollection = new();
-
-    private readonly Dictionary<Entity, Tag> tagByEntity = new();
-    private readonly Dictionary<Tag, HashSet<Entity>> entitiesByTag = new();
-
-    private readonly HashSet<EntityWithAnything> componentsToAdd = new();
-    private readonly HashSet<(Type, Entity)> componentsToDestroy = new();
-    private readonly HashSet<Entity> entitiesToDestroy = new();
-
-    private readonly HashSet<System> systemsToAdd = new();
-    private readonly HashSet<System> systemsToDestroy = new();
 
     internal bool HasBeenLoadedAlready = false;
 
@@ -46,12 +35,16 @@ public sealed class Scene : IDisposable
     public Scene(Game game)
     {
         Game = game;
+        systems = new BasicSystemCollection(this);
     }
 
     /// <summary>
     /// Create scene without an attached game. This can cause issues when a <see cref="System"/> expects a game
     /// </summary>
-    public Scene() { }
+    public Scene()
+    {
+        systems = new BasicSystemCollection(this);
+    }
 
     /// <summary>
     /// Fired when an entity is created and registered
@@ -76,169 +69,34 @@ public sealed class Scene : IDisposable
     /// <summary>
     /// Add a system
     /// </summary>
-    public T AddSystem<T>(T system) where T : System
-    {
-        system.Scene = this;
-        systemsToAdd.Add(system);
-        return system;
-    }
-
-    private void ReverseSortAddSystem(System system)
-    {
-        for (int i = orderedSystemCollection.Count - 1; i >= 0; i--)
-            if (orderedSystemCollection[i].ExecutionOrder <= system.ExecutionOrder)
-            {
-                orderedSystemCollection.Insert(i + 1, system);
-                return;
-            }
-        orderedSystemCollection.Insert(0, system);
-    }
-
-    private void ForceSortSystems()
-    {
-        while (true)
-        {
-            bool moved = false;
-            for (int i = 0; i < orderedSystemCollection.Count - 1; i++)
-            {
-                var current = orderedSystemCollection[i];
-                var next = orderedSystemCollection[i + 1];
-
-                current.ExecutionOrderChanged = false;
-                next.ExecutionOrderChanged = false;
-
-                if (current.ExecutionOrder > next.ExecutionOrder)
-                {
-                    orderedSystemCollection.Remove(next);
-                    orderedSystemCollection.Insert(i, next);
-                    moved = true;
-                }
-            }
-
-            if (!moved)
-            {
-                Logger.Log("System collection sorted");
-                break;
-            }
-        }
-    }
+    public T AddSystem<T>(T system) where T : System => systems.Add(system);
 
     /// <summary>
     /// Retrieve a system
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public T GetSystem<T>() where T : System
-    {
-        return (T)systems[typeof(T)];
-    }
+    public T GetSystem<T>() where T : System => systems.Get<T>();
 
+    /// <summary>
+    /// Retrieve a system
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public System GetSystem(Type type)
-    {
-        return systems[type];
-    }
-
-    /// <summary>
-    /// Attaches a tag to an entity
-    /// </summary>
-    public void SetTag(Entity entity, Tag tag)
-    {
-        if (tagByEntity.ContainsKey(entity))//does this entity already have a tag? 
-        {
-            if (entitiesByTag.TryGetValue(tag, out var existing))
-                existing.Remove(entity);//remove entity from old tag collection
-
-            tagByEntity[entity] = tag;
-        }
-        else
-        {
-            //this entity never had a tag so we need to create everything
-            tagByEntity.Add(entity, tag);
-
-            if (entitiesByTag.TryGetValue(tag, out var coll))//does the tag already have a collection?
-                coll.Add(entity);
-            else
-                entitiesByTag.Add(tag, new HashSet<Entity> { entity });
-        }
-    }
-
-    /// <summary>
-    /// Returns true if the entity has the given tag
-    /// </summary>
-    public bool HasTag(Entity entity, Tag tag) => tagByEntity.TryGetValue(entity, out var t) && t == tag;
-
-    /// <summary>
-    /// Detaches a tag from an entity
-    /// </summary>
-    public bool ClearTag(Entity entity)
-    {
-        if (tagByEntity.Remove(entity, out var tag))
-        {
-            var coll = entitiesByTag[tag];
-            bool s = coll.Remove(entity);
-            if (coll.Count == 0)
-                s &= entitiesByTag.Remove(tag);
-            return s;
-        }
-        return false;
-    }
-
-    /// <summary>
-    /// Returns true if the given entity has a tag attached. The tag is returned in the output parameter <paramref name="tag"/>
-    /// </summary>
-    public bool TryGetTag(Entity entity, out Tag tag) => tagByEntity.TryGetValue(entity, out tag);
-
-    /// <summary>
-    /// Returns all entities with the given tag
-    /// </summary>
-    public IEnumerable<Entity> GetEntitiesWithTag(Tag tag)
-    {
-        if (entitiesByTag.TryGetValue(tag, out var coll))
-            return coll;
-        return Array.Empty<Entity>();
-    }
-
-    /// <summary>
-    /// Returns true if any entity with a given tag is found. The entity is returned in the output parameter <paramref name="entity"/>
-    /// </summary>
-    public bool TryGetEntityWithTag(Tag tag, out Entity entity)
-    {
-        if (entitiesByTag.TryGetValue(tag, out var coll) && coll.Count > 0)
-        {
-            entity = coll.First();
-            return true;
-        }
-        entity = default;
-        return false;
-    }
+    public System GetSystem(Type type) => systems.Get(type);
 
     /// <summary>
     /// Returns true if the system of the given type exists in the scene and returns false otherwise.
     /// </summary>
-    public bool HasSystem<T>() => systems.ContainsKey(typeof(T)) || systemsToAdd.Any(t => t is T);
+    public bool HasSystem<T>() where T : System => systems.Has<T>();
 
     /// <summary>
     /// Remove system from the list. Getting rid of any references to it is not handled, so the object might remain in memory.
     /// </summary>
-    /// <returns>if the operation was successful</returns>
-    public bool RemoveSystem<T>()
-    {
-        if (systems.TryGetValue(typeof(T), out var s))
-        {
-            systemsToDestroy.Add(s);
-            return true;
-        }
-        return false;
-    }
+    public bool RemoveSystem<T>() where T : System => systems.Remove<T>();
 
     /// <summary>
     /// Get all systems
     /// </summary>
-    public IEnumerable<System> GetSystems()
-    {
-        foreach (var s in orderedSystemCollection)
-            yield return s;
-    }
+    public IEnumerable<System> GetSystems() => systems;
 
     /// <summary>
     /// Register a new entity to the scene
@@ -246,26 +104,11 @@ public sealed class Scene : IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Entity CreateEntity()
     {
-        Entity newEntity = new Entity
-        {
-            Identity = IdentityGenerator.Generate()
-        };
-
-        entities.Add(newEntity.Identity, newEntity);
+        Entity newEntity = new(IdentityGenerator.Generate());
+        entities.Add(newEntity);
         OnCreateEntity?.Invoke(newEntity);
 
         return newEntity;
-    }
-
-    /// <summary>
-    /// Register an existing Entity ID to the scene. This should not be used if you are to create a new entity. Use <see cref="CreateEntity"/> instead. <see cref="OnCreateEntity"/> will not be invoked.
-    /// </summary>
-    public void RegisterExistingEntity(Entity entity)
-    {
-        if (HasEntity(entity))
-            throw new InvalidOperationException($"Prefab ID ({entity}) already exists in the scene");
-
-        entities.Add(entity.Identity, entity);
     }
 
     /// <summary>
@@ -273,27 +116,22 @@ public sealed class Scene : IDisposable
     /// </summary>
     /// <param name="identity"></param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void RemoveEntity(int identity)
+    public void RemoveEntity(Entity identity)
     {
-        entitiesToDestroy.Add(identity);
+        entities.Remove(identity);
+        components.Remove(identity);
     }
 
     /// <summary>
     /// Get if an entity lives in the scene
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool HasEntity(int identity)
-    {
-        return entities.ContainsKey(identity);
-    }
+    public bool HasEntity(Entity identity) => entities.Has(identity);
 
     /// <summary>
     /// Get all entities
     /// </summary>
-    public IEnumerable<Entity> GetAllEntities()
-    {
-        return entities.Values;
-    }
+    public IEnumerable<Entity> GetAllEntities() => entities;
 
     /// <summary>
     /// Amount of entities in the scene
@@ -304,107 +142,42 @@ public sealed class Scene : IDisposable
     /// Get all components attached to the given entity
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public IEnumerable GetAllComponentsFrom(Entity entity)
-    {
-        //foreach (var item in componentsToAdd)
-        //    if (item.Entity == entity)
-        //        yield return item.Component;
-
-        //foreach (var component in components.GetAllComponentsFrom(entity))
-        //    yield return component;
-
-        return components.GetAllComponentsFrom(entity);
-    }
+    public IEnumerable<Component> GetAllComponentsFrom(Entity entity) => components.GetAllFrom(entity);
 
     /// <summary>
     /// Get all components and entities of a certain type
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public IEnumerable<EntityWith<T>> GetAllComponentsOfType<T>() where T : class
-    {
-        //foreach (var item in componentsToAdd)
-        //    if (item.Component is T typed)
-        //        yield return new EntityWith<T>(typed, item.Entity);
-
-        //foreach (var item in components.GetAllComponentsOfType<T>())
-        //    yield return new EntityWith<T>(item.Component, item.Entity);
-
-        return components.GetAllComponentsOfType<T>();
-    }
-
+    public IEnumerable<T> GetAllComponentsOfType<T>() where T : Component => components.GetAllOfType<T>();
 
     /// <summary>
     /// Get all components and entities of a certain type and put them into the given buffer, returning the relevant section of it
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ReadOnlySpan<EntityWith<T>> GetAllComponentsOfType<T>(EntityWith<T>[] buffer) where T : class
+    public ReadOnlySpan<T> GetAllComponentsOfType<T>(T[] array) where T : Component
     {
-        int i = 0;
-        foreach (var item in componentsToAdd)
-            if (item.Component is T typed)
-            {
-                buffer[i++] = new EntityWith<T>(typed, item.Entity);
-                if (i >= buffer.Length)
-                    break;
-            }
-
-        foreach (var item in components.GetAllComponentsOfType<T>())
-        {
-            buffer[i++] = new EntityWith<T>(item.Component, item.Entity);
-            if (i >= buffer.Length)
-                break;
-        }
-
-        return buffer.AsSpan(0, i);
+        int i = components.GetAllOfType<T>(array);
+        return array.AsSpan(0, i);
     }
 
     /// <summary>
     /// Get all components and entities and add them into the given array. It returns the amount of items that were inserted.
     /// </summary>
-    public int CopyAllComponentsOfType<T>(EntityWith<T>[] array) where T : class
-    {
-        //TODO include creation buffer
-        int i = 0;
-        foreach (var item in components.GetAllComponentsOfType<T>())
-        {
-            if (i >= array.Length)
-                break;
-
-            array[i] = item;
-            i++;
-        }
-        return i;
-    }
+    public int CopyAllComponentsOfType<T>(T[] array) where T : Component => components.GetAllOfType<T>(array);
 
     /// <summary>
     /// Returns the first found instance of the given type.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool FindAnyComponent<T>([global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out T? anyInstance) where T : class => FindAnyComponent(out anyInstance, out _);
-
-    /// <summary>
-    /// Returns the first found instance of the given type.
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool FindAnyComponent<T>([global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out T? anyInstance, out Entity entity) where T : class
+    public bool FindAnyComponent<T>([global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out T? anyInstance) where T : Component
     {
-        foreach (var item in componentsToAdd)
-            if (item.Component is T typed)
-            {
-                anyInstance = typed;
-                entity = item.Entity;
-                return true;
-            }
-
-        foreach (var item in components.GetAllComponentsOfType<T>())
+        var arr = new T[1];
+        if (components.GetAllOfType(arr, 0, 1) > 0)
         {
-            anyInstance = item.Component;
-            entity = item.Entity;
+            anyInstance = arr[0];
             return true;
         }
-
-        entity = default;
-        anyInstance = null;
+        anyInstance = default;
         return false;
     }
 
@@ -412,128 +185,60 @@ public sealed class Scene : IDisposable
     /// Retrieve the first component of the specified type on the given entity, otherwise returns default
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public T? GetComponentFrom<T>(Entity entity) where T : class
-    {
-        if (components.TryGetComponentFrom<T>(entity, out var attemptResult))
-            return attemptResult;
-
-        foreach (var item in componentsToAdd)
-            if (item.Entity == entity && item.Component is T typed)
-                return typed;
-
-        foreach (var item in components.GetAllComponentsFrom(entity))
-            if (item is T a)
-                return a;
-
-        foreach (var item in components.GetAllComponentsOfType<T>())
-            if (item.Entity == entity)
-                return item.Component;
-
-        return default;
-    }
-
-    /// <summary>
-    /// Gets the component of the <b>exact</b> given type from the given entity. Use this is you are absolutely sure that the entity has the component you're asking for and that it refers to a component of that exact type. Inheritance is supported here but it's discouraged as it can lead to ambiguity.
-    /// </summary>
-    public T GetComponentFast<T>(Entity entity) where T : class
-    {
-        //This has to happen :(
-        foreach (var item in componentsToAdd)
-            if (item.Entity == entity && item.Component is T typed)
-                return typed;
-
-        return components.GetComponentFrom<T>(entity);
-    }
-
-    /// <summary>
-    /// Get the <see cref="Entity"/> connected to the given component
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TryGetEntityWith(object component, out Entity entity)
-    {
-        return components.GetEntityFromComponent(component, out entity);
-    }
+    public T GetComponentFrom<T>(Entity entity) where T : Component => components.GetFrom<T>(entity);
 
     /// <summary>
     /// Retrieve the first component of the specified type on the given entity
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TryGetComponentFrom<T>(Entity entity, [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out T? component) where T : class
-    {
-        component = null;
-
-        foreach (var item in componentsToAdd)
-            if (item.Entity == entity && item.Component is T typed)
-            {
-                component = typed;
-                return true;
-            }
-
-        foreach (var item in components.GetAllComponentsFrom(entity))
-            if (item is T typed)
-            {
-                component = typed;
-                return true;
-            }
-
-        return false;
-    }
+    public bool TryGetComponentFrom<T>(Entity entity, [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out T? component) where T : Component
+        => components.TryGetFrom(entity, out component);
 
     /// <summary>
     /// Get if an entity has a component. This is a bit slow so you should really just have the entity at hand
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool HasComponent<T>(Entity entity) where T : class
-    {
-        foreach (var item in componentsToAdd)
-            if (item.Entity == entity && item.Component is T typed)
-                return true;
-
-        foreach (var a in components.GetAllComponentsFrom(entity))
-            if (a is T)
-                return true;
-        return false;
-    }
+    public bool HasComponent<T>(Entity entity) where T : Component
+    => components.Has<T>(entity);
 
     /// <summary>
     /// Attach a component to an entity
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public T AttachComponent<T>(Entity entity, T component) where T : class
+    public T AttachComponent<T>(Entity entity, T component) where T : Component
     {
-        componentsToAdd.Add(new EntityWithAnything(component, entity));
-
-        return component;
+        return components.Attach(entity, component);
     }
 
-    private void AssertComponentRequirements<T>(Entity entity, T component) where T : class
+    //TODO dit werkt meer denk ik
+    private void AssertComponentRequirements<T>(Entity entity, T component) where T : Component
     {
-        RequiresComponents[] requirements = ReflectionCache.GetAttributes<RequiresComponents, T>();
-        if (requirements.Length == 0) return;
+        //RequiresComponents[] requirements = ReflectionCache.GetAttributes<RequiresComponents, T>();
+        //if (requirements.Length == 0) return;
 
-        foreach (var requirement in requirements)
-            if (requirement.Types != null)
-                foreach (var type in requirement.Types)
-                {
-                    bool isOk = false;
-                    foreach (var e in GetAllComponentsFrom(entity))
-                        if (type.IsAssignableFrom(e.GetType()))
-                        {
-                            isOk = true;
-                            break;
-                        }
-                    if (!isOk)
-                        throw new InvalidOperationException($"{component.GetType()} requires a {type}");
-                }
+        //foreach (var requirement in requirements)
+        //    if (requirement.Types != null)
+        //        foreach (var type in requirement.Types)
+        //        {
+        //            bool isOk = false;
+        //            foreach (var e in GetAllComponentsFrom(entity))
+        //                if (type.IsAssignableFrom(e.GetType()))
+        //                {
+        //                    isOk = true;
+        //                    break;
+        //                }
+        //            if (!isOk)
+        //                throw new InvalidOperationException($"{component.GetType()} requires a {type}");
+        //        }
     }
 
     /// <summary>
     /// Detach a component from an entity
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void DetachComponent<T>(Entity entity)
+    public void DetachComponent<T>(Entity entity) where T : Component
     {
-        componentsToDestroy.Add((typeof(T), entity));
+        components.Remove<T>(entity);
     }
 
     /// <summary>
@@ -545,15 +250,21 @@ public sealed class Scene : IDisposable
         if (!HasBeenLoadedAlready)
             Initialise();
 
-        ProcessAddDestroyBuffers();
-        for (int i = 0; i < orderedSystemCollection.Count; i++)
-            if (orderedSystemCollection[i].ExecutionOrderChanged)
+        bool shouldSort = false;
+        foreach (var item in systems.GetAll())
+            if (item.ExecutionOrderChanged)
             {
-                ForceSortSystems();
+                shouldSort = true;
                 break;
             }
+        if (shouldSort)
+            systems.Sort(); // TODO double sorting. die onderste systems.SyncBuffers sorteert ook maar je moet dus kunnen aangeven om dat niet te doen
 
-        foreach (var system in orderedSystemCollection)
+        entities.SyncBuffers();
+        components.SyncBuffers();
+        systems.SyncBuffers();
+
+        foreach (var system in systems.GetAll())
             system.Update();
     }
 
@@ -566,7 +277,7 @@ public sealed class Scene : IDisposable
         if (!HasBeenLoadedAlready)
             Initialise();
 
-        foreach (var system in orderedSystemCollection)
+        foreach (var system in systems.GetAll())
             system.FixedUpdate();
     }
 
@@ -579,69 +290,19 @@ public sealed class Scene : IDisposable
             Game.State.Time.DeltaTime = 0;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ProcessAddDestroyBuffers()
-    {
-        foreach (var system in systemsToAdd)
-        {
-            OnAddSystem?.Invoke(system);
-            var type = system.GetType();
-            systems.Add(type, system);
-            ReverseSortAddSystem(system);
-            system.ExecutionOrderChanged = false;
-            system.Initialise();
-        }
-        systemsToAdd.Clear();
-
-        foreach (var system in systemsToDestroy)
-            if (systems.Remove(system.GetType(), out var removed))
-                orderedSystemCollection.Remove(removed);
-        systemsToDestroy.Clear();
-
-        foreach (var pair in componentsToAdd)
-        {
-            if (Game?.DevelopmentMode ?? false)
-                AssertComponentRequirements(pair.Entity, pair.Component);
-
-            components.Add(pair.Component, pair.Entity);
-            OnAttachComponent?.Invoke(pair.Entity, pair.Component);
-        }
-        componentsToAdd.Clear();
-
-        foreach ((Type type, Entity entity) in componentsToDestroy)
-        {
-            bool success = components.RemoveComponentOfType(type, entity);
-
-            if (success)
-                OnDetachComponent?.Invoke(entity);
-        }
-        componentsToDestroy.Clear();
-
-        foreach (var identity in entitiesToDestroy)
-        {
-            bool entityRemovalSuccess = entities.Remove(identity);
-            if (entityRemovalSuccess)
-            {
-                ClearTag(identity);
-                components.DeleteEntity(identity);
-            }
-        }
-        entitiesToDestroy.Clear();
-    }
-
     /// <summary>
     /// Renders all systems that implement rendering code. This is typically handled by the window implementation
     /// </summary>
     public void RenderSystems()
     {
-        for (int i = 0; i < orderedSystemCollection.Count; i++)
-            orderedSystemCollection[i].PreRender();
+        foreach (var systems in systems.GetAll())
+            systems.PreRender();
 
-        for (int i = 0; i < orderedSystemCollection.Count; i++)
-            orderedSystemCollection[i].Render();
+        foreach (var systems in systems.GetAll())
+            systems.Render();
 
-        for (int i = 0; i < orderedSystemCollection.Count; i++)
-            orderedSystemCollection[i].PostRender();
+        foreach (var systems in systems.GetAll())
+            systems.PostRender();
     }
 
     /// <summary>
@@ -650,10 +311,14 @@ public sealed class Scene : IDisposable
     public void Dispose()
     {
         foreach (var item in entities)
-            RemoveEntity(item.Value);
+            RemoveEntity(item);
 
-        ProcessAddDestroyBuffers();
-        entities.Clear();
+        entities.SyncBuffers();
+        components.SyncBuffers();
+        systems.SyncBuffers();
+
+        systems.Dispose();
+        components.Dispose();
     }
 
     //TODO voeg manier to om meerdere componenten te krijgen per keer
