@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Walgelijk;
 
@@ -17,22 +14,19 @@ public class BasicComponentCollection : IComponentCollection
     private readonly ConcurrentDictionary<Type, LinkedList<Component>> components;
     private readonly ConcurrentDictionary<Entity, LinkedList<Component>> byEntity = new();
 
+    private readonly ConcurrentDictionary<Type, HashSet<Type>> typeUmbrella = new();
+
     private readonly ConcurrentBag<Component> componentsToAdd = new();
     private readonly ConcurrentBag<Component> componentsToDestroy = new();
-
-    public readonly int CapacityPerType;
-    public readonly int TypeCapacity;
 
     private int totalCount;
 
     /// <inheritdoc/>
     public int Count => totalCount;
 
-    public BasicComponentCollection(int capacityPerType = 4096, int typeCapacity = 1024)
+    public BasicComponentCollection()
     {
-        CapacityPerType = capacityPerType;
-        TypeCapacity = typeCapacity;
-        components = new ConcurrentDictionary<Type, LinkedList<Component>>(2, typeCapacity);
+        components = new ConcurrentDictionary<Type, LinkedList<Component>>();
     }
 
     /// <inheritdoc/>
@@ -40,13 +34,7 @@ public class BasicComponentCollection : IComponentCollection
     {
         component.Entity = entity;
         componentsToAdd.Add(component);
-        if (!byEntity.TryGetValue(entity, out var coll))
-        {
-            coll = new LinkedList<Component>();
-            if (!byEntity.TryAdd(entity, coll))
-                throw new Exception("Failed to create component list for entity");
-        }
-        coll.AddLast(component);
+        byEntity.Ensure(entity).AddLast(component);
         return component;
     }
 
@@ -95,22 +83,20 @@ public class BasicComponentCollection : IComponentCollection
     /// <inheritdoc/>
     public IEnumerable<Component> GetAllFrom(Entity entity)
     {
-        if (byEntity.TryGetValue(entity, out var coll))
-            foreach (var comp in coll)
-                yield return comp;
+        foreach (var comp in byEntity.Ensure(entity))
+            yield return comp;
     }
 
     /// <inheritdoc/>
     public int GetAllFrom(Entity entity, Span<Component> span)
     {
         int i = 0;
-        if (byEntity.TryGetValue(entity, out var coll))
-            foreach (var comp in coll)
-            {
-                span[i++] = comp;
-                if (i >= span.Length)
-                    break;
-            }
+        foreach (var comp in byEntity.Ensure(entity))
+        {
+            span[i++] = comp;
+            if (i >= span.Length)
+                break;
+        }
         return i;
     }
 
@@ -118,21 +104,24 @@ public class BasicComponentCollection : IComponentCollection
     public int GetAllFrom(Entity entity, Component[] arr, int offset, int count)
     {
         int i = 0;
-        if (byEntity.TryGetValue(entity, out var coll))
-            foreach (var comp in coll)
-            {
-                arr[offset + i++] = comp;
-                if (i >= count || offset + i >= arr.Length)
-                    break;
-            }
+        foreach (var comp in byEntity.Ensure(entity))
+        {
+            arr[offset + i++] = comp;
+            if (i >= count || offset + i >= arr.Length)
+                break;
+        }
         return i;
     }
 
     /// <inheritdoc/>
     public IEnumerable<T> GetAllOfType<T>() where T : Component
     {
-        if (components.TryGetValue(typeof(T), out var coll))
-            foreach (var item in coll)
+        var t = typeof(T);
+        if (typeUmbrella.ContainsKey(t))
+            CheckAndUpdateFor(t);
+
+        foreach (var types in typeUmbrella.Ensure(t))
+            foreach (var item in components.Ensure(types))
                 if (item is T typed)
                     yield return typed;
     }
@@ -140,9 +129,13 @@ public class BasicComponentCollection : IComponentCollection
     /// <inheritdoc/>
     public int GetAllOfType<T>(Span<T> span) where T : Component
     {
+        var t = typeof(T);
+        if (typeUmbrella.ContainsKey(t))
+            CheckAndUpdateFor(t);
+
         int i = 0;
-        if (components.TryGetValue(typeof(T), out var coll))
-            foreach (var item in coll)
+        foreach (var types in typeUmbrella.Ensure(t))
+            foreach (var item in components.Ensure(types))
                 if (item is T typed)
                 {
                     span[i++] = typed;
@@ -155,9 +148,13 @@ public class BasicComponentCollection : IComponentCollection
     /// <inheritdoc/>
     public int GetAllOfType<T>(T[] arr, int offset, int count) where T : Component
     {
+        var t = typeof(T);
+        if (typeUmbrella.ContainsKey(t))
+            CheckAndUpdateFor(t);
+
         int i = 0;
-        if (components.TryGetValue(typeof(T), out var coll))
-            foreach (var item in coll)
+        foreach (var types in typeUmbrella.Ensure(t))
+            foreach (var item in components.Ensure(types))
                 if (item is T typed)
                 {
                     arr[offset + i++] = typed;
@@ -170,10 +167,9 @@ public class BasicComponentCollection : IComponentCollection
     /// <inheritdoc/>
     public T GetFrom<T>(Entity entity) where T : Component
     {
-        if (byEntity.TryGetValue(entity, out var coll))
-            foreach (var comp in coll)
-                if (comp is T typed)
-                    return typed;
+        foreach (var comp in byEntity.Ensure(entity))
+            if (comp is T typed)
+                return typed;
 
         throw new Exception($"There is no component of that type in entity {entity}");
     }
@@ -181,13 +177,12 @@ public class BasicComponentCollection : IComponentCollection
     /// <inheritdoc/>
     public bool TryGetFrom<T>(Entity entity, [NotNullWhen(true)] out T? component) where T : Component
     {
-        if (byEntity.TryGetValue(entity, out var coll))
-            foreach (var comp in coll)
-                if (comp is T typed)
-                {
-                    component = typed;
-                    return true;
-                }
+        foreach (var comp in byEntity.Ensure(entity))
+            if (comp is T typed)
+            {
+                component = typed;
+                return true;
+            }
 
         component = null;
         return false;
@@ -196,19 +191,16 @@ public class BasicComponentCollection : IComponentCollection
     /// <inheritdoc/>
     public bool Has<T>(Entity entity) where T : Component
     {
-        if (byEntity.TryGetValue(entity, out var coll))
-            foreach (var comp in coll)
-                if (comp is T)
-                    return true;
+        foreach (var comp in byEntity.Ensure(entity))
+            if (comp is T)
+                return true;
         return false;
     }
 
     /// <inheritdoc/>
     public bool HasEntity(Entity entity)
     {
-        if (byEntity.TryGetValue(entity, out var list))
-            return list.Any();
-        return false;
+        return byEntity.Ensure(entity).Any();
     }
 
     /// <inheritdoc/>
@@ -225,13 +217,12 @@ public class BasicComponentCollection : IComponentCollection
     /// <inheritdoc/>
     public bool Remove(Type type, Entity entity)
     {
-        if (byEntity.TryGetValue(entity, out var coll))
-            foreach (var comp in coll)
-                if (comp.GetType().IsAssignableTo(type))
-                {
-                    componentsToDestroy.Add(comp);
-                    return true;
-                }
+        foreach (var comp in byEntity.Ensure(entity))
+            if (comp.GetType().IsAssignableTo(type))
+            {
+                componentsToDestroy.Add(comp);
+                return true;
+            }
 
         return false;
     }
@@ -242,17 +233,8 @@ public class BasicComponentCollection : IComponentCollection
         while (componentsToAdd.TryTake(out var component))
         {
             var type = component.GetType();
-
-            LinkedList<Component>? list;
-
-            if (!components.TryGetValue(type, out list))
-            {
-                list = new LinkedList<Component>();
-                if (!components.TryAdd(type, list))
-                    throw new Exception("Failed to add component list to dictionary");
-            }
-
-            list.AddLast(component);
+            components.Ensure(type).AddLast(component);
+            CheckAndUpdateFor(type);
             totalCount++;
         }
 
@@ -263,18 +245,25 @@ public class BasicComponentCollection : IComponentCollection
             if (byEntity.TryGetValue(component.Entity, out var coll))
                 coll.Remove(component);
 
-            if (components.TryGetValue(type, out var list))
+            if (components.Ensure(type).Remove(component))
             {
-                if (list.Remove(component))
-                {
-                    if (component is IDisposable disp)
-                        disp.Dispose();
-                    totalCount--;
-                }
-                else
-                    throw new Exception("Failed to remove component from list");
+                if (component is IDisposable disp)
+                    disp.Dispose();
+                totalCount--;
             }
+            else
+                throw new Exception("Failed to remove component from list");
         }
+    }
+
+    private void CheckAndUpdateFor(Type type)
+    {
+        var list = typeUmbrella.Ensure(type);
+        if (list.Count == 0)
+            list.Add(type);
+        foreach (var potentialDerivative in components.Keys)
+            if (!list.Contains(potentialDerivative) && potentialDerivative.IsAssignableTo(type))
+                list.Add(potentialDerivative);
     }
 
     public bool Remove(Entity entity)

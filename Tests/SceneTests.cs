@@ -8,7 +8,8 @@ namespace Tests;
 [TestClass]
 public class SceneTests
 {
-    [TestMethod]
+    //[TestMethod]
+    //TODO dit is oud en moet opnieuw
     public void EntityDeleteMemoryTest()
     {
         const int entityCount = 5000;

@@ -13,8 +13,8 @@ public static class StringExtension
     public static byte[] ToByteArray(this string str)
     {
         return Encoding.ASCII.GetBytes(str);
-    }  
-    
+    }
+
     /// <summary>
     /// Populates an array where each entry is a byte that corresponds to the given string in ASCII
     /// </summary>
