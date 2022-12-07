@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -136,6 +137,8 @@ public class FilterComponentCollection : IComponentCollection
         return i;
     }
 
+    nieuwsflash: isInLoop met IDisposable WERKT NIET zoek het uit.sukkel
+
     public T GetFrom<T>(Entity entity) where T : Component
     {
         var list = components.Ensure(new Filter(entity, typeof(T)), out var isnew);
@@ -143,14 +146,19 @@ public class FilterComponentCollection : IComponentCollection
         //    foreach (var item in all)
         //        EnsureFilterSync(item);
         foreach (var item in list)
-            return item as T ?? throw new Exception(
-                "The component that was found in the typed component list was of the incorrect type and this error is so severe that you should probably use a different game engine");
+            return item as T ?? throw new Exception("The component that was found in the typed component list was of the incorrect type and this error is so severe that you should probably use a different game engine");
+
+        //TODO het moet :(
+        foreach (var item in toAdd)
+            if (item is T tt)
+                return tt;
+
         throw new Exception("Entity has no component of that type");
     }
 
     public bool Has<T>(Entity entity) where T : Component
     {
-        return components.ContainsKey(new Filter(type: typeof(T)));
+        return components.ContainsKey(new Filter(entity, typeof(T)));
     }
 
     public bool HasEntity(Entity entity)
@@ -167,7 +175,7 @@ public class FilterComponentCollection : IComponentCollection
     {
         var list = components.Ensure(new Filter(entity, type));
         foreach (var item in list)
-            if (item.GetType().IsAssignableTo(type))
+            if (!toDestroy.Contains(item) && item.GetType().IsAssignableTo(type))
             {
                 toDestroy.Enqueue(item);
                 return true;
@@ -178,7 +186,8 @@ public class FilterComponentCollection : IComponentCollection
     public bool Remove(Entity entity)
     {
         foreach (var item in components.Ensure(new Filter(entity)))
-            toDestroy.Enqueue(item);
+            if (!toDestroy.Contains(item))
+                toDestroy.Enqueue(item);
         return true;
     }
 
@@ -206,19 +215,19 @@ public class FilterComponentCollection : IComponentCollection
 
     private void InternalRemoveComponent(Component component)
     {
-        bool success = false;
         foreach (var filter in GetFiltersFor(component))
-            success |= components.Ensure(filter).Remove(component);
-
-        if (success)
         {
-            if (component is IDisposable disp)
-                disp.Dispose();
-            all.Remove(component);
-
+            var list = components[filter];
+            if (!list.Remove(component))
+            {
+                global::System.IO.File.WriteAllLines("scene_dump", components.Select(a => $"{a.Key}\t{a.Value.Count}"));
+                throw new Exception($"Failed to remove component {component} from filtered list: {filter}");
+            }
         }
-        else
-            throw new Exception("Failed to remove component from list");
+
+        all.Remove(component);
+        if (component is IDisposable disp)
+            disp.Dispose();
     }
 
     private void InternalAddComponent(Component component)

@@ -38,7 +38,7 @@ namespace Walgelijk
 
             set
             {
-                IsMatrixCached &= position == value;
+                IsMatrixCached = false;//IsMatrixCached &= position == value;
                 position = value;
             }
         }
@@ -52,7 +52,7 @@ namespace Walgelijk
 
             set
             {
-                IsMatrixCached &= rotation == value;
+                IsMatrixCached = false;//IsMatrixCached &= rotation == value;
                 rotation = value;
             }
         }
@@ -66,7 +66,7 @@ namespace Walgelijk
 
             set
             {
-                IsMatrixCached &= scale == value;
+                IsMatrixCached = false;//IsMatrixCached &= scale == value;
                 scale = value;
             }
         }
@@ -80,7 +80,7 @@ namespace Walgelijk
 
             set
             {
-                IsMatrixCached &= value == pivot;
+                IsMatrixCached = false;//IsMatrixCached &= value == pivot;
                 pivot = new(value.X, value.Y);
             }
         }
@@ -94,7 +94,7 @@ namespace Walgelijk
 
             set
             {
-                IsMatrixCached &= value == rotationPivot;
+                IsMatrixCached = false;//&= value == rotationPivot;
                 rotationPivot = new(value.X, value.Y);
             }
         }

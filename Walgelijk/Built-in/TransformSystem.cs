@@ -33,6 +33,8 @@ namespace Walgelijk
                 else if (!transform.Parent.HasValue)
                     CalculateMatrix(transform);
             }
+
+            ArrayPool<TransformComponent>.Shared.Return(arr);
         }
 
         private void CalculateMatrix(TransformComponent transform)

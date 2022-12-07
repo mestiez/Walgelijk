@@ -277,7 +277,7 @@ public sealed class Scene : IDisposable
     /// When adding or removing components or systems, they won't be returned by querying methods until the following frame. You can call this method to force update the buffers after adding/removing stuff
     /// if you really need to query them immediately.
     /// </summary>
-    internal void SyncBuffers()
+    public void SyncBuffers()
     {
         entities.SyncBuffers();
         components.SyncBuffers();
