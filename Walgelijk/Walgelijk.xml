@@ -1226,7 +1226,7 @@
         </member>
         <member name="M:Walgelijk.Scene.HasComponent``1(Walgelijk.Entity)">
             <summary>
-            Get if an entity has a component. This is a bit slow so you should really just have the entity at hand
+            Get if an entity has a component.
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.AttachComponent``1(Walgelijk.Entity,``0)">
@@ -1242,6 +1242,12 @@
         <member name="M:Walgelijk.Scene.UpdateSystems">
             <summary>
             Executes all systems
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.SyncBuffers">
+            <summary>
+            When adding or removing components or systems, they won't be returned by querying methods until the following frame. You can call this method to force update the buffers after adding/removing stuff
+            if you really need to query them immediately.
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.FixedUpdateSystems">
@@ -1426,7 +1432,7 @@
             <summary>
             Called when a frame has ended. 
             The collection will empty its add and destroy buffers and update the main system collection.
-            It will sort the collection if necessary so do not call <see cref="M:Walgelijk.ISystemCollection.Sort"/>
+            It will sort the collection if necessary
             </summary>
         </member>
         <member name="M:Walgelijk.ISystemCollection.Sort">

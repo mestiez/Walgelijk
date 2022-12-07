@@ -14,12 +14,18 @@ public class FilterComponentCollection : IComponentCollection
     private readonly Queue<Component> toDestroy = new();
     private readonly HashSet<Component> all = new();
 
+    private bool isInLoop;
+
     public int Count => all.Count;
 
     public T Attach<T>(Entity entity, T component) where T : Component
     {
         component.Entity = entity;
-        toAdd.Enqueue(component);
+        if (isInLoop)
+            toAdd.Enqueue(component);
+        else
+            InternalAddComponent(component);
+
         return component;
     }
 
@@ -89,6 +95,8 @@ public class FilterComponentCollection : IComponentCollection
 
     public IEnumerable<T> GetAllOfType<T>() where T : Component
     {
+        using var marker = new LoopMarker(this);
+
         var list = components.Ensure(new Filter(type: typeof(T)), out var isnew);
 
         //if (isnew)
@@ -98,6 +106,8 @@ public class FilterComponentCollection : IComponentCollection
         foreach (var item in list)
             if (item is T tt)
                 yield return tt;
+
+        marker.Dispose();
     }
 
     public int GetAllOfType<T>(Span<T> span) where T : Component
@@ -188,30 +198,36 @@ public class FilterComponentCollection : IComponentCollection
     public void SyncBuffers()
     {
         while (toAdd.TryDequeue(out var component))
-        {
-            all.Add(component);
-            foreach (var filter in GetFiltersFor(component))
-            {
-                //Console.WriteLine("{0} for {1}", filter, component);
-                components.Ensure(filter).Add(component);
-            }
-        }
+            InternalAddComponent(component);
 
         while (toDestroy.TryDequeue(out var component))
+            InternalRemoveComponent(component);
+    }
+
+    private void InternalRemoveComponent(Component component)
+    {
+        bool success = false;
+        foreach (var filter in GetFiltersFor(component))
+            success |= components.Ensure(filter).Remove(component);
+
+        if (success)
         {
-            bool success = false;
-            foreach (var filter in GetFiltersFor(component))
-                success |= components.Ensure(filter).Remove(component);
+            if (component is IDisposable disp)
+                disp.Dispose();
+            all.Remove(component);
 
-            if (success)
-            {
-                if (component is IDisposable disp)
-                    disp.Dispose();
-                all.Remove(component);
+        }
+        else
+            throw new Exception("Failed to remove component from list");
+    }
 
-            }
-            else
-                throw new Exception("Failed to remove component from list");
+    private void InternalAddComponent(Component component)
+    {
+        all.Add(component);
+        foreach (var filter in GetFiltersFor(component))
+        {
+            //Console.WriteLine("{0} for {1}", filter, component);
+            components.Ensure(filter).Add(component);
         }
     }
 
@@ -291,5 +307,21 @@ public class FilterComponentCollection : IComponentCollection
         }
 
         public override string ToString() => $"{ByType?.ToString() ?? "any type"} on {ByEntity?.ToString() ?? "any entity"}";
+    }
+
+    private readonly struct LoopMarker : IDisposable
+    {
+        public readonly FilterComponentCollection coll;
+
+        public LoopMarker(FilterComponentCollection coll)
+        {
+            this.coll = coll;
+            coll.isInLoop = true;
+        }
+
+        public void Dispose()
+        {
+            coll.isInLoop = false;
+        }
     }
 }

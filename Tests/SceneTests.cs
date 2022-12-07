@@ -49,7 +49,8 @@ public class SceneTests
         }
     }
 
-    [TestMethod]
+    //[TestMethod]
+    //TODO dit is oud en moet opnieuw
     public void DetachComponentMemoryTest()
     {
         const int entityCount = 5000;

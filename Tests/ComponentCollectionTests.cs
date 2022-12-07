@@ -12,7 +12,7 @@ public class ComponentCollectionTests
     [TestMethod]
     public void AddRemove()
     {
-        IComponentCollection coll = GetNewCollection();
+        using IComponentCollection coll = GetNewCollection();
         Assert.AreEqual(0, coll.Count);
 
         Entity ent1 = IdentityGenerator.Generate();
@@ -20,7 +20,7 @@ public class ComponentCollectionTests
 
         var transform = coll.Attach(ent1, new TransformComponent());
 
-        Assert.AreEqual(0, coll.Count);
+        Assert.AreEqual(1, coll.Count); // not in loop so it adds instantly
         coll.SyncBuffers();
         Assert.AreEqual(1, coll.Count);
         Assert.IsFalse(coll.Contains<CameraComponent>());
@@ -47,7 +47,7 @@ public class ComponentCollectionTests
     [TestMethod]
     public void Querying()
     {
-        IComponentCollection coll = GetNewCollection();
+        using IComponentCollection coll = GetNewCollection();
         Assert.AreEqual(0, coll.Count);
 
         Entity ent1 = IdentityGenerator.Generate();
@@ -63,7 +63,7 @@ public class ComponentCollectionTests
         var e3board = coll.Attach(ent3, new BoardComponent());
         var e3blob = coll.Attach(ent3, new BlobComponent());
 
-        Assert.AreEqual(0, coll.Count);
+        Assert.AreEqual(6, coll.Count); // not in loop so adds instantly
         coll.SyncBuffers();
 
         Assert.AreEqual(6, coll.Count);
@@ -97,6 +97,29 @@ public class ComponentCollectionTests
         inheritance = coll.GetAllOfType<BoardComponent>();
         Assert.IsTrue(inheritance.Contains(e1breadboard));
         Assert.AreEqual(1, inheritance.Count());
+    }
+
+    [TestMethod]
+    public void MidLoopManipulation()
+    {
+        using IComponentCollection coll = GetNewCollection();
+        Assert.AreEqual(0, coll.Count);
+
+        Entity ent1 = IdentityGenerator.Generate();
+
+        var transform = coll.Attach(ent1, new TransformComponent());
+
+        Assert.AreEqual(1, coll.Count); // not in loop so it adds instantly
+        coll.SyncBuffers();
+        Assert.AreEqual(1, coll.Count);
+        Assert.IsFalse(coll.Contains<CameraComponent>());
+        Assert.IsTrue(coll.Contains<TransformComponent>());
+        Assert.AreSame(transform, coll.GetAll().First());
+
+        foreach (var item in coll.GetAllOfType<TransformComponent>())
+        {
+
+        }
     }
 
     public class BlobComponent : Component { }

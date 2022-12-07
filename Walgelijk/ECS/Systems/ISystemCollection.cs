@@ -74,7 +74,7 @@ public interface ISystemCollection : IEnumerable<System>, IDisposable
     /// <summary>
     /// Called when a frame has ended. 
     /// The collection will empty its add and destroy buffers and update the main system collection.
-    /// It will sort the collection if necessary so do not call <see cref="Sort"/>
+    /// It will sort the collection if necessary
     /// </summary>
     public void SyncBuffers();
 

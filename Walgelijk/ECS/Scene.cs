@@ -195,7 +195,7 @@ public sealed class Scene : IDisposable
         => components.TryGetFrom(entity, out component);
 
     /// <summary>
-    /// Get if an entity has a component. This is a bit slow so you should really just have the entity at hand
+    /// Get if an entity has a component.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool HasComponent<T>(Entity entity) where T : Component
@@ -270,7 +270,7 @@ public sealed class Scene : IDisposable
     /// When adding or removing components or systems, they won't be returned by querying methods until the following frame. You can call this method to force update the buffers after adding/removing stuff
     /// if you really need to query them immediately.
     /// </summary>
-    public void SyncBuffers()
+    internal void SyncBuffers()
     {
         entities.SyncBuffers();
         components.SyncBuffers();

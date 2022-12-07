@@ -15,18 +15,17 @@ public class SystemCollectionTests
     [TestMethod]
     public void AddRemove()
     {
-        ISystemCollection coll = GetNewCollection();
-        Assert.AreEqual(0, coll.Count);
-
-        coll.Add(new TransformSystem());
+        using ISystemCollection coll = GetNewCollection();
         Assert.AreEqual(0, coll.Count);
         Assert.IsFalse(coll.Has<TransformSystem>());
         Assert.IsFalse(coll.Has(typeof(TransformSystem)));
 
-        coll.SyncBuffers();
+        var transformSystem = coll.Add(new TransformSystem());
         Assert.AreEqual(1, coll.Count);
         Assert.IsTrue(coll.Has<TransformSystem>());
         Assert.IsTrue(coll.Has(typeof(TransformSystem)));
+        Assert.AreSame(transformSystem, coll.Get<TransformSystem>());
+        coll.SyncBuffers();
 
         Assert.ThrowsException<DuplicateSystemException>(() =>
         {
@@ -40,28 +39,57 @@ public class SystemCollectionTests
         Assert.IsTrue(coll.Has(typeof(TransformSystem)));
 
         Assert.IsTrue(coll.Remove<TransformSystem>());
-        Assert.AreEqual(1, coll.Count);
-        Assert.IsTrue(coll.Has<TransformSystem>());
-        Assert.IsTrue(coll.Has(typeof(TransformSystem)));
         coll.SyncBuffers();
         Assert.AreEqual(0, coll.Count);
         Assert.IsFalse(coll.Has<TransformSystem>());
         Assert.IsFalse(coll.Has(typeof(TransformSystem)));
+    }
 
-        coll.Dispose();
+    [TestMethod]
+    public void MidLoopManipulation()
+    {
+        using ISystemCollection coll = GetNewCollection();
+        Assert.AreEqual(0, coll.Count);
+
+        coll.Add(new DebugCameraSystem());
+        coll.Add(new TransformSystem());
+        Assert.AreEqual(2, coll.Count);
+        Assert.IsTrue(coll.Has<DebugCameraSystem>());
+        Assert.IsTrue(coll.Has<TransformSystem>());
+        //coll.SyncBuffers(); // should not be necessary
+
+        foreach (var sys in coll)
+        {
+            if (sys is DebugCameraSystem) //gewoon iets zodat het maar 1 keer gebeurt
+            {
+                Assert.IsTrue(coll.Remove<DebugCameraSystem>());
+                coll.Add(new ParticleSystem());
+                coll.Add(new ShapeRendererSystem());
+            }
+        }
+
+        Assert.AreEqual(2, coll.Count); // nu is SyncBuffers nog niet geroepen en de aanpassing was gemaakt tijdens een loop dus we moeten daarop wachten
+        Assert.IsTrue(coll.Has<DebugCameraSystem>());
+        Assert.IsFalse(coll.Has<ShapeRendererSystem>());
+        Assert.IsFalse(coll.Has<ParticleSystem>());
+        coll.SyncBuffers();
+        Assert.AreEqual(3, coll.Count);
+        Assert.IsFalse(coll.Has<DebugCameraSystem>());
+        Assert.IsTrue(coll.Has<ShapeRendererSystem>());
+        Assert.IsTrue(coll.Has<ParticleSystem>());
     }
 
     [TestMethod]
     public void Sort()
     {
-        ISystemCollection coll = GetNewCollection();
+        using ISystemCollection coll = GetNewCollection();
         Assert.AreEqual(0, coll.Count);
 
         // added in random order to make sure it has actually been sorted
         var third = coll.Add(new TransformSystem() { ExecutionOrder = 35 });
         var first = coll.Add(new DebugCameraSystem() { ExecutionOrder = 5 });
         var second = coll.Add(new ParticleSystem() { ExecutionOrder = 15 });
-        coll.SyncBuffers();
+        coll.Sort();
 
         Assert.AreEqual(3, coll.Count);
         Assert.AreEqual(first, coll.First());
@@ -69,7 +97,7 @@ public class SystemCollectionTests
         Assert.AreEqual(third, coll.GetAll()[2]);
 
         Assert.IsTrue(coll.Remove<ParticleSystem>());// remove middle system
-        coll.SyncBuffers();
+        coll.Sort();
 
         Assert.AreEqual(2, coll.Count);
         Assert.AreEqual(first, coll.First());
@@ -79,14 +107,12 @@ public class SystemCollectionTests
         {
             Assert.AreEqual(third, coll.GetAll()[5]); // out of range
         });
-
-        coll.Dispose();
     }
 
     [TestMethod]
     public void GetAll()
     {
-        ISystemCollection coll = GetNewCollection();
+        using ISystemCollection coll = GetNewCollection();
         Assert.AreEqual(0, coll.Count);
         var third = coll.Add(new TransformSystem() { ExecutionOrder = 35 });
         var first = coll.Add(new DebugCameraSystem() { ExecutionOrder = 5 });
@@ -123,7 +149,7 @@ public class SystemCollectionTests
     [TestMethod]
     public void BasicSystemExceptions()
     {
-        ISystemCollection coll = new BasicSystemCollection(4); //small capacity
+        using ISystemCollection coll = new BasicSystemCollection(4); //small capacity
         Assert.AreEqual(0, coll.Count);
         coll.Add(new TransformSystem());
         coll.Add(new DebugCameraSystem());

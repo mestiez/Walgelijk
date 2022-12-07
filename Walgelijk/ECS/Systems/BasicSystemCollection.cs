@@ -35,6 +35,8 @@ public class BasicSystemCollection : ISystemCollection
     /// </summary>
     public readonly int Capacity;
 
+    private bool isInLoop = false;
+
     /// <inheritdoc/>
     public Scene? Scene { get; }
 
@@ -73,7 +75,12 @@ public class BasicSystemCollection : ISystemCollection
             throw new DuplicateSystemException($"A system of type {typeof(T)} already exists");
         if (Scene != null)
             s.Scene = Scene;
-        systemsToAdd.Add(s);
+
+        if (isInLoop)
+            systemsToAdd.Add(s);
+        else
+            InternalAddSystem(s);
+
         return s;
     }
 
@@ -159,15 +166,19 @@ public class BasicSystemCollection : ISystemCollection
     /// <inheritdoc/>
     public IEnumerator<System> GetEnumerator()
     {
+        using var marker = new LoopMarker(this);
         for (int i = 0; i < systemCount; i++)
             yield return systems[i];
+        marker.Dispose();
     }
 
     /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator()
     {
+        using var marker = new LoopMarker(this);
         for (int i = 0; i < systemCount; i++)
             yield return systems[i];
+        marker.Dispose();
     }
 
     /// <inheritdoc/>
@@ -188,30 +199,36 @@ public class BasicSystemCollection : ISystemCollection
         mut.WaitOne();
 
         while (systemsToAdd.TryTake(out var system))
-        {
-            OnSystemAdded?.Invoke(system);
-            var type = system.GetType();
-            systems[systemCount++] = system;
-            systemsByType.TryAdd(type, new WeakReference<System>(system));
-            system.Initialise();
-        }
+            InternalAddSystem(system);
 
         while (systemsToDestroy.TryTake(out var system))
-        {
-            int index = Array.IndexOf(systems, system);
-            if (index >= 0)
-            {
-                OnSystemRemoved?.Invoke(system);
-                Array.Copy(systems, index + 1, systems, index, systems.Length - index - 1);
-                systemsByType.Remove(system.GetType(), out _);
-                systemCount--;
-            }
-        }
+            InternalRemoveSystem(system);
 
         if (hasAny)
             Sort();
 
         mut.ReleaseMutex();
+    }
+
+    private void InternalRemoveSystem(System system)
+    {
+        int index = Array.IndexOf(systems, system);
+        if (index >= 0)
+        {
+            OnSystemRemoved?.Invoke(system);
+            Array.Copy(systems, index + 1, systems, index, systems.Length - index - 1);
+            systemsByType.Remove(system.GetType(), out _);
+            systemCount--;
+        }
+    }
+
+    private void InternalAddSystem(System system)
+    {
+        OnSystemAdded?.Invoke(system);
+        var type = system.GetType();
+        systems[systemCount++] = system;
+        systemsByType.TryAdd(type, new WeakReference<System>(system));
+        system.Initialise();
     }
 
     /// <inheritdoc/>
@@ -234,7 +251,10 @@ public class BasicSystemCollection : ISystemCollection
     {
         if (TryGet(t, out var sys))
         {
-            systemsToDestroy.Add(sys);
+            if (isInLoop)
+                systemsToDestroy.Add(sys);
+            else
+                InternalRemoveSystem(sys);
             return true;
         }
         return false;
@@ -243,5 +263,21 @@ public class BasicSystemCollection : ISystemCollection
     private struct SystemComparer : IComparer<System>
     {
         public int Compare(System? x, System? y) => (x?.ExecutionOrder ?? int.MaxValue) - (y?.ExecutionOrder ?? int.MaxValue);
+    }
+
+    private readonly struct LoopMarker : IDisposable
+    {
+        public readonly BasicSystemCollection sys;
+
+        public LoopMarker(BasicSystemCollection sys)
+        {
+            this.sys = sys;
+            sys.isInLoop = true;
+        }
+
+        public void Dispose()
+        {
+            sys.isInLoop = false;
+        }
     }
 }
