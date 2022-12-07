@@ -295,13 +295,15 @@ public sealed class Scene : IDisposable
     /// </summary>
     public void RenderSystems()
     {
-        foreach (var systems in systems.GetAll())
+        var s = systems.GetAll();
+
+        foreach (var systems in s)
             systems.PreRender();
 
-        foreach (var systems in systems.GetAll())
+        foreach (var systems in s)
             systems.Render();
 
-        foreach (var systems in systems.GetAll())
+        foreach (var systems in s)
             systems.PostRender();
     }
 

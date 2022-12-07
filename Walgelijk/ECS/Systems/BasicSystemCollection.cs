@@ -181,9 +181,11 @@ public class BasicSystemCollection : ISystemCollection
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SyncBuffers()
     {
-        mut.WaitOne();
+        bool hasAny = systemsToAdd.Any() || systemsToDestroy.Any();
+        if (!hasAny)
+            return;
 
-        bool shouldSort = systemsToAdd.Any() || systemsToDestroy.Any();
+        mut.WaitOne();
 
         while (systemsToAdd.TryTake(out var system))
         {
@@ -206,7 +208,7 @@ public class BasicSystemCollection : ISystemCollection
             }
         }
 
-        if (shouldSort)
+        if (hasAny)
             Sort();
 
         mut.ReleaseMutex();
