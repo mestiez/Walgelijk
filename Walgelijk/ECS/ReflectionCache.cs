@@ -1,23 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace Walgelijk
+namespace Walgelijk;
+
+internal static class ReflectionCache
 {
-    internal static class ReflectionCache
+    private static readonly Dictionary<Type, object[]> attributes = new();
+    private static readonly Dictionary<Type, Type[]> baseTypes = new();
+
+    internal static IEnumerable<Type> GetAllBaseTypes(Type type)
     {
-        private static readonly Dictionary<Type, object[]> attributes = new Dictionary<Type, object[]>();
+        if (baseTypes.TryGetValue(type, out var bases))
+            return bases;
 
-        internal static AttributeType[] GetAttributes<AttributeType, T>() where T : class
+        bases = GetParent(type).ToArray();
+        baseTypes.Add(type, bases);
+
+        return bases;
+
+        static IEnumerable<Type> GetParent(Type t)
         {
-            var type = typeof(T);
-
-            if (!attributes.TryGetValue(type, out var attr))
+            if (t.BaseType != null)
             {
-                attr = type.GetCustomAttributes(typeof(AttributeType), true);
-                attributes.Add(type, attr);
+                yield return t.BaseType;
+                foreach (var parent in GetParent(t.BaseType))
+                {
+                    yield return parent;
+                }
             }
-
-            return attr as AttributeType[] ?? throw new Exception("Cached attribute array is invalid");
         }
+    }
+
+    internal static AttributeType[] GetAttributes<AttributeType, T>() where T : class
+    {
+        var type = typeof(T);
+
+        if (!attributes.TryGetValue(type, out var attr))
+        {
+            attr = type.GetCustomAttributes(typeof(AttributeType), true);
+            attributes.Add(type, attr);
+        }
+
+        return attr as AttributeType[] ?? throw new Exception("Cached attribute array is invalid");
     }
 }

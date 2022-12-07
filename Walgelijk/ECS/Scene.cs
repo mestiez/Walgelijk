@@ -23,7 +23,7 @@ public sealed class Scene : IDisposable
     public bool ShouldBeDisposedOnSceneChange = false;
 
     private readonly IEntityCollection entities = new BasicEntityCollection();
-    private readonly IComponentCollection components = new BasicComponentCollection();
+    private readonly IComponentCollection components = new FilterComponentCollection();
     private readonly ISystemCollection systems;
 
 
@@ -260,12 +260,21 @@ public sealed class Scene : IDisposable
         if (shouldSort)
             systems.Sort(); // TODO double sorting. die onderste systems.SyncBuffers sorteert ook maar je moet dus kunnen aangeven om dat niet te doen
 
-        entities.SyncBuffers();
-        components.SyncBuffers();
-        systems.SyncBuffers();
+        SyncBuffers();
 
         foreach (var system in systems.GetAll())
             system.Update();
+    }
+
+    /// <summary>
+    /// When adding or removing components or systems, they won't be returned by querying methods until the following frame. You can call this method to force update the buffers after adding/removing stuff
+    /// if you really need to query them immediately.
+    /// </summary>
+    public void SyncBuffers()
+    {
+        entities.SyncBuffers();
+        components.SyncBuffers();
+        systems.SyncBuffers();
     }
 
     /// <summary>

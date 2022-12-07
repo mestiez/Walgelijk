@@ -10,10 +10,12 @@ namespace Tests;
 [TestClass]
 public class SystemCollectionTests
 {
+    private ISystemCollection GetNewCollection() => new BasicSystemCollection();
+
     [TestMethod]
     public void AddRemove()
     {
-        ISystemCollection coll = new BasicSystemCollection();
+        ISystemCollection coll = GetNewCollection();
         Assert.AreEqual(0, coll.Count);
 
         coll.Add(new TransformSystem());
@@ -52,7 +54,7 @@ public class SystemCollectionTests
     [TestMethod]
     public void Sort()
     {
-        ISystemCollection coll = new BasicSystemCollection();
+        ISystemCollection coll = GetNewCollection();
         Assert.AreEqual(0, coll.Count);
 
         // added in random order to make sure it has actually been sorted
@@ -84,7 +86,7 @@ public class SystemCollectionTests
     [TestMethod]
     public void GetAll()
     {
-        ISystemCollection coll = new BasicSystemCollection();
+        ISystemCollection coll = GetNewCollection();
         Assert.AreEqual(0, coll.Count);
         var third = coll.Add(new TransformSystem() { ExecutionOrder = 35 });
         var first = coll.Add(new DebugCameraSystem() { ExecutionOrder = 5 });
@@ -119,7 +121,7 @@ public class SystemCollectionTests
     }
 
     [TestMethod]
-    public void Exceptions()
+    public void BasicSystemExceptions()
     {
         ISystemCollection coll = new BasicSystemCollection(4); //small capacity
         Assert.AreEqual(0, coll.Count);

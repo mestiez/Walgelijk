@@ -7,10 +7,12 @@ namespace Tests;
 [TestClass]
 public class ComponentCollectionTests
 {
+    private IComponentCollection GetNewCollection() => new FilterComponentCollection();
+
     [TestMethod]
     public void AddRemove()
     {
-        IComponentCollection coll = new BasicComponentCollection();
+        IComponentCollection coll = GetNewCollection();
         Assert.AreEqual(0, coll.Count);
 
         Entity ent1 = IdentityGenerator.Generate();
@@ -33,7 +35,7 @@ public class ComponentCollectionTests
         coll.SyncBuffers();
         Assert.AreEqual(1, coll.Count);
 
-        coll.Remove<TransformComponent>(ent1);// wrong entity
+        coll.Remove<TransformComponent>(ent1);
         coll.SyncBuffers();
         Assert.AreEqual(0, coll.Count);   
         
@@ -45,7 +47,7 @@ public class ComponentCollectionTests
     [TestMethod]
     public void Querying()
     {
-        IComponentCollection coll = new BasicComponentCollection();
+        IComponentCollection coll = GetNewCollection();
         Assert.AreEqual(0, coll.Count);
 
         Entity ent1 = IdentityGenerator.Generate();

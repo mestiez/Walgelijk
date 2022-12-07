@@ -5,7 +5,7 @@
     /// </summary>
     public struct IdentityGenerator
     {
-        private static int i = int.MinValue;
+        private static int i = 0;
 
         /// <summary>
         /// Generate a new identity value

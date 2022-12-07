@@ -6,118 +6,6 @@ using System.Linq;
 
 namespace Walgelijk;
 
-public class FilterComponentCollection : IComponentCollection
-{
-    /* Het idee is dat er een dictionary is van "filters" wat eigenlijk gewoon een query is met 1 level
-     * Als iemand iets opvraagt (by entity, by type, wat dan ook) dan pakt het deze filter uit de dict
-     * als het nog niet bestaat dan maakt hij het
-     * als er een component wordt toegevoegd of verwijdert dan kijkt het naar de filters en past alle relevante lijsten aan
-     * IEnumerable<Filter> GetRelevantFilters(Component) of misschien dat het direct de lijsten uit de dict teruggeeft
-     */ 
-
-    public int Count => throw new NotImplementedException();
-
-    public T Attach<T>(Entity entity, T component) where T : Component
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Contains<T>() where T : Component
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Dispose()
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEnumerable<Component> GetAll()
-    {
-        throw new NotImplementedException();
-    }
-
-    public int GetAll(Span<Component> span)
-    {
-        throw new NotImplementedException();
-    }
-
-    public int GetAll(Component[] span, int offset, int count)
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEnumerable<Component> GetAllFrom(Entity entity)
-    {
-        throw new NotImplementedException();
-    }
-
-    public int GetAllFrom(Entity entity, Span<Component> span)
-    {
-        throw new NotImplementedException();
-    }
-
-    public int GetAllFrom(Entity entity, Component[] arr, int offset, int count)
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEnumerable<T> GetAllOfType<T>() where T : Component
-    {
-        throw new NotImplementedException();
-    }
-
-    public int GetAllOfType<T>(Span<T> span) where T : Component
-    {
-        throw new NotImplementedException();
-    }
-
-    public int GetAllOfType<T>(T[] arr, int offset, int count) where T : Component
-    {
-        throw new NotImplementedException();
-    }
-
-    public T GetFrom<T>(Entity entity) where T : Component
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Has<T>(Entity entity) where T : Component
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool HasEntity(Entity entity)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Remove<T>(Entity entity) where T : Component
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Remove(Type type, Entity entity)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Remove(Entity entity)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SyncBuffers()
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool TryGetFrom<T>(Entity entity, [NotNullWhen(true)] out T? component) where T : Component
-    {
-        throw new NotImplementedException();
-    }
-}
-
 /// <summary>
 /// Represents a thread safe collection of components and their entities
 /// </summary>
@@ -229,10 +117,7 @@ public class BasicComponentCollection : IComponentCollection
     public IEnumerable<T> GetAllOfType<T>() where T : Component
     {
         var t = typeof(T);
-        if (typeUmbrella.ContainsKey(t))
-            CheckAndUpdateFor(t);
-
-        foreach (var types in typeUmbrella.Ensure(t))
+        foreach (var types in typeUmbrella[t])
             foreach (var item in components.Ensure(types))
                 if (item is T typed)
                     yield return typed;
