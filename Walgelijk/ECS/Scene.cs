@@ -241,6 +241,13 @@ public sealed class Scene : IDisposable
         components.Remove<T>(entity);
     }
 
+    public bool HasTag(Entity entity, Tag tag) => entities.HasTag(entity, tag);
+    public bool ClearTag(Entity entity) => entities.ClearTag(entity);
+    public void SetTag(Entity entity, Tag tag) => entities.SetTag(entity, tag);
+    public bool TryGetEntityWithTag(Tag tag, out Entity entity) => entities.TryGetEntityWithTag(tag, out entity);
+    public bool TryGetTag(Entity entity, out Tag tag) => entities.TryGetTag(entity, out tag);
+    public IEnumerable<Entity> GetEntitiesWithTag(Tag tag) => entities.GetEntitiesWithTag(tag);
+
     /// <summary>
     /// Executes all systems
     /// </summary>
