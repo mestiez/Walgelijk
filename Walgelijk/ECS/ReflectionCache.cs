@@ -9,6 +9,12 @@ internal static class ReflectionCache
     private static readonly Dictionary<Type, object[]> attributes = new();
     private static readonly Dictionary<Type, Type[]> baseTypes = new();
 
+    public static void Clear()
+    {
+        baseTypes.Clear();
+        attributes.Clear();
+    }
+
     internal static IEnumerable<Type> GetAllBaseTypes(Type type)
     {
         if (baseTypes.TryGetValue(type, out var bases))

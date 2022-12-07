@@ -217,6 +217,13 @@ public class FilterComponentCollection : IComponentCollection
 
     public void Dispose()
     {
+        foreach (var c in all)
+            if (c is IDisposable d)
+                d.Dispose();
+        all.Clear();
+        components.Clear();
+        toAdd.Clear();
+        toDestroy.Clear();
     }
 
     //private void EnsureFilterSync<T>(T component) where T : Component
