@@ -35,8 +35,6 @@ public class BasicSystemCollection : ISystemCollection
     /// </summary>
     public readonly int Capacity;
 
-    private bool isInLoop = false;
-
     /// <inheritdoc/>
     public Scene? Scene { get; }
 
@@ -76,10 +74,7 @@ public class BasicSystemCollection : ISystemCollection
         if (Scene != null)
             s.Scene = Scene;
 
-        if (isInLoop)
-            systemsToAdd.Add(s);
-        else
-            InternalAddSystem(s);
+        systemsToAdd.Add(s);
 
         return s;
     }
@@ -166,19 +161,15 @@ public class BasicSystemCollection : ISystemCollection
     /// <inheritdoc/>
     public IEnumerator<System> GetEnumerator()
     {
-        using var marker = new LoopMarker(this);
         for (int i = 0; i < systemCount; i++)
             yield return systems[i];
-        marker.Dispose();
     }
 
     /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator()
     {
-        using var marker = new LoopMarker(this);
         for (int i = 0; i < systemCount; i++)
             yield return systems[i];
-        marker.Dispose();
     }
 
     /// <inheritdoc/>
@@ -251,10 +242,7 @@ public class BasicSystemCollection : ISystemCollection
     {
         if (TryGet(t, out var sys))
         {
-            if (isInLoop)
-                systemsToDestroy.Add(sys);
-            else
-                InternalRemoveSystem(sys);
+            systemsToDestroy.Add(sys);
             return true;
         }
         return false;
@@ -263,21 +251,5 @@ public class BasicSystemCollection : ISystemCollection
     private struct SystemComparer : IComparer<System>
     {
         public int Compare(System? x, System? y) => (x?.ExecutionOrder ?? int.MaxValue) - (y?.ExecutionOrder ?? int.MaxValue);
-    }
-
-    private readonly struct LoopMarker : IDisposable
-    {
-        public readonly BasicSystemCollection sys;
-
-        public LoopMarker(BasicSystemCollection sys)
-        {
-            this.sys = sys;
-            sys.isInLoop = true;
-        }
-
-        public void Dispose()
-        {
-            sys.isInLoop = false;
-        }
     }
 }

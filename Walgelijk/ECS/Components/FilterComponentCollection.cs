@@ -15,17 +15,12 @@ public class FilterComponentCollection : IComponentCollection
     private readonly Queue<Component> toDestroy = new();
     private readonly HashSet<Component> all = new();
 
-    private bool isInLoop;
-
     public int Count => all.Count;
 
     public T Attach<T>(Entity entity, T component) where T : Component
     {
         component.Entity = entity;
-        if (isInLoop)
-            toAdd.Enqueue(component);
-        else
-            InternalAddComponent(component);
+        toAdd.Enqueue(component);
 
         return component;
     }
@@ -96,19 +91,11 @@ public class FilterComponentCollection : IComponentCollection
 
     public IEnumerable<T> GetAllOfType<T>() where T : Component
     {
-        using var marker = new LoopMarker(this);
-
         var list = components.Ensure(new Filter(type: typeof(T)), out var isnew);
-
-        //if (isnew)
-        //    foreach (var item in all)
-        //        EnsureFilterSync(item);
 
         foreach (var item in list)
             if (item is T tt)
                 yield return tt;
-
-        marker.Dispose();
     }
 
     public int GetAllOfType<T>(Span<T> span) where T : Component
@@ -137,14 +124,9 @@ public class FilterComponentCollection : IComponentCollection
         return i;
     }
 
-    nieuwsflash: isInLoop met IDisposable WERKT NIET zoek het uit.sukkel
-
     public T GetFrom<T>(Entity entity) where T : Component
     {
         var list = components.Ensure(new Filter(entity, typeof(T)), out var isnew);
-        //if (isnew)
-        //    foreach (var item in all)
-        //        EnsureFilterSync(item);
         foreach (var item in list)
             return item as T ?? throw new Exception("The component that was found in the typed component list was of the incorrect type and this error is so severe that you should probably use a different game engine");
 
@@ -316,21 +298,5 @@ public class FilterComponentCollection : IComponentCollection
         }
 
         public override string ToString() => $"{ByType?.ToString() ?? "any type"} on {ByEntity?.ToString() ?? "any entity"}";
-    }
-
-    private readonly struct LoopMarker : IDisposable
-    {
-        public readonly FilterComponentCollection coll;
-
-        public LoopMarker(FilterComponentCollection coll)
-        {
-            this.coll = coll;
-            coll.isInLoop = true;
-        }
-
-        public void Dispose()
-        {
-            coll.isInLoop = false;
-        }
     }
 }
