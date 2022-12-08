@@ -257,10 +257,7 @@ public class FilterComponentCollection : IComponentCollection
         {
             var list = components[filter];
             if (!list.Remove(component))
-            {
-                global::System.IO.File.WriteAllLines("scene_dump", components.Select(a => $"{a.Key}\t{a.Value.Count}"));
                 throw new Exception($"Failed to remove component {component} from filtered list: {filter}");
-            }
         }
 
         all.Remove(component);

@@ -7,6 +7,13 @@ using System.Text;
 
 namespace Walgelijk
 {
+    public class ManualCrashException : Exception
+    {
+        public ManualCrashException(string? message) : base(message)
+        {
+        }
+    }
+
     /// <summary>
     /// Object responsible for command processing. Only has static methods.
     /// </summary>
@@ -44,6 +51,9 @@ namespace Walgelijk
                 }
                 catch (global::System.Exception e)
                 {
+                    if (e.InnerException != null && e.InnerException is ManualCrashException m)
+                        throw m;
+
                     success = false;
                     var message = e.InnerException != null ? e.InnerException.Message : e.Message;
                     console.Print("Command error: " + message, Colors.Red, ConsoleMessageType.Error);
