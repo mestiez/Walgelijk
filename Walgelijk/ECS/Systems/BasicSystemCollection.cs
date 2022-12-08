@@ -21,10 +21,6 @@ public class BasicSystemCollection : ISystemCollection
 
     private readonly ConcurrentDictionary<Type, WeakReference<System>> systemsByType = new();
 
-    private readonly ConcurrentBag<System> systemsToAdd = new();
-    private readonly ConcurrentBag<System> systemsToDestroy = new();
-
-    private readonly Mutex mut = new();
     private readonly SystemComparer systemComparer = new SystemComparer();
 
     /// <inheritdoc/>
@@ -74,9 +70,25 @@ public class BasicSystemCollection : ISystemCollection
         if (Scene != null)
             s.Scene = Scene;
 
-        systemsToAdd.Add(s);
+        InternalAddSystem(s);
 
         return s;
+    }
+
+    /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Remove<T>() where T : System => Remove(typeof(T));
+
+    /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Remove(Type t)
+    {
+        if (TryGet(t, out var sys))
+        {
+            InternalRemoveSystem(sys);
+            return true;
+        }
+        return false;
     }
 
     /// <inheritdoc/>
@@ -172,34 +184,6 @@ public class BasicSystemCollection : ISystemCollection
             yield return systems[i];
     }
 
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-        mut.Dispose();
-    }
-
-    /// <inheritdoc/>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SyncBuffers()
-    {
-        bool hasAny = systemsToAdd.Any() || systemsToDestroy.Any();
-        if (!hasAny)
-            return;
-
-        mut.WaitOne();
-
-        while (systemsToAdd.TryTake(out var system))
-            InternalAddSystem(system);
-
-        while (systemsToDestroy.TryTake(out var system))
-            InternalRemoveSystem(system);
-
-        if (hasAny)
-            Sort();
-
-        mut.ReleaseMutex();
-    }
 
     private void InternalRemoveSystem(System system)
     {
@@ -211,6 +195,8 @@ public class BasicSystemCollection : ISystemCollection
             systemsByType.Remove(system.GetType(), out _);
             systemCount--;
         }
+
+        Sort();
     }
 
     private void InternalAddSystem(System system)
@@ -220,33 +206,19 @@ public class BasicSystemCollection : ISystemCollection
         systems[systemCount++] = system;
         systemsByType.TryAdd(type, new WeakReference<System>(system));
         system.Initialise();
+
+        Sort();
     }
 
     /// <inheritdoc/>
     public void Sort()
     {
-        mut.WaitOne();
         Array.Sort(systems, 0, systemCount, systemComparer);
         foreach (var item in GetAll())
             item.ExecutionOrderChanged = false;
-        mut.ReleaseMutex();
     }
 
-    /// <inheritdoc/>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Remove<T>() where T : System => Remove(typeof(T));
-
-    /// <inheritdoc/>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Remove(Type t)
-    {
-        if (TryGet(t, out var sys))
-        {
-            systemsToDestroy.Add(sys);
-            return true;
-        }
-        return false;
-    }
+    public void Dispose() { }
 
     private struct SystemComparer : IComparer<System>
     {

@@ -72,13 +72,6 @@ public interface ISystemCollection : IEnumerable<System>, IDisposable
     public ReadOnlySpan<System> GetAll();
 
     /// <summary>
-    /// Called when a frame has ended. 
-    /// The collection will empty its add and destroy buffers and update the main system collection.
-    /// It will sort the collection if necessary
-    /// </summary>
-    public void SyncBuffers();
-
-    /// <summary>
     /// Called after the collection is edited to sort it based on ExecutionOrder
     /// </summary>
     public void Sort();

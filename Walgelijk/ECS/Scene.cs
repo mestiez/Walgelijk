@@ -281,7 +281,7 @@ public sealed class Scene : IDisposable
     {
         entities.SyncBuffers();
         components.SyncBuffers();
-        systems.SyncBuffers();
+        //systems.SyncBuffers();
     }
 
     /// <summary>
@@ -333,7 +333,7 @@ public sealed class Scene : IDisposable
 
         entities.SyncBuffers();
         components.SyncBuffers();
-        systems.SyncBuffers();
+        //systems.SyncBuffers();
 
         systems.Dispose();
         components.Dispose();

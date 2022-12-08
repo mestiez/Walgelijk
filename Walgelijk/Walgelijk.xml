@@ -1305,6 +1305,12 @@
         <member name="M:Walgelijk.BasicSystemCollection.Add``1(``0)">
             <inheritdoc/>
         </member>
+        <member name="M:Walgelijk.BasicSystemCollection.Remove``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.BasicSystemCollection.Remove(System.Type)">
+            <inheritdoc/>
+        </member>
         <member name="M:Walgelijk.BasicSystemCollection.Get``1">
             <inheritdoc/>
         </member>
@@ -1338,19 +1344,7 @@
         <member name="M:Walgelijk.BasicSystemCollection.System#Collections#IEnumerable#GetEnumerator">
             <inheritdoc/>
         </member>
-        <member name="M:Walgelijk.BasicSystemCollection.Dispose">
-            <inheritdoc/>
-        </member>
-        <member name="M:Walgelijk.BasicSystemCollection.SyncBuffers">
-            <inheritdoc/>
-        </member>
         <member name="M:Walgelijk.BasicSystemCollection.Sort">
-            <inheritdoc/>
-        </member>
-        <member name="M:Walgelijk.BasicSystemCollection.Remove``1">
-            <inheritdoc/>
-        </member>
-        <member name="M:Walgelijk.BasicSystemCollection.Remove(System.Type)">
             <inheritdoc/>
         </member>
         <member name="T:Walgelijk.ISystemCollection">
@@ -1426,13 +1420,6 @@
         <member name="M:Walgelijk.ISystemCollection.GetAll">
             <summary>
             Returns a span with all systems
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ISystemCollection.SyncBuffers">
-            <summary>
-            Called when a frame has ended. 
-            The collection will empty its add and destroy buffers and update the main system collection.
-            It will sort the collection if necessary
             </summary>
         </member>
         <member name="M:Walgelijk.ISystemCollection.Sort">

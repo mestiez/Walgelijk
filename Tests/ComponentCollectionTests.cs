@@ -20,11 +20,13 @@ public class ComponentCollectionTests
 
         var transform = coll.Attach(ent1, new TransformComponent());
 
-        Assert.AreEqual(1, coll.Count); // not in loop so it adds instantly
+        Assert.AreEqual(1, coll.Count, "component could not be found immediately after adding it"); // not in loop so it adds instantly
         coll.SyncBuffers();
         Assert.AreEqual(1, coll.Count);
         Assert.IsFalse(coll.Contains<CameraComponent>());
         Assert.IsTrue(coll.Contains<TransformComponent>());
+        Assert.IsTrue(coll.Has<TransformComponent>(ent1));
+        Assert.IsFalse(coll.Has<TransformComponent>(ent2));
         Assert.AreSame(transform, coll.GetAll().First());
 
         coll.Remove<CameraComponent>(ent1); // non existent component
@@ -36,6 +38,7 @@ public class ComponentCollectionTests
         Assert.AreEqual(1, coll.Count);
 
         coll.Remove<TransformComponent>(ent1);
+        Assert.IsTrue(coll.Has<TransformComponent>(ent2)); //dingen verwijderen is instant
         coll.SyncBuffers();
         Assert.AreEqual(0, coll.Count);   
         
@@ -109,16 +112,22 @@ public class ComponentCollectionTests
 
         var transform = coll.Attach(ent1, new TransformComponent());
 
-        Assert.AreEqual(1, coll.Count); // not in loop so it adds instantly
+        Assert.AreEqual(1, coll.Count); 
         coll.SyncBuffers();
         Assert.AreEqual(1, coll.Count);
         Assert.IsFalse(coll.Contains<CameraComponent>());
         Assert.IsTrue(coll.Contains<TransformComponent>());
         Assert.AreSame(transform, coll.GetAll().First());
 
+        int c = 0;
+
         foreach (var item in coll.GetAllOfType<TransformComponent>())
         {
-
+            if (c++ == 0)
+            {
+                coll.Attach(ent1, new BlobComponent());
+                Assert.IsTrue(coll.Has<BlobComponent>(ent1));
+            }
         }
     }
 

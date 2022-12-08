@@ -11,16 +11,16 @@ namespace Walgelijk;
 public class FilterComponentCollection : IComponentCollection
 {
     private readonly Dictionary<Filter, HashSet<Component>> components = new();
-    private readonly Queue<Component> toAdd = new();
-    private readonly Queue<Component> toDestroy = new();
+    private readonly LinkedList<Component> toAdd = new();
+    private readonly LinkedList<Component> toDestroy = new();
     private readonly HashSet<Component> all = new();
 
-    public int Count => all.Count;
+    public int Count => all.Count + toAdd.Count;
 
     public T Attach<T>(Entity entity, T component) where T : Component
     {
         component.Entity = entity;
-        toAdd.Enqueue(component);
+        toAdd.AddLast(component);
 
         return component;
     }
@@ -42,7 +42,13 @@ public class FilterComponentCollection : IComponentCollection
         {
             span[i++] = item;
             if (i >= span.Length)
-                break;
+                return i;
+        }
+        foreach (var item in toAdd)
+        {
+            span[i++] = item;
+            if (i >= span.Length)
+                return i;
         }
         return i;
     }
@@ -50,12 +56,21 @@ public class FilterComponentCollection : IComponentCollection
     public int GetAll(Component[] arr, int offset, int count)
     {
         int i = 0;
+
         foreach (var item in all)
         {
             arr[offset + i++] = item;
             if (i >= count || offset + i >= arr.Length)
-                break;
+                return i;
         }
+
+        foreach (var item in toAdd)
+        {
+            arr[offset + i++] = item;
+            if (i >= count || offset + i >= arr.Length)
+                return i;
+        }
+
         return i;
     }
 
@@ -63,17 +78,32 @@ public class FilterComponentCollection : IComponentCollection
     {
         foreach (var item in components.Ensure(new Filter(entity)))
             yield return item;
+
+        foreach (var item in toAdd)
+            if (item.Entity == entity)
+                yield return item;
     }
 
     public int GetAllFrom(Entity entity, Span<Component> span)
     {
         int i = 0;
+
         foreach (var item in components.Ensure(new Filter(entity)))
         {
             span[i++] = item;
             if (i >= span.Length)
-                break;
+                return i;
         }
+
+        foreach (var item in toAdd)
+        {
+            if (item.Entity != entity)
+                continue;
+            span[i++] = item;
+            if (i >= span.Length)
+                return i;
+        }
+
         return i;
     }
 
@@ -84,16 +114,28 @@ public class FilterComponentCollection : IComponentCollection
         {
             arr[offset + i++] = item;
             if (i >= count || offset + i >= arr.Length)
-                break;
+                return i;
+        }
+
+        foreach (var item in toAdd)
+        {
+            if (item.Entity != entity)
+                continue;
+            arr[offset + i++] = item;
+            if (i >= count || offset + i >= arr.Length)
+                return i;
         }
         return i;
     }
 
     public IEnumerable<T> GetAllOfType<T>() where T : Component
     {
-        var list = components.Ensure(new Filter(type: typeof(T)), out var isnew);
+        var list = components.Ensure(new Filter(type: typeof(T)));
 
         foreach (var item in list)
+            yield return (T)item;
+
+        foreach (var item in toAdd)
             if (item is T tt)
                 yield return tt;
     }
@@ -130,9 +172,8 @@ public class FilterComponentCollection : IComponentCollection
         foreach (var item in list)
             return item as T ?? throw new Exception("The component that was found in the typed component list was of the incorrect type and this error is so severe that you should probably use a different game engine");
 
-        //TODO het moet :(
         foreach (var item in toAdd)
-            if (item is T tt)
+            if (item.Entity == entity && item is T tt)
                 return tt;
 
         throw new Exception("Entity has no component of that type");
@@ -140,11 +181,17 @@ public class FilterComponentCollection : IComponentCollection
 
     public bool Has<T>(Entity entity) where T : Component
     {
+        foreach (var item in toAdd)
+            if (item is T && item.Entity == entity)
+                return true;
         return components.ContainsKey(new Filter(entity, typeof(T)));
     }
 
     public bool HasEntity(Entity entity)
     {
+        foreach (var item in toAdd)
+            if (item.Entity == entity)
+                return true;
         return components.ContainsKey(new Filter(entity));
     }
 
@@ -159,7 +206,7 @@ public class FilterComponentCollection : IComponentCollection
         foreach (var item in list)
             if (!toDestroy.Contains(item) && item.GetType().IsAssignableTo(type))
             {
-                toDestroy.Enqueue(item);
+                toDestroy.AddLast(item);
                 return true;
             }
         return false;
@@ -169,7 +216,7 @@ public class FilterComponentCollection : IComponentCollection
     {
         foreach (var item in components.Ensure(new Filter(entity)))
             if (!toDestroy.Contains(item))
-                toDestroy.Enqueue(item);
+                toDestroy.AddLast(item);
         return true;
     }
 
@@ -182,17 +229,26 @@ public class FilterComponentCollection : IComponentCollection
                 component = t;
                 return true;
             }
+        foreach (var item in toAdd)
+            if (item.Entity == entity && item is T t)
+            {
+                component = t;
+                return true;
+            }
         component = null;
         return false;
     }
 
     public void SyncBuffers()
     {
-        while (toAdd.TryDequeue(out var component))
-            InternalAddComponent(component);
+        foreach (var c in toAdd)
+            InternalAddComponent(c);
 
-        while (toDestroy.TryDequeue(out var component))
-            InternalRemoveComponent(component);
+        foreach (var c in toDestroy)
+            InternalRemoveComponent(c);
+
+        toAdd.Clear();
+        toDestroy.Clear();
     }
 
     private void InternalRemoveComponent(Component component)

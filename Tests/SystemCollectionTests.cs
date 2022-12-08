@@ -25,7 +25,6 @@ public class SystemCollectionTests
         Assert.IsTrue(coll.Has<TransformSystem>());
         Assert.IsTrue(coll.Has(typeof(TransformSystem)));
         Assert.AreSame(transformSystem, coll.Get<TransformSystem>());
-        coll.SyncBuffers();
 
         Assert.ThrowsException<DuplicateSystemException>(() =>
         {
@@ -33,13 +32,11 @@ public class SystemCollectionTests
         });
 
         Assert.IsFalse(coll.Remove<ShapeRendererSystem>()); // do nothing when non existent system is removed
-        coll.SyncBuffers();
         Assert.AreEqual(1, coll.Count);
         Assert.IsTrue(coll.Has<TransformSystem>());
         Assert.IsTrue(coll.Has(typeof(TransformSystem)));
 
         Assert.IsTrue(coll.Remove<TransformSystem>());
-        coll.SyncBuffers();
         Assert.AreEqual(0, coll.Count);
         Assert.IsFalse(coll.Has<TransformSystem>());
         Assert.IsFalse(coll.Has(typeof(TransformSystem)));
@@ -56,7 +53,6 @@ public class SystemCollectionTests
         Assert.AreEqual(2, coll.Count);
         Assert.IsTrue(coll.Has<DebugCameraSystem>());
         Assert.IsTrue(coll.Has<TransformSystem>());
-        //coll.SyncBuffers(); // should not be necessary
 
         foreach (var sys in coll)
         {
@@ -68,11 +64,6 @@ public class SystemCollectionTests
             }
         }
 
-        Assert.AreEqual(2, coll.Count); // nu is SyncBuffers nog niet geroepen en de aanpassing was gemaakt tijdens een loop dus we moeten daarop wachten
-        Assert.IsTrue(coll.Has<DebugCameraSystem>());
-        Assert.IsFalse(coll.Has<ShapeRendererSystem>());
-        Assert.IsFalse(coll.Has<ParticleSystem>());
-        coll.SyncBuffers();
         Assert.AreEqual(3, coll.Count);
         Assert.IsFalse(coll.Has<DebugCameraSystem>());
         Assert.IsTrue(coll.Has<ShapeRendererSystem>());
@@ -117,7 +108,6 @@ public class SystemCollectionTests
         var third = coll.Add(new TransformSystem() { ExecutionOrder = 35 });
         var first = coll.Add(new DebugCameraSystem() { ExecutionOrder = 5 });
         var second = coll.Add(new ParticleSystem() { ExecutionOrder = 15 });
-        coll.SyncBuffers();
 
         Assert.AreEqual(3, coll.Count);
         Assert.AreEqual(3, coll.GetAll().Length);
@@ -154,7 +144,6 @@ public class SystemCollectionTests
         coll.Add(new TransformSystem());
         coll.Add(new DebugCameraSystem());
         coll.Add(new ParticleSystem());
-        coll.SyncBuffers();
 
         Assert.ThrowsException<DuplicateSystemException>(() =>
         {
@@ -162,7 +151,6 @@ public class SystemCollectionTests
         });
 
         coll.Add(new GuiSystem());
-        coll.SyncBuffers();
 
         Assert.ThrowsException<Exception>(() => // exceeded capacity
         {
