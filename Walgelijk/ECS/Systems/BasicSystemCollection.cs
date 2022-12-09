@@ -18,10 +18,9 @@ public class BasicSystemCollection : ISystemCollection
 {
     private int systemCount;
     private readonly System[] systems;
-
     private readonly ConcurrentDictionary<Type, WeakReference<System>> systemsByType = new();
-
     private readonly SystemComparer systemComparer = new SystemComparer();
+    private readonly ConcurrentBag<WeakReference<System>> toInitialise = new();
 
     /// <inheritdoc/>
     public int Count => systemCount;
@@ -204,8 +203,9 @@ public class BasicSystemCollection : ISystemCollection
         OnSystemAdded?.Invoke(system);
         var type = system.GetType();
         systems[systemCount++] = system;
-        systemsByType.TryAdd(type, new WeakReference<System>(system));
-        system.Initialise();
+        var wr = new WeakReference<System>(system);
+        systemsByType.TryAdd(type, wr);
+        toInitialise.Add(wr);
 
         Sort();
     }
@@ -219,6 +219,13 @@ public class BasicSystemCollection : ISystemCollection
     }
 
     public void Dispose() { }
+
+    public void InitialiseNewSystems()
+    {
+        while(toInitialise.TryTake(out var wr))
+            if (wr.TryGetTarget(out var system))
+                system.Initialise();
+    }
 
     private struct SystemComparer : IComparer<System>
     {

@@ -268,6 +268,7 @@ public sealed class Scene : IDisposable
             systems.Sort(); // TODO double sorting. die onderste systems.SyncBuffers sorteert ook maar je moet dus kunnen aangeven om dat niet te doen
 
         SyncBuffers();
+        systems.InitialiseNewSystems();
 
         foreach (var system in systems.GetAll())
             system.Update();

@@ -584,6 +584,10 @@ public struct Utilities
             color.Z = 255f;
         }
 
-        return new Color(color.X / 255f, color.Y / 255f, color.Z / 255f, 1);
+        return new Color(
+            NanFallback(color.X) / 255f,
+            NanFallback(color.Y) / 255f,
+            NanFallback(color.Z) / 255f,
+            1);
     }
 }

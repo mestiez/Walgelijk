@@ -77,6 +77,11 @@ public interface ISystemCollection : IEnumerable<System>, IDisposable
     public void Sort();
 
     /// <summary>
+    /// Initialise every new system, after which they are removed from the new system list
+    /// </summary>
+    public void InitialiseNewSystems();
+
+    /// <summary>
     /// Fired right after a system is added
     /// </summary>
     public event Action<System>? OnSystemAdded;

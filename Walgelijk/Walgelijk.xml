@@ -1427,6 +1427,11 @@
             Called after the collection is edited to sort it based on ExecutionOrder
             </summary>
         </member>
+        <member name="M:Walgelijk.ISystemCollection.InitialiseNewSystems">
+            <summary>
+            Initialise every new system, after which they are removed from the new system list
+            </summary>
+        </member>
         <member name="E:Walgelijk.ISystemCollection.OnSystemAdded">
             <summary>
             Fired right after a system is added
