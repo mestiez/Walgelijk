@@ -68,6 +68,11 @@
         }
 
         /// <summary>
+        /// Separate ordering value that is determined by the chronological order of this sytem within the collection
+        /// </summary>
+        internal int OrderOfAddition = 0;
+
+        /// <summary>
         /// Is the game running in dev mode?
         /// </summary>
         protected bool DevelopmentMode => Scene.Game.DevelopmentMode;

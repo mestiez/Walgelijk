@@ -1497,6 +1497,11 @@
             The order of execution relative to other systems. The lower, the earlier it gets executed.
             </summary>
         </member>
+        <member name="F:Walgelijk.System.OrderOfAddition">
+            <summary>
+            Separate ordering value that is determined by the chronological order of this sytem within the collection
+            </summary>
+        </member>
         <member name="P:Walgelijk.System.DevelopmentMode">
             <summary>
             Is the game running in dev mode?

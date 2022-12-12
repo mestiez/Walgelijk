@@ -21,6 +21,7 @@ public class BasicSystemCollection : ISystemCollection
     private readonly ConcurrentDictionary<Type, WeakReference<System>> systemsByType = new();
     private readonly SystemComparer systemComparer = new SystemComparer();
     private readonly ConcurrentBag<WeakReference<System>> toInitialise = new();
+    private int incrementalIdentity = 0;
 
     /// <inheritdoc/>
     public int Count => systemCount;
@@ -69,6 +70,7 @@ public class BasicSystemCollection : ISystemCollection
         if (Scene != null)
             s.Scene = Scene;
 
+        s.OrderOfAddition = incrementalIdentity++;
         InternalAddSystem(s);
 
         return s;
@@ -229,6 +231,12 @@ public class BasicSystemCollection : ISystemCollection
 
     private struct SystemComparer : IComparer<System>
     {
-        public int Compare(System? x, System? y) => (x?.ExecutionOrder ?? int.MaxValue) - (y?.ExecutionOrder ?? int.MaxValue);
+        public int Compare(System? x, System? y)
+        {
+            int d = (x?.ExecutionOrder ?? int.MaxValue) - (y?.ExecutionOrder ?? int.MaxValue);
+            if (d == 0)
+                return (x?.OrderOfAddition ?? 0) - (y?.OrderOfAddition ?? 0);
+            return d;
+        }
     }
 }
