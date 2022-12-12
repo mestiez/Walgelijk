@@ -152,7 +152,7 @@ namespace Walgelijk
             if (Matrix3x2.Invert(LocalToWorldMatrix, out var result))
                 WorldToLocalMatrix = result;
             else
-                Logger.Warn("transform matrix could not be inverted");
+                WorldToLocalMatrix = Matrix3x2.Identity;
 
             IsMatrixCached = true;
         }
