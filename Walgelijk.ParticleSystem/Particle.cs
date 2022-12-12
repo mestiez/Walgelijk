@@ -1,31 +1,30 @@
 ﻿using System.Numerics;
 
-namespace Walgelijk.ParticleSystem
+namespace Walgelijk.ParticleSystem;
+
+public struct Particle
 {
-    public struct Particle
-    {
-        public bool Active;
+    public bool Active;
 
-        public Vector2 Position;
-        public float Angle;
+    public Vector2 Position;
+    public float Rotation;
 
-        public Color InitialColor;
-        public Color Color;
+    public Color Color;
+    public float Size;
 
-        public float InitialSize;
-        public float Size;
+    public Vector2 Velocity;
+    public float RotationalVelocity;
 
-        public Vector2 Velocity;
-        public float RotationalVelocity;
+    public float Life;
+    public float MaxLife;
 
-        public Vector2 Gravity;
+    public float Dampening;
+    public float RotationalDampening;
 
-        public float Life;
-        public float MaxLife;
+    public static readonly Material DefaultMaterial = ParticleMaterialInitialiser.CreateDefaultMaterial();
 
-        public float Dampening;
-        public float RotationalDampening;
+    public Vector2 Acceleration;
+    public float RotationalAcceleration;
 
-        public static readonly Material DefaultMaterial = ParticleMaterialInitialiser.CreateDefaultMaterial();
-    }
+    public void Delete() => Life = MaxLife + 1;
 }

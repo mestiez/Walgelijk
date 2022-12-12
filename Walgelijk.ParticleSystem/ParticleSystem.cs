@@ -1,174 +1,142 @@
 ﻿using System;
 using System.Numerics;
 
-namespace Walgelijk.ParticleSystem
+namespace Walgelijk.ParticleSystem;
+
+public class ParticleSystem : Walgelijk.System
 {
-    public class ParticleSystem : Walgelijk.System
+    public override void Update()
     {
-        public override void Update()
+        var s = Scene.GetAllComponentsOfType<ParticlesComponent>();
+        foreach (var particles in s)
         {
-            var s = Scene.GetAllComponentsOfType<ParticlesComponent>();
-            foreach (var particles in s)
-            {
-                var transform = Scene.GetComponentFrom<TransformComponent>(particles.Entity);
+            var transform = Scene.GetComponentFrom<TransformComponent>(particles.Entity);
 
-                HandleEmission(particles, transform);
-                UpdateParticleSystem(particles, transform);
+            EmitParticles(particles, transform);
+            UpdateParticleSystem(particles, transform);
+        }
+    }
+
+    public override void Render()
+    {
+        var s = Scene.GetAllComponentsOfType<ParticlesComponent>();
+        foreach (var particles in s)
+        {
+            var transform = Scene.GetComponentFrom<TransformComponent>(particles.Entity);
+
+            RenderParticleSystem(particles, transform);
+        }
+    }
+
+    private void EmitParticles(ParticlesComponent particles, TransformComponent transform)
+    {
+        if (particles.Emitters.Count == 0 || particles.CurrentParticleCount >= particles.MaxParticleCount)
+            return;
+
+        int amount = 0;
+
+        foreach (var emitter in particles.Emitters)
+            if (!emitter.Disabled)
+                amount += emitter.Emit(Game.State, particles);
+
+        for (int i = 0; i < amount; i++)
+            CreateParticle(particles, particles.GenerateParticleObject(Scene.Game.State, transform));
+    }
+
+    private static int GetFreeParticleIndex(ParticlesComponent particles)
+    {
+        for (int i = 0; i < particles.MaxParticleCount; i++)
+            if (!particles.RawParticleArray[i].Active)
+                return i;
+
+        return -1;
+    }
+
+    private static void RemoveParticle(ParticlesComponent particles, int index)
+    {
+        if (particles.CurrentParticleCount <= 0) return;
+        particles.RawParticleArray[index].Active = false;
+        particles.CurrentParticleCount--;
+    }
+
+    private void UpdateParticleSystem(ParticlesComponent particles, TransformComponent transform)
+    {
+        var dt = Time.DeltaTime * particles.SimulationSpeed;
+
+        for (int i = 0; i < particles.MaxParticleCount; i++)
+        {
+            var particle = particles.RawParticleArray[i];
+
+            if (!particle.Active)
+                continue;
+
+            particle.Life += dt;
+
+            if (particle.Life >= particle.MaxLife)
+                RemoveParticle(particles, i);
+            else
+            {
+                foreach (var item in particles.Modules)
+                    item.Process(i, ref particle, Game.State, particles, transform);
+
+                var positionData = Utilities.ApplyAcceleration(particle.Acceleration, particle.Position, particle.Velocity, dt, particle.Dampening);
+                particle.Position = positionData.newPosition;
+                particle.Velocity = positionData.newVelocity;
+
+                var rotationData = Utilities.ApplyAcceleration(particle.RotationalAcceleration, particle.Rotation, particle.RotationalVelocity, dt, particle.RotationalDampening);
+                particle.RotationalVelocity = rotationData.newVelocity;
+                particle.Rotation = rotationData.newPosition;
+
+                particle.Acceleration = Vector2.Zero;
+                particle.RotationalAcceleration = 0;
+
+                particles.RawParticleArray[i] = particle;
             }
-        }
+        };
+    }
 
-        public override void Render()
+    private void RenderParticleSystem(ParticlesComponent particles, TransformComponent transform)
+    {
+        var posArray = particles.VertexBuffer.GetAttribute<Matrix4x4AttributeArray>(0) ?? throw new Exception("Particle system vertex buffer attribute 0 is not of the correct type");
+        var colArray = particles.VertexBuffer.GetAttribute<Vector4AttributeArray>(1) ?? throw new Exception("Particle system vertex buffer attribute 1 is not of the correct type");
+
+        int activeIndex = 0;
+
+        for (int i = 0; i < particles.MaxParticleCount; i++)
         {
-            var s = Scene.GetAllComponentsOfType<ParticlesComponent>();
-            foreach (var particles in s)
-            {
-                var transform = Scene.GetComponentFrom<TransformComponent>(particles.Entity);
+            var particle = particles.RawParticleArray[i];
 
-                RenderParticleSystem(particles, transform);
-            }
+            if (!particle.Active)
+                continue;
+
+            var model = Matrix3x2.CreateRotation(particle.Rotation * Utilities.DegToRad)
+                * Matrix3x2.CreateScale(particle.Size)
+                * Matrix3x2.CreateTranslation(particle.Position.X, particle.Position.Y);
+
+            posArray.Data[activeIndex] = new Matrix4x4(model);
+            colArray.Data[activeIndex] = particle.Color;
+
+            activeIndex++;
         }
+        if (activeIndex != particles.CurrentParticleCount)
+            Logger.Warn($"Set particles and current expected particle count are not equal: {particles.CurrentParticleCount} expected, actual {activeIndex}");
 
-        private void HandleEmission(ParticlesComponent particles, TransformComponent transform)
-        {
-            if (particles.EmissionRate <= float.Epsilon) return;
+        var task = particles.RenderTask;
+        task.InstanceCount = particles.CurrentParticleCount;
+        task.ModelMatrix = particles.WorldSpace ? Matrix3x2.Identity : transform.LocalToWorldMatrix;
 
-            particles.EmissionDistributor.Rate = particles.EmissionRate;
-            var cycles = particles.EmissionDistributor.CalculateCycleCount(Time.DeltaTime);
+        particles.VertexBuffer.ExtraDataHasChanged = true;
 
-            for (int i = 0; i < cycles; i++)
-                CreateParticle(particles, transform);
-        }
+        RenderQueue.Add(particles.RenderTask, RenderOrder.DebugUI);
+    }
 
-        public void CreateParticle(ParticlesComponent particles, TransformComponent transform)
-        {
-            if (particles.CurrentParticleCount >= particles.MaxParticleCount) return;
+    public void CreateParticle(ParticlesComponent particles, in Particle particle)
+    {
+        int targetIndex = GetFreeParticleIndex(particles);
+        if (targetIndex == -1)
+            return;
 
-            CreateParticle(particles, transform, particles.GenerateParticleObject());
-        }
-
-        public void CreateParticle(ParticlesComponent particles, TransformComponent transform, Particle particleToAdd)
-        {
-            if (particles.CurrentParticleCount >= particles.MaxParticleCount)
-                return;
-
-            int targetIndex = GetFreeParticleIndex(particles);
-            if (targetIndex == -1)
-                return;
-
-            var particle = particleToAdd;
-
-            particle.Active = true;
-            particle.Color = particle.InitialColor;
-            particle.Size = particle.InitialSize;
-
-            if (particles.CircularStartVelocity)
-            {
-                var v = particle.Velocity.Length();
-                particle.Velocity = particle.Velocity / v * Utilities.RandomFloat(0, v);
-            }
-
-            if (particles.WorldSpace)
-                particle.Position += transform.Position;
-
-            particles.RawParticleArray[targetIndex] = particle;
-
-            particles.CurrentParticleCount++;
-        }
-
-        private int GetFreeParticleIndex(ParticlesComponent particles)
-        {
-            for (int i = 0; i < particles.MaxParticleCount; i++)
-                if (!particles.RawParticleArray[i].Active)
-                    return i;
-
-            return -1;
-        }
-
-        private void RemoveParticle(ParticlesComponent particles, int index)
-        {
-            if (particles.CurrentParticleCount <= 0) return;
-            particles.RawParticleArray[index].Active = false;
-            particles.CurrentParticleCount--;
-        }
-
-        private void UpdateParticleSystem(ParticlesComponent particles, TransformComponent transform)
-        {
-            var dt = Time.DeltaTime * particles.SimulationSpeed;
-
-            for (int i = 0; i < particles.MaxParticleCount; i++)
-            {
-                var particle = particles.RawParticleArray[i];
-
-                if (!particle.Active)
-                    continue;
-
-                particle.Life += dt;
-
-                if (particle.Life >= particle.MaxLife)
-                    RemoveParticle(particles, i);
-                else
-                {
-                    var positionData = Utilities.ApplyAcceleration(particle.Gravity, particle.Position, particle.Velocity, dt, particle.Dampening);
-
-                    if (particles.FloorLevel.HasValue && particles.FloorLevel.Value > positionData.newPosition.Y)
-                    {
-                        positionData.newVelocity.Y *= -particles.FloorBounceFactor;
-                        positionData.newVelocity.X *= 1 - particles.FloorCollisionDampeningFactor;
-                        positionData.newPosition.Y = particles.FloorLevel.Value;
-                        if (MathF.Abs(particle.Position.Y - particles.FloorLevel.Value) > 0.01f)
-                            particles.OnHitFloor.Dispatch(particle);
-                    }
-
-                    particle.Position = positionData.newPosition;
-                    particle.Velocity = positionData.newVelocity;
-
-                    var rotationData = Utilities.ApplyAcceleration(0, particle.Angle, particle.RotationalVelocity, dt, particle.RotationalDampening);
-                    particle.RotationalVelocity = rotationData.newVelocity;
-                    particle.Angle = rotationData.newPosition;
-
-                    float lifePercentage = particle.Life / particle.MaxLife;
-
-                    particle.Size = particle.InitialSize * particles.SizeOverLife.Evaluate(lifePercentage);
-                    particle.Color = particle.InitialColor * particles.ColorOverLife.Evaluate(lifePercentage);
-
-                    particles.RawParticleArray[i] = particle;
-                }
-            };
-        }
-
-        private void RenderParticleSystem(ParticlesComponent particles, TransformComponent transform)
-        {
-            var posArray = particles.VertexBuffer.GetAttribute(0) as Matrix4x4AttributeArray;
-            var colArray = particles.VertexBuffer.GetAttribute(1) as Vector4AttributeArray;
-
-            int activeIndex = 0;
-
-            for (int i = 0; i < particles.MaxParticleCount; i++)
-            {
-                var particle = particles.RawParticleArray[i];
-
-                if (!particle.Active)
-                    continue;
-
-                var model = Matrix3x2.CreateRotation(particle.Angle * Utilities.DegToRad) 
-                    * Matrix3x2.CreateScale(particle.Size)
-                    * Matrix3x2.CreateTranslation(particle.Position.X, particle.Position.Y);
-
-                posArray.Data[activeIndex] = new Matrix4x4(model);
-                colArray.Data[activeIndex] = particle.Color;
-
-                activeIndex++;
-            }
-            if (activeIndex != particles.CurrentParticleCount)
-                Logger.Warn($"Set particles and current expected particle count are not equal: {particles.CurrentParticleCount} expected, actual {activeIndex}");
-
-            var task = particles.RenderTask;
-            task.InstanceCount = particles.CurrentParticleCount;
-            task.ModelMatrix = particles.WorldSpace ? Matrix3x2.Identity : transform.LocalToWorldMatrix;
-
-            particles.VertexBuffer.ExtraDataHasChanged = true;
-
-            RenderQueue.Add(particles.RenderTask, particles.Depth);
-        }
+        particles.RawParticleArray[targetIndex] = particle;
+        particles.CurrentParticleCount++;
     }
 }

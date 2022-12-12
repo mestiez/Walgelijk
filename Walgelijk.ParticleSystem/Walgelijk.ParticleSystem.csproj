@@ -9,6 +9,7 @@
 		<Authors>mestiez</Authors>
 		<Company>Studio Minus</Company>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<Target Name="PostClean" AfterTargets="Clean">
