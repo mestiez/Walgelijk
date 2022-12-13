@@ -103,7 +103,6 @@ namespace Walgelijk.OpenTK
             }
             SetTextureData(data, raw);
             ArrayPool<float>.Shared.Return(data);
-
         }
 
         private static void SetTextureParameters(IReadableTexture raw)

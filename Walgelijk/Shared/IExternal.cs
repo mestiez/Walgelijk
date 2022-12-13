@@ -5,7 +5,6 @@ namespace Walgelijk;
 /// <summary>
 /// Objects that have data on the local side that is eventually uploaded somewhere else (usually the GPU)
 /// </summary>
-/// <typeparam name="T"></typeparam>
 public interface IExternal<T>
 {
     /// <summary>
