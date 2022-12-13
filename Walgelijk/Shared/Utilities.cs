@@ -585,9 +585,9 @@ public struct Utilities
         }
 
         return new Color(
-            NanFallback(color.X) / 255f,
-            NanFallback(color.Y) / 255f,
-            NanFallback(color.Z) / 255f,
+            Clamp(NanFallback(color.X) / 255f),
+            Clamp(NanFallback(color.Y) / 255f),
+            Clamp(NanFallback(color.Z) / 255f),
             1);
     }
 }

@@ -23,7 +23,7 @@ public struct GravityModule : IParticleModule
         particle.Acceleration += Utilities.Lerp(
            Gravity.Min,
            Gravity.Max,
-            Utilities.Hash(index * 24.2453f));
+            Utilities.Hash(index * 24.2453f)); // waarom? omdat particles een "random" gravity moeten hebben die wel consequent blijft tijdens het leven van een particle
     }
 }
 
@@ -40,7 +40,7 @@ public struct ColorOverTimeModule : IParticleModule
 
     public void Process(int index, ref Particle particle, in GameState gameState, ParticlesComponent component, TransformComponent transform)
     {
-        particle.Color = Colors.Evaluate(particle.Life / particle.MaxLife);
+        particle.RenderedColor *= Colors.Evaluate(particle.NormalisedLife);
     }
 }
 
@@ -57,6 +57,41 @@ public struct SizeOverTimeModule : IParticleModule
 
     public void Process(int index, ref Particle particle, in GameState gameState, ParticlesComponent component, TransformComponent transform)
     {
-        particle.Size = Size.Evaluate(particle.Life / particle.MaxLife);
+        particle.RenderedSize *= Size.Evaluate(particle.NormalisedLife);
+    }
+}
+
+public struct NoiseModule : IParticleModule
+{
+    public bool Disabled { get; set; } = false;
+
+    public float Frequency = 0.5f;
+    public float Evolution = 0.2f;
+    public FloatRange VelocityIntensity = new(0, 1);
+    public FloatRange RotVelIntensity = new(0, 0);
+
+    public FloatCurve InfluenceOverTime = new(new Curve<float>.Key(1, 0));
+    public float Influence = 1;
+
+    public NoiseModule()
+    {
+    }
+
+    public void Process(int index, ref Particle particle, in GameState gameState, ParticlesComponent component, TransformComponent transform)
+    {
+        var influence = Influence * InfluenceOverTime.Evaluate(particle.NormalisedLife);
+
+        var x = Noise.GetSimplex(
+            particle.Position.X * Frequency,
+            particle.Position.Y * Frequency,
+            Evolution * (gameState.Time.SecondsSinceLoad + index * 382.5923f));
+
+        var y = Noise.GetSimplex(
+            particle.Position.X * Frequency,
+            particle.Position.Y * Frequency,
+            4892.2938f - Evolution * -(gameState.Time.SecondsSinceLoad + index * 382.5923f));
+
+        particle.Acceleration.X += x * influence;
+        particle.Acceleration.Y += y * influence;
     }
 }

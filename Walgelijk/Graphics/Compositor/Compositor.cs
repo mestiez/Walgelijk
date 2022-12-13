@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace Walgelijk;
 
@@ -10,13 +11,24 @@ public class Compositor
 
     public bool ForceUpdateTargets = true;
 
+    private RenderTexture? buffer;
     private readonly List<CompositorPass> passes = new();
     private Game game;
+    private Material blitMat = new Material();
+
+    private IRenderTask targetBufferTask;
+    private IRenderTask targetWindowTask;
+    private IRenderTask blitBufferTask;
 
     public Compositor(Game game)
     {
         this.game = game;
         game.Window.OnResize += OnWindowResize;
+
+        buffer = new RenderTexture(game.Window.Width, game.Window.Height, hdr: true);
+        targetBufferTask = new TargetRenderTask(buffer);
+        targetWindowTask = new TargetRenderTask(game.Window.RenderTarget);
+        blitBufferTask = new ActionRenderTask(BlitBuffer);
     }
 
     private void OnWindowResize(object? sender, global::System.Numerics.Vector2 e)
@@ -47,16 +59,37 @@ public class Compositor
 
     public void Render(RenderQueue queue)
     {
+        if (ForceUpdateTargets || buffer == null)
+        {
+            buffer?.Dispose();
+            buffer = new RenderTexture(game.Window.Width, game.Window.Height, hdr: true);
+            targetBufferTask = new TargetRenderTask(buffer);
+        }
+
+       // queue.Add(targetBufferTask, passes.Min(static p => p.InclusiveStart));
+
         foreach (var pass in passes)
+        {
             if (pass.Enabled)
             {
                 if (ForceUpdateTargets)
-                    pass.RegenerateRenderTexture(out _, game.Window.Width, game.Window.Height);
+                    pass.RegenerateRenderTextures(game.Window.Width, game.Window.Height);
                 queue.Add(pass.PushTask, pass.InclusiveStart);
                 queue.Add(pass.PopTask, pass.ExclusiveEnd);
             }
+        }
+
+     //   var end = passes.Max(static p => p.ExclusiveEnd);
+      //  queue.Add(targetWindowTask, end);
+      //  queue.Add(blitBufferTask, end);
 
         ForceUpdateTargets = false;
+    }
+
+    private void BlitBuffer(IGraphics g)
+    {
+        if (buffer != null)
+            g.BlitFullscreenQuad(buffer, game.Window.RenderTarget, game.Window.Width, game.Window.Height, blitMat, ShaderDefaults.MainTextureUniform);
     }
 }
 
@@ -66,16 +99,20 @@ public class CompositorPass : IDisposable
     public bool Enabled = true;
     public readonly RenderOrder InclusiveStart = new RenderOrder(0, 0);
     public readonly RenderOrder ExclusiveEnd = RenderOrder.UI;
-    public readonly List<CompositorProcess> Steps = new();
+    public readonly List<CompositorStep> Steps = new();
 
-    private RenderTarget? previousRt;
-    private RenderTexture? rt;
+    private Material blitMat = new Material();
+
+    private RenderTarget? finalTarget;
+
+    private RenderTexture? rtSrc;
+    private RenderTexture? rtDst;
     private bool pushed;
 
     public readonly IRenderTask PushTask;
     public readonly IRenderTask PopTask;
 
-    public CompositorPass(in string name, RenderOrder inclusiveStart, RenderOrder exclusiveEnd, params CompositorProcess[] steps)
+    public CompositorPass(in string name, RenderOrder inclusiveStart, RenderOrder exclusiveEnd, params CompositorStep[] steps)
     {
         if (inclusiveStart >= exclusiveEnd)
             throw new Exception("Start layer cannot be more than or equal to end layer");
@@ -89,27 +126,28 @@ public class CompositorPass : IDisposable
         PopTask = new ActionRenderTask(Pop);
     }
 
-    public void RegenerateRenderTexture(out RenderTarget target, int width, int height)
+    public void RegenerateRenderTextures(int width, int height)
     {
-        if (rt != null)
-            rt.Dispose();
+        rtSrc?.Dispose();
+        rtSrc = new RenderTexture(width, height, hdr: true);
 
-        target = rt = new RenderTexture(width, height, hdr: true);
+        rtDst?.Dispose();
+        rtDst = new RenderTexture(width, height, hdr: true);
     }
 
     private void Push(IGraphics graphics)
     {
-        pushed = rt != null && graphics.CurrentTarget != null;
-        if (rt != null)
+        pushed = rtSrc != null && rtDst != null && graphics.CurrentTarget != null;
+        if (rtSrc != null && rtDst != null)
         {
-            previousRt = graphics.CurrentTarget;
-            if (previousRt != null)
+            // TODO je neemt aan dat graphics.CurrentTarget 1 pass is of de window. elke pass moet zn eigen target hebben :) en maak steps disposable
+            finalTarget = graphics.CurrentTarget;
+            if (finalTarget != null)
             {
-                rt.ViewMatrix = previousRt.ViewMatrix;
-                rt.ProjectionMatrix = previousRt.ProjectionMatrix;
+                rtDst.ViewMatrix = rtSrc.ViewMatrix = finalTarget.ViewMatrix;
+                rtDst.ProjectionMatrix = rtSrc.ProjectionMatrix = finalTarget.ProjectionMatrix;
             }
-            graphics.CurrentTarget = rt;
-
+            graphics.CurrentTarget = rtSrc;
             graphics.Clear(Colors.Transparent);
         }
     }
@@ -117,48 +155,56 @@ public class CompositorPass : IDisposable
     private void Pop(IGraphics graphics)
     {
         var state = Game.Main.State; //TODO dit is niet al te best
-        if (pushed && rt != null && previousRt != null)
+        if (pushed && rtSrc != null && rtDst != null && finalTarget != null)
         {
-            graphics.CurrentTarget = previousRt;
+            graphics.CurrentTarget = rtDst;
+            graphics.Clear(Colors.Transparent);
+            //graphics.Blit(rtSrc, rtDst);
 
             foreach (var step in Steps)
             {
-                step.Process(graphics, rt, graphics.CurrentTarget, state);
+                step.Process(graphics, rtSrc, rtDst, state);
+                graphics.Blit(rtDst, rtSrc);
             }
 
-            previousRt = null;
+            graphics.CurrentTarget = finalTarget;
+            graphics.BlitFullscreenQuad(rtDst, finalTarget, rtDst.Width, rtDst.Height, blitMat, ShaderDefaults.MainTextureUniform);
+            finalTarget = null;
             pushed = false;
         }
     }
 
     public void Dispose()
     {
-        previousRt = null;
-        if (rt != null)
-            rt.Dispose();
+        finalTarget = null;
+        blitMat.Dispose();
+        rtSrc?.Dispose();
+        rtDst?.Dispose();
     }
 }
 
-public abstract class CompositorProcess
+public abstract class CompositorStep : IDisposable
 {
     public readonly string Name;
 
-    protected CompositorProcess(string name)
+    protected CompositorStep(string name)
     {
         Name = name;
     }
 
-    public abstract void Process(IGraphics graphics, RenderTexture src, RenderTarget dst, GameState state);
+    public abstract void Dispose();
+
+    public abstract void Process(IGraphics graphics, RenderTexture src, RenderTexture dst, GameState state);
 }
 
-public abstract class ShaderProcess : CompositorProcess
+public abstract class ShaderProcess : CompositorStep
 {
 
     protected ShaderProcess(string name) : base(name)
     {
     }
 
-    public override void Process(IGraphics graphics, RenderTexture src, RenderTarget dst, GameState state)
+    public override void Process(IGraphics graphics, RenderTexture src, RenderTexture dst, GameState state)
     {
         if (!string.IsNullOrEmpty(TimeFloatUniform))
             Material.SetUniform(TimeFloatUniform, state.Time.SecondsSinceLoad);
@@ -199,6 +245,11 @@ void main()
     protected override Material Material => mat;
     protected override string MainTextureUniform => "mainTex";
     protected override string? TimeFloatUniform => null;
+
+    public override void Dispose()
+    {
+        mat.Dispose();
+    }
 }
 
 public class BlinkProcess : ShaderProcess
@@ -230,4 +281,9 @@ void main()
     protected override Material Material => mat;
     protected override string MainTextureUniform => "mainTex";
     protected override string? TimeFloatUniform => "time";
+
+    public override void Dispose()
+    {
+        mat.Dispose();
+    }
 }

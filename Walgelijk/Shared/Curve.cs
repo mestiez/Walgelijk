@@ -14,6 +14,11 @@ public abstract class Curve<T> where T : notnull
     public Key[] Keys { get; set; }
 
     /// <summary>
+    /// Mapping function of the input time value. Regarded as linear if null.
+    /// </summary>
+    public Func<float, float>? MappingFunction = null;
+
+    /// <summary>
     /// Construct a curve and sort the given keys
     /// </summary>
     protected Curve(params Key[] keys)
@@ -100,6 +105,9 @@ public abstract class Curve<T> where T : notnull
             return default;
 
         float mapped = Utilities.MapRange(previous.Position, next.Position, 0, 1, t);
+
+        if (MappingFunction != null)
+            mapped = MappingFunction(mapped);
 
         return Lerp(previous.Value, next.Value, mapped);
     }

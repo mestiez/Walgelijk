@@ -180,12 +180,13 @@ namespace Walgelijk.OpenTK
         {
             var sourceLoaded = GPUObjects.RenderTextureCache.Load(source);
             var destinationLoaded = GPUObjects.RenderTextureCache.Load(destination);
+            //var destinationLoaded = GPUObjects.RenderTargetDictionary.Get(destination);
 
             GL.BlitNamedFramebuffer(
                 sourceLoaded.FramebufferID,
                 destinationLoaded.FramebufferID,
                 0, 0, source.Width, source.Height,
-                0, 0, destination.Width, destination.Height,
+                0, 0, (int)destination.Size.X, (int)destination.Size.Y,
                 ClearBufferMask.ColorBufferBit,
                 BlitFramebufferFilter.Linear
                 );

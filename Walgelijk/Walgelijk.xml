@@ -1078,6 +1078,12 @@
             The tag value
             </summary>
         </member>
+        <member name="M:Walgelijk.Tag.CreateUnique">
+            <summary>
+            Generate new Tag with a unique value that probably doesn't matter
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Walgelijk.RequiresComponents">
             <summary>
             Attribute that lets the <see cref="T:Walgelijk.Scene"/> know that something needs something else.
@@ -3307,6 +3313,11 @@
         <member name="P:Walgelijk.Curve`1.Keys">
             <summary>
             Value keys
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Curve`1.MappingFunction">
+            <summary>
+            Mapping function of the input time value. Regarded as linear if null.
             </summary>
         </member>
         <member name="M:Walgelijk.Curve`1.#ctor(Walgelijk.Curve{`0}.Key[])">

@@ -76,6 +76,10 @@ public class ParticleSystem : Walgelijk.System
                 RemoveParticle(particles, i);
             else
             {
+                particle.NormalisedLife = particle.Life / particle.MaxLife;
+                particle.RenderedSize = particle.Size;
+                particle.RenderedColor = particle.Color;
+
                 foreach (var item in particles.Modules)
                     item.Process(i, ref particle, Game.State, particles, transform);
 
@@ -110,11 +114,11 @@ public class ParticleSystem : Walgelijk.System
                 continue;
 
             var model = Matrix3x2.CreateRotation(particle.Rotation * Utilities.DegToRad)
-                * Matrix3x2.CreateScale(particle.Size)
+                * Matrix3x2.CreateScale(particle.RenderedSize)
                 * Matrix3x2.CreateTranslation(particle.Position.X, particle.Position.Y);
 
             posArray.Data[activeIndex] = new Matrix4x4(model);
-            colArray.Data[activeIndex] = particle.Color;
+            colArray.Data[activeIndex] = particle.RenderedColor;
 
             activeIndex++;
         }
@@ -127,7 +131,7 @@ public class ParticleSystem : Walgelijk.System
 
         particles.VertexBuffer.ExtraDataHasChanged = true;
 
-        RenderQueue.Add(particles.RenderTask, RenderOrder.DebugUI);
+        RenderQueue.Add(particles.RenderTask, particles.Depth);
     }
 
     public void CreateParticle(ParticlesComponent particles, in Particle particle)

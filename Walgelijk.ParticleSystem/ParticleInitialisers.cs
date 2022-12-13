@@ -59,9 +59,14 @@ public struct RandomStartVelocity : IParticleInitialiser
         Velocity = velocity;
     }
 
+    public RandomStartVelocity(Vector2 min, Vector2 max) : this()
+    {
+        Velocity = new(min, max);
+    }
+
     public void Initialise(ref Particle particle, in GameState gameState, ParticlesComponent component, TransformComponent transform)
     {
-        particle.Acceleration += Velocity.GetRandom() ;
+        particle.Acceleration += Velocity.GetRandom();
     }
 }
 
@@ -73,6 +78,11 @@ public struct RandomStartRotVel : IParticleInitialiser
     public RandomStartRotVel(FloatRange rotationalVelocity) : this()
     {
         RotationalVelocity = rotationalVelocity;
+    }
+
+    public RandomStartRotVel(float min, float max) : this()
+    {
+        RotationalVelocity = new(min, max);
     }
 
     public void Initialise(ref Particle particle, in GameState gameState, ParticlesComponent component, TransformComponent transform)
@@ -91,6 +101,11 @@ public struct RandomStartSize : IParticleInitialiser
         Size = size;
     }
 
+    public RandomStartSize(float min, float max) : this()
+    {
+        Size = new(min, max);
+    }
+
     public void Initialise(ref Particle particle, in GameState gameState, ParticlesComponent component, TransformComponent transform)
     {
         particle.Size += Size.GetRandom();
@@ -107,6 +122,11 @@ public struct RandomStartRotation : IParticleInitialiser
         Rotation = rotation;
     }
 
+    public RandomStartRotation(float min, float max) : this()
+    {
+        Rotation = new(min, max);
+    }
+
     public void Initialise(ref Particle particle, in GameState gameState, ParticlesComponent component, TransformComponent transform)
     {
         particle.Rotation = Rotation.GetRandom();
@@ -121,6 +141,11 @@ public struct RandomStartColor : IParticleInitialiser
     public RandomStartColor(ColorRange color) : this()
     {
         Color = color;
+    }
+
+    public RandomStartColor(Color min, Color max) : this()
+    {
+        Color = new(min, max);
     }
 
     public void Initialise(ref Particle particle, in GameState gameState, ParticlesComponent component, TransformComponent transform)
@@ -140,6 +165,13 @@ public struct RandomDampening : IParticleInitialiser
         Dampening = dampening;
         RotationalDampening = rotationalDampening;
     }
+
+    public RandomDampening(float minDamp, float maxDamp, float minRotDamp, float maxRotDamp) : this()
+    {
+        Dampening = new(minDamp, maxDamp);
+        RotationalDampening = new(minRotDamp, maxRotDamp);
+    }
+
     public void Initialise(ref Particle particle, in GameState gameState, ParticlesComponent component, TransformComponent transform)
     {
         particle.Dampening += Dampening.GetRandom();
@@ -156,6 +188,12 @@ public struct RandomLifespan : IParticleInitialiser
     {
         LifeRange = lifeRange;
     }
+
+    public RandomLifespan(float min, float max) : this()
+    {
+        LifeRange = new(min, max);
+    }
+
     public void Initialise(ref Particle particle, in GameState gameState, ParticlesComponent component, TransformComponent transform)
     {
         particle.MaxLife += LifeRange.GetRandom();
