@@ -3623,7 +3623,6 @@
             <summary>
             Objects that have data on the local side that is eventually uploaded somewhere else (usually the GPU)
             </summary>
-            <typeparam name="T"></typeparam>
         </member>
         <member name="M:Walgelijk.IExternal`1.DisposeLocalCopy">
             <summary>
