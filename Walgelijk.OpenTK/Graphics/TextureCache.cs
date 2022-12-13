@@ -1,32 +1,11 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using System;
+using System.Buffers;
 
 namespace Walgelijk.OpenTK
 {
-    internal class FloatArrayCache : Cache<int, float[]>
-    {
-        protected override float[] CreateNew(int raw)
-        {
-            return new float[raw];
-        }
-
-        protected override void DisposeOf(float[] loaded) { }
-    }
-
-    internal class ByteArrayCache : Cache<int, byte[]>
-    {
-        protected override byte[] CreateNew(int raw)
-        {
-            return new byte[raw];
-        }
-
-        protected override void DisposeOf(byte[] loaded) { }
-    }
-
     public class TextureCache : Cache<IReadableTexture, LoadedTexture>
     {
-        private static readonly FloatArrayCache floatsCache = new();
-        private static readonly ByteArrayCache bytesCache = new();
         private const int componentCount = 4;
 
         public override LoadedTexture Load(IReadableTexture raw)
@@ -84,7 +63,8 @@ namespace Walgelijk.OpenTK
 
         private void WriteLDRData(IReadableTexture raw, int componentCount, ReadOnlySpan<Color> pixels)
         {
-            var data = bytesCache.Load(raw.Width * raw.Height * componentCount);
+            int l = raw.Width * raw.Height * componentCount;
+            var data = ArrayPool<byte>.Shared.Rent(l);
             int i = 0;
             foreach (var pixel in pixels)
             {
@@ -103,11 +83,14 @@ namespace Walgelijk.OpenTK
                 i += componentCount;
             }
             SetTextureData(data, raw);
+            ArrayPool<byte>.Shared.Return(data);
         }
 
         private void WriteHDRData(IReadableTexture raw, int componentCount, ReadOnlySpan<Color> pixels)
         {
-            var data = floatsCache.Load(raw.Width * raw.Height * componentCount);
+            int l = raw.Width * raw.Height * componentCount;
+            var data = ArrayPool<float>.Shared.Rent(l);
+            //var data = floatsCache.Load(raw.Width * raw.Height * componentCount);
             int i = 0;
             foreach (var pixel in pixels)
             {
@@ -119,6 +102,8 @@ namespace Walgelijk.OpenTK
                 i += componentCount;
             }
             SetTextureData(data, raw);
+            ArrayPool<float>.Shared.Return(data);
+
         }
 
         private static void SetTextureParameters(IReadableTexture raw)
