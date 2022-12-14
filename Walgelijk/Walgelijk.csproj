@@ -38,7 +38,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="resources\fonts\arial narrow bold.fnt">
+		<!--<None Update="resources\fonts\arial narrow bold.fnt">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="resources\fonts\arial narrow bold.png">
@@ -67,7 +67,7 @@
 		</None>
 		<None Update="resources\shaders\sdf-font.frag" Pack="false">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
+		</None>-->
 		<None Include="..\.editorconfig" Link=".editorconfig" />
 		<None Include="..\README.md">
 			<Pack>True</Pack>

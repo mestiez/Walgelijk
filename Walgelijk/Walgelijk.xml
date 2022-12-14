@@ -1983,7 +1983,7 @@
             Extension methods for all implementations of <see cref="T:Walgelijk.IGraphics"/>
             </summary>
         </member>
-        <member name="M:Walgelijk.GraphicsExtensions.BlitFullscreenQuad(Walgelijk.IGraphics,Walgelijk.RenderTexture,Walgelijk.RenderTarget,System.Int32,System.Int32,Walgelijk.Material,System.String)">
+        <member name="M:Walgelijk.GraphicsExtensions.BlitFullscreenQuad(Walgelijk.IGraphics,Walgelijk.IReadableTexture,Walgelijk.RenderTarget,System.Int32,System.Int32,Walgelijk.Material,System.String)">
             <summary>
             Blit the <paramref name="src"/> content to <paramref name="dst"/> using a fullscreen quad and the given material
             </summary>

@@ -10,7 +10,7 @@ namespace Walgelijk
         /// <summary>
         /// Blit the <paramref name="src"/> content to <paramref name="dst"/> using a fullscreen quad and the given material
         /// </summary>
-        public static void BlitFullscreenQuad(this IGraphics graphics, RenderTexture src, RenderTarget dst, int targetWidth, int targetHeight, Material material, string textureUniform)
+        public static void BlitFullscreenQuad(this IGraphics graphics, IReadableTexture src, RenderTarget dst, int targetWidth, int targetHeight, Material material, string textureUniform)
         {
             material.SetUniform(textureUniform, src);
 
