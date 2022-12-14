@@ -63,7 +63,18 @@ public class OpenTKWindow : Window
         get => new(window.Size.X, window.Size.Y);
         set => window.Size = new global::OpenTK.Mathematics.Vector2i((int)value.X, (int)value.Y);
     }
-    public override bool IsCursorLocked { get => window.CursorState == CursorState.Grabbed; set => window.CursorState = value ? CursorState.Grabbed : CursorState.Normal; }
+    public override bool IsCursorLocked
+    {
+        get => window.CursorState == CursorState.Grabbed;
+
+        set
+        {
+            bool setMousePosToOld = (value == false && window.CursorState == CursorState.Grabbed);
+            window.CursorState = value ? CursorState.Grabbed : CursorState.Normal;
+            if (setMousePosToOld)
+                window.MousePosition = window.MouseState.PreviousPosition;
+        }
+    }
     public override DefaultCursor CursorAppearance
     {
         get => cursorAppearance;
@@ -152,7 +163,7 @@ public class OpenTKWindow : Window
             Position = position;
         else
             window.CenterWindow();
-
+        //window.MousePosition
         renderTarget = new OpenTKWindowRenderTarget();
         renderTarget.Window = this;
 
