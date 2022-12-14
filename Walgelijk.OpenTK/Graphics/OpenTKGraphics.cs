@@ -136,6 +136,9 @@ namespace Walgelijk.OpenTK
                 return;
             }
 
+            bounds.Size.X = MathF.Max(0, bounds.Size.X);
+            bounds.Size.Y = MathF.Max(0, bounds.Size.Y);
+
             int x = (int)MathF.Round(bounds.Position.X);
             int y = (int)MathF.Round(CurrentTarget.Size.Y - bounds.Position.Y - bounds.Size.Y);
             int w = (int)MathF.Round(bounds.Size.X);
