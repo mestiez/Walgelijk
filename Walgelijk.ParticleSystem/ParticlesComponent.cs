@@ -110,6 +110,7 @@ public class ParticlesComponent : Component
     public float SimulationSpeed = 1;
     //public float EmissionRate = 150;
     public bool WorldSpace;
+    public bool ScreenSpace; //TODO enum shit
 
     public readonly InstancedShapeRenderTask RenderTask;
     public readonly VertexBuffer VertexBuffer;
