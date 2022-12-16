@@ -65,6 +65,11 @@ namespace Walgelijk.SimpleDrawing
         /// </summary>
         public HorizontalTextAlign HorizontalAlign;
 
+        /// <summary>
+        /// Value from 0.0 to 1.0 that determines the percentage of the text to actually draw. This is usually used for "writing" animations for things like dialogue.
+        /// </summary>
+        public float TextDrawRatio;
+
         public override bool Equals(object? obj)
         {
             return obj is TextDrawing drawing &&
