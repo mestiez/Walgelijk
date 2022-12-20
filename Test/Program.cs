@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Numerics;
+﻿using System.Numerics;
 using Walgelijk;
-using Walgelijk.Imgui;
 using Walgelijk.Localisation;
 using Walgelijk.OpenTK;
-using Walgelijk.ParticleSystem;
-using Walgelijk.SimpleDrawing;
-using Walgelijk.Video;
 
 namespace TestWorld;
 
@@ -45,7 +36,6 @@ public class Program
         TextureLoader.Settings.FilterMode = FilterMode.Linear;
 
         Resources.RegisterType(typeof(Language), Language.Load);
-        Resources.RegisterType(typeof(Gif), Gif.Load);
 
         Resources.SetBasePathForType<AudioData>("audio");
         Resources.SetBasePathForType<Texture>("textures");
@@ -76,8 +66,8 @@ public class Program
         game.Window.SetIcon(Resources.Load<Texture>("icon.png"));
         game.Profiling.DrawQuickProfiler = false;
 
-        game.Compositor.AddPass(new CompositorPass("Invert", RenderOrder.Zero, new RenderOrder(100,0), new InvertProcess()));
-        game.Compositor.AddPass(new CompositorPass("Blink", new RenderOrder(20, 0), new RenderOrder(30,0), new BlinkProcess()));
+        //game.Compositor.AddPass(new CompositorPass("Invert", RenderOrder.Zero, new RenderOrder(100,0), new InvertProcess()));
+       // game.Compositor.AddPass(new CompositorPass("Blink", new RenderOrder(20, 0), new RenderOrder(30,0), new BlinkProcess()));
 
         game.Start();
     }

@@ -7,12 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Playgrounds\Playgrounds.csproj" />
     <ProjectReference Include="..\Walgelijk.Imgui\Walgelijk.Imgui.csproj" />
     <ProjectReference Include="..\Walgelijk.Localisation\Walgelijk.Localisation.csproj" />
+    <ProjectReference Include="..\Walgelijk.OpenTK.MotionTK\Walgelijk.OpenTK.MotionTK.csproj" />
     <ProjectReference Include="..\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />
     <ProjectReference Include="..\Walgelijk.ParticleSystem\Walgelijk.ParticleSystem.csproj" />
     <ProjectReference Include="..\Walgelijk.SimpleDrawing\Walgelijk.SimpleDrawing.csproj" />
-    <ProjectReference Include="..\Walgelijk.Video\Walgelijk.Video.csproj" />
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
   </ItemGroup>
 

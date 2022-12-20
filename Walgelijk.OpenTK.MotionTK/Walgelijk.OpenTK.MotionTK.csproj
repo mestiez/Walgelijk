@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FFmpeg.AutoGen" Version="5.1.1" />
+    <PackageReference Include="FFmpeg.AutoGen.Bindings.DynamicallyLinked" Version="5.1.1.1" />
+    <PackageReference Include="FFmpeg.AutoGen.Bindings.DynamicallyLoaded" Version="5.1.1.1" />
+    <PackageReference Include="FFmpeg.AutoGen.Bindings.StaticallyLinked" Version="5.1.1.1" />
+    <PackageReference Include="FFmpeg.Loader" Version="3.0.0" />
+    <PackageReference Include="FFmpeg.Native" Version="4.4.0.2386" />
+    <PackageReference Include="FFmpeg.Native.H264" Version="4.4.0.2627" />
+    <PackageReference Include="OpenTK" Version="4.7.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />
+    <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="MotionTK\" />
+  </ItemGroup>
+
+</Project>

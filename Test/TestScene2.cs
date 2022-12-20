@@ -5,12 +5,15 @@ using System.Numerics;
 using Walgelijk;
 using Walgelijk.Imgui;
 using Walgelijk.Localisation;
+using Walgelijk.OpenTK.MotionTK;
 using Walgelijk.SimpleDrawing;
 
 namespace TestWorld;
 
 public struct TestScene2
 {
+    private static Video videos;
+
     public static Scene Load(Game game)
     {
         var scene = new Scene(game);
@@ -18,7 +21,10 @@ public struct TestScene2
         scene.AddSystem(new TransformSystem());
         scene.AddSystem(new CameraSystem() { ExecutionOrder = -1 });
         scene.AddSystem(new TestSystem());
+        scene.AddSystem(new VideoSystem());
         scene.AddSystem(new GuiSystem());
+        videos = new Video("resources/video/new york.mp4");
+        scene.AttachComponent(scene.CreateEntity(), new VideoComponent(videos));
 
         var camera = scene.CreateEntity();
         scene.AttachComponent(camera, new TransformComponent());
@@ -93,6 +99,15 @@ public struct TestScene2
             Draw.Image(Resources.Load<Texture>(Localisation.Get("advert")), new Rect(new Vector2(612,256), new Vector2(256)), ImageContainmentMode.Stretch);
 
             Gui.Dropdown<Language>(new Vector2(256, 32), new Vector2(256, 32), langs, ref Localisation.CurrentLanguage);
+
+            Draw.Reset();
+            Draw.Order = new RenderOrder(1000, 0);
+            Draw.ScreenSpace = true;
+            Draw.Colour = Colors.White;
+            Draw.Image(videos.Texture, new Rect(64, 64, 300, 300), ImageContainmentMode.Contain);
+
+            if (Input.IsButtonReleased(Button.Middle))
+                videos.Restart();
         }
 
         public override void FixedUpdate()
