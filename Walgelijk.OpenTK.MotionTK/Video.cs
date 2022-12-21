@@ -43,7 +43,7 @@ internal readonly struct FfmpegInitialiser
         FFmpegLoader
             .SearchApplication()
             .ThenSearchSystem()
-            .Load("avformat");    
+            .Load("avformat");
         FFmpegLoader
             .SearchApplication()
             .ThenSearchSystem()
@@ -87,8 +87,8 @@ public class Video : IDisposable
     public int Width => videoTex?.Width ?? 0;
     public int Height => videoTex?.Height ?? 0;
 
-    public bool IsPlaying => source?.State == PlayState.Playing ;
-    public bool IsPaused => source?.State == PlayState.Paused ;
+    public bool IsPlaying => source?.State == PlayState.Playing;
+    public bool IsPaused => source?.State == PlayState.Paused;
     public bool IsStopped => source?.State == PlayState.Stopped;
     public TimeSpan Time => source?.PlayingOffset ?? TimeSpan.Zero;
     public TimeSpan Duration => source?.FileLength ?? TimeSpan.Zero;

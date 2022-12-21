@@ -1,20 +1,19 @@
-﻿namespace MotionTK
+﻿namespace MotionTK;
+
+public unsafe class AudioPacket : Packet
 {
-    public unsafe class AudioPacket : Packet
+    public readonly short[] SampleBuffer;
+    public readonly int TotalSampleCount;
+
+    public AudioPacket(byte* sampleBuffer, int sampleCount, int channelCount)
     {
-        public readonly byte[] SampleBuffer;
-        public readonly int TotalSampleCount;
+        TotalSampleCount = sampleCount * channelCount;
+        SampleBuffer = new short[TotalSampleCount];
 
-        public AudioPacket(byte* sampleBuffer, int sampleCount, int channelCount)
+        // copy buffer
+        for (int i = 0; i < TotalSampleCount; i++)
         {
-            TotalSampleCount = sampleCount * channelCount;
-            SampleBuffer = new byte[TotalSampleCount];
-
-            // copy buffer
-            for (int i = 0; i < TotalSampleCount; i++)
-            {
-                SampleBuffer[i] = ((byte*)sampleBuffer)[i];
-            }
+            SampleBuffer[i] = ((short*)sampleBuffer)[i];
         }
     }
 }

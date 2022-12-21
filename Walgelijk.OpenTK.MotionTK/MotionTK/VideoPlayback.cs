@@ -1,89 +1,97 @@
-﻿using System;
+﻿using OpenTK.Graphics.OpenGL4;
 using System.Drawing;
-using System.Linq;
-using OpenTK.Graphics.OpenGL4;
 
-namespace MotionTK {
-	public class VideoPlayback : Playback<VideoPacket> {
-		public int TextureHandle { get; protected set; } = -1;
+namespace MotionTK;
 
-		protected TimeSpan _totalPlayTime;
-		protected TimeSpan _elapsedTime;
-		protected TimeSpan _frameTime;
-		protected int _skipFrames;
-		public uint PlayedFrameCount { get; private set; }
-		public Size Size => DataSource.VideoSize;
+public class VideoPlayback : Playback<VideoPacket>
+{
+    public int TextureHandle { get; protected set; } = -1;
 
-		internal VideoPlayback(DataSource dataSource) : base(dataSource) { }
+    protected TimeSpan _totalPlayTime;
+    protected TimeSpan _elapsedTime;
+    protected TimeSpan _frameTime;
+    protected int _skipFrames;
+    public uint PlayedFrameCount { get; private set; }
+    public Size Size => DataSource.VideoSize;
 
-		internal void ResetBuffer() {
-			if(DataSource == null) return;
-			if(TextureHandle != 0) GL.DeleteTexture(TextureHandle);
-			TextureHandle = 0;
+    internal VideoPlayback(DataSource dataSource) : base(dataSource) { }
 
-			TextureHandle = GL.GenTexture();
-			GL.BindTexture(TextureTarget.Texture2D, TextureHandle);
-			GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, DataSource.VideoSize.Width, DataSource.VideoSize.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
-			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
-			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
-		}
+    internal void ResetBuffer()
+    {
+        if (DataSource == null) return;
+        if (TextureHandle != 0) GL.DeleteTexture(TextureHandle);
+        TextureHandle = 0;
 
-		internal override void SourceReloaded() {
-			if(!DataSource.HasVideo) return;
+        TextureHandle = GL.GenTexture();
+        GL.BindTexture(TextureTarget.Texture2D, TextureHandle);
+        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, DataSource.VideoSize.Width, DataSource.VideoSize.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
+    }
 
-			_frameTime = DataSource.FrameDuration;
-			ResetBuffer();
-		}
+    internal override void SourceReloaded()
+    {
+        if (!DataSource.HasVideo) return;
 
-		internal override void StateChanged(PlayState oldState, PlayState newState) {
-			switch(newState) {
+        _frameTime = DataSource.FrameDuration;
+        ResetBuffer();
+    }
 
-				case PlayState.Playing when oldState == PlayState.Stopped:
-					_skipFrames = 1;
-					PlayedFrameCount = 0;
-					break;
+    internal override void StateChanged(PlayState oldState, PlayState newState)
+    {
+        switch (newState)
+        {
 
-				case PlayState.Stopped:
-					_skipFrames = 0;
-					PlayedFrameCount = 0;
-					if(DataSource.HasVideo) ResetBuffer();
-					while(PacketQueue.Any()) {
-						PacketQueue.Take();
-					}
-					break;
-			}
-		}
+            case PlayState.Playing when oldState == PlayState.Stopped:
+                _skipFrames = 1;
+                PlayedFrameCount = 0;
+                break;
 
-		internal void Update(TimeSpan deltaTime) {
-			if(DataSource == null || !DataSource.HasVideo) return;
+            case PlayState.Stopped:
+                _skipFrames = 0;
+                PlayedFrameCount = 0;
+                if (DataSource.HasVideo) ResetBuffer();
+                while (PacketQueue.Any())
+                {
+                    PacketQueue.Take();
+                }
+                break;
+        }
+    }
 
-			if(DataSource.State == PlayState.Playing) {
+    internal void Update(TimeSpan deltaTime)
+    {
+        if (DataSource == null || !DataSource.HasVideo) return;
 
-				_totalPlayTime += deltaTime;
-				_elapsedTime += deltaTime;
+        if (DataSource.State == PlayState.Playing)
+        {
 
-				int jumps = (int)(_elapsedTime.Ticks / _frameTime.Ticks);
-				_elapsedTime -= TimeSpan.FromTicks(_frameTime.Ticks * jumps);
+            _totalPlayTime += deltaTime;
+            _elapsedTime += deltaTime;
 
-				_skipFrames += jumps;
-			}
+            int jumps = (int)(_elapsedTime.Ticks / _frameTime.Ticks);
+            _elapsedTime -= TimeSpan.FromTicks(_frameTime.Ticks * jumps);
 
-			//int skipped = 0;
-			while(_skipFrames > 1 && PacketQueue.Count > 1 && PacketQueue.TryTake(out var ignoredPacket)) {
-				_skipFrames--;
-				PlayedFrameCount++;
-				ignoredPacket.Dispose();
-				//skipped++;
-			}
-			//if(skipped > 0) Console.WriteLine($"Skipped {skipped} frames");
+            _skipFrames += jumps;
+        }
 
-			if(_skipFrames < 1 || !PacketQueue.TryTake(out var packet)) return;
+        //int skipped = 0;
+        while (_skipFrames > 1 && PacketQueue.Count > 1 && PacketQueue.TryTake(out var ignoredPacket))
+        {
+            _skipFrames--;
+            PlayedFrameCount++;
+            ignoredPacket.Dispose();
+            //skipped++;
+        }
+        //if(skipped > 0) Console.WriteLine($"Skipped {skipped} frames");
 
-			#region Debug
+        if (_skipFrames < 1 || !PacketQueue.TryTake(out var packet)) return;
+
+        #region Debug
 #if DEBUG
-			/*
+        /*
 			var videoTime = TimeSpan.FromTicks(_frameTime.Ticks * PlayedFrameCount);
 			Console.ForegroundColor = ConsoleColor.Cyan;
 			Console.Write($"Frame {PlayedFrameCount + 1} ({_totalPlayTime} ~ {videoTime}) ");
@@ -94,26 +102,26 @@ namespace MotionTK {
 			Console.ResetColor();
 			//*/
 #endif
-			#endregion
+        #endregion
 
-			_skipFrames--;
-			PlayedFrameCount++;
+        _skipFrames--;
+        PlayedFrameCount++;
 
-			// update texture
-			GL.BindTexture(TextureTarget.Texture2D, TextureHandle);
-			GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, DataSource.VideoSize.Width, DataSource.VideoSize.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, packet.RgbaBuffer);
+        // update texture
+        GL.BindTexture(TextureTarget.Texture2D, TextureHandle);
+        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, DataSource.VideoSize.Width, DataSource.VideoSize.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, packet.RgbaBuffer);
 
-			packet.Dispose();
-		}
+        packet.Dispose();
+    }
 
-		~VideoPlayback() => Dispose();
+    ~VideoPlayback() => Dispose();
 
-		public override void Dispose() {
-			GC.SuppressFinalize(this);
-			if(TextureHandle == -1) return;
-			GL.DeleteTexture(TextureHandle);
-			TextureHandle = -1;
-			base.Dispose();
-		}
-	}
+    public override void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        if (TextureHandle == -1) return;
+        GL.DeleteTexture(TextureHandle);
+        TextureHandle = -1;
+        base.Dispose();
+    }
 }
