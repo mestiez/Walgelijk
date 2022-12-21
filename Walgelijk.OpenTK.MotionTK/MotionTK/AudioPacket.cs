@@ -7,8 +7,7 @@
 
         public AudioPacket(byte* sampleBuffer, int sampleCount, int channelCount)
         {
-            // I have no idea why the * 2 is necessary, but without it only half of each packet is played
-            TotalSampleCount = sampleCount * channelCount * 2;
+            TotalSampleCount = sampleCount * channelCount ;
             SampleBuffer = new short[TotalSampleCount];
 
             // copy buffer

@@ -52,7 +52,7 @@ namespace MotionTK
 
         public void Bind()
         {
-            AL.BufferData(Handle, Format, Data, 44100);
+            AL.BufferData(Handle, Format, Data, SampleRate);
         }
 
         public void MakeAvailable()

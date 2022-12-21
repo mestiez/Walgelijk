@@ -215,6 +215,7 @@ public class Game
         }
         clock.Stop();
         Window.Deinitialise();
+        Scene?.Dispose();
     }
 
     /// <summary>

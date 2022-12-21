@@ -1,6 +1,7 @@
 ﻿using FFmpeg.AutoGen;
 using System;
 using System.Drawing;
+using System.Text;
 using System.Threading;
 using static FFmpeg.AutoGen.ffmpeg;
 
@@ -229,10 +230,11 @@ namespace MotionTK {
 				return;
 			}
 
-			var audioPcmBuffer = _audioPcmBuffer;
-			if(av_samples_alloc(&audioPcmBuffer, null, _audioContext->ch_layout.nb_channels, av_samples_get_buffer_size(null, _audioContext->ch_layout.nb_channels, MaxAudioSamples, AVSampleFormat.AV_SAMPLE_FMT_S16, 0), AVSampleFormat.AV_SAMPLE_FMT_S16, 0) < 0) {
+			byte* audioPcmBuffer;
+			int linesize = 0;
+            if (av_samples_alloc(&audioPcmBuffer, &linesize, _audioContext->channels, _audioContext->frame_size, AVSampleFormat.AV_SAMPLE_FMT_S16, 0) < 0) {
 				Console.WriteLine("Motion: Failed to create audio samples buffer");
-				_audioStreamId = -1;
+                _audioStreamId = -1;
 				return;
 			}
 			_audioPcmBuffer = audioPcmBuffer;
@@ -256,7 +258,7 @@ namespace MotionTK {
 			av_opt_set_sample_fmt(_audioSwContext, "in_sample_fmt", _audioContext->sample_fmt, 0);
 			av_opt_set_sample_fmt(_audioSwContext, "out_sample_fmt", AVSampleFormat.AV_SAMPLE_FMT_S16, 0);
 			swr_init(_audioSwContext);
-			AudioChannelCount = _audioContext->ch_layout.nb_channels;
+			AudioChannelCount = _audioContext->channels;
 
 			AudioPlayback = new AudioPlayback(this);
 		}
