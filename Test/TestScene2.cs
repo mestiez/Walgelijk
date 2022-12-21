@@ -110,7 +110,7 @@ public struct TestScene2
             {
                 if (videos == null)
                 {
-                    videos = new Video("resources/video/intro.mp4");
+                    videos = new Video("resources/video/dried up old bones.mp4");
                     Scene.AttachComponent(Scene.CreateEntity(), new VideoComponent(videos));
                     videos.Play();
                 }
