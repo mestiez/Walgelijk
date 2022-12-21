@@ -12,8 +12,8 @@ namespace MotionTK
         public readonly int Id;
         public readonly int Handle;
 
-        public short[]? Data;
-        public ALFormat Format = ALFormat.Stereo16;
+        public byte[]? Data;
+        public ALFormat Format = ALFormat.Stereo8;
         public int SampleRate;
 
         private AudioBuffer(int size, ALFormat format, int sampleRate)
@@ -46,7 +46,7 @@ namespace MotionTK
         {
             if (Data != null && Data.Length == size) return false;
 
-            Data = new short[size];
+            Data = new byte[size];
             return true;
         }
 

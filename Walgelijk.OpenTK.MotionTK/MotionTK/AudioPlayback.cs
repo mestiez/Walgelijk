@@ -74,7 +74,7 @@ namespace MotionTK {
 
 			// queue new buffers
 			while(queued++ < maxQueue && PacketQueue.TryTake(out var packet)) {
-				var buffer = AudioBuffer.Get(packet.TotalSampleCount, DataSource.AudioChannelCount == 2 ? ALFormat.Stereo16 : ALFormat.Mono16, _sampleRate);
+				var buffer = AudioBuffer.Get(packet.TotalSampleCount, DataSource.AudioChannelCount == 2 ? ALFormat.Stereo8 : ALFormat.Mono8, _sampleRate);
 				buffer.Data = packet.SampleBuffer;
 				buffer.Bind();
 

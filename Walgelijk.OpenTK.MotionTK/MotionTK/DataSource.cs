@@ -232,7 +232,7 @@ namespace MotionTK {
 
 			byte* audioPcmBuffer;
 			int linesize = 0;
-            if (av_samples_alloc(&audioPcmBuffer, &linesize, _audioContext->channels, _audioContext->frame_size, AVSampleFormat.AV_SAMPLE_FMT_S16, 0) < 0) {
+            if (av_samples_alloc(&audioPcmBuffer, &linesize, _audioContext->ch_layout.nb_channels, _audioContext->frame_size, AVSampleFormat.AV_SAMPLE_FMT_U8, 0) < 0) {
 				Console.WriteLine("Motion: Failed to create audio samples buffer");
                 _audioStreamId = -1;
 				return;
@@ -248,7 +248,7 @@ namespace MotionTK {
 			}
 
 			ulong inchanlayout = _audioContext->channel_layout;
-			if(inchanlayout == 0) inchanlayout = (ulong)av_get_default_channel_layout(_audioContext->channels);
+			if(inchanlayout == 0) inchanlayout = (ulong)av_get_default_channel_layout(_audioContext->ch_layout.nb_channels);
 			ulong outchanlayout = inchanlayout;
 			if(outchanlayout != AV_CH_LAYOUT_MONO) outchanlayout = AV_CH_LAYOUT_STEREO;
 			av_opt_set_int(_audioSwContext, "in_channel_layout", (long)inchanlayout, 0);
@@ -256,9 +256,9 @@ namespace MotionTK {
 			av_opt_set_int(_audioSwContext, "in_sample_rate", _audioContext->sample_rate, 0);
 			av_opt_set_int(_audioSwContext, "out_sample_rate", _audioContext->sample_rate, 0);
 			av_opt_set_sample_fmt(_audioSwContext, "in_sample_fmt", _audioContext->sample_fmt, 0);
-			av_opt_set_sample_fmt(_audioSwContext, "out_sample_fmt", AVSampleFormat.AV_SAMPLE_FMT_S16, 0);
+			av_opt_set_sample_fmt(_audioSwContext, "out_sample_fmt", AVSampleFormat.AV_SAMPLE_FMT_U8, 0);
 			swr_init(_audioSwContext);
-			AudioChannelCount = _audioContext->channels;
+			AudioChannelCount = _audioContext->ch_layout.nb_channels;
 
 			AudioPlayback = new AudioPlayback(this);
 		}
@@ -473,8 +473,8 @@ namespace MotionTK {
 			if(avcodec_send_packet(_audioContext, packet) < 0) return false;
 			if(avcodec_receive_frame(_audioContext, _audioRawBuffer) < 0) return false;
 
-			var audioPcmBuffer = _audioPcmBuffer;
-			int convertlength = swr_convert(_audioSwContext, &audioPcmBuffer, _audioRawBuffer->nb_samples, _audioRawBuffer->extended_data, _audioRawBuffer->nb_samples);
+			byte* audioPcmBuffer = _audioPcmBuffer;
+			int convertlength = swr_convert(_audioSwContext, &audioPcmBuffer, _audioRawBuffer->nb_samples, (byte**)&_audioRawBuffer->data, _audioRawBuffer->nb_samples);
 
 			if(convertlength <= 0) return false;
 
