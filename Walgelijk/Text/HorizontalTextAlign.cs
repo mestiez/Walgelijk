@@ -1,12 +1,11 @@
-﻿namespace Walgelijk
+﻿namespace Walgelijk;
+
+/// <summary>
+/// Ways to align text horizontally
+/// </summary>
+public enum HorizontalTextAlign
 {
-    /// <summary>
-    /// Ways to align text horizontally
-    /// </summary>
-    public enum HorizontalTextAlign
-    {
-        Left,
-        Center,
-        Right
-    }
+    Left,
+    Center,
+    Right
 }

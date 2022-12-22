@@ -114,6 +114,8 @@ namespace Walgelijk
             if (Input.IsKeyReleased(ToggleKey))
             {
                 IsActive = !IsActive;
+                if (isActive)
+                    Game.Window.IsCursorLocked = false;
                 renderer.SetDirty();
             }
 

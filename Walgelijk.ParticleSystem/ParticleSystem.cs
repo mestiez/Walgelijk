@@ -128,10 +128,12 @@ public class ParticleSystem : Walgelijk.System
         var task = particles.RenderTask;
         task.InstanceCount = particles.CurrentParticleCount;
         task.ModelMatrix = particles.WorldSpace ? Matrix3x2.Identity : transform.LocalToWorldMatrix;
+        task.Material = particles.Material;
 
+        task.ScreenSpace = particles.ScreenSpace;
         particles.VertexBuffer.ExtraDataHasChanged = true;
 
-        RenderQueue.Add(particles.RenderTask, particles.Depth);
+        RenderQueue.Add(task, particles.Depth);
     }
 
     public void CreateParticle(ParticlesComponent particles, in Particle particle)

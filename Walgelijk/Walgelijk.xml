@@ -2753,6 +2753,31 @@
             Main texture uniform name
             </summary>
         </member>
+        <member name="T:Walgelijk.TexGen">
+            <summary>
+            Provides texture generation functions
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TexGen.Checkerboard(System.Int32,System.Int32,System.Int32,Walgelijk.Color,Walgelijk.Color)">
+            <summary>
+            Generate a simple checkerboard texture
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TexGen.Noise(System.Int32,System.Int32,System.Single,System.Single,Walgelijk.Color,Walgelijk.Color)">
+            <summary>
+            Generate a simple noise texture
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TexGen.Colour(System.Int32,System.Int32,Walgelijk.Color)">
+            <summary>
+            Generate a flat colour texture
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TexGen.Gradient(System.Int32,System.Int32,Walgelijk.TexGen.GradientType,Walgelijk.Color,Walgelijk.Color)">
+            <summary>
+            Generate a simple gradient texture
+            </summary>
+        </member>
         <member name="T:Walgelijk.Texture">
             <summary>
             Represents a texture
@@ -2862,31 +2887,6 @@
         <member name="P:Walgelijk.Texture.ErrorTexture">
             <summary>
             8x8 red-black frowning face texture, usually used to indicate something has gone wrong
-            </summary>
-        </member>
-        <member name="T:Walgelijk.TexGen">
-            <summary>
-            Provides texture generation functions
-            </summary>
-        </member>
-        <member name="M:Walgelijk.TexGen.Checkerboard(System.Int32,System.Int32,System.Int32,Walgelijk.Color,Walgelijk.Color)">
-            <summary>
-            Generate a simple checkerboard texture
-            </summary>
-        </member>
-        <member name="M:Walgelijk.TexGen.Noise(System.Int32,System.Int32,System.Single,System.Single,Walgelijk.Color,Walgelijk.Color)">
-            <summary>
-            Generate a simple noise texture
-            </summary>
-        </member>
-        <member name="M:Walgelijk.TexGen.Colour(System.Int32,System.Int32,Walgelijk.Color)">
-            <summary>
-            Generate a flat colour texture
-            </summary>
-        </member>
-        <member name="M:Walgelijk.TexGen.Gradient(System.Int32,System.Int32,Walgelijk.TexGen.GradientType,Walgelijk.Color,Walgelijk.Color)">
-            <summary>
-            Generate a simple gradient texture
             </summary>
         </member>
         <member name="T:Walgelijk.UniformDictionary">
@@ -3993,12 +3993,15 @@
         </member>
         <member name="M:Walgelijk.Rect.SignedDistanceTo(System.Numerics.Vector2)">
             <summary>
-            Return signed distance from the edge of this rectangle to the given point 
-            <br></br>
-            <a href="https://iquilezles.org/articles/distfunctions2d/">https://iquilezles.org/articles/distfunctions2d/</a>
+            Identical to <see cref="M:Walgelijk.SDF.Rectangle(System.Numerics.Vector2,System.Numerics.Vector2,System.Numerics.Vector2)"/>
             </summary>
         </member>
         <member name="M:Walgelijk.Rect.Translate(System.Numerics.Vector2)">
+            <summary>
+            Return a copy of the rectangle but translated by the given amount
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.Translate(System.Single,System.Single)">
             <summary>
             Return a copy of the rectangle but translated by the given amount
             </summary>

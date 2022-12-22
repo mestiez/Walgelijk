@@ -78,6 +78,11 @@ namespace Walgelijk.SimpleDrawing
         public static int CacheTextMeshes = 200;
 
         /// <summary>
+        /// Value from 0.0 to 1.0 that determines the percentage of the text to actually draw. This is usually used for "writing" animations for things like dialogue.
+        /// </summary>
+        public static float TextDrawRatio = 1;
+
+        /// <summary>
         /// Calculate the pixel width of the given text considering the font and font size. This function doesn't care about wrapping.
         /// </summary>
         public static float CalculateTextWidth(ReadOnlySpan<char> text)
@@ -150,6 +155,7 @@ namespace Walgelijk.SimpleDrawing
         /// screenspace = false,<br></br>
         /// outline width = 0,<br></br>
         /// outline colour = white,<br></br>
+        /// textdrawratio = 1,<br></br>
         /// transform matrix = identity
         /// </summary>
         public static void Reset()
@@ -165,6 +171,7 @@ namespace Walgelijk.SimpleDrawing
             Colour = Colors.White;
             OutlineWidth = 0;
             OutlineColour = default;
+            TextDrawRatio = 1;
             TransformMatrix = Matrix3x2.Identity;
         }
 
@@ -247,7 +254,8 @@ namespace Walgelijk.SimpleDrawing
                 Text = text,
                 HorizontalAlign = halign,
                 VerticalAlign = valign,
-                TextBoxWidth = textBoxWidth / calculatedScale.X
+                TextBoxWidth = textBoxWidth / calculatedScale.X,
+                TextDrawRatio = TextDrawRatio
             };
             Enqueue(new Drawing(textMesh, pivot, calculatedScale, degrees * Utilities.DegToRad, Colour, ScreenSpace, textDrawing, DrawBounds)
             {

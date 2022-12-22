@@ -5,12 +5,16 @@ using System.Numerics;
 using Walgelijk;
 using Walgelijk.Imgui;
 using Walgelijk.Localisation;
+using Walgelijk.OpenTK.MotionTK;
 using Walgelijk.SimpleDrawing;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace TestWorld;
 
 public struct TestScene2
 {
+    private static Video videos;
+
     public static Scene Load(Game game)
     {
         var scene = new Scene(game);
@@ -18,6 +22,7 @@ public struct TestScene2
         scene.AddSystem(new TransformSystem());
         scene.AddSystem(new CameraSystem() { ExecutionOrder = -1 });
         scene.AddSystem(new TestSystem());
+        scene.AddSystem(new VideoSystem());
         scene.AddSystem(new GuiSystem());
 
         var camera = scene.CreateEntity();
@@ -53,12 +58,12 @@ public struct TestScene2
             if (Input.IsKeyReleased(Key.D1))
                 Window.CursorAppearance = DefaultCursor.Default;
             if (Input.IsKeyReleased(Key.D2))
-                Window.CursorAppearance = DefaultCursor.Pointer;    
+                Window.CursorAppearance = DefaultCursor.Pointer;
             if (Input.IsKeyReleased(Key.D3))
-                Window.CursorAppearance = DefaultCursor.Crosshair;      
-            
+                Window.CursorAppearance = DefaultCursor.Crosshair;
+
             if (Input.IsKeyReleased(Key.D4))
-                Window.CustomCursor = TexGen.Noise(64,64,0.7f, 2.354f, Colors.Magenta, Colors.Cyan);
+                Window.CustomCursor = TexGen.Noise(64, 64, 0.7f, 2.354f, Colors.Magenta, Colors.Cyan);
 
             Draw.Reset();
             Draw.Order = new RenderOrder(50, 0);
@@ -90,9 +95,28 @@ public struct TestScene2
             Draw.Text(Localisation.Get("solitary"), new Vector2(256, 276), Vector2.One);
             Draw.Image(Localisation.CurrentLanguage.Flag, new Rect(new Vector2(256 - 32, 266), new Vector2(48, 32)), ImageContainmentMode.Stretch);
 
-            Draw.Image(Resources.Load<Texture>(Localisation.Get("advert")), new Rect(new Vector2(612,256), new Vector2(256)), ImageContainmentMode.Stretch);
+            Draw.Image(Resources.Load<Texture>(Localisation.Get("advert")), new Rect(new Vector2(612, 256), new Vector2(256)), ImageContainmentMode.Stretch);
 
             Gui.Dropdown<Language>(new Vector2(256, 32), new Vector2(256, 32), langs, ref Localisation.CurrentLanguage);
+
+            Draw.Reset();
+            Draw.Order = new RenderOrder(1000, 0);
+            Draw.ScreenSpace = true;
+            Draw.Colour = Colors.White;
+            if (videos != null)
+                Draw.Image(videos.Texture, new Rect(64, 64, 500, 500), ImageContainmentMode.Contain);
+
+            if (Input.IsButtonReleased(Button.Middle))
+            {
+                if (videos == null)
+                {
+                    videos = new Video("resources/video/new york.mp4");
+                    Scene.AttachComponent(Scene.CreateEntity(), new VideoComponent(videos));
+                    videos.Play();
+                }
+                else
+                    videos.Restart();
+            }
         }
 
         public override void FixedUpdate()

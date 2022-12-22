@@ -38,4 +38,8 @@
 		<ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Video\" />
+	</ItemGroup>
+
 </Project>

@@ -65,6 +65,10 @@ namespace Walgelijk.SimpleDrawing
                             Drawing.VertexBuffer = Draw.TextMeshCache.Load(cachable); // this text is common! use cache
                         else
                             TextMeshCache.Prepare(cachable, Drawing.VertexBuffer, true); // this text has only appeared infrequently.
+
+                        const float indicesPerLetter = 6;
+                        int total = Drawing.VertexBuffer.AmountOfIndicesToRender ?? Drawing.VertexBuffer.IndexCount;
+                        Drawing.VertexBuffer.AmountOfIndicesToRender = (int)Utilities.Snap(total * textDrawing.TextDrawRatio, indicesPerLetter);
                     }
                 }
                 else
