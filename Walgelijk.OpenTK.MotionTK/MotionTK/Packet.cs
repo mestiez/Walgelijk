@@ -2,6 +2,6 @@
 
 public abstract class Packet : IDisposable
 {
-    ~Packet() => Dispose();
+    ~Packet() => Dispose(); 
     public virtual void Dispose() => GC.SuppressFinalize(this);
 }

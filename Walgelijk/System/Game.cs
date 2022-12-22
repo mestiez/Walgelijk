@@ -38,7 +38,7 @@ public class Game
     /// </summary>
     public Scene Scene
     {
-        get => scene ?? FallbackScene.GetFallbackScene(this);
+        get => scene ?? throw new Exception("No active scene");
 
         set
         {
