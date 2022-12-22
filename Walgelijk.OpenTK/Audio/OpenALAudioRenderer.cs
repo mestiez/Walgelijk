@@ -256,6 +256,9 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public override void Release()
     {
+        if (!canPlayAudio)
+            return;
+
         canPlayAudio = false;
 
         if (device != ALDevice.Null)

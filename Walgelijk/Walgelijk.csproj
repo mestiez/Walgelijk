@@ -73,7 +73,7 @@
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="pushd $(SolutionDir)&#xD;&#xA;cd&#xD;&#xA;dotnet script increment_version.csx&#xD;&#xA;popd" />
-  </Target>
+  </Target>-->
 </Project>

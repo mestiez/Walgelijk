@@ -213,11 +213,11 @@ public class Game
             dt = clock.Elapsed.TotalSeconds;
             clock.Restart();
         }
+        Stop();
+
         clock.Stop();
         Window.Deinitialise();
         Scene?.Dispose();
-
-        Stop();
     }
 
     /// <summary>
