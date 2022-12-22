@@ -215,6 +215,9 @@ public class Game
         }
         clock.Stop();
         Window.Deinitialise();
+        Scene?.Dispose();
+
+        Stop();
     }
 
     /// <summary>
@@ -222,7 +225,7 @@ public class Game
     /// </summary>
     public void Stop()
     {
-        BeforeExit?.Dispatch();
+        BeforeExit.Dispatch();
 
         if (Window == null)
             throw new InvalidOperationException("Window is null");
