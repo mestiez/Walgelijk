@@ -140,9 +140,7 @@ public struct Rect
     }
 
     /// <summary>
-    /// Return signed distance from the edge of this rectangle to the given point 
-    /// <br></br>
-    /// <a href="https://iquilezles.org/articles/distfunctions2d/">https://iquilezles.org/articles/distfunctions2d/</a>
+    /// Identical to <see cref="SDF.Rectangle(Vector2, Vector2, Vector2)"/>
     /// </summary>
     public readonly float SignedDistanceTo(Vector2 p) => SDF.Rectangle(p, GetCenter(), GetSize());
 
@@ -152,6 +150,14 @@ public struct Rect
     public readonly Rect Translate(Vector2 offset)
     {
         return new Rect(MinX + offset.X, MinY + offset.Y, MaxX + offset.X, MaxY + offset.Y);
+    }
+
+    /// <summary>
+    /// Return a copy of the rectangle but translated by the given amount
+    /// </summary>
+    public readonly Rect Translate(float x, float y)
+    {
+        return new Rect(MinX + x, MinY + y, MaxX + x, MaxY + y);
     }
 
     /// <summary>

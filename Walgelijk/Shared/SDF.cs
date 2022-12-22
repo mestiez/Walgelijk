@@ -34,7 +34,6 @@ public struct SDF
         return q.Length() + Math.Min(Math.Max(q.X, q.Y), 0.0f);
     }
 
-
     public static float Triangle(Vector2 point, Vector2 offset, Vector2 p0, Vector2 p1, Vector2 p2)
     {
         point -= offset;

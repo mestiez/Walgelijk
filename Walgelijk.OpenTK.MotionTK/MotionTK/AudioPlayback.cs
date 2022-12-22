@@ -87,9 +87,9 @@ public class AudioPlayback : Playback<AudioPacket>
         while (queued++ < maxQueue && PacketQueue.TryTake(out var packet))
         {
             var buffer = AudioBuffer.Get(packet.TotalSampleCount, DataSource.AudioChannelCount == 2 ? ALFormat.Stereo16 : ALFormat.Mono16, _sampleRate);
-            //Array.Copy(packet.SampleBuffer, buffer.Data, packet.TotalSampleCount);
-            buffer.Data = packet.SampleBuffer;
-            buffer.Bind();
+            Array.Copy(packet.SampleBuffer, buffer.Data, packet.TotalSampleCount);
+            //buffer.Data = packet.SampleBuffer;
+            buffer.UploadData();
 
             AL.SourceQueueBuffer(SourceHandle, buffer.Handle);
         }

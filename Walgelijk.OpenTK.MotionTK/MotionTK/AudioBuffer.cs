@@ -1,29 +1,29 @@
 ﻿using OpenTK.Audio.OpenAL;
+using System.Collections.Concurrent;
 
 namespace MotionTK;
 
-public class AudioBuffer
+public class AudioBuffer : IDisposable
 {
-    private static readonly Dictionary<int, AudioBuffer> Buffers = new Dictionary<int, AudioBuffer>();
-    private static readonly List<AudioBuffer> Free = new List<AudioBuffer>();
+    private readonly static ConcurrentBag<AudioBuffer> Free = new();
+    private readonly static ConcurrentDictionary<int, AudioBuffer> byHandle = new();
 
     public readonly int Id;
     public readonly int Handle;
 
-    public short[]? Data;
+    public short[] Data = Array.Empty<short>();
     public ALFormat Format = ALFormat.Stereo8;
     public int SampleRate;
 
     private AudioBuffer(int size, ALFormat format, int sampleRate)
     {
-        Id = Buffers.Count;
+        Id = byHandle.Count;
         Handle = AL.GenBuffer();
 
         Init(size, format, sampleRate);
-        Bind();
+        UploadData();
 
-        Buffers.Add(Handle, this);
-        //Console.WriteLine("Allocated buffer " + Id);
+        byHandle.TryAdd(Handle, this);
     }
 
     public void Init(int size, ALFormat format, int sampleRate)
@@ -48,52 +48,31 @@ public class AudioBuffer
         return true;
     }
 
-    public void Bind()
+    public void UploadData()
     {
         AL.BufferData(Handle, Format, Data, SampleRate);
     }
 
     public void MakeAvailable()
     {
-        lock (Free) Free.Add(this);
+        Free.Add(this);
     }
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
         AL.DeleteBuffer(Handle);
-        foreach (var pair in Buffers)
-        {
-            if (pair.Value != this) continue;
-            Buffers.Remove(pair.Key);
-            break;
-        }
+        byHandle.TryRemove(Handle, out _);
     }
 
     ~AudioBuffer() => Dispose();
 
-    public static AudioBuffer ByHandle(int handle)
-    {
-        return Buffers[handle];
-    }
+    public static AudioBuffer ByHandle(int handle) => byHandle[handle];
 
     public static AudioBuffer Get(int size, ALFormat format, int sampleRate)
     {
-        AudioBuffer? buffer;
-        lock (Free)
-        {
-            buffer = Free.FirstOrDefault(b => b.Data.Length == size);
-            if (buffer != null)
-            {
-                Free.Remove(buffer);
-                //Console.WriteLine("Reusing buffer " + buffer.Id);
-            }
-            else if (Free.Count > 0)
-            {
-                buffer = Free[0];
-                //Console.WriteLine("Reusing buffer " + buffer.Id);
-            }
-            else buffer = new AudioBuffer(size, format, sampleRate);
-        }
+        if (!Free.TryTake(out AudioBuffer? buffer))
+            buffer = new AudioBuffer(size, format, sampleRate);
         buffer.Init(size, format, sampleRate);
         return buffer;
     }

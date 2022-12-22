@@ -509,7 +509,6 @@ public unsafe class DataSource : IDisposable
 
     private bool DecodeVideo(AVPacket* packet)
     {
-
         if (avcodec_send_packet(_videoContext, packet) < 0) return false;
         if (avcodec_receive_frame(_videoContext, _videoRawFrame) < 0) return false;
 
@@ -524,7 +523,6 @@ public unsafe class DataSource : IDisposable
 
     private bool DecodeAudio(AVPacket* packet)
     {
-
         if (avcodec_send_packet(_audioContext, packet) < 0) return false;
         if (avcodec_receive_frame(_audioContext, _audioRawBuffer) < 0) return false;
 
@@ -532,7 +530,7 @@ public unsafe class DataSource : IDisposable
         int convertlength = swr_convert(_audioSwContext, &audioPcmBuffer, _audioRawBuffer->nb_samples, (byte**)&_audioRawBuffer->data, _audioRawBuffer->nb_samples);
 
         if (convertlength <= 0) return false;
-
+        //TODO die hele array allocaten wtf
         var audioPacket = new AudioPacket(_audioPcmBuffer, convertlength, AudioChannelCount);
         AudioPlayback.PushPacket(audioPacket);
 

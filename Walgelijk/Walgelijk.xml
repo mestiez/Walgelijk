@@ -3993,12 +3993,15 @@
         </member>
         <member name="M:Walgelijk.Rect.SignedDistanceTo(System.Numerics.Vector2)">
             <summary>
-            Return signed distance from the edge of this rectangle to the given point 
-            <br></br>
-            <a href="https://iquilezles.org/articles/distfunctions2d/">https://iquilezles.org/articles/distfunctions2d/</a>
+            Identical to <see cref="M:Walgelijk.SDF.Rectangle(System.Numerics.Vector2,System.Numerics.Vector2,System.Numerics.Vector2)"/>
             </summary>
         </member>
         <member name="M:Walgelijk.Rect.Translate(System.Numerics.Vector2)">
+            <summary>
+            Return a copy of the rectangle but translated by the given amount
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.Translate(System.Single,System.Single)">
             <summary>
             Return a copy of the rectangle but translated by the given amount
             </summary>
