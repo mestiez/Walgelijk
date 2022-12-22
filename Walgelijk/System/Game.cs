@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -38,7 +38,7 @@ public class Game
     /// </summary>
     public Scene Scene
     {
-        get => scene ?? throw new Exception("No active scene");
+        get => scene ?? FallbackScene.GetFallbackScene(this);
 
         set
         {
@@ -216,6 +216,8 @@ public class Game
         clock.Stop();
         Window.Deinitialise();
         Scene?.Dispose();
+
+        Stop();
     }
 
     /// <summary>
@@ -223,7 +225,7 @@ public class Game
     /// </summary>
     public void Stop()
     {
-        BeforeExit?.Dispatch();
+        BeforeExit.Dispatch();
 
         if (Window == null)
             throw new InvalidOperationException("Window is null");
