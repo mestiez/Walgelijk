@@ -33,6 +33,7 @@ foreach (var path in GetChangedFiles())
 	var relativeDir = Path.GetRelativePath(Environment.CurrentDirectory, p.DirectoryName);
 	relativeDir = relativeDir.Split(new[]{Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar})[0];
 	projectDirs.Add(relativeDir);
+	Console.WriteLine("Change detected: {0} in solution {1}", path, relativeDir);
 }
 
 foreach (var project in projectDirs)
@@ -48,5 +49,5 @@ foreach (var project in projectDirs)
 		Console.WriteLine("{0} >> {1}", version, newVersion);
 		versionElement.SetValue(newVersion.ToString());
 		doc.Save(csProj);
-	}
+	}else Console.Error.WriteLine("csproj does not exist: {0}", csProj);
 }
