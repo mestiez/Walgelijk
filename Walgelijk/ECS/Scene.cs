@@ -271,7 +271,7 @@ public sealed class Scene : IDisposable
         systems.InitialiseNewSystems();
 
         foreach (var system in systems.GetAll())
-            system.Update();
+            system?.Update();
     }
 
     /// <summary>
