@@ -9,7 +9,7 @@ namespace Walgelijk
     public class DiskLogger : ILogger, IDisposable
     {
         public string TargetPath = "output.log";
-        private StreamWriter output;
+        private StreamWriter? output;
 
         public DiskLogger()
         {
@@ -40,6 +40,7 @@ namespace Walgelijk
         {
             output?.Close();
             output?.Dispose();
+            output = null;
         }
     }
 
