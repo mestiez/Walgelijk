@@ -78,8 +78,8 @@ namespace Walgelijk.OpenTK
                     GL.BlendFuncSeparate(
                         BlendingFactorSrc.SrcAlpha, 
                         BlendingFactorDest.OneMinusSrcAlpha, 
-                        BlendingFactorSrc.SrcAlpha, 
-                        BlendingFactorDest.One);
+                        BlendingFactorSrc.One, 
+                        BlendingFactorDest.OneMinusSrcAlpha);
                     GL.BlendEquationSeparate(
                         BlendEquationMode.FuncAdd, 
                         BlendEquationMode.FuncAdd);
