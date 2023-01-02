@@ -8,7 +8,7 @@ using System.IO;
 namespace Walgelijk;
 
 /// <summary>
-/// Global path based resource storage. It's recommended to use the <see cref="Assets"/> system to interface with this instead of using this directly.
+/// Global file based resource storage
 /// </summary>
 public static class Resources
 {
@@ -137,6 +137,11 @@ public static class Resources
         path = Path.Combine(BasePath, path);
         return path;
     }
+
+    /// <summary>
+    /// Returns all IDs without duplicates
+    /// </summary>
+    public static IEnumerable<int> GetAllIDs() => fileById.Keys;
 
     /// <summary>
     /// Returns the ID for the object at the given path. 
