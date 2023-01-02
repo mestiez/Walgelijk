@@ -4874,6 +4874,11 @@
             Exit the game
             </summary>
         </member>
+        <member name="T:Walgelijk.Hashes">
+            <summary>
+            Utility struct that provides hashing functions that take a string and return an int
+            </summary>
+        </member>
         <member name="T:Walgelijk.Hook`1">
             <summary>
             Event that can be dispatched and listened to
@@ -4984,12 +4989,24 @@
         </member>
         <member name="M:Walgelijk.Resources.GetPathAssociatedWith(System.Object)">
             <summary>
-            Return the path that a given resource was loaded with. Returns null if it could not be found.
+            Return the full path to a resource. Returns null if it could not be found.
             </summary>
         </member>
         <member name="M:Walgelijk.Resources.ParseFullPathForType``1(System.String)">
             <summary>
             Get the full path for a path, considering its type and set base paths
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Resources.GetID(System.String)">
+            <summary>
+            Returns the ID for the object at the given path. 
+            This function does not take any of the base paths into account. 
+            You can provide absolute paths or paths relative to the game executable.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Resources.GetFileFromID(System.Int32)">
+            <summary>
+            Returns the <see cref="T:System.IO.FileInfo"/> associated with the resource id
             </summary>
         </member>
         <member name="M:Walgelijk.Resources.TryGetBasePathForType(System.Type,System.String@)">
