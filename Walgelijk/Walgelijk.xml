@@ -4956,7 +4956,7 @@
         </member>
         <member name="T:Walgelijk.Resources">
             <summary>
-            Global path based resource storage. It's recommended to use the <see cref="T:Walgelijk.Assets"/> system to interface with this instead of using this directly.
+            Global file based resource storage
             </summary>
         </member>
         <member name="E:Walgelijk.Resources.OnStartLoad">
@@ -4995,6 +4995,11 @@
         <member name="M:Walgelijk.Resources.ParseFullPathForType``1(System.String)">
             <summary>
             Get the full path for a path, considering its type and set base paths
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Resources.GetAllIDs">
+            <summary>
+            Returns all IDs without duplicates
             </summary>
         </member>
         <member name="M:Walgelijk.Resources.GetID(System.String)">
