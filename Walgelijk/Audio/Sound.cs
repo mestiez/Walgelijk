@@ -6,7 +6,7 @@
     public class Sound
     {
         /// <summary>
-        /// Reference to the actual audio data that this sound plays. This is a shared object, so other sounds that share this data will also sound different
+        /// Reference to the actual audio data that this sound plays. This is a shared object, so other sounds that share this data will also sound different if you manipulate it
         /// </summary>
         public AudioData Data;
 

@@ -45,7 +45,6 @@ internal class TemporarySourcePool : Pool<TemporarySource?, TemporarySourceArgs>
 
 public class OpenALAudioRenderer : AudioRenderer
 {
-    internal const int StreamingBufferSize = 1024;
     public readonly int MaxTempSourceCount = 256;
 
     private ALDevice device;
