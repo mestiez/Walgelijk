@@ -57,7 +57,8 @@ namespace Walgelijk.Imgui.Controls
 
             id.TopLeft = rectTopLeft;
             id.Size = rectSize;
-            PositioningUtils.ApplyRaycastRect(id, new Rect(rectTopLeft.X, rectTopLeft.Y, rectTopLeft.X + rectSize.X, rectTopLeft.Y + rectSize.Y), true);
+            //PositioningUtils.ApplyRaycastRect(id, new Rect(rectTopLeft.X, rectTopLeft.Y, rectTopLeft.X + rectSize.X, rectTopLeft.Y + rectSize.Y), true);
+            id.RaycastRectangle = null;
             Draw.DrawBounds = PositioningUtils.ApplyDrawBounds(Gui.Context, id, new DrawBounds(rectSize, rectTopLeft));
             Gui.PrepareDrawer();
 

@@ -28,7 +28,7 @@ namespace Walgelijk
 
         public void Log(string message, string? source = null)
         {
-            output?.WriteLine("[LOG] {0} ({1})", message, source);
+            output?.WriteLine("[INF] {0} ({1})", message, source);
         }
 
         public void Warn(string message, string? source = null)
@@ -56,7 +56,7 @@ namespace Walgelijk
 
         public void Log(string message, string? source = null)
         {
-            Write("[LOG]", message, source ?? "null");
+            Write("[INF]", message, source ?? "null");
         }
 
         public void Warn(string message, string? source = null)

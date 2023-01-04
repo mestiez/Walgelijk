@@ -78,12 +78,13 @@ namespace Walgelijk.Imgui.Controls
             Gui.PrepareDrawer();
             Gui.ResetAnchor();
             ImageBox(topLeft, size, texture, background, containmentMode, style, site, optionalId + 1);
+            id.Cursor = ImguiUtils.GetCursorForState(state);
 
             if (state == State.Hover)
             {
                 Draw.ResetTexture();
                 Draw.Colour = Colors.Transparent;
-                Draw.OutlineColour = Gui.GetForegroundColour(style, State.Hover);
+                Draw.OutlineColour = Colors.Red;
                 Draw.OutlineWidth = 3;
                 Draw.Quad(topLeft, size);
             }
