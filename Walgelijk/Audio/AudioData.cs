@@ -3,15 +3,46 @@ using System.IO;
 
 namespace Walgelijk;
 
-public class StreamAudioData : AudioData
+public class StreamAudioData : AudioData, IDisposable
 {
     public const int BufferSize = 1024;
 
-    public StreamAudioData(FileInfo file) : base(Array.Empty<byte>(), 0, 0, 0, true)
-    {
+    public readonly FileInfo File;
+    public int Cursor = 0;
 
+    private readonly Stream stream;
+    private readonly byte[] buffer = new byte[BufferSize];
+
+    public long TotalSize => stream.Length;
+
+    public StreamAudioData(string path) : base(Array.Empty<byte>(), 0, 0, 0, true)
+    {
+        File = new FileInfo(path) ;
+        stream = new FileStream(File.FullName, FileMode.Open, FileAccess.Read);
+    }
+
+    public ReadOnlySpan<byte> Read(int amount)
+    {
+        var c = stream.Read(buffer, 0, amount);
+        Cursor += c;
+        return buffer.AsSpan(0, c);
+    }
+
+    public void Dispose()
+    {
+        stream.Dispose();
     }
 }
+
+//public interface ISampleSource
+//{
+//    /// <summary>
+//    /// Returns a span with samples. The returned span could be smaller than the requested amount. If the span is empty (length 0), 
+//    /// </summary>
+//    /// <param name="amount"></param>
+//    /// <returns></returns>
+//    public ReadOnlySpan<byte> Read(int amount);
+//}
 
 /// <summary>
 /// Object that contains sound data
