@@ -37,7 +37,8 @@ public class Program
 
         Resources.RegisterType(typeof(Language), Language.Load);
 
-        Resources.SetBasePathForType<AudioData>("audio");
+        Resources.SetBasePathForType<FixedAudioData>("audio");
+        Resources.SetBasePathForType<StreamAudioData>("audio");
         Resources.SetBasePathForType<Texture>("textures");
         Resources.SetBasePathForType<Font>("fonts");
         Resources.SetBasePathForType<Language>("locale");

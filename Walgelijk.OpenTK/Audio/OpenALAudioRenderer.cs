@@ -85,7 +85,15 @@ public class OpenALAudioRenderer : AudioRenderer
         MaxTempSourceCount = maxTempSourceCount;
         temporarySources = new(MaxTempSourceCount);
         temporySourceBuffer = new TemporarySource[MaxTempSourceCount];
-        Resources.RegisterType(typeof(AudioData), d => LoadSound(d));
+        Resources.RegisterType(typeof(FixedAudioData), d => LoadSound(d));
+        Resources.RegisterType(typeof(StreamAudioData), d => LoadStream(d));
+        Resources.RegisterType(typeof(AudioData), d =>
+        {
+            var s = new FileInfo(d);
+            if (s.Length >= 1_000_000) //this is fucked but if the file is more than or equal to 1 MB it should probably be streamed. or be explicit and do not use the AudioData base class
+                return LoadStream(d);
+            return LoadSound(d);
+        });
         canEnumerateDevices = AL.IsExtensionPresent("ALC_ENUMERATION_EXT");
         Initialise();
     }
@@ -225,7 +233,7 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public override void PlayOnce(Sound sound, float volume = 1, float pitch = 1, AudioTrack? track = null)
     {
-        if (!canPlayAudio || sound.Data == null || (track?.Muted ?? false))
+        if (!canPlayAudio || sound.Data == null || (track?.Muted ?? false) || sound.Data is not FixedAudioData)
             return;
 
         UpdateIfRequired(sound, out _);
@@ -234,7 +242,7 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1, AudioTrack? track = null)
     {
-        if (!canPlayAudio || sound.Data == null || (track?.Muted ?? false))
+        if (!canPlayAudio || sound.Data == null || (track?.Muted ?? false) || sound.Data is not FixedAudioData)
             return;
 
         UpdateIfRequired(sound, out _);
@@ -474,14 +482,31 @@ public class OpenALAudioRenderer : AudioRenderer
     public override void SetTime(Sound sound, float seconds)
     {
         UpdateIfRequired(sound, out var source);
-        AL.Source(source, ALSourcef.SecOffset, seconds);
+
+        switch (sound.Data)
+        {
+            case StreamAudioData stream:
+                var streamer = AudioObjects.OggStreamers.Load((source, sound));
+                streamer.CurrentTime = TimeSpan.FromSeconds(seconds);
+                break;
+            default:
+                AL.Source(source, ALSourcef.SecOffset, seconds);
+                break;
+        }
     }
 
     public override float GetTime(Sound sound)
     {
         UpdateIfRequired(sound, out var source);
-        AL.GetSource(source, ALSourcef.SecOffset, out var offset);
-        return offset;
+        switch (sound.Data)
+        {
+            case StreamAudioData stream:
+                var streamer = AudioObjects.OggStreamers.Load((source, sound));
+                return (float)streamer.CurrentTime.TotalSeconds;
+            default:
+                AL.GetSource(source, ALSourcef.SecOffset, out var offset);
+                return offset;
+        }
     }
 
     public override void SetPosition(Sound sound, Vector2 worldPosition)

@@ -15,6 +15,16 @@ public class OggStreamer : IDisposable
     public readonly StreamAudioData Raw;
     public readonly BufferEntry[] Buffers = new BufferEntry[MaxBufferCount];
 
+    public TimeSpan CurrentTime
+    {
+        get => reader.TimePosition;
+
+        set
+        {
+            reader.TimePosition = value > TimeSpan.Zero ? (value < reader.TotalTime ? value : reader.TotalTime) : TimeSpan.Zero;
+        }
+    }
+
     private FileStream stream;
     private VorbisReader reader;
     private bool endReached;

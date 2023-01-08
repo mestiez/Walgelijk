@@ -34,8 +34,7 @@ public struct TestScene2
             ClearColour = new Color("#a8a3c1")
         });
 
-        var audio = game.AudioRenderer.LoadStream("resources/audio/dexter.ogg");
-        streamTest = new Sound(audio, true, false);
+        streamTest = new Sound(Resources.Load<StreamAudioData>("trainmadness.ogg"), false, false);
         game.AudioRenderer.Play(streamTest);
 
         return scene;
@@ -81,6 +80,11 @@ public struct TestScene2
             {
                 Audio.Pause(streamTest);
             }
+
+            if (Input.IsKeyReleased(Key.Period))
+                Audio.SetTime(streamTest, Audio.GetTime(streamTest) + 1f);
+            if (Input.IsKeyReleased(Key.Comma))
+                Audio.SetTime(streamTest, Audio.GetTime(streamTest) - 1f);
 
             Draw.Reset();
             Draw.Order = new RenderOrder(50, 0);
