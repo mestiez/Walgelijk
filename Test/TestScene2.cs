@@ -45,7 +45,7 @@ public struct TestScene2
             ClearColour = new Color("#a8a3c1")
         });
 
-        streamTest = new Sound(Resources.Load<StreamAudioData>("mus_toriel.ogg"), false, false);
+        streamTest = new Sound(Resources.Load<StreamAudioData>("Party_Level_Theme_4.ogg"), false, false);
         game.AudioRenderer.Play(streamTest);
 
         return scene;
@@ -81,7 +81,7 @@ public struct TestScene2
             Draw.Colour = Colors.Purple;
             int length = Audio.GetCurrentSamples(streamTest, samples);
             for (int i = 0; i < length; i++)
-                samplesCast[i] = Utilities.MapRange(0, byte.MaxValue, 0, 1f, samples[i]);
+                samplesCast[i] = Utilities.MapRange(0, byte.MaxValue, -0.5f, 0.5f, samples[i]);
 
             if (sampleSetCounter >= BufferCollectionSize)
             {
@@ -92,6 +92,7 @@ public struct TestScene2
                     AudioAnalysis.BlurSignal(averaged);
                 AudioAnalysis.Fft(averaged.AsSpan(0, length), fft.AsSpan(0, length));
                 sampleSetCounter = 0;
+                Array.Reverse(fft);
             }
             else
             {
@@ -110,18 +111,21 @@ public struct TestScene2
                 else
                     visualiser[i] = Utilities.SmoothApproach(
                         visualiser[i],
-                        Utilities.RandomFloat(0.2f, 1.5f) * fft[(int)Utilities.Clamp(MathF.Pow(i / (float)visualiser.Length, 2f) * visualiser.Length, 0, visualiser.Length)],
-                        32, Time.DeltaTime);
+                        fft[(int)Utilities.Clamp(MathF.Pow(i / (float)visualiser.Length, 2f) * visualiser.Length, 0, visualiser.Length)],
+                        64, Time.DeltaTime);
             }
 
             int index = 0;
-            for (int i = 0; i < visualiser.Length / 2; i += 1)
+            for (int i = 20; i < visualiser.Length / 2; i += 1)
             {
-                var f = Utilities.Clamp(MathF.Abs(visualiser[i]) * 0.01f, 0, 133);// Utilities.MapRange(0, byte.MaxValue, -1, 1f, samples[i]);
-                var a = new Vector2(15 + index * 1.6f, 650);
-                var b = new Vector2(15 + index * 1.6f, 650 - (f) * 80);
-                Draw.Colour = Color.FromHsv(index * 0.01f,1,1).WithAlpha(f * f * 5 + 0.2f);
-                Draw.Line(a, b, 3);
+                var f = Utilities.Clamp(MathF.Abs(visualiser[i]) * 0.05f, 0, 150);// Utilities.MapRange(0, byte.MaxValue, -1, 1f, samples[i]);
+                if (f > .01f)
+                {
+                    var a = new Vector2(15 + index * 1.6f, 250);
+                    var b = new Vector2(15 + index * 1.6f, 250 - MathF.Log10(f + 1) * 50);
+                    Draw.Colour = Color.FromHsv(index * 0.01f, 1, 1).WithAlpha(f * f * 5 + 0.2f);
+                    Draw.Line(a, b, 3);
+                }
                 index++;
             }
 

@@ -53,7 +53,7 @@ public struct AudioAnalysis
         for (int i = 0; i < n; i++)
         {
             var m = fft[i].Magnitude;
-            result[i] = Utilities.NanFallback((float)(m*m), 0);
+            result[i] = Utilities.NanFallback((float)fft[i].Real, 0);
         }
 
         ArrayPool<Complex>.Shared.Return(samples, true);
