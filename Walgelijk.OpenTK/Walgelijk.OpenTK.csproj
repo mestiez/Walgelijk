@@ -30,16 +30,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Video\**" />
+	  <EmbeddedResource Remove="Video\**" />
+	  <None Remove="Video\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="NVorbis" Version="0.10.5" />
 		<PackageReference Include="OpenTK" Version="4.7.5" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Video\" />
 	</ItemGroup>
 
 </Project>

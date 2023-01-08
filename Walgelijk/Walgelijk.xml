@@ -4,6 +4,26 @@
         <name>Walgelijk</name>
     </assembly>
     <members>
+        <member name="M:Walgelijk.StreamAudioData.DisposeLocalCopy">
+            <summary>
+            This does nothing because the stream is managed by the audio renderer
+            </summary>
+        </member>
+        <member name="M:Walgelijk.StreamAudioData.GetData">
+            <summary>
+            Returns an empty span because this object has no knowledge of the data being read other than its source
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FixedAudioData.Data">
+            <summary>
+            Raw data for the audio. This doesn't necessarily contain all audio data as it could be used as a streaming buffer.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.FixedAudioData.#ctor(System.Byte[],System.Int32,System.Int32,System.Int64,System.Boolean)">
+            <summary>
+            Create a sound from raw data
+            </summary>
+        </member>
         <member name="T:Walgelijk.AudioData">
             <summary>
             Object that contains sound data
@@ -29,29 +49,9 @@
             Duration of the sound
             </summary>
         </member>
-        <member name="P:Walgelijk.AudioData.KeepInMemory">
-            <summary>
-            Use <see cref="P:Walgelijk.AudioData.DisposeLocalCopyAfterUpload"/> instead
-            </summary>
-        </member>
-        <member name="P:Walgelijk.AudioData.Streaming">
-            <summary>
-            Was this audio data configured to be streamed?
-            </summary>
-        </member>
         <member name="P:Walgelijk.AudioData.DisposeLocalCopyAfterUpload">
             <summary>
             Should the data be cleared from memory and only remain in the audio engine?
-            </summary>
-        </member>
-        <member name="M:Walgelijk.AudioData.#ctor(System.Byte[],System.Int32,System.Int32,System.Int64,System.Boolean,System.Boolean)">
-            <summary>
-            Create a sound from raw data
-            </summary>
-        </member>
-        <member name="M:Walgelijk.AudioData.ForceClearData">
-            <summary>
-            Use <see cref="M:Walgelijk.AudioData.DisposeLocalCopy"/> instead
             </summary>
         </member>
         <member name="M:Walgelijk.AudioData.DisposeLocalCopy">
@@ -179,9 +179,14 @@
             Get time in seconds for the sound if it is playing
             </summary>
         </member>
-        <member name="M:Walgelijk.AudioRenderer.LoadSound(System.String,System.Boolean)">
+        <member name="M:Walgelijk.AudioRenderer.LoadSound(System.String)">
             <summary>
-            Load a sound from file
+            Load an sound from file at once
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioRenderer.LoadStream(System.String)">
+            <summary>
+            Load a streaming sound from file
             </summary>
         </member>
         <member name="M:Walgelijk.AudioRenderer.Release">
@@ -246,7 +251,7 @@
         </member>
         <member name="F:Walgelijk.Sound.Data">
             <summary>
-            Reference to the actual audio data that this sound plays. This is a shared object, so other sounds that share this data will also sound different
+            Reference to the actual audio data that this sound plays. This is a shared object, so other sounds that share this data will also sound different if you manipulate it
             </summary>
         </member>
         <member name="F:Walgelijk.Sound.Looping">

@@ -84,7 +84,7 @@ namespace Walgelijk.Imgui.Controls
             {
                 Draw.ResetTexture();
                 Draw.Colour = Colors.Transparent;
-                Draw.OutlineColour = Colors.Red;
+                Draw.OutlineColour = Gui.GetForegroundColour(style, State.Hover);
                 Draw.OutlineWidth = 3;
                 Draw.Quad(topLeft, size);
             }

@@ -1,6 +1,7 @@
 ﻿using OpenTK.Audio.OpenAL;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
 
 namespace Walgelijk.OpenTK;
@@ -128,13 +129,10 @@ public class OpenALAudioRenderer : AudioRenderer
         AL.Source(source, ALSourcef.Gain, (sound.Track?.Muted ?? false) ? 0 : (sound.Volume * (sound.Track?.Volume ?? 1)));
     }
 
-    public override AudioData LoadSound(string path, bool streaming = false)
+    public override FixedAudioData LoadSound(string path)
     {
         var ext = path.AsSpan()[path.LastIndexOf('.')..];
         AudioFileData data;
-
-        if (streaming)
-            throw new NotImplementedException("This audio renderer can not stream yet.");
 
         try
         {
@@ -149,8 +147,24 @@ public class OpenALAudioRenderer : AudioRenderer
         {
             throw new AggregateException($"Failed to load audio file: {path}", e);
         }
-        var audio = new AudioData(data.Data, data.SampleRate, data.NumChannels, data.SampleCount);
+        var audio = new FixedAudioData(data.Data, data.SampleRate, data.NumChannels, data.SampleCount);
         return audio;
+    }
+
+    public override StreamAudioData LoadStream(string path)
+    {
+        var ext = path.AsSpan()[path.LastIndexOf('.')..];
+        AudioFileData data;
+
+        if (!ext.Equals(".ogg", StringComparison.InvariantCultureIgnoreCase))
+            throw new Exception($"This is not a supported audio file. Only Ogg Vorbis can be streamed.");
+
+        string absolutePath = Path.GetFullPath(path);
+        using var reader = new NVorbis.VorbisReader(absolutePath);
+        data = VorbisFileReader.ReadMetadata(reader);
+        reader.Dispose();
+
+        return new StreamAudioData(absolutePath, data.SampleRate, data.NumChannels, data.SampleCount);
     }
 
     public override void Pause(Sound sound)
@@ -269,13 +283,13 @@ public class OpenALAudioRenderer : AudioRenderer
             ALC.DestroyContext(context);
         }
 
-        foreach (var item in AudioObjects.Buffers.GetAllUnloaded())
+        foreach (var item in AudioObjects.FixedBuffers.GetAllUnloaded())
             DisposeOf(item);
 
         foreach (var item in AudioObjects.Sources.GetAllUnloaded())
             DisposeOf(item);
 
-        AudioObjects.Buffers.UnloadAll();
+        AudioObjects.FixedBuffers.UnloadAll();
         AudioObjects.Sources.UnloadAll();
     }
 
@@ -283,6 +297,9 @@ public class OpenALAudioRenderer : AudioRenderer
     {
         if (!canPlayAudio)
             return;
+
+        foreach (var streamer in AudioObjects.OggStreamers.GetAllLoaded())
+            streamer.Update();
 
         int i = 0;
         foreach (var v in temporarySources.GetAllInUse())
@@ -312,9 +329,13 @@ public class OpenALAudioRenderer : AudioRenderer
         if (audioData != null)
         {
             audioData.DisposeLocalCopy();
-            AudioObjects.Buffers.Unload(audioData);
+            if (audioData is FixedAudioData fixedAudioData)
+                AudioObjects.FixedBuffers.Unload(fixedAudioData);
             Resources.Unload(audioData);
         }
+
+        if (audioData is IDisposable d)
+            d.Dispose();
         //TODO dispose of vorbis reader if applicable
         //if (AudioObjects.VorbisReaderCache.Has())
         //AudioObjects.VorbisReaderCache.Unload(audioData);

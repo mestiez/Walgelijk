@@ -119,9 +119,14 @@ public abstract class AudioRenderer
     public abstract float GetTime(Sound sound);
 
     /// <summary>
-    /// Load a sound from file
+    /// Load an sound from file at once
     /// </summary>
-    public abstract AudioData LoadSound(string path, bool streaming = false);
+    public abstract FixedAudioData LoadSound(string path);
+
+    /// <summary>
+    /// Load a streaming sound from file
+    /// </summary>
+    public abstract StreamAudioData LoadStream(string path);
 
     /// <summary>
     /// Release all resources used by the audio engine

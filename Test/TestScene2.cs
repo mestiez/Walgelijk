@@ -7,13 +7,13 @@ using Walgelijk.Imgui;
 using Walgelijk.Localisation;
 using Walgelijk.OpenTK.MotionTK;
 using Walgelijk.SimpleDrawing;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace TestWorld;
 
 public struct TestScene2
 {
     private static Video videos;
+    private static Sound streamTest;
 
     public static Scene Load(Game game)
     {
@@ -33,6 +33,10 @@ public struct TestScene2
             OrthographicSize = 1,
             ClearColour = new Color("#a8a3c1")
         });
+
+        var audio = game.AudioRenderer.LoadStream("resources/audio/dexter.ogg");
+        streamTest = new Sound(audio, true, false);
+        game.AudioRenderer.Play(streamTest);
 
         return scene;
     }
@@ -64,6 +68,19 @@ public struct TestScene2
 
             if (Input.IsKeyReleased(Key.D4))
                 Window.CustomCursor = TexGen.Noise(64, 64, 0.7f, 2.354f, Colors.Magenta, Colors.Cyan);
+
+            if (Input.IsKeyReleased(Key.K))
+            {
+                if (Audio.IsPlaying(streamTest))
+                    Audio.Stop(streamTest);
+                else
+                    Audio.Play(streamTest);
+            }
+
+            if (Input.IsKeyReleased(Key.M))
+            {
+                Audio.Pause(streamTest);
+            }
 
             Draw.Reset();
             Draw.Order = new RenderOrder(50, 0);
