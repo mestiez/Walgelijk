@@ -77,21 +77,26 @@ public class OggStreamer : IDisposable
         int queued = 0;
         while (queued++ < MaxBufferCount && TryRead(out var readAmount))
         {
-            var buffer = GetFreeBuffer();
+            if (!TryGetFreeBuffer(out var buffer))
+                continue;
             buffer.Free = false;
             CastBuffer(rawOggBuffer, readBuffer, readAmount);
             AL.BufferData<short>(buffer.Handle, Format, readBuffer.AsSpan(0, readAmount), Raw.SampleRate);
             AL.SourceQueueBuffer(SourceHandle, buffer.Handle);
-            Logger.Debug($"+ Enqueued {buffer.Handle}");
         }
     }
 
-    private BufferEntry GetFreeBuffer()
+    private bool TryGetFreeBuffer(out BufferEntry? entry)
     {
         foreach (var item in Buffers)
             if (item.Free)
-                return item;
-        throw new Exception("Streaming buffer requested but all of them are occupied");
+            {
+                entry = item;
+                return true;
+            }
+        entry = null;
+        Logger.Warn("Streaming buffer requested but all of them are occupied");
+        return false;
     }
 
     public void Update()
@@ -153,7 +158,8 @@ public class OggStreamer : IDisposable
                     break;
                 }
 
-                var buffer = GetFreeBuffer();
+                if (!TryGetFreeBuffer(out var buffer))
+                    continue;
                 buffer.Free = false;
                 CastBuffer(rawOggBuffer, readBuffer, readAmount);
                 AL.BufferData<short>(buffer.Handle, Format, readBuffer.AsSpan(0, readAmount), Raw.SampleRate);

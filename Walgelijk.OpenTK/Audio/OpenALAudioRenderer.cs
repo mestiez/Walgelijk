@@ -339,11 +339,11 @@ public class OpenALAudioRenderer : AudioRenderer
             audioData.DisposeLocalCopy();
             if (audioData is FixedAudioData fixedAudioData)
                 AudioObjects.FixedBuffers.Unload(fixedAudioData);
-            Resources.Unload(audioData);
-        }
 
-        if (audioData is IDisposable d)
-            d.Dispose();
+            Resources.Unload(audioData);
+            if (audioData is IDisposable d)
+                d.Dispose();
+        }
         //TODO dispose of vorbis reader if applicable
         //if (AudioObjects.VorbisReaderCache.Has())
         //AudioObjects.VorbisReaderCache.Unload(audioData);
