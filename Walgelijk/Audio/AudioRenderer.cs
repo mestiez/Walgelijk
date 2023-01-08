@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace Walgelijk;
@@ -62,6 +63,12 @@ public abstract class AudioRenderer
     /// Play sound at a position in the world and let it overlap itself
     /// </summary>
     public abstract void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1, AudioTrack? track = null);
+
+    /// <summary>
+    /// Populates the given array with the most recently played samples of the given sound.
+    /// Returns the amount of samples.
+    /// </summary>
+    public abstract int GetCurrentSamples(Sound sound, Span<byte> arr);
 
     /// <summary>
     /// Set world position of the sound (if it is spatial)

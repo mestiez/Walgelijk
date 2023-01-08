@@ -15,6 +15,17 @@ public struct TestScene2
     private static Video videos;
     private static Sound streamTest;
 
+    public const int BufferCollectionSize = 3;
+    public const int BufferSize = 1024;
+    private static byte[] samples = new byte[BufferSize];
+    private static float[] samplesCast = new float[BufferSize];
+
+    private static float[] rawCollection = new float[BufferCollectionSize * BufferSize];
+    private static float[] averaged = new float[BufferCollectionSize * BufferSize];
+    private static float[] fft = new float[BufferCollectionSize * BufferSize];
+    private static float[] visualiser = new float[BufferCollectionSize * BufferSize];
+    private static int sampleSetCounter = 0;
+
     public static Scene Load(Game game)
     {
         var scene = new Scene(game);
@@ -34,7 +45,7 @@ public struct TestScene2
             ClearColour = new Color("#a8a3c1")
         });
 
-        streamTest = new Sound(Resources.Load<StreamAudioData>("trainmadness.ogg"), false, false);
+        streamTest = new Sound(Resources.Load<StreamAudioData>("mus_toriel.ogg"), false, false);
         game.AudioRenderer.Play(streamTest);
 
         return scene;
@@ -53,8 +64,67 @@ public struct TestScene2
             sw.Start();
         }
 
+        public static void FrequencyWarp(ReadOnlySpan<float> input, Span<float> warped, float minFrequency, float maxFrequency)
+        {
+            for (int i = 0; i < input.Length; i++)
+            {
+                float frequency = minFrequency + (maxFrequency - minFrequency) * (float)i / (float)input.Length;
+                warped[i] = input[i] * MathF.Log(frequency);
+            }
+        }
+
         public override void Update()
         {
+            Draw.Reset();
+            Draw.Order = new RenderOrder(350, 0);
+            Draw.ScreenSpace = true;
+            Draw.Colour = Colors.Purple;
+            int length = Audio.GetCurrentSamples(streamTest, samples);
+            for (int i = 0; i < length; i++)
+                samplesCast[i] = Utilities.MapRange(0, byte.MaxValue, 0, 1f, samples[i]);
+
+            if (sampleSetCounter >= BufferCollectionSize)
+            {
+                for (int i = 0; i < length; i++)
+                    averaged[i] = rawCollection[i];
+                Array.Clear(samplesCast);
+                for (int i = 0; i < 0; i++)
+                    AudioAnalysis.BlurSignal(averaged);
+                AudioAnalysis.Fft(averaged.AsSpan(0, length), fft.AsSpan(0, length));
+                sampleSetCounter = 0;
+            }
+            else
+            {
+                samplesCast.CopyTo(rawCollection, sampleSetCounter * BufferSize);
+                sampleSetCounter++;
+            }
+
+            const float minFrequency = 20;
+            const float maxFrequency = 2000;
+            for (int i = 0; i < visualiser.Length; i++)
+            {
+                //float frequency = minFrequency + (maxFrequency - minFrequency) * (float)i / (float)visualiser.Length;
+                //visualiser[i] = 
+                if (Input.IsKeyHeld(Key.Space))
+                    visualiser[i] = Utilities.SmoothApproach(visualiser[i], fft[i], 64, Time.DeltaTime);
+                else
+                    visualiser[i] = Utilities.SmoothApproach(
+                        visualiser[i],
+                        Utilities.RandomFloat(0.2f, 1.5f) * fft[(int)Utilities.Clamp(MathF.Pow(i / (float)visualiser.Length, 2f) * visualiser.Length, 0, visualiser.Length)],
+                        32, Time.DeltaTime);
+            }
+
+            int index = 0;
+            for (int i = 0; i < visualiser.Length / 2; i += 1)
+            {
+                var f = Utilities.Clamp(MathF.Abs(visualiser[i]) * 0.01f, 0, 133);// Utilities.MapRange(0, byte.MaxValue, -1, 1f, samples[i]);
+                var a = new Vector2(15 + index * 1.6f, 650);
+                var b = new Vector2(15 + index * 1.6f, 650 - (f) * 80);
+                Draw.Colour = Color.FromHsv(index * 0.01f,1,1).WithAlpha(f * f * 5 + 0.2f);
+                Draw.Line(a, b, 3);
+                index++;
+            }
+
             if (Input.IsKeyReleased(Key.O))
                 Window.IsCursorLocked = !Window.IsCursorLocked;
 

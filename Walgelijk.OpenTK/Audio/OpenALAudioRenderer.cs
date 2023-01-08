@@ -1,8 +1,10 @@
-﻿using OpenTK.Audio.OpenAL;
+﻿using NVorbis;
+using OpenTK.Audio.OpenAL;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
+using System.Threading;
 
 namespace Walgelijk.OpenTK;
 
@@ -181,7 +183,8 @@ public class OpenALAudioRenderer : AudioRenderer
             return;
 
         UpdateIfRequired(sound, out int id);
-        AL.SourcePause(id);
+        sound.State = SoundState.Paused;
+        //AL.SourcePause(id);
     }
 
     public override void Play(Sound sound, float volume = 1)
@@ -193,7 +196,8 @@ public class OpenALAudioRenderer : AudioRenderer
         sound.ForceUpdate();
         EnforceCorrectTrack(sound);
         UpdateIfRequired(sound, out int s);
-        AL.SourcePlay(s);
+        sound.State = SoundState.Playing;
+        //AL.SourcePlay(s);
     }
 
     public override void Play(Sound sound, Vector2 worldPosition, float volume = 1)
@@ -209,7 +213,8 @@ public class OpenALAudioRenderer : AudioRenderer
             AL.Source(s, ALSource3f.Position, worldPosition.X, 0, worldPosition.Y);
         else
             Logger.Warn("Attempt to play a non-spatial sound in space!");
-        AL.SourcePlay(s);
+        sound.State = SoundState.Playing;
+        //AL.SourcePlay(s);
     }
 
     private int CreateTempSource(Sound sound, float volume, Vector2 worldPosition, float pitch, AudioTrack? track = null)
@@ -233,7 +238,10 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public override void PlayOnce(Sound sound, float volume = 1, float pitch = 1, AudioTrack? track = null)
     {
-        if (!canPlayAudio || sound.Data == null || (track?.Muted ?? false) || sound.Data is not FixedAudioData)
+        if (sound.Data is not FixedAudioData)
+            throw new Exception("Only fixed buffer audio sources can be overlapped using PlayOnce");
+
+        if (!canPlayAudio || sound.Data == null || (track?.Muted ?? false))
             return;
 
         UpdateIfRequired(sound, out _);
@@ -242,7 +250,10 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1, AudioTrack? track = null)
     {
-        if (!canPlayAudio || sound.Data == null || (track?.Muted ?? false) || sound.Data is not FixedAudioData)
+        if (sound.Data is not FixedAudioData)
+            throw new Exception("Only fixed buffer audio sources can be overlapped using PlayOnce");
+
+        if (!canPlayAudio || sound.Data == null || (track?.Muted ?? false))
             return;
 
         UpdateIfRequired(sound, out _);
@@ -257,7 +268,8 @@ public class OpenALAudioRenderer : AudioRenderer
             return;
 
         UpdateIfRequired(sound, out int s);
-        AL.SourceStop(s);
+        sound.State = SoundState.Stopped;
+        //AL.SourceStop(s);
     }
 
     public override void StopAll()
@@ -265,8 +277,8 @@ public class OpenALAudioRenderer : AudioRenderer
         if (!canPlayAudio)
             return;
 
-        foreach (var sound in AudioObjects.Sources.GetAllLoaded())
-            AL.SourceStop(sound);
+        foreach (var sound in AudioObjects.Sources.GetAllUnloaded())
+            Stop(sound);
 
         foreach (var item in temporarySources.GetAllInUse())
         {
@@ -306,6 +318,34 @@ public class OpenALAudioRenderer : AudioRenderer
         if (!canPlayAudio)
             return;
 
+        foreach (var item in AudioObjects.Sources.GetAll())
+        {
+            var sound = item.Item1;
+            var source = item.Item2;
+
+            if (sound.Data is StreamAudioData)
+                continue;
+
+            var sourceState = AL.GetSourceState(source);
+            switch (sound.State)
+            {
+                case SoundState.Idle:
+                    break;
+                case SoundState.Playing:
+                    if (sourceState != ALSourceState.Playing)
+                        AL.SourcePlay(source);
+                    break;
+                case SoundState.Paused:
+                    if (sourceState != ALSourceState.Paused)
+                        AL.SourcePause(source);
+                    break;
+                case SoundState.Stopped:
+                    if (sourceState != ALSourceState.Stopped)
+                        AL.SourceStop(source);
+                    break;
+            }
+        }
+
         foreach (var streamer in AudioObjects.OggStreamers.GetAllLoaded())
             streamer.Update();
 
@@ -313,8 +353,9 @@ public class OpenALAudioRenderer : AudioRenderer
         foreach (var v in temporarySources.GetAllInUse())
             temporySourceBuffer[i++] = v;
 
-        foreach (var v in temporySourceBuffer.AsSpan()[0..i])
+        for (int j = 0; j < i; j++)
         {
+            var v = temporySourceBuffer[j];
             if (v.CurrentLifetime > v.Duration)
             {
                 AL.DeleteSource(v.Source);
@@ -516,5 +557,46 @@ public class OpenALAudioRenderer : AudioRenderer
             AL.Source(source, ALSource3f.Position, worldPosition.X, 0, worldPosition.Y);
         else
             Logger.Error("Attempt to set position for non-spatial sound");
+    }
+
+    public override int GetCurrentSamples(Sound sound, Span<byte> arr)
+    {
+        UpdateIfRequired(sound, out var source);
+
+        switch (sound.Data)
+        {
+            case StreamAudioData stream:
+                {
+                    var streamer = AudioObjects.OggStreamers.Load((source, sound));
+                    int i = 0;
+                    foreach (var item in streamer.LastSamples)
+                    {
+                        var temp = (int)(byte.MaxValue * Utilities.MapRange(-1, 1, 0, 1, item));
+
+                        if (temp > byte.MaxValue)
+                            temp = byte.MaxValue;
+                        else if (temp < byte.MinValue)
+                            temp = byte.MinValue;
+
+                        arr[i++] = (byte)temp;
+                        if (i >= arr.Length)
+                            return i;
+                    }
+                    return i;
+                }
+            case FixedAudioData fixedData:
+                {
+                    const int amount = 1024;
+                    float progress = GetTime(sound) / (float)sound.Data.Duration.TotalSeconds;
+                    int total = fixedData.Data.Length - amount;
+                    int cursor = Utilities.Clamp((int)(total * progress), 0, fixedData.Data.Length);
+                    int maxReturnSize = fixedData.Data.Length - cursor;
+                    var section = fixedData.Data.AsSpan(cursor, Math.Min(arr.Length, Math.Min(maxReturnSize, amount)));
+                    section.CopyTo(arr);
+                    return section.Length;
+                }
+            default:
+                return 0;
+        }
     }
 }

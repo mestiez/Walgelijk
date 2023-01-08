@@ -124,6 +124,12 @@
             Play sound at a position in the world and let it overlap itself
             </summary>
         </member>
+        <member name="M:Walgelijk.AudioRenderer.GetCurrentSamples(Walgelijk.Sound,System.Span{System.Byte})">
+            <summary>
+            Populates the given array with the most recently played samples of the given sound.
+            Returns the amount of samples.
+            </summary>
+        </member>
         <member name="M:Walgelijk.AudioRenderer.SetPosition(Walgelijk.Sound,System.Numerics.Vector2)">
             <summary>
             Set world position of the sound (if it is spatial)
@@ -244,6 +250,31 @@
             Empty audio renderer that is used when none is set
             </summary>
         </member>
+        <member name="T:Walgelijk.SoundState">
+            <summary>
+            States that a sound can be in
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SoundState.Idle">
+            <summary>
+            Untouched by audio engine.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SoundState.Playing">
+            <summary>
+            Currently playing.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SoundState.Paused">
+            <summary>
+            Not playing but not stopped either. This sound can be resumed.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SoundState.Stopped">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="T:Walgelijk.Sound">
             <summary>
             A sound that can be played. It does not contain audio data, but is instead linked to an <see cref="T:Walgelijk.AudioData"/>
@@ -277,6 +308,11 @@
         <member name="F:Walgelijk.Sound.Spatial">
             <summary>
             Is the sound affected by the listener position? True by default. Set to false for things like UI SFX.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Sound.State">
+            <summary>
+            Currrent sound state
             </summary>
         </member>
         <member name="F:Walgelijk.Sound.Track">
@@ -3306,6 +3342,11 @@
             </summary>
         </member>
         <member name="M:Walgelijk.Cache`2.GetAllUnloaded">
+            <summary>
+            Returns every unloaded item ever loaded
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Cache`2.GetAll">
             <summary>
             Returns every unloaded item ever loaded
             </summary>

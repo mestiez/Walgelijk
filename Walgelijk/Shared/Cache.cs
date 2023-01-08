@@ -86,5 +86,14 @@ namespace Walgelijk
             foreach (var item in Loaded)
                 yield return item.Key;
         }
+
+        /// <summary>
+        /// Returns every unloaded item ever loaded
+        /// </summary>
+        public IEnumerable<(UnloadedType, LoadedType)> GetAll()
+        {
+            foreach (var item in Loaded)
+                yield return (item.Key, item.Value);
+        }
     }
 }
