@@ -9,7 +9,7 @@ namespace Walgelijk.OpenTK;
 public class OggStreamer : IDisposable
 {
     public const int BufferSize = 1024;
-    public const int MaxBufferCount = 32;
+    public const int MaxBufferCount = 16;
 
     public ALFormat Format => Raw.ChannelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16;
     public readonly SourceHandle SourceHandle;
@@ -22,7 +22,7 @@ public class OggStreamer : IDisposable
 
     public TimeSpan CurrentTime
     {
-        get => TimeSpan.FromSeconds(processedSamples / (float)reader.SampleRate);
+        get => TimeSpan.FromSeconds(processedSamples / (float)reader.SampleRate / Raw.ChannelCount);
 
         set
         {

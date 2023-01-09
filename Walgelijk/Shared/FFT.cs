@@ -31,7 +31,7 @@ public struct AudioAnalysis
         return v * (0.54f - 0.46f * MathF.Cos(2 * MathF.PI * n / (N - 1)));
     }
 
-    public static void Fft(ReadOnlySpan<float> input, Span<float> result)
+    public static void Fft(ReadOnlySpan<float> input, Span<float> result, in TimeSpan duration)
     {
         if (input.Length != result.Length)
             throw new Exception("input length and result length should be equal");
@@ -48,7 +48,7 @@ public struct AudioAnalysis
         for (int i = 0; i < n; i++)
             samples[i] = new Complex(Hamming(input[i], i, n), 0);
 
-        Fft(samples, fft);
+        Fft(samples, fft, duration);
 
         for (int i = 0; i < n; i++)
         {
@@ -60,7 +60,7 @@ public struct AudioAnalysis
         ArrayPool<Complex>.Shared.Return(fft, true);
     }
 
-    public static void Fft(ReadOnlySpan<Complex> arr, Span<Complex> output)
+    public static void Fft(ReadOnlySpan<Complex> arr, Span<Complex> output, in TimeSpan duration)
     {
         var length = arr.Length;
         var hLength = length >> 1;
@@ -80,7 +80,7 @@ public struct AudioAnalysis
 
         for (var i = 0; i < length; i++)
         {
-            var alpha = 2 * Math.PI * i / length;
+            var alpha = 2 * Math.PI * (i / length / duration.TotalSeconds);
             roots[i] = new Complex(Math.Cos(alpha), Math.Sin(alpha));
         }
         for (var i = 0; i < hLength; i++)
@@ -94,8 +94,8 @@ public struct AudioAnalysis
         var evenOrderCoefficientTransform = eoca.AsSpan(0, hLength);
         var oddOrderCoefficientTransform = ooca.AsSpan(0, hLength);
 
-        Fft(evenCoefficients, evenOrderCoefficientTransform);
-        Fft(oddCoefficients, oddOrderCoefficientTransform);
+        Fft(evenCoefficients, evenOrderCoefficientTransform, duration);
+        Fft(oddCoefficients, oddOrderCoefficientTransform, duration);
 
         for (var i = 0; i < hLength; i++)
         {
