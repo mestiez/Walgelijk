@@ -197,7 +197,8 @@ public class OpenALAudioRenderer : AudioRenderer
         EnforceCorrectTrack(sound);
         UpdateIfRequired(sound, out int s);
         sound.State = SoundState.Playing;
-        //AL.SourcePlay(s);
+        if (!sound.Looping && sound.Data is FixedAudioData)
+            AL.SourcePlay(s);
     }
 
     public override void Play(Sound sound, Vector2 worldPosition, float volume = 1)
@@ -214,7 +215,8 @@ public class OpenALAudioRenderer : AudioRenderer
         else
             Logger.Warn("Attempt to play a non-spatial sound in space!");
         sound.State = SoundState.Playing;
-        //AL.SourcePlay(s);
+        if (!sound.Looping && sound.Data is FixedAudioData)
+            AL.SourcePlay(s);
     }
 
     private int CreateTempSource(Sound sound, float volume, Vector2 worldPosition, float pitch, AudioTrack? track = null)
@@ -332,7 +334,7 @@ public class OpenALAudioRenderer : AudioRenderer
                 case SoundState.Idle:
                     break;
                 case SoundState.Playing:
-                    if (sourceState != ALSourceState.Playing)
+                    if (sourceState != ALSourceState.Playing && sound.Looping)
                         AL.SourcePlay(source);
                     break;
                 case SoundState.Paused:
@@ -370,7 +372,7 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public override bool IsPlaying(Sound sound)
     {
-        return AL.GetSourceState(AudioObjects.Sources.Load(sound)) == ALSourceState.Playing;
+        return sound.State == SoundState.Playing || AL.GetSourceState(AudioObjects.Sources.Load(sound)) == ALSourceState.Playing;
     }
 
     public override void DisposeOf(AudioData audioData)
