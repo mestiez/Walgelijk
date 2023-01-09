@@ -293,8 +293,20 @@ public class OpenALAudioRenderer : AudioRenderer
     {
         if (!canPlayAudio)
             return;
-
         canPlayAudio = false;
+
+        foreach (var streamer in AudioObjects.OggStreamers.GetAllLoaded())
+            streamer.Dispose();
+
+        foreach (var item in AudioObjects.FixedBuffers.GetAllUnloaded())
+            DisposeOf(item);
+
+        foreach (var item in AudioObjects.Sources.GetAllUnloaded())
+            DisposeOf(item);
+
+        AudioObjects.OggStreamers.UnloadAll();
+        AudioObjects.FixedBuffers.UnloadAll();
+        AudioObjects.Sources.UnloadAll();
 
         if (device != ALDevice.Null)
             ALC.CloseDevice(device);
@@ -304,15 +316,6 @@ public class OpenALAudioRenderer : AudioRenderer
             ALC.MakeContextCurrent(ALContext.Null);
             ALC.DestroyContext(context);
         }
-
-        foreach (var item in AudioObjects.FixedBuffers.GetAllUnloaded())
-            DisposeOf(item);
-
-        foreach (var item in AudioObjects.Sources.GetAllUnloaded())
-            DisposeOf(item);
-
-        AudioObjects.FixedBuffers.UnloadAll();
-        AudioObjects.Sources.UnloadAll();
     }
 
     public override void Process(Game game)
@@ -348,8 +351,8 @@ public class OpenALAudioRenderer : AudioRenderer
             }
         }
 
-        foreach (var streamer in AudioObjects.OggStreamers.GetAllLoaded())
-            streamer.Update();
+        //foreach (var streamer in AudioObjects.OggStreamers.GetAllLoaded())
+        //    streamer.Update();
 
         int i = 0;
         foreach (var v in temporarySources.GetAllInUse())
@@ -387,9 +390,6 @@ public class OpenALAudioRenderer : AudioRenderer
             if (audioData is IDisposable d)
                 d.Dispose();
         }
-        //TODO dispose of vorbis reader if applicable
-        //if (AudioObjects.VorbisReaderCache.Has())
-        //AudioObjects.VorbisReaderCache.Unload(audioData);
     }
 
     public override void DisposeOf(Sound sound)

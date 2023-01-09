@@ -1,8 +1,10 @@
-﻿using NVorbis;
+﻿using Microsoft.Win32.SafeHandles;
+using NVorbis;
 using OpenTK.Audio.OpenAL;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 
 namespace Walgelijk.OpenTK;
 
@@ -35,6 +37,8 @@ public class OggStreamer : IDisposable
     private bool endReached;
     private readonly short[] readBuffer = new short[BufferSize]; //16 bits per sample
     private readonly float[] rawOggBuffer = new float[BufferSize];
+    private readonly Thread monitorThread;
+    private volatile bool monitorFlag = true;
 
     public BufferHandle? CurrentPlayingBuffer;
     public float[] LastSamples = new float[BufferSize];
@@ -61,8 +65,10 @@ public class OggStreamer : IDisposable
         for (int i = 0; i < MaxBufferCount; i++)
             Buffers[i] = new BufferEntry(AL.GenBuffer(), true);
 
-
         Reset();
+
+        monitorThread = new Thread(MonitorLoop);
+        monitorThread.Start();
     }
 
     public void Reset()
@@ -121,6 +127,12 @@ public class OggStreamer : IDisposable
         entry = null;
         Logger.Warn("Streaming buffer requested but all of them are occupied");
         return false;
+    }
+
+    private void MonitorLoop()
+    {
+        while (monitorFlag)
+            Update();
     }
 
     public void Update()
@@ -211,8 +223,6 @@ public class OggStreamer : IDisposable
 
                 if (TryGetFreeBuffer(out var buffer))
                     FillBuffer(buffer, readAmount);
-                else
-                    Logger.Warn("Failed to find empty buffer");
             }
         }
     }
@@ -240,8 +250,10 @@ public class OggStreamer : IDisposable
 
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
+        monitorFlag = false;
+        monitorThread.Join();
 
+        GC.SuppressFinalize(this);
         reader.Dispose();
         stream.Dispose();
 

@@ -46,14 +46,14 @@ public struct AudioAnalysis
         var fft = ArrayPool<Complex>.Shared.Rent(n);
 
         for (int i = 0; i < n; i++)
-            samples[i] = new Complex(Hamming(input[i], i, n), 0);
+            samples[i] = new Complex(Blackman(input[i], i, n), 0);
 
         Fft(samples, fft, duration);
 
         for (int i = 0; i < n; i++)
         {
             var m = fft[i].Magnitude;
-            result[i] = Utilities.NanFallback((float)fft[i].Real, 0);
+            result[i] = Utilities.NanFallback((float)m, 0);
         }
 
         ArrayPool<Complex>.Shared.Return(samples, true);
