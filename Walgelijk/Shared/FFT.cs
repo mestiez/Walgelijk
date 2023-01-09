@@ -4,6 +4,84 @@ using System.Numerics;
 
 namespace Walgelijk;
 
+public class AudioVisualiser
+{
+    public readonly Sound Sound;
+
+    public readonly int BufferSize;
+    public readonly int FftSize;
+    public int MinFreq = 20;
+    public int MaxFreq = 20000;
+    public int InputBlur = 0;
+    public int OutputBlur = 2;
+
+    private readonly byte[] samples;
+    private readonly float[] samplesCast;
+
+    private readonly float[] fft;
+    private readonly float[] visualiser;
+
+    private readonly float[] sampleAccumulator;
+    private int accumulationCursor = 0;
+
+    public AudioVisualiser(Sound sound, int fftSize = 4096, int bufferSize = 1024)
+    {
+        BufferSize = bufferSize;
+        Sound = sound;
+        FftSize = fftSize;
+
+        sampleAccumulator = new float[FftSize];
+        samplesCast = new float[BufferSize];
+        samples = new byte[BufferSize];
+
+        visualiser = new float[FftSize];
+        fft = new float[FftSize];
+    }
+
+    public void Update(AudioRenderer audio, float dt)
+    {
+        int readSampleCount = audio.GetCurrentSamples(Sound, samples);
+        for (int i = 0; i < readSampleCount; i++)
+            samplesCast[i] = Utilities.MapRange(0, byte.MaxValue, -0.5f, 0.5f, samples[i]);
+
+        if (accumulationCursor < FftSize) // if the amount of accumulated samples have not yet reached the end 
+        {
+            if (Sound.Data.ChannelCount == 2)
+            {
+                //stereo! channels are interleaved! take sum of both channels
+                for (int i = 0; i < samplesCast.Length; i+=2)
+                    sampleAccumulator[accumulationCursor++] = samplesCast[i] + samplesCast[i + 1];
+            }
+            else
+            {
+                //mono! take everything as-is
+                samplesCast.CopyTo(sampleAccumulator, accumulationCursor);
+                accumulationCursor += readSampleCount;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < InputBlur; i++)
+                AudioAnalysis.BlurSignal(sampleAccumulator);
+
+            var actualFft = AudioAnalysis.Fft(sampleAccumulator, fft);
+            accumulationCursor = 0;
+
+            for (int i = 0; i < OutputBlur; i++)
+                AudioAnalysis.BlurSignal(actualFft);
+        }
+
+        for (int i = 0; i < visualiser.Length; i++)
+        {
+            visualiser[i] = Utilities.SmoothApproach(visualiser[i], fft[i  / 2], 32, dt);
+            //visualiser[i] = Utilities.SmoothApproach(visualiser[i], fft[(int)Utilities.Clamp(MathF.Pow(i / (float)visualiser.Length, 2f) * visualiser.Length, 0, visualiser.Length)], 32, dt);
+        }
+    }
+
+    public int BarCount => visualiser.Length;
+    public ReadOnlySpan<float> GetBars() => visualiser;
+}
+
 public struct AudioAnalysis
 {
     public static void BlurSignal(Span<float> values)
@@ -31,7 +109,7 @@ public struct AudioAnalysis
         return v * (0.54f - 0.46f * MathF.Cos(2 * MathF.PI * n / (N - 1)));
     }
 
-    public static void Fft(ReadOnlySpan<float> input, Span<float> result, in TimeSpan duration)
+    public static Span<float> Fft(ReadOnlySpan<float> input, Span<float> result)
     {
         if (input.Length != result.Length)
             throw new Exception("input length and result length should be equal");
@@ -48,22 +126,27 @@ public struct AudioAnalysis
         for (int i = 0; i < n; i++)
             samples[i] = new Complex(Blackman(input[i], i, n), 0);
 
-        Fft(samples, fft, duration);
+        Fft(samples, fft);
 
         for (int i = 0; i < n; i++)
         {
-            var m = fft[i].Magnitude;
-            result[i] = Utilities.NanFallback((float)m, 0);
+            var m = fft[i];
+            var v = (float)(10d * Math.Log10(m.Real * m.Real + m.Imaginary * m.Imaginary));
+            if (float.IsInfinity(v) || v < 0)
+                v = 0;
+            result[i] = v;
         }
 
         ArrayPool<Complex>.Shared.Return(samples, true);
         ArrayPool<Complex>.Shared.Return(fft, true);
+
+        return result[0..n];
     }
 
-    public static void Fft(ReadOnlySpan<Complex> arr, Span<Complex> output, in TimeSpan duration)
+    public static void Fft(ReadOnlySpan<Complex> arr, Span<Complex> output)
     {
         var length = arr.Length;
-        var hLength = length >> 1;
+        var hLength = length >> 1; //length is power of two dus length / 2 is hetzelfde als bitshift
         if (length == 1)
         {
             arr.CopyTo(output);
@@ -80,8 +163,8 @@ public struct AudioAnalysis
 
         for (var i = 0; i < length; i++)
         {
-            var alpha = 2 * Math.PI * (i / length / duration.TotalSeconds);
-            roots[i] = new Complex(Math.Cos(alpha), Math.Sin(alpha));
+            var th = Math.Tau * (i / (double)length);
+            roots[i] = new Complex(Math.Cos(th), Math.Sin(th));
         }
         for (var i = 0; i < hLength; i++)
         {
@@ -94,8 +177,8 @@ public struct AudioAnalysis
         var evenOrderCoefficientTransform = eoca.AsSpan(0, hLength);
         var oddOrderCoefficientTransform = ooca.AsSpan(0, hLength);
 
-        Fft(evenCoefficients, evenOrderCoefficientTransform, duration);
-        Fft(oddCoefficients, oddOrderCoefficientTransform, duration);
+        Fft(evenCoefficients, evenOrderCoefficientTransform);
+        Fft(oddCoefficients, oddOrderCoefficientTransform);
 
         for (var i = 0; i < hLength; i++)
         {

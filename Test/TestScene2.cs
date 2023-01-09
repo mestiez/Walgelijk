@@ -15,16 +15,7 @@ public struct TestScene2
     private static Video videos;
     private static Sound streamTest;
 
-    public const int BufferCollectionSize = 2;
-    public const int BufferSize = 1024;
-    private static byte[] samples = new byte[BufferSize];
-    private static float[] samplesCast = new float[BufferSize];
-
-    private static float[] rawCollection = new float[BufferCollectionSize * BufferSize];
-    private static float[] averaged = new float[BufferCollectionSize * BufferSize];
-    private static float[] fft = new float[BufferCollectionSize * BufferSize];
-    private static float[] visualiser = new float[BufferCollectionSize * BufferSize];
-    private static int sampleSetCounter = 0;
+    public static AudioVisualiser visualiser;
 
     public static Scene Load(Game game)
     {
@@ -45,8 +36,10 @@ public struct TestScene2
             ClearColour = new Color("#a8a3c1")
         });
 
-        streamTest = new Sound(Resources.Load<StreamAudioData>("stereo_ten_second_interval.ogg"), false, false);
+        streamTest = new Sound(Resources.Load<StreamAudioData>("madness_4.ogg"), false, false);
         game.AudioRenderer.Play(streamTest);
+
+        visualiser = new AudioVisualiser(streamTest, 1024 * 4, 1024);
 
         return scene;
     }
@@ -81,50 +74,18 @@ public struct TestScene2
             Draw.Colour = Colors.Red;
             Draw.Text(Audio.GetTime(streamTest).ToString(), new Vector2(32,32), Vector2.One);
             Draw.Colour = Colors.Purple;
-            int length = Audio.GetCurrentSamples(streamTest, samples);
-            for (int i = 0; i < length; i++)
-                samplesCast[i] = Utilities.MapRange(0, byte.MaxValue, -0.5f, 0.5f, samples[i]);
 
-            if (sampleSetCounter >= BufferCollectionSize)
-            {
-                for (int i = 0; i < averaged.Length; i++)
-                    averaged[i] = rawCollection[i];
-                Array.Clear(samplesCast);
-                for (int i = 0; i < 0; i++)
-                    AudioAnalysis.BlurSignal(averaged);
-                AudioAnalysis.Fft(averaged.AsSpan(0, length), fft.AsSpan(0, length), TimeSpan.FromSeconds(averaged.Length / (float)streamTest.Data.SampleRate));
-                sampleSetCounter = 0;
-                //Array.Reverse(fft);
-            }
-            else
-            {
-                samplesCast.CopyTo(rawCollection, sampleSetCounter * BufferSize);
-                sampleSetCounter++;
-            }
-
-            const float minFrequency = 20;
-            const float maxFrequency = 2000;
-            for (int i = 0; i < visualiser.Length; i++)
-            {
-                //float frequency = minFrequency + (maxFrequency - minFrequency) * (float)i / (float)visualiser.Length;
-                //visualiser[i] = 
-                if (Input.IsKeyHeld(Key.Space))
-                    visualiser[i] = Utilities.SmoothApproach(visualiser[i], fft[i] * 5, 64, Time.DeltaTime);
-                else
-                    visualiser[i] = Utilities.SmoothApproach(
-                        visualiser[i],
-                        fft[(int)Utilities.Clamp(MathF.Pow(i / (float)visualiser.Length, 2f) * visualiser.Length, 0, visualiser.Length)],
-                        32, Time.DeltaTime);
-            }
+            visualiser.Update(Audio, Time.DeltaTime);
 
             int index = 0;
-            for (int i = 0; i < visualiser.Length / 2; i += 1)
+            for (int i = 0; i < visualiser.BarCount / 6 ; i += 1)
             {
-                var f = Utilities.Clamp(MathF.Abs(visualiser[i]) * 0.05f, 0, 150);// Utilities.MapRange(0, byte.MaxValue, -1, 1f, samples[i]);
+                //int readIndex = Utilities.Clamp((int)Utilities.MapRange(0, visualiser.BarCount - 1, 20, 10000, i), 0, visualiser.BarCount - 1);
+                var f = Utilities.Clamp(MathF.Abs(visualiser.GetBars()[i]) * 0.05f, 0, 150);// Utilities.MapRange(0, byte.MaxValue, -1, 1f, samples[i]);
                 if (f > .001f)
                 {
-                    var a = new Vector2(15 + index * 1.6f, 250);
-                    var b = new Vector2(15 + index * 1.6f, 250 - MathF.Log10(f +1 ) * 250);
+                    var a = new Vector2(15 + index * 2.6f, 250);
+                    var b = new Vector2(15 + index * 2.6f, 250 - (f * f) * 50);
                     Draw.Colour = Color.FromHsv(index * 0.01f, 1, 1);//.WithAlpha(f * f * 5 + 0.2f);
                     Draw.Line(a, b, 3);
                 }
