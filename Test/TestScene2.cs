@@ -39,7 +39,7 @@ public struct TestScene2
         streamTest = new Sound(Resources.Load<StreamAudioData>("Party_Level_Theme_4.ogg"), false, false);
         game.AudioRenderer.Play(streamTest);
 
-        visualiser = new AudioVisualiser(streamTest, 1024 * 8, 1024, 512);
+        visualiser = new AudioVisualiser(streamTest, 1024 * 4, 1024, 512);
 
         return scene;
     }

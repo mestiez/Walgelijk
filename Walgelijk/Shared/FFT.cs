@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
 
@@ -18,11 +19,8 @@ public class AudioVisualiser
     public int InputBlur = 0;
     public int OutputBlur = 2;
 
-    private readonly byte[] samples;
-    private readonly float[] samplesCast;
-
+    private readonly float[] samples;
     private readonly float[] fft;
-
     private readonly float[] sampleAccumulator;
 
     private readonly Bin[] bins;
@@ -33,13 +31,22 @@ public class AudioVisualiser
     private class Bin
     {
         public float Value = 0;
-        public List<float> Section = new();
-        //public Memory<float> Section;
+        public Memory<float> Section;
+        public int Start;
 
-        //public Bin(Memory<float> section)
-        //{
-        //    Section = section;
-        //}
+        public Bin(Memory<float> section)
+        {
+            Section = section;
+        }
+
+        public float CalculateValue()
+        {
+            float v = 0;
+            var span = Section.Span;
+            for (int i = 0; i < Section.Length; i++)
+                v = MathF.Max(span[i], v);
+            return /*10f * MathF.Log10(v)*/v;
+        }
     }
 
     public AudioVisualiser(Sound sound, int fftSize = 4096, int bufferSize = 1024, int binCount = 128)
@@ -50,14 +57,13 @@ public class AudioVisualiser
         FftSize = fftSize;
 
         sampleAccumulator = new float[FftSize];
-        samplesCast = new float[BufferSize];
-        samples = new byte[BufferSize];
+        samples = new float[BufferSize];
         fft = new float[FftSize];
 
         visualiser = new float[BinCount];
         bins = new Bin[BinCount];
         for (int i = 0; i < bins.Length; i++)
-            bins[i] = new Bin();
+            bins[i] = new Bin(Memory<float>.Empty);
     }
 
     public int FrequencyToFftIndex(float freq) => (int)((Sound.Data.SampleRate / (float)FftSize) / freq);
@@ -66,21 +72,19 @@ public class AudioVisualiser
     private void UpdateFft(AudioRenderer audio)
     {
         int readSampleCount = audio.GetCurrentSamples(Sound, samples);
-        for (int i = 0; i < readSampleCount; i++)
-            samplesCast[i] = Utilities.MapRange(0, byte.MaxValue - 1, -0.5f, 0.5f, samples[i]);
 
         if (accumulationCursor < FftSize) // if the amount of accumulated samples have not yet reached the end 
         {
             if (Sound.Data.ChannelCount == 2)
             {
                 //stereo! channels are interleaved! take left
-                for (int i = 0; i < samplesCast.Length; i += 2)
-                    sampleAccumulator[accumulationCursor++] = samplesCast[i];
+                for (int i = 0; i < readSampleCount; i += 2)
+                    sampleAccumulator[accumulationCursor++] = samples[i];
             }
             else
             {
                 //mono! take everything as-is
-                samplesCast.CopyTo(sampleAccumulator, accumulationCursor);
+                samples.CopyTo(sampleAccumulator, accumulationCursor);
                 accumulationCursor += readSampleCount;
             }
         }
@@ -89,8 +93,11 @@ public class AudioVisualiser
             for (int i = 0; i < InputBlur; i++)
                 AudioAnalysis.BlurSignal(sampleAccumulator);
 
-            var actualFft = AudioAnalysis.Fft(sampleAccumulator, fft);
-            accumulationCursor = 0;
+            AudioAnalysis.Fft(sampleAccumulator, fft);
+
+            //shift sampleAccumulator to the left halfway to let the windows overlap
+            sampleAccumulator.AsSpan(sampleAccumulator.Length - BufferSize / 2, BufferSize / 2).CopyTo(sampleAccumulator);
+            accumulationCursor = BufferSize / 2;
         }
     }
 
@@ -98,18 +105,27 @@ public class AudioVisualiser
     {
         foreach (var item in bins)
         {
-            item.Section.Clear();
+            item.Section = Memory<float>.Empty;
+            item.Start = -1;
         }
 
         for (int i = 0; i < FftSize / 2; i++)
         {
             var bin = bins[FftIndexToBinIndex(i)];
-            bin.Section.Add(fft[i]);
+            if (bin.Section.Length == 0 || bin.Start == -1) // empty bin
+            {
+                bin.Section = fft.AsMemory(i, 1);
+                bin.Start = i;
+            }
+            else
+            {
+                bin.Section = fft.AsMemory(bin.Start, i - bin.Start);
+            }
         }
 
         foreach (var item in bins)
         {
-            item.Value = Utilities.SmoothApproach(item.Value, item.Section.Any() ? (item.Section.Max()) : 0, 32, dt);
+            item.Value = Utilities.SmoothApproach(item.Value, item.Section.Length > 0 ? (item.CalculateValue()) : 0, 64, dt);
         }
 
         //for (int i = 0; i < BinCount; i++)
@@ -187,7 +203,7 @@ public struct AudioAnalysis
         for (int i = 0; i < n; i++)
         {
             var m = fft[i];
-            var v = (float)(10d * Math.Log10(m.Real * m.Real + m.Imaginary * m.Imaginary));
+            var v = (float)((m.Real * m.Real + m.Imaginary * m.Imaginary));
             if (float.IsInfinity(v) || v < 0)
                 v = 0;
             result[i] = v;

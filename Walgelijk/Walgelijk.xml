@@ -124,7 +124,7 @@
             Play sound at a position in the world and let it overlap itself
             </summary>
         </member>
-        <member name="M:Walgelijk.AudioRenderer.GetCurrentSamples(Walgelijk.Sound,System.Span{System.Byte})">
+        <member name="M:Walgelijk.AudioRenderer.GetCurrentSamples(Walgelijk.Sound,System.Span{System.Single})">
             <summary>
             Populates the given array with the most recently played samples of the given sound.
             Returns the amount of samples.

@@ -68,7 +68,7 @@ public abstract class AudioRenderer
     /// Populates the given array with the most recently played samples of the given sound.
     /// Returns the amount of samples.
     /// </summary>
-    public abstract int GetCurrentSamples(Sound sound, Span<byte> arr);
+    public abstract int GetCurrentSamples(Sound sound, Span<float> arr);
 
     /// <summary>
     /// Set world position of the sound (if it is spatial)

@@ -69,5 +69,5 @@ internal sealed class EmptyAudioRenderer : AudioRenderer
 
     public override StreamAudioData LoadStream(string path) => new StreamAudioData(Path.GetTempFileName(), 0, 0, 0);
 
-    public override int GetCurrentSamples(Sound sound, Span<byte> arr) => 0;
+    public override int GetCurrentSamples(Sound sound, Span<float> arr) => 0;
 }

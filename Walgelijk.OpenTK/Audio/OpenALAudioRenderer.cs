@@ -561,7 +561,13 @@ public class OpenALAudioRenderer : AudioRenderer
             Logger.Error("Attempt to set position for non-spatial sound");
     }
 
-    public override int GetCurrentSamples(Sound sound, Span<byte> arr)
+    /// <summary>
+    /// Populates the array with the most recently played samples ranging from -1 to 1
+    /// </summary>
+    /// <param name="sound"></param>
+    /// <param name="arr"></param>
+    /// <returns></returns>
+    public override int GetCurrentSamples(Sound sound, Span<float> arr)
     {
         UpdateIfRequired(sound, out var source);
 
@@ -570,21 +576,8 @@ public class OpenALAudioRenderer : AudioRenderer
             case StreamAudioData stream:
                 {
                     var streamer = AudioObjects.OggStreamers.Load((source, sound));
-                    int i = 0;
-                    foreach (var item in streamer.LastSamples)
-                    {
-                        var temp = (int)(byte.MaxValue * Utilities.MapRange(-1, 1, 0, 1, item));
-
-                        if (temp > byte.MaxValue)
-                            temp = byte.MaxValue;
-                        else if (temp < byte.MinValue)
-                            temp = byte.MinValue;
-
-                        arr[i++] = (byte)temp;
-                        if (i >= arr.Length)
-                            return i;
-                    }
-                    return i;
+                    streamer.LastSamples.CopyTo(arr);
+                    return Math.Min(streamer.LastSamples.Length, arr.Length);
                 }
             case FixedAudioData fixedData:
                 {
@@ -594,7 +587,8 @@ public class OpenALAudioRenderer : AudioRenderer
                     int cursor = Utilities.Clamp((int)(total * progress), 0, fixedData.Data.Length);
                     int maxReturnSize = fixedData.Data.Length - cursor;
                     var section = fixedData.Data.AsSpan(cursor, Math.Min(arr.Length, Math.Min(maxReturnSize, amount)));
-                    section.CopyTo(arr);
+                    for (int i = 0; i < section.Length; i++)
+                        arr[i] = Utilities.MapRange(0, byte.MaxValue, -1, 1, arr[i]);
                     return section.Length;
                 }
             default:
