@@ -36,10 +36,10 @@ public struct TestScene2
             ClearColour = new Color("#a8a3c1")
         });
 
-        streamTest = new Sound(Resources.Load<StreamAudioData>("madness_4.ogg"), false, false);
+        streamTest = new Sound(Resources.Load<StreamAudioData>("Party_Level_Theme_4.ogg"), false, false);
         game.AudioRenderer.Play(streamTest);
 
-        visualiser = new AudioVisualiser(streamTest, 1024 * 4, 1024);
+        visualiser = new AudioVisualiser(streamTest, 1024 * 8, 1024, 512);
 
         return scene;
     }
@@ -72,22 +72,21 @@ public struct TestScene2
             Draw.Order = new RenderOrder(350, 0);
             Draw.ScreenSpace = true;
             Draw.Colour = Colors.Red;
-            Draw.Text(Audio.GetTime(streamTest).ToString(), new Vector2(32,32), Vector2.One);
+            Draw.Text(Audio.GetTime(streamTest).ToString(), new Vector2(32, 32), Vector2.One);
             Draw.Colour = Colors.Purple;
 
             visualiser.Update(Audio, Time.DeltaTime);
 
             int index = 0;
-            for (int i = 0; i < visualiser.BarCount / 6 ; i += 1)
+            foreach (var val in visualiser.GetVisualiserData())
             {
-                //int readIndex = Utilities.Clamp((int)Utilities.MapRange(0, visualiser.BarCount - 1, 20, 10000, i), 0, visualiser.BarCount - 1);
-                var f = Utilities.Clamp(MathF.Abs(visualiser.GetBars()[i]) * 0.05f, 0, 150);// Utilities.MapRange(0, byte.MaxValue, -1, 1f, samples[i]);
-                if (f > .001f)
+                float width = Window.Width / (float)visualiser.BinCount;
+                if (val > .001f)
                 {
-                    var a = new Vector2(15 + index * 2.6f, 250);
-                    var b = new Vector2(15 + index * 2.6f, 250 - (f * f) * 50);
-                    Draw.Colour = Color.FromHsv(index * 0.01f, 1, 1);//.WithAlpha(f * f * 5 + 0.2f);
-                    Draw.Line(a, b, 3);
+                    var a = new Vector2(15 + index * width, Window.Height);
+                    var b = new Vector2(15 + index * width, Window.Height - val * 10);
+                    Draw.Colour = index % 2 == 0 ? Colors.Red : Colors.Orange;//.WithAlpha(f * f * 5 + 0.2f);
+                    Draw.Line(a, b, width, 0);
                 }
                 index++;
             }
