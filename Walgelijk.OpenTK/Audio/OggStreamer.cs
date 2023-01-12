@@ -132,7 +132,10 @@ public class OggStreamer : IDisposable
     private void MonitorLoop()
     {
         while (monitorFlag)
+        {
             Update();
+            Thread.Sleep(32);
+        }
     }
 
     public void Update()
