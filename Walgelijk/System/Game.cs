@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Walgelijk;
 
@@ -205,12 +206,18 @@ public class Game
 
             if (UpdateRate != 0)
             {
-                var timeToSleep = TimeSpan.FromSeconds(1d / UpdateRate - clock.Elapsed.TotalSeconds);
-                if (timeToSleep.TotalMilliseconds > double.Epsilon)
-                    Thread.Sleep(timeToSleep);
+                //var timeToSleep = TimeSpan.FromSeconds(1d / UpdateRate - clock.Elapsed.TotalSeconds);
+                var expected = TimeSpan.FromSeconds(1d / UpdateRate);
+                var msToSleep = expected.TotalMilliseconds - clock.Elapsed.TotalMilliseconds;
+                //Logger.Debug($"TTS: {timeToSleep.TotalSeconds} s because we need to wait {1d/UpdateRate} s and the frame took {elapsed.TotalSeconds} s.");
+                if (msToSleep > 1)
+                    Thread.Sleep((int)msToSleep / 2); //Waarom deel ik door twee?
+                while (clock.Elapsed < expected) 
+                    Thread.Sleep(0); //Dit is niet echt slapen.. het gebruikt alsnog CPU maar het is nodig voor de laatste beetjes om de wachttijd perfect te maken
             }
 
             dt = clock.Elapsed.TotalSeconds;
+            //Logger.Debug($"Frame duration: {dt} s.");
             clock.Restart();
         }
         Stop();

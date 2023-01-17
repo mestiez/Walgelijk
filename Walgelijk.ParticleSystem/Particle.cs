@@ -17,6 +17,7 @@ public struct Particle
     public float RotationalDampening;
     public Vector2 Acceleration;
     public float RotationalAcceleration;
+    public Vector4 UvOffset;
 
     /// <summary>
     /// Size that can be processed by modules and is eventually rendered. It is set to the initial Size every frame, before module processing
