@@ -4,26 +4,6 @@
         <name>Walgelijk</name>
     </assembly>
     <members>
-        <member name="M:Walgelijk.StreamAudioData.DisposeLocalCopy">
-            <summary>
-            This does nothing because the stream is managed by the audio renderer
-            </summary>
-        </member>
-        <member name="M:Walgelijk.StreamAudioData.GetData">
-            <summary>
-            Returns an empty span because this object has no knowledge of the data being read other than its source
-            </summary>
-        </member>
-        <member name="F:Walgelijk.FixedAudioData.Data">
-            <summary>
-            Raw data for the audio. This doesn't necessarily contain all audio data as it could be used as a streaming buffer.
-            </summary>
-        </member>
-        <member name="M:Walgelijk.FixedAudioData.#ctor(System.Byte[],System.Int32,System.Int32,System.Int64,System.Boolean)">
-            <summary>
-            Create a sound from raw data
-            </summary>
-        </member>
         <member name="T:Walgelijk.AudioData">
             <summary>
             Object that contains sound data
@@ -62,6 +42,11 @@
         <member name="M:Walgelijk.AudioData.GetData">
             <summary>
             Get a readonly collection of the raw audio data. This can be null if it has been disposed.
+            </summary>
+        </member>
+        <member name="T:Walgelijk.AudioGen">
+            <summary>
+            Audio generation and manipulation functions. These only work on 16 bit audio.
             </summary>
         </member>
         <member name="T:Walgelijk.AudioRenderer">
@@ -250,6 +235,21 @@
             Empty audio renderer that is used when none is set
             </summary>
         </member>
+        <member name="F:Walgelijk.FixedAudioData.Data">
+            <summary>
+            Raw data for the audio. This doesn't necessarily contain all audio data as it could be used as a streaming buffer.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.FixedAudioData.#ctor(System.Byte[],System.Int32,System.Int32,System.Int64,System.Boolean)">
+            <summary>
+            Create a sound from raw data
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FixedAudioData.Beep">
+            <summary>
+            Beep audio data
+            </summary>
+        </member>
         <member name="T:Walgelijk.SoundState">
             <summary>
             States that a sound can be in
@@ -328,6 +328,21 @@
         <member name="M:Walgelijk.Sound.ForceUpdate">
             <summary>
             Sets <see cref="F:Walgelijk.Sound.RequiresUpdate"/> to true, forcing the audio engine to synchronise the property change
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Sound.Beep">
+            <summary>
+            Beep sound
+            </summary>
+        </member>
+        <member name="M:Walgelijk.StreamAudioData.DisposeLocalCopy">
+            <summary>
+            This does nothing because the stream is managed by the audio renderer
+            </summary>
+        </member>
+        <member name="M:Walgelijk.StreamAudioData.GetData">
+            <summary>
+            Returns an empty span because this object has no knowledge of the data being read other than its source
             </summary>
         </member>
         <member name="T:Walgelijk.Background">

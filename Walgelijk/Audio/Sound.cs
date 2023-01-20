@@ -88,4 +88,9 @@ public class Sound
     {
         RequiresUpdate = true;
     }
+
+    /// <summary>
+    /// Beep sound
+    /// </summary>
+    public static readonly Sound Beep = new Sound(FixedAudioData.Beep, false, false);
 }
