@@ -576,7 +576,7 @@ public class OpenALAudioRenderer : AudioRenderer
             case StreamAudioData stream:
                 {
                     var streamer = AudioObjects.OggStreamers.Load((source, sound));
-                    streamer.LastSamples.CopyTo(arr);
+                    streamer.LastSamples.AsSpan(0, arr.Length).CopyTo(arr);
                     return Math.Min(streamer.LastSamples.Length, arr.Length);
                 }
             case FixedAudioData fixedData:

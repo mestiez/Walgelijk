@@ -39,7 +39,7 @@ public struct TestScene2
         streamTest = new Sound(Resources.Load<StreamAudioData>("Party_Level_Theme_4.ogg"), false, false);
         game.AudioRenderer.Play(streamTest);
 
-        visualiser = new AudioVisualiser(streamTest, 1024 * 4, 1024, 512);
+        visualiser = new AudioVisualiser(streamTest, 1024 * 4, 1024, 1024);
 
         return scene;
     }
@@ -84,7 +84,7 @@ public struct TestScene2
                 if (val > .001f)
                 {
                     var a = new Vector2(15 + index * width, Window.Height);
-                    var b = new Vector2(15 + index * width, Window.Height - val * 10);
+                    var b = new Vector2(15 + index * width, Window.Height - MathF.Log10(val) * 50);
                     Draw.Colour = index % 2 == 0 ? Colors.Red : Colors.Orange;//.WithAlpha(f * f * 5 + 0.2f);
                     Draw.Line(a, b, width, 0);
                 }
