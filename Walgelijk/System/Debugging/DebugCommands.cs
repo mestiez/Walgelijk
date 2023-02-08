@@ -184,7 +184,7 @@ namespace Walgelijk
             var builder = new StringBuilder();
             foreach (var item in CommandProcessor.GetAllCommands())
             {
-                builder.Append(item);
+                builder.Append(item.Item1);
                 builder.Append(Environment.NewLine);
             }
             return builder.ToString();

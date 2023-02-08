@@ -242,7 +242,7 @@ public class Game
         Logger.Dispose();
     }
 
-    [Command]
+    [Command(HelpString ="Prints the game and engine versions")]
     private static string Version()
     {
 #if DEBUG
