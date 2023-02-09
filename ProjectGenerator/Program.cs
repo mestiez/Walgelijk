@@ -1,9 +1,18 @@
 ﻿namespace ProjectGenerator;
 
-internal class Program
+public class Program
 {
-    static void Main(string[] args)
+    public static void Main(string[] args)
     {
-        Console.WriteLine("Hello, World!");
+        var command = Args.Configuration.Configure<Options>().CreateAndBind(args);
     }
+}
+
+public class Options
+{
+    [System.ComponentModel.Description("Project name. May not contain spaces or other special characters")]
+    public string Name { get; set; }
+    [System.ComponentModel.Description("Requested game engine branch")]
+    public string EngineBranch { get; set; } = "master";
+    public s
 }
