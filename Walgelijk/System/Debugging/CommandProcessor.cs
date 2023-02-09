@@ -259,7 +259,7 @@ namespace Walgelijk
         /// <summary>
         /// Get all commands
         /// </summary>
-        public static IEnumerable<string> GetAllCommands()
+        public static IEnumerable<(string, (MethodInfo method, CommandAttribute cmd))> GetAllCommands()
         {
             return commandCache.GetAll();
         }

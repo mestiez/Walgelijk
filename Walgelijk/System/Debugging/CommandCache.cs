@@ -18,11 +18,18 @@ namespace Walgelijk
 
             foreach (var (method, cmd) in methods)
             {
-                if (method.Name.ToLower() != raw) continue;
+                if (method.Name.ToLower() != raw) 
+                    continue;
                 return (method, cmd);
             }
 
             return default;
+        }
+
+        public new IEnumerable<(string, (MethodInfo method, CommandAttribute cmd))> GetAll()
+        {
+            foreach (var item in methods)
+                yield return (item.method.Name, item);
         }
 
         private void Initialise()
@@ -31,11 +38,6 @@ namespace Walgelijk
             RegisterAssembly(Assembly.GetAssembly(typeof(CommandCache)));
 
             initialised = true;
-        }
-
-        public IEnumerable<string> GetAll()
-        {
-            return methods.Select(m => m.method.Name);
         }
 
         public void RegisterAssembly(Assembly? ass)
