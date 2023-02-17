@@ -4102,6 +4102,11 @@
             This will return a copy of this rectangle that is stretched just enough to contain the given rect
             </summary>
         </member>
+        <member name="M:Walgelijk.Rect.Scale(System.Single)">
+            <summary>
+            This will return a copy of this rectangle scaled in each direction by the given value ranging, 1 meaning 100%
+            </summary>
+        </member>
         <member name="T:Walgelijk.SDF">
             <summary>
             Utility struct full of SDF functions

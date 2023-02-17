@@ -212,4 +212,12 @@ public struct Rect
     {
         return StretchToContain(rect.TopLeft).StretchToContain(rect.TopRight).StretchToContain(rect.BottomLeft).StretchToContain(rect.BottomRight);
     }
+
+    /// <summary>
+    /// This will return a copy of this rectangle scaled in each direction by the given value ranging, 1 meaning 100%
+    /// </summary>
+    public readonly Rect Scale(float scale)
+    {
+        return new Rect(GetCenter(), GetSize() * scale);
+    }
 }

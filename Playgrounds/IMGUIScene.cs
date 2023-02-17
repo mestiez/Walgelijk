@@ -51,11 +51,18 @@ public struct IMGUIScene : ISceneCreator
             if (Input.IsKeyHeld(Key.K))
             {
                 Onion.Tree.Start(425, null);
-                Walgelijk.Onion.Button.Click("Hallo wereld!", default, new Vector2(128, 32));
+                Onion.Layout.Position(8, 8);
+                Onion.Layout.Size(128, 32);
+                Walgelijk.Onion.Controls.Button.Click("Hallo wereld!");
                 Onion.Tree.End();
             }
 
-                Walgelijk.Onion.Button.Click("Hallo wereld!", new Vector2(512,256), new Vector2(128, 32));
+            if (!Input.IsKeyHeld(Key.L))
+            {
+                Onion.Layout.Position(512, 256);
+                Onion.Layout.Size(200, 100);
+                Walgelijk.Onion.Controls.Button.Click("Hallo wereld!");
+            }
             Onion.Tree.Start(75, null);
             Onion.Tree.End();
 
