@@ -255,6 +255,6 @@ public class Game
 
         var a = $"\tENGINE: {walgelijk.GetName()?.Name ?? "null assembly"} {walgelijk.GetName()?.Version ?? (new Version(0, 0, 0))}\n";
         var b = $"\tGAME: {game.GetName()?.Name ?? "null assembly"} {game.GetName()?.Version ?? (new Version(0, 0, 0))}\n";
-        return $"{config} mode\n" + a + b;
+        return $"{config}\n" + a + b;
     }
 }
