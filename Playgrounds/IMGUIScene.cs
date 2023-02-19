@@ -2,6 +2,7 @@
 using Walgelijk;
 using Walgelijk.Imgui;
 using Walgelijk.Onion;
+using Walgelijk.Onion.Layout;
 
 namespace TestWorld;
 
@@ -59,10 +60,13 @@ public struct IMGUIScene : ISceneCreator
 
             if (!Input.IsKeyHeld(Key.L))
             {
-                Onion.Layout.Position(512, 256);
+                Onion.Layout.Position(0, 256);
                 Onion.Layout.Size(200, 100);
+                if (Input.IsKeyHeld(Key.S))
+                    Onion.Layout.SelfLayout.Enqueue(new FitContainer(1, null));
                 Walgelijk.Onion.Controls.Button.Click("Hallo wereld!");
             }
+
             Onion.Tree.Start(75, null);
             Onion.Tree.End();
 

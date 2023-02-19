@@ -15,7 +15,9 @@ public class OnionSystem : Walgelijk.System
     {
         Onion.Tree.End();
         Onion.Tree.Process(Time.DeltaTime);
-        Onion.Tree.Start(0, null);
+        Onion.Layout.Position(0, 0, Layout.Space.Absolute);
+        Onion.Layout.Size(Window.Width, Window.Height);
+        Onion.Tree.Start(0, null); //Root node
     }
 
     public override void Render()

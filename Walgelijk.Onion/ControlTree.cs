@@ -60,7 +60,11 @@ public class ControlTree
 
         node.ChronologicalPosition = incrementor++;
         node.Alive = true;
-        node.Behaviour?.OnStart(new ControlParams(this, Onion.Layout, Game.Main.State, node, inst));
+        var p = new ControlParams(this, Onion.Layout, Game.Main.State, node, inst);
+        node.SetLayout(Onion.Layout.SelfLayout, Onion.Layout.ChildrenLayout);
+        Onion.Layout.Apply(p);
+        node.Behaviour?.OnStart(p);
+        Onion.Layout.Reset();
 
         return (inst, node);
     }
@@ -68,16 +72,11 @@ public class ControlTree
     public void End()
     {
         if (CurrentParent == null)
-        {
             return;
-            throw new Exception("Attempt to end a null control");
-        }
 
         CurrentParent.Behaviour?.OnEnd(
             new ControlParams(this, Onion.Layout, Game.Main.State, CurrentParent, EnsureInstance(CurrentParent.Identity))
             );
-
-        Onion.Layout.Reset();
 
         CurrentParent = CurrentParent.Parent;
     }

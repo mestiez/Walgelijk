@@ -59,6 +59,20 @@ public struct Utilities
         return a * (1 - t) + b * t;
     }
 
+
+    /// <summary>
+    /// Linearly interpolate between two rects
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Rect Lerp(in Rect a, in Rect b, float t)
+    {
+        return new Rect(
+            Lerp(a.MinX, b.MinX, t),
+            Lerp(a.MinY, b.MinY, t),
+            Lerp(a.MaxX, b.MaxX, t),
+            Lerp(a.MaxY, b.MaxY, t));
+    }
+
     /// <summary>
     /// Linearly interpolate between two colors or 4 dimensional vectors
     /// </summary>
@@ -378,6 +392,21 @@ public struct Utilities
         var v = (targetPosition - pastTargetPosition) / t;
         var f = pastPosition - pastTargetPosition + v;
         return NanFallback(targetPosition - v + f * MathF.Exp(-t));
+    }
+
+    /// <summary>
+    /// Smoothly approaches a value to a target value given a speed and dt
+    /// <br></br>
+    /// By luispedrofonseca
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Rect SmoothApproach(in Rect pastPosition, in Rect pastTargetPosition, in Rect targetPosition, float speed, float deltaTime)
+    {
+        return new Rect(
+            SmoothApproach(pastPosition.MinX, pastTargetPosition.MinX, targetPosition.MinX, speed, deltaTime),
+            SmoothApproach(pastPosition.MinY, pastTargetPosition.MinY, targetPosition.MinY, speed, deltaTime),
+            SmoothApproach(pastPosition.MaxX, pastTargetPosition.MaxX, targetPosition.MaxX, speed, deltaTime),
+            SmoothApproach(pastPosition.MaxY, pastTargetPosition.MaxY, targetPosition.MaxY, speed, deltaTime));
     }
 
     /// <summary>

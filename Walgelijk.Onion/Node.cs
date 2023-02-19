@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Net.Http.Headers;
 using Walgelijk.Onion.Controls;
+using Walgelijk.Onion.Layout;
 
 namespace Walgelijk.Onion;
 
@@ -20,6 +21,24 @@ public class Node
     public bool AliveLastFrame = false;
     public float SecondsAlive;
     public float SecondsDead;
+
+    public Layout.ISingleLayout[]? SelfLayout = null;
+    public Layout.IGroupLayout[]? ChildrenLayout = null;
+
+    internal void SetLayout(Queue<ISingleLayout> single, Queue<IGroupLayout> children)
+    {
+        SelfLayout ??= new ISingleLayout[single.Count];
+        ChildrenLayout ??= new IGroupLayout[children.Count];
+
+        if (SelfLayout.Length != single.Count)
+            Array.Resize(ref SelfLayout, single.Count);
+
+        if (ChildrenLayout.Length != children.Count)
+            Array.Resize(ref ChildrenLayout, children.Count);
+
+        single.CopyTo(SelfLayout, 0);
+        children.CopyTo(ChildrenLayout, 0);
+    }
 
     public Node(int id, Node? parent, IControl? behaviour)
     {

@@ -11,7 +11,12 @@ public class ControlInstance
     /// <summary>
     /// The requested rectangle for this control
     /// </summary>
-    public Rect TargetRect;
+    public Rect TargetRect;    
+    
+    /// <summary>
+    /// The final rendered rectangle for this control
+    /// </summary>
+    public Rect FinalRect;
 
     /// <summary>
     /// Amount of seconds that this control will exist for even when no longer being called 

@@ -29,7 +29,7 @@ public readonly struct RelativeLayout : ILayout
     void ILayout.CalculateEither(in ControlParams p)
     {
         var parent = p.Node.Parent != null ? p.ControlTree.EnsureInstance(p.Node.Parent.Identity) : null;
-        var offset = parent?.TargetRect.TopLeft ?? Vector2.Zero;
+        var offset = parent?.TargetRect.BottomLeft ?? Vector2.Zero;
 
         if (Position.HasValue)
         {

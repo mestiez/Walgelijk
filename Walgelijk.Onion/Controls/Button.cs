@@ -25,7 +25,6 @@ public struct Button : IControl
 
     public void OnStart(in ControlParams p)
     {
-        Onion.Layout.Apply(p);
     }
 
     public void OnProcess(in ControlParams p)
@@ -39,8 +38,11 @@ public struct Button : IControl
         var animation = node.Alive ? Utilities.Clamp(node.SecondsAlive / instance.AllowedDeadTime) : 1 - Utilities.Clamp(node.SecondsDead / instance.AllowedDeadTime);
         animation = Easings.Cubic.InOut(animation);
 
+        instance.FinalRect = instance.TargetRect.Scale(Utilities.Lerp(animation, 1, 0.6f));
+        //instance.FinalRect = Utilities.SmoothApproach(instance.FinalRect, finalRect, finalRect, 25, p.GameState.Time.DeltaTime);
+
         Draw.Colour = Colors.Red.WithAlpha(animation * animation * animation);
-        Draw.Quad(instance.TargetRect.Scale(Utilities.Lerp(animation, 1, 0.6f)));
+        Draw.Quad(instance.FinalRect);
     }
 
     public void OnEnd(in ControlParams p)

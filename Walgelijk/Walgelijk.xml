@@ -4157,6 +4157,11 @@
             Linearly interpolate between two floats
             </summary>
         </member>
+        <member name="M:Walgelijk.Utilities.Lerp(Walgelijk.Rect@,Walgelijk.Rect@,System.Single)">
+            <summary>
+            Linearly interpolate between two rects
+            </summary>
+        </member>
         <member name="M:Walgelijk.Utilities.Lerp(System.Numerics.Vector4,System.Numerics.Vector4,System.Single)">
             <summary>
             Linearly interpolate between two colors or 4 dimensional vectors
@@ -4316,6 +4321,13 @@
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.SmoothApproach(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(Walgelijk.Rect@,Walgelijk.Rect@,Walgelijk.Rect@,System.Single,System.Single)">
             <summary>
             Smoothly approaches a value to a target value given a speed and dt
             <br></br>
