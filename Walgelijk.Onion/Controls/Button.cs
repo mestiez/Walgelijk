@@ -15,7 +15,6 @@ public struct Button : IControl
             //(new RelativeLayout(0, 0) as ISingleLayout).Calculate(ControlParams.CreateFor(node));
             //TODO het probleem hiermee is dat als deze control niet meer wordt geroepen, worden zijn kinderen ook niet meer geroepen. zijn kinderen hebben geen idee dat die parent nog wel bestaat... dat mag niet.
             //controls moeten hun kinderen kunnen registreren ofzo of iets weet ik veel misschien een functie net als OnProcess maar dan met OnStructure of iets 
-
         }
         Onion.Tree.End();
     }
@@ -40,7 +39,7 @@ public struct Button : IControl
         animation = Easings.Cubic.InOut(animation);
 
         instance.Rects.Rendered = instance.Rects.Target.Scale(Utilities.Lerp(animation, 1, 0.6f));
-        //instance.FinalRect = Utilities.SmoothApproach(instance.FinalRect, finalRect, finalRect, 25, p.GameState.Time.DeltaTime);
+        //instance.Rects.Rendered = Utilities.SmoothApproach(instance.Rects.Rendered, instance.Rects.Rendered, instance.Rects.Target.Scale(Utilities.Lerp(animation, 1, 0.6f)), 25, p.GameState.Time.DeltaTime);
 
         Draw.Colour = Colors.Red.WithAlpha(animation * animation * animation);
         Draw.Quad(instance.Rects.Rendered);

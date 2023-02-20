@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using Walgelijk.Onion.Controls;
 using Walgelijk.Onion.Layout;
+using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion;
 
@@ -62,6 +63,7 @@ public class Node
 
     public void Render(in ControlParams p)
     {
+        Draw.Order = new RenderOrder(Onion.RenderLayer, p.Node.ComputedGlobalOrder);
         Behaviour?.OnRender(p);
         foreach (var child in Children)
             child.Value.Render(

@@ -8,6 +8,7 @@ public static class Onion
     public static readonly LayoutState Layout = new();
     public static readonly ControlTree Tree = new();
     public static readonly Navigator Navigator = new();
+    public static int RenderLayer = RenderOrder.UI.Layer;
 
 
     /*TODO 
