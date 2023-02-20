@@ -29,18 +29,18 @@ public readonly struct RelativeLayout : ILayout
     void ILayout.CalculateEither(in ControlParams p)
     {
         var parent = p.Node.Parent != null ? p.ControlTree.EnsureInstance(p.Node.Parent.Identity) : null;
-        var offset = parent?.TargetRect.BottomLeft ?? Vector2.Zero;
+        var offset = parent?.Rects.Target.BottomLeft ?? Vector2.Zero;
 
         if (Position.HasValue)
         {
-            p.Instance.TargetRect.MinX = offset.X + Position.Value.X;
-            p.Instance.TargetRect.MinY = offset.Y + Position.Value.Y;
+            p.Instance.Rects.Target.MinX = offset.X + Position.Value.X;
+            p.Instance.Rects.Target.MinY = offset.Y + Position.Value.Y;
         }
 
         if (Size.HasValue)
         {
-            p.Instance.TargetRect.Width = Size.Value.X;
-            p.Instance.TargetRect.Height = Size.Value.Y;
+            p.Instance.Rects.Target.Width = Size.Value.X;
+            p.Instance.Rects.Target.Height = Size.Value.Y;
         }
     }
 }

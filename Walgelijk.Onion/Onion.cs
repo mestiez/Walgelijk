@@ -1,11 +1,14 @@
-﻿using Walgelijk.Onion.Layout;
+﻿using System;
+using Walgelijk.Onion.Layout;
 
 namespace Walgelijk.Onion;
 
 public static class Onion
 {
-    public static LayoutState Layout = new();
-    public static ControlTree Tree = new();
+    public static readonly LayoutState Layout = new();
+    public static readonly ControlTree Tree = new();
+    public static readonly Navigator Navigator = new();
+
 
     /*TODO 
      * control state (hot, active, capture, scroll, etc.)
@@ -13,10 +16,13 @@ public static class Onion
      * scissorbox (drawarea? GetDrawBox() of iets)
      * ClearEverything();
      * style
+     * style moet textures meer supporten, niet alleen kleuren
      * Stack<Style> en dan bouw je voor elke control een final style misschien?
      * heel veel basic functies hier (label, button. etc.)
      * Animation system (IAnimation) deel van style? nee toch??? weet ik het 
      * fix die node deletion shit ControlTree.cs:93
-     * navigation (arrows)
+     * navigation (arrows, tab)
+     *      tab: cycle through all controls chronologically
+     *      arrows: move from control to control based on position in space
     */
 }

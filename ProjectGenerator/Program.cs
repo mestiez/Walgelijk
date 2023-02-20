@@ -14,5 +14,4 @@ public class Options
     public string Name { get; set; }
     [System.ComponentModel.Description("Requested game engine branch")]
     public string EngineBranch { get; set; } = "master";
-    public s
 }

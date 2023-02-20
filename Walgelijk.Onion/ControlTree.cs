@@ -58,14 +58,16 @@ public class ControlTree
         else
             CurrentParent = node = Root;
 
+        var p = new ControlParams(this, Onion.Layout, Game.Main.State, node, inst);
+
+        node.SetLayout(Onion.Layout.SelfLayout, Onion.Layout.ChildrenLayout);
         node.ChronologicalPosition = incrementor++;
         node.Alive = true;
-        var p = new ControlParams(this, Onion.Layout, Game.Main.State, node, inst);
-        node.SetLayout(Onion.Layout.SelfLayout, Onion.Layout.ChildrenLayout);
         Onion.Layout.Apply(p);
-        node.Behaviour?.OnStart(p);
-        Onion.Layout.Reset();
 
+        node.Behaviour?.OnStart(p);
+
+        Onion.Layout.Reset();
         return (inst, node);
     }
 

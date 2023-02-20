@@ -30,14 +30,14 @@ public readonly struct AbsoluteLayout : ILayout
     {
         if (Position.HasValue)
         {
-            p.Instance.TargetRect.MinX = Position.Value.X;
-            p.Instance.TargetRect.MinY = Position.Value.Y;
+            p.Instance.Rects.Target.MinX = Position.Value.X;
+            p.Instance.Rects.Target.MinY = Position.Value.Y;
         }
 
         if (Size.HasValue)
         {
-            p.Instance.TargetRect.Width = Size.Value.X;
-            p.Instance.TargetRect.Height = Size.Value.Y;
+            p.Instance.Rects.Target.Width = Size.Value.X;
+            p.Instance.Rects.Target.Height = Size.Value.Y;
         }
     }
 }

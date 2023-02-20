@@ -49,6 +49,7 @@ public struct IMGUIScene : ISceneCreator
             Onion.Tree.End();
             Onion.Tree.End();
 
+            Onion.Tree.Start(51, null);
             if (Input.IsKeyHeld(Key.K))
             {
                 Onion.Tree.Start(425, null);
@@ -57,6 +58,7 @@ public struct IMGUIScene : ISceneCreator
                 Walgelijk.Onion.Controls.Button.Click("Hallo wereld!");
                 Onion.Tree.End();
             }
+            Onion.Tree.End();
 
             if (!Input.IsKeyHeld(Key.L))
             {

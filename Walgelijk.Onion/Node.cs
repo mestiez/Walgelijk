@@ -1,5 +1,4 @@
 ﻿using System.Buffers;
-using System.Net.Http.Headers;
 using Walgelijk.Onion.Controls;
 using Walgelijk.Onion.Layout;
 
@@ -12,18 +11,28 @@ public class Node
 {
     public readonly int Identity;
     public readonly Node? Parent;
-    public readonly IControl? Behaviour;
     public readonly Dictionary<int, Node> Children = new();
+
+    public readonly IControl? Behaviour;
     public readonly string Name;
+
+    /// <summary>
+    /// Desired local order within the parent
+    /// </summary>
+    public int RequestedLocalOrder;
 
     public int ChronologicalPosition;
     public bool Alive = false;
     public bool AliveLastFrame = false;
     public float SecondsAlive;
     public float SecondsDead;
+    /// <summary>
+    /// Actual global order
+    /// </summary>
+    public int ComputedGlobalOrder;
 
-    public Layout.ISingleLayout[]? SelfLayout = null;
-    public Layout.IGroupLayout[]? ChildrenLayout = null;
+    public ISingleLayout[]? SelfLayout = null;
+    public IGroupLayout[]? ChildrenLayout = null;
 
     internal void SetLayout(Queue<ISingleLayout> single, Queue<IGroupLayout> children)
     {
@@ -46,7 +55,9 @@ public class Node
         Parent = parent;
         Behaviour = behaviour;
 
-        Name = Identity == 0 ? "ROOT" : Identity + $"[{(Behaviour == null ? "Dummy" : Behaviour.GetType().Name)}]";
+        Name = Identity == 0 ?
+            "ROOT" : 
+            Identity + $"[{(Behaviour == null ? "Dummy" : Behaviour.GetType().Name)}]";
     }
 
     public void Render(in ControlParams p)

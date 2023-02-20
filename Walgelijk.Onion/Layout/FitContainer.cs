@@ -21,8 +21,8 @@ public readonly struct FitContainer : ILayout
         var parent = p.ControlTree.EnsureInstance(p.Node.Parent.Identity);
 
         if (WidthRatio.HasValue)
-            p.Instance.TargetRect.Width = WidthRatio.Value * parent.TargetRect.Width;
+            p.Instance.Rects.Target.Width = WidthRatio.Value * parent.Rects.Target.Width;
         if (HeightRatio.HasValue)
-            p.Instance.TargetRect.Height = HeightRatio.Value * parent.TargetRect.Height;
+            p.Instance.Rects.Target.Height = HeightRatio.Value * parent.Rects.Target.Height;
     }
 }
