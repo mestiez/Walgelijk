@@ -12,7 +12,13 @@ public class Node
 {
     public readonly int Identity;
     public readonly Node? Parent;
-    public readonly Dictionary<int, Node> Children = new();
+    public readonly SortedSet<int> Children = new();
+
+    public IEnumerable<Node> GetChildren()
+    {
+        foreach (var item in Children)
+            yield return Onion.Tree.Nodes[item];
+    }
 
     public readonly IControl? Behaviour;
     public readonly string Name;
@@ -65,9 +71,9 @@ public class Node
     {
         Draw.Order = new RenderOrder(Onion.RenderLayer, p.Node.ComputedGlobalOrder);
         Behaviour?.OnRender(p);
-        foreach (var child in Children)
-            child.Value.Render(
-                new ControlParams(p.ControlTree, p.Layout, p.GameState, child.Value, p.ControlTree.EnsureInstance(child.Key)));
+        foreach (var child in GetChildren())
+            child.Render(
+                new ControlParams(p.ControlTree, p.Layout, p.GameState, child, p.ControlTree.EnsureInstance(child.Identity)));
     }
 
     public void Process(in ControlParams p)
@@ -85,9 +91,9 @@ public class Node
 
         Behaviour?.OnProcess(p);
 
-        foreach (var child in Children)
-            child.Value.Process(
-                new ControlParams(p.ControlTree, p.Layout, p.GameState, child.Value, p.ControlTree.EnsureInstance(child.Key)));
+        foreach (var child in GetChildren())
+            child.Process(
+                new ControlParams(p.ControlTree, p.Layout, p.GameState, child, p.ControlTree.EnsureInstance(child.Identity)));
     }
 
     public void RefreshChildrenList(ControlTree tree, float dt)
@@ -97,20 +103,20 @@ public class Node
         // remove dead children from the child list
         var toDelete = ArrayPool<int>.Shared.Rent(Children.Count);
         var length = 0;
-        foreach (var item in Children)
-            if (!item.Value.Alive)
+        foreach (var item in GetChildren())
+            if (!item.Alive)
             {
-                var inst = tree.EnsureInstance(item.Key);
-                if (inst.AllowedDeadTime <= item.Value.SecondsDead)
-                    toDelete[length++] = item.Key;
+                var inst = tree.EnsureInstance(item.Identity);
+                if (inst.AllowedDeadTime <= item.SecondsDead)
+                    toDelete[length++] = item.Identity;
             }
         for (int i = 0; i < length; i++)
-            Children.Remove(toDelete[i], out var child);
+            Children.Remove(toDelete[i]);
         ArrayPool<int>.Shared.Return(toDelete);
 
-        foreach (var item in Children)
-            item.Value.RefreshChildrenList(tree, dt);
+        foreach (var item in GetChildren())
+            item.RefreshChildrenList(tree, dt);
     }
 
-    public override string? ToString() => $"{Name} [{(Alive ? "Alive" : "Dead")}](#{ChronologicalPosition})";
+    public override string? ToString() => $"{Name} [{(AliveLastFrame ? "Alive" : "Dead")}](#{ChronologicalPosition})";
 }

@@ -14,6 +14,11 @@ public class ControlTree
     private int incrementor;
     private readonly Queue<Node> toDelete = new();
 
+    public ControlTree()
+    {
+        Nodes.Add(0, Root);
+    }
+
     public ControlInstance CreateInstance(int id)
     {
         var instance = new ControlInstance(id);
@@ -39,16 +44,16 @@ public class ControlTree
     public (ControlInstance Instance, Node node) Start(int id, IControl? behaviour)
     {
         var inst = EnsureInstance(id);
-
         if (!Nodes.TryGetValue(id, out var node))
         {
             node = new Node(id, CurrentNode, behaviour);
+            node.Alive = true;
             Nodes.Add(id, node);
             behaviour?.OnAdd(new ControlParams(this, Onion.Layout, Game.Main.State, node, inst));
         }
-        VOOR DE EEN OF ANDERE REDEN IS DIE ALIVE RANDOM FALSE EN WEET IK VEEL ZOEK HET UIT
+
         // attempt to add just in case it came back alive
-        CurrentNode?.Children.TryAdd(id, node);
+        CurrentNode?.Children.Add(id);
 
         CurrentNode = node;
         var p = new ControlParams(this, Onion.Layout, Game.Main.State, node, inst);
@@ -85,7 +90,7 @@ public class ControlTree
             item.Value.Alive = false;
         }
 
-        Root.RefreshChildrenList(this, dt);
+       // Root.RefreshChildrenList(this, dt);
         Root.Process(new ControlParams(this, Onion.Layout, Game.Main.State, Root, EnsureInstance(Root.Identity)));
         incrementor = 0;
     }

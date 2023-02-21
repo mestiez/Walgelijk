@@ -51,10 +51,10 @@ public class OnionSystem : Walgelijk.System
                 Draw.Text((node.ToString() ?? "[untitled]") + " D: " + node.ComputedGlobalOrder, offset, Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Bottom);
                 offset.X += 32;
                 h += 0.15f;
-                foreach (var item in node.Children)
+                foreach (var item in node.GetChildren())
                 {
                     offset.Y += 16;
-                    draw(item.Value);
+                    draw(item);
                 }
                 h -= 0.15f;
                 offset.X -= 32;

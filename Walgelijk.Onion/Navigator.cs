@@ -31,8 +31,8 @@ public class Navigator
         {
             orderStack.Push(node.ComputedGlobalOrder = GetGlobalDepth(node.RequestedLocalOrder + counter++));
 
-            foreach (var child in node.Children)
-                mark(child.Value);
+            foreach (var child in node.GetChildren())
+                mark(child);
 
             orderStack.Pop();
         }
