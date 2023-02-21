@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Walgelijk.Onion.Layout;
 using Walgelijk.SimpleDrawing;
 

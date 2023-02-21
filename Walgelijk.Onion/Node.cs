@@ -104,7 +104,7 @@ public class Node
         var toDelete = ArrayPool<int>.Shared.Rent(Children.Count);
         var length = 0;
         foreach (var item in GetChildren())
-            if (!item.Alive)
+            if (!item.AliveLastFrame)
             {
                 var inst = tree.EnsureInstance(item.Identity);
                 if (inst.AllowedDeadTime <= item.SecondsDead)

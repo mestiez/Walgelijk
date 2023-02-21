@@ -2,12 +2,16 @@
 
 /// <summary>
 /// A control instance. Instances represent each instance of the controls that exist in the tree.
-/// They are meant to track the non-hierarchical, general state of a control.
+/// They are meant to track the non-hierarchical, general state of a control. 
+/// Think of it like a little box attached to a node that contains instance data
 /// </summary>
 public class ControlInstance
 {
     public readonly int Identity;
 
+    /// <summary>
+    /// The active rectangles that define the areas on the screen that represent this control for different purposes.
+    /// </summary>
     public ControlRects Rects;
 
     /// <summary>
@@ -23,11 +27,17 @@ public class ControlInstance
     /// </summary>
     public bool HasFocus => Onion.Navigator.FocusedControl == Identity;
 
+    /// <summary>
+    /// Determines what events this control is capable of capturing. 
+    /// Normally set to just <see cref="CaptureFlags.Cursor"/>, it will only capture hover events.
+    /// </summary>
+    public CaptureFlags CaptureFlags = CaptureFlags.Cursor;
+
     public ControlState State
     {
         get
         {
-            if (Onion.Navigator.HotControl == Identity)
+            if (Onion.Navigator.HoverControl == Identity)
                 return ControlState.Hot;
 
             if (Onion.Navigator.ActiveControl == Identity)
@@ -43,46 +53,29 @@ public class ControlInstance
     }
 }
 
-public enum ControlState
+[Flags]
+public enum CaptureFlags : byte
 {
     /// <summary>
-    /// Inactive state (idle)
+    /// This control cannot be interacted with
     /// </summary>
-    None,
-    /// <summary>
-    /// The user is probably about to interact with this control
-    /// </summary>
-    Hot,
-    /// <summary>
-    /// The user is currently interacting with this control
-    /// </summary>
-    Active,
-}
-
-public struct ControlRects
-{
-    /// <summary>
-    /// The preferred rectangle for this control, as adjusted before rendering
-    /// </summary>
-    public Rect Target;
+    None = 0,
 
     /// <summary>
-    /// The rectangle that is considered for raycasting.
-    /// The control won't be considered at all if this is null.
+    /// Will capture hover events
     /// </summary>
-    public Rect? Raycast;
+    Cursor = 0b001,
+    /// <summary>
+    /// Will capture scroll events
+    /// </summary>
+    Scroll = 0b010,   
+    /// <summary>
+    /// Will capture key events
+    /// </summary>
+    Key    = 0b100,
 
     /// <summary>
-    /// The rectangle that encapsulates all children of this control in local space.
-    /// This determines the scrollable area within this control
+    /// Will capture all events
     /// </summary>
-    public Rect ChildContent;
-
-    /// <summary>
-    /// The final rectangle that represents the rendered area of this control on the window.
-    /// Do note that this rectangle may be obstructed by other rectangles, so this is not 
-    /// representative of the currently visible area of this control, 
-    /// only the area that is actively being rendered.
-    /// </summary>
-    public Rect Rendered;
+    All = byte.MaxValue,
 }

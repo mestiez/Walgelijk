@@ -7,8 +7,24 @@ public class Navigator
 {
     public const int MaxDepth = 8;
 
-    public int? HotControl;
+    /// <summary>
+    /// Control currently capturing the cursor
+    /// </summary>
+    public int? HoverControl;
+
+    /// <summary>
+    /// Control currently capturing the scroll wheel
+    /// </summary>
+    public int? ScrollControl;
+
+    /// <summary>
+    /// Control that is currently selected
+    /// </summary>
     public int? FocusedControl;
+
+    /// <summary>
+    /// Control that is actively being used (buttons held, dropdowns open, sliders sliding, etc.)
+    /// </summary>
     public int? ActiveControl;
 
     private readonly Stack<int> orderStack = new();
@@ -17,8 +33,15 @@ public class Navigator
     public void Process(in InputState input)
     {
         RefreshOrder();
-        var hit = Raycast(input.WindowMousePosition.X, input.WindowMousePosition.Y);
-        HotControl = hit;
+
+        var hover = Raycast(input.WindowMousePosition.X, input.WindowMousePosition.Y, CaptureFlags.Cursor);
+        HoverControl = hover;
+
+        if (MathF.Abs(input.MouseScrollDelta) > float.Epsilon)
+        {
+            var scroll = Raycast(input.WindowMousePosition, CaptureFlags.Scroll);
+            if (scroll.HasValue && /*succes met dit sukkel*/)
+        }
     }
 
     public void ComputeGlobalOrder()
@@ -62,7 +85,9 @@ public class Navigator
         Array.Sort(sortedByDepth, static (a, b) => a.Order - b.Order);
     }
 
-    public int? Raycast(float x, float y)
+    public int? Raycast(Vector2 pos, CaptureFlags captureFlags) => Raycast(pos.X, pos.Y, captureFlags);
+
+    public int? Raycast(float x, float y, CaptureFlags captureFlags)
     {
         if (sortedByDepth == null)
             return null;
@@ -77,7 +102,7 @@ public class Navigator
                 continue;
 
             var inst = Onion.Tree.EnsureInstance(c.Identity);
-            if (inst.Rects.Raycast.HasValue)
+            if (inst.Rects.Raycast.HasValue && (inst.CaptureFlags & captureFlags) != 0)
             {
                 if (inst.Rects.Raycast.Value.ContainsPoint(v))
                     return c.Identity;

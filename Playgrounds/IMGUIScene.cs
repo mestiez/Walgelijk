@@ -37,8 +37,8 @@ public struct IMGUIScene : ISceneCreator
 
         public override void Update()
         {
-            if (Gui.ClickButton("Hello World", new Vector2(32), new Vector2(128, 32), HorizontalTextAlign.Center, VerticalTextAlign.Middle))
-                Audio.PlayOnce(Sound.Beep);
+            //if (Gui.ClickButton("Hello World", new Vector2(32), new Vector2(128, 32), HorizontalTextAlign.Center, VerticalTextAlign.Middle))
+            //  Audio.PlayOnce(Sound.Beep);
 
             Onion.Tree.Start(23, null);
             Onion.Tree.Start(5, null);

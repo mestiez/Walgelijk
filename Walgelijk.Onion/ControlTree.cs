@@ -9,6 +9,10 @@ public class ControlTree
     public readonly Dictionary<int, ControlInstance> Instances = new();
     public readonly Dictionary<int, Node> Nodes = new();
 
+    /// <summary>
+    /// Amount of seconds that expired nodes will be kept in cache for
+    /// </summary>
+    public float CacheTimeToLive = 15;
     public Node? CurrentNode;
 
     private int incrementor;
@@ -84,15 +88,21 @@ public class ControlTree
 
     public void Process(float dt)
     {
-        foreach (var item in Nodes)
+        foreach (var node in Nodes.Values)
         {
-            item.Value.AliveLastFrame = item.Value.Alive;
-            item.Value.Alive = false;
+            node.AliveLastFrame = node.Alive;
+            node.Alive = false;
+
+            if (!node.AliveLastFrame && node.SecondsDead > CacheTimeToLive)
+                toDelete.Enqueue(node);
         }
 
-       // Root.RefreshChildrenList(this, dt);
+        Root.RefreshChildrenList(this, dt);
         Root.Process(new ControlParams(this, Onion.Layout, Game.Main.State, Root, EnsureInstance(Root.Identity)));
         incrementor = 0;
+
+        while (toDelete.TryDequeue(out var node))
+            Nodes.Remove(node.Identity);
     }
 
     public void Render()
