@@ -40,14 +40,14 @@ public struct IMGUIScene : ISceneCreator
             //if (Gui.ClickButton("Hello World", new Vector2(32), new Vector2(128, 32), HorizontalTextAlign.Center, VerticalTextAlign.Middle))
             //    Audio.PlayOnce(Sound.Beep);
 
-            Onion.Tree.Start(23, null);
-            Onion.Tree.Start(5, null);
-            Onion.Tree.End();
-            Onion.Tree.Start(635, null);
-            Onion.Tree.End();
-            Onion.Tree.Start(6235, null);
-            Onion.Tree.End();
-            Onion.Tree.End();
+            //Onion.Tree.Start(23, null);
+            //Onion.Tree.Start(5, null);
+            //Onion.Tree.End();
+            //Onion.Tree.Start(635, null);
+            //Onion.Tree.End();
+            //Onion.Tree.Start(6235, null);
+            //Onion.Tree.End();
+            //Onion.Tree.End();
 
             Onion.Tree.Start(51, null);
             if (Input.IsKeyHeld(Key.K))
@@ -60,23 +60,23 @@ public struct IMGUIScene : ISceneCreator
             }
             Onion.Tree.End();
 
-            if (!Input.IsKeyHeld(Key.L))
-            {
-                Onion.Layout.Position(0, 256);
-                Onion.Layout.Size(200, 100);
-                if (Input.IsKeyHeld(Key.S))
-                    Onion.Layout.SelfLayout.Enqueue(new FitContainer(1, null));
-                Walgelijk.Onion.Controls.Button.Click("Hallo wereld!");
-            }
+            //if (!Input.IsKeyHeld(Key.L))
+            //{
+            //    Onion.Layout.Position(0, 256);
+            //    Onion.Layout.Size(200, 100);
+            //    if (Input.IsKeyHeld(Key.S))
+            //        Onion.Layout.SelfLayout.Enqueue(new FitContainer(1, null));
+            //    Walgelijk.Onion.Controls.Button.Click("Hallo wereld!");
+            //}
 
-            Onion.Tree.Start(75, null);
-            Onion.Tree.End();
+            //Onion.Tree.Start(75, null);
+            //Onion.Tree.End();
 
-            Onion.Tree.Start(535, null);
-            Onion.Tree.End();
+            //Onion.Tree.Start(535, null);
+            //Onion.Tree.End();
 
-            Onion.Tree.Start(42, null);
-            Onion.Tree.End();
+            //Onion.Tree.Start(42, null);
+            //Onion.Tree.End();
         }
 
         public override void Render()

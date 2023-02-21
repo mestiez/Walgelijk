@@ -1,4 +1,7 @@
-﻿namespace Walgelijk.Onion;
+﻿using System.Numerics;
+using Walgelijk.SimpleDrawing;
+
+namespace Walgelijk.Onion;
 
 public class Navigator
 {
@@ -14,6 +17,8 @@ public class Navigator
     public void Process(in InputState input)
     {
         RefreshOrder();
+        var hit = Raycast(input.WindowMousePosition.X, input.WindowMousePosition.Y);
+        HotControl = hit;
     }
 
     public void ComputeGlobalOrder()
@@ -51,7 +56,7 @@ public class Navigator
             Array.Resize(ref sortedByDepth, Onion.Tree.Nodes.Count);
 
         int i = 0;
-        foreach (var item in Onion.Tree.Nodes)
+        foreach (var item in Onion.Tree.Nodes.Values)
             sortedByDepth[i++] = new SortedNode(item.Identity, item.ComputedGlobalOrder);
 
         Array.Sort(sortedByDepth, static (a, b) => a.Order - b.Order);
@@ -59,6 +64,26 @@ public class Navigator
 
     public int? Raycast(float x, float y)
     {
+        if (sortedByDepth == null)
+            return null;
+
+        var v = new Vector2(x, y);
+
+        for (int i = sortedByDepth.Length - 1; i >= 0; i--)
+        {
+            var c = sortedByDepth[i];
+            var node = Onion.Tree.Nodes[c.Identity];
+            if (!node.AliveLastFrame)
+                continue;
+
+            var inst = Onion.Tree.EnsureInstance(c.Identity);
+            if (inst.Rects.Raycast.HasValue)
+            {
+                if (inst.Rects.Raycast.Value.ContainsPoint(v))
+                    return c.Identity;
+            }
+        }
+
         return null;
     }
 

@@ -23,8 +23,8 @@ public class Node
     public int RequestedLocalOrder;
 
     public int ChronologicalPosition;
-    public bool Alive = false;
-    public bool AliveLastFrame = false;
+    public bool Alive;
+    public bool AliveLastFrame;
     public float SecondsAlive;
     public float SecondsDead;
     /// <summary>
@@ -57,7 +57,7 @@ public class Node
         Behaviour = behaviour;
 
         Name = Identity == 0 ?
-            "ROOT" : 
+            "ROOT" :
             Identity + $"[{(Behaviour == null ? "Dummy" : Behaviour.GetType().Name)}]";
     }
 

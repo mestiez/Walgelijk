@@ -1,14 +1,15 @@
 ﻿using Walgelijk.Onion.Controls;
+using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion;
 
 public class ControlTree
 {
     public readonly Node Root = new(0, null, null);
-    public readonly Dictionary<int, ControlInstance> InstanceDictionary = new();
-    public readonly HashSet<Node> Nodes = new();
+    public readonly Dictionary<int, ControlInstance> Instances = new();
+    public readonly Dictionary<int, Node> Nodes = new();
 
-    public Node? CurrentParent;
+    public Node? CurrentNode;
 
     private int incrementor;
     private readonly Queue<Node> toDelete = new();
@@ -16,21 +17,21 @@ public class ControlTree
     public ControlInstance CreateInstance(int id)
     {
         var instance = new ControlInstance(id);
-        if (!InstanceDictionary.TryAdd(id, instance))
+        if (!Instances.TryAdd(id, instance))
             throw new Exception("ID was already registered");
         return instance;
     }
 
     public ControlInstance GetControlInstance(int identity)
     {
-        if (InstanceDictionary.TryGetValue(identity, out var result))
+        if (Instances.TryGetValue(identity, out var result))
             return result;
         throw new Exception("There is no control instance with id " + identity);
     }
 
     public ControlInstance EnsureInstance(int id)
     {
-        if (InstanceDictionary.TryGetValue(id, out var instance))
+        if (Instances.TryGetValue(id, out var instance))
             return instance;
         return CreateInstance(id);
     }
@@ -38,26 +39,18 @@ public class ControlTree
     public (ControlInstance Instance, Node node) Start(int id, IControl? behaviour)
     {
         var inst = EnsureInstance(id);
-        Node node;
-        if (CurrentParent != null)
-        {
-            if (CurrentParent.Children.TryGetValue(id, out var n))
-            {
-                node = n;
-                CurrentParent = node;
-            }
-            else
-            {
-                node = new Node(id, CurrentParent, behaviour);
-                CurrentParent.Children.Add(id, node);
-                CurrentParent = node;
-                behaviour?.OnAdd(new ControlParams(this, Onion.Layout, Game.Main.State, node, inst));
-                Nodes.Add(node);
-            }
-        }
-        else
-            CurrentParent = node = Root;
 
+        if (!Nodes.TryGetValue(id, out var node))
+        {
+            node = new Node(id, CurrentNode, behaviour);
+            Nodes.Add(id, node);
+            behaviour?.OnAdd(new ControlParams(this, Onion.Layout, Game.Main.State, node, inst));
+        }
+        VOOR DE EEN OF ANDERE REDEN IS DIE ALIVE RANDOM FALSE EN WEET IK VEEL ZOEK HET UIT
+        // attempt to add just in case it came back alive
+        CurrentNode?.Children.TryAdd(id, node);
+
+        CurrentNode = node;
         var p = new ControlParams(this, Onion.Layout, Game.Main.State, node, inst);
 
         node.SetLayout(Onion.Layout.SelfLayout, Onion.Layout.ChildrenLayout);
@@ -68,37 +61,28 @@ public class ControlTree
         node.Behaviour?.OnStart(p);
 
         Onion.Layout.Reset();
+
         return (inst, node);
     }
 
     public void End()
     {
-        if (CurrentParent == null)
+        if (CurrentNode == null)
             return;
 
-        CurrentParent.Behaviour?.OnEnd(
-            new ControlParams(this, Onion.Layout, Game.Main.State, CurrentParent, EnsureInstance(CurrentParent.Identity))
+        CurrentNode.Behaviour?.OnEnd(
+            new ControlParams(this, Onion.Layout, Game.Main.State, CurrentNode, EnsureInstance(CurrentNode.Identity))
             );
 
-        CurrentParent = CurrentParent.Parent;
+        CurrentNode = CurrentNode.Parent;
     }
 
     public void Process(float dt)
     {
         foreach (var item in Nodes)
-            if (!item.Alive)
-                toDelete.Enqueue(item);
-
-        while (toDelete.TryDequeue(out var n))
         {
-            n.AliveLastFrame = false;
-            // Nodes.Remove(n);
-        }
-
-        foreach (var item in Nodes)
-        {
-            item.AliveLastFrame = item.Alive;
-            item.Alive = false;
+            item.Value.AliveLastFrame = item.Value.Alive;
+            item.Value.Alive = false;
         }
 
         Root.RefreshChildrenList(this, dt);
@@ -108,6 +92,8 @@ public class ControlTree
 
     public void Render()
     {
+        Draw.Reset();
+        Draw.ScreenSpace = true;
         Root.Render(new ControlParams(this, Onion.Layout, Game.Main.State, Root, EnsureInstance(Root.Identity)));
     }
 }

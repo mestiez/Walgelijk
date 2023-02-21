@@ -29,6 +29,7 @@ public struct Button : IControl
 
     public void OnProcess(in ControlParams p)
     {
+        p.Instance.Rects.Raycast = p.Instance.Rects.Rendered;
     }
 
     public void OnRender(in ControlParams p)
@@ -41,7 +42,19 @@ public struct Button : IControl
         instance.Rects.Rendered = instance.Rects.Target.Scale(Utilities.Lerp(animation, 1, 0.6f));
         //instance.Rects.Rendered = Utilities.SmoothApproach(instance.Rects.Rendered, instance.Rects.Rendered, instance.Rects.Target.Scale(Utilities.Lerp(animation, 1, 0.6f)), 25, p.GameState.Time.DeltaTime);
 
-        Draw.Colour = Colors.Red.WithAlpha(animation * animation * animation);
+        switch (instance.State)
+        {
+            case ControlState.None:
+                Draw.Colour = Colors.Red;
+                break;
+            case ControlState.Hot:
+                Draw.Colour = Colors.Red.Brightness(0.2f);
+                break;
+            case ControlState.Active:
+                Draw.Colour = Colors.Red.Brightness(0.8f);
+                break;
+        }
+        Draw.Colour.A = (animation * animation * animation);
         Draw.Quad(instance.Rects.Rendered);
     }
 
