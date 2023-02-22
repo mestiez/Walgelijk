@@ -34,14 +34,12 @@ public class Navigator
     {
         RefreshOrder();
 
-        var hover = Raycast(input.WindowMousePosition.X, input.WindowMousePosition.Y, CaptureFlags.Cursor);
-        HoverControl = hover;
+        HoverControl = Raycast(input.WindowMousePosition.X, input.WindowMousePosition.Y, CaptureFlags.Cursor);
 
         if (MathF.Abs(input.MouseScrollDelta) > float.Epsilon)
-        {
-            var scroll = Raycast(input.WindowMousePosition, CaptureFlags.Scroll);
-            if (scroll.HasValue && /*succes met dit sukkel*/)
-        }
+            ScrollControl = Raycast(input.WindowMousePosition, CaptureFlags.Scroll);
+        else
+            ScrollControl = null;
     }
 
     public void ComputeGlobalOrder()
