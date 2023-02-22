@@ -1,17 +1,26 @@
 ﻿namespace Walgelijk.Onion;
 
-public enum ControlState
+[Flags]
+public enum ControlState : byte
 {
     /// <summary>
     /// Inactive state (idle)
     /// </summary>
-    None,
+    None = 0,
     /// <summary>
-    /// The user is probably about to interact with this control
+    /// The cursor is hovering over this control. <see cref="Navigator.HoverControl"/>
     /// </summary>
-    Hot,
+    Hover = 1,
     /// <summary>
-    /// The user is currently interacting with this control
+    /// The user is scrolling over this control. <see cref="Navigator.ScrollControl"/>
     /// </summary>
-    Active,
+    Scroll = 2,   
+    /// <summary>
+    /// This control is selected. <see cref="Navigator.FocusedControl"/>
+    /// </summary>
+    Focus = 4,    
+    /// <summary>
+    /// The user is actively interacting with this control. <see cref="Navigator.ActiveControl"/>
+    /// </summary>
+    Active = 8,
 }

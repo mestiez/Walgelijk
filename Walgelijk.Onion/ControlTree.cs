@@ -9,6 +9,8 @@ public class ControlTree
     public readonly Dictionary<int, ControlInstance> Instances = new();
     public readonly Dictionary<int, Node> Nodes = new();
 
+    public readonly Stack<Rect> DrawboundStack = new();
+
     /// <summary>
     /// Amount of seconds that expired nodes will be kept in cache for
     /// </summary>

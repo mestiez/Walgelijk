@@ -1,4 +1,6 @@
-﻿namespace Walgelijk.Onion;
+﻿using System.Numerics;
+
+namespace Walgelijk.Onion;
 
 /// <summary>
 /// A control instance. Instances represent each instance of the controls that exist in the tree.
@@ -13,6 +15,11 @@ public class ControlInstance
     /// The active rectangles that define the areas on the screen that represent this control for different purposes.
     /// </summary>
     public ControlRects Rects;
+
+    /// <summary>
+    /// The offset of every child as adjusted by scrolling
+    /// </summary>
+    public Vector2 InnerScrollOffset;
 
     /// <summary>
     /// Amount of seconds that this control will exist for even when no longer being called 
@@ -37,13 +44,21 @@ public class ControlInstance
     {
         get
         {
+            var state = ControlState.None;
+
             if (Onion.Navigator.HoverControl == Identity)
-                return ControlState.Hot;
+                state |= ControlState.Hover;
+
+            if (Onion.Navigator.ScrollControl== Identity)
+                state |= ControlState.Scroll;
+
+            if (Onion.Navigator.FocusedControl == Identity)
+                state |= ControlState.Focus;
 
             if (Onion.Navigator.ActiveControl == Identity)
-                return ControlState.Active;
+                state |= ControlState.Active;
 
-            return ControlState.None;
+            return state;
         }
     }
 

@@ -22,8 +22,17 @@ public struct ControlRects
     /// <summary>
     /// This rectangle determines the area in which it and its children can be drawn. 
     /// Note that this may not represent the final bounding box because it will might be cutoff by its parent bounding box.
+    /// See <see cref="ComputedDrawBounds"/> for the final draw bounds.
+    /// <br></br>
+    /// If this is null it will fall back to the parent drawbounds, effectively having no influence on the drawbound chain.
     /// </summary>
-    public Rect DrawBounds;
+    public Rect? DrawBounds;
+
+    /// <summary>
+    /// The draw bounds that should be considered when drawing the control. It is derived from <see cref="DrawBounds"/> and the bounds of all its parents.
+    /// It is never larger than <see cref="DrawBounds"/>.
+    /// </summary>
+    public Rect ComputedDrawBounds;
 
     /// <summary>
     /// The final rectangle that represents the rendered area of this control on the window.

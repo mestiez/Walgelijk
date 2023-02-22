@@ -4107,6 +4107,11 @@
             This will return a copy of this rectangle scaled in each direction by the given value ranging, 1 meaning 100%
             </summary>
         </member>
+        <member name="M:Walgelijk.Rect.Intersect(Walgelijk.Rect)">
+            <summary>
+            Return the rectangle that represents the intersection between this rectangle and the given rectangle
+            </summary>
+        </member>
         <member name="T:Walgelijk.SDF">
             <summary>
             Utility struct full of SDF functions

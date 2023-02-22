@@ -13,12 +13,12 @@ public class Navigator
     public int? HoverControl;
 
     /// <summary>
-    /// Control currently capturing the scroll wheel
+    /// Control currently capturing the scroll wheel (scroll view, sliders, dropdowns, etc.)
     /// </summary>
     public int? ScrollControl;
 
     /// <summary>
-    /// Control that is currently selected
+    /// Control that is currently selected (textboxes, dropdowns, sliders, etc.)
     /// </summary>
     public int? FocusedControl;
 
@@ -30,14 +30,14 @@ public class Navigator
     private readonly Stack<int> orderStack = new();
     private SortedNode[]? sortedByDepth = null;
 
-    public void Process(in InputState input)
+    public void Process(Input input)
     {
         RefreshOrder();
 
-        HoverControl = Raycast(input.WindowMousePosition.X, input.WindowMousePosition.Y, CaptureFlags.Cursor);
+        HoverControl = Raycast(input.MousePosition.X, input.MousePosition.Y, CaptureFlags.Cursor);
 
-        if (MathF.Abs(input.MouseScrollDelta) > float.Epsilon)
-            ScrollControl = Raycast(input.WindowMousePosition, CaptureFlags.Scroll);
+        if (input.ScrollDelta.LengthSquared() > float.Epsilon)
+            ScrollControl = Raycast(input.MousePosition, CaptureFlags.Scroll);
         else
             ScrollControl = null;
     }

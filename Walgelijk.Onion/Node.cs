@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using Microsoft.VisualBasic;
+using System.Buffers;
 using Walgelijk.Onion.Controls;
 using Walgelijk.Onion.Layout;
 using Walgelijk.SimpleDrawing;
@@ -67,13 +68,39 @@ public class Node
             Identity + $"[{(Behaviour == null ? "Dummy" : Behaviour.GetType().Name)}]";
     }
 
+    public Rect GetFinalDrawBounds(ControlTree tree)
+    {
+        var rects = tree.EnsureInstance(Identity).Rects;
+        Rect previous;
+        if (rects.DrawBounds.HasValue)
+        {
+            if (tree.DrawboundStack.TryPeek(out previous)) // i have a parent with drawbounds!!
+                return rects.DrawBounds.Value.Intersect(previous);
+            return rects.DrawBounds.Value;
+        }
+
+        if (tree.DrawboundStack.TryPeek(out previous)) // i have no drawbounds assigned so I shouldnt affect the chain
+            return previous;
+        var size = Game.Main.Window.Size;
+        return new Rect(0, 0, size.X, size.Y); //i have no parent so my drawbounds should be as big as the window
+        //TODO this is fucked up
+    }
+
     public void Render(in ControlParams p)
     {
-        Draw.Order = new RenderOrder(Onion.RenderLayer, p.Node.ComputedGlobalOrder);
+        var drawBounds = GetFinalDrawBounds(p.ControlTree);
+        p.ControlTree.DrawboundStack.Push(drawBounds);
+
+        Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, p.Node.ComputedGlobalOrder);
+        Draw.DrawBounds = new DrawBounds(drawBounds.GetSize(), drawBounds.BottomLeft, true);
+        p.Instance.Rects.ComputedDrawBounds = drawBounds;
+
         Behaviour?.OnRender(p);
         foreach (var child in GetChildren())
             child.Render(
                 new ControlParams(p.ControlTree, p.Layout, p.GameState, child, p.ControlTree.EnsureInstance(child.Identity)));
+
+        p.ControlTree.DrawboundStack.Pop();
     }
 
     public void Process(in ControlParams p)

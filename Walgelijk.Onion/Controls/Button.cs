@@ -28,7 +28,12 @@ public struct Button : IControl
 
     public void OnProcess(in ControlParams p)
     {
+        p.Instance.CaptureFlags = CaptureFlags.All;
         p.Instance.Rects.Raycast = p.Instance.Rects.Rendered;
+   //     p.Instance.Rects.DrawBounds = p.Instance.Rects.Rendered;
+
+        if (p.Instance.State.HasFlag(ControlState.Scroll))
+            p.Instance.InnerScrollOffset += Onion.Input.ScrollDelta;
     }
 
     public void OnRender(in ControlParams p)
@@ -46,7 +51,7 @@ public struct Button : IControl
             case ControlState.None:
                 Draw.Colour = Colors.Red;
                 break;
-            case ControlState.Hot:
+            case ControlState.Hover or ControlState.Scroll or (ControlState.Hover | ControlState.Scroll):
                 Draw.Colour = Colors.Red.Brightness(0.2f);
                 break;
             case ControlState.Active:
@@ -54,7 +59,8 @@ public struct Button : IControl
                 break;
         }
         Draw.Colour.A = (animation * animation * animation);
-        Draw.Quad(instance.Rects.Rendered);
+        var r = instance.Rects.Rendered.Translate(instance.InnerScrollOffset);
+        Draw.Quad(r);
     }
 
     public void OnEnd(in ControlParams p)

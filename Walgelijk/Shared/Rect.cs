@@ -220,4 +220,26 @@ public struct Rect
     {
         return new Rect(GetCenter(), GetSize() * scale);
     }
+
+
+    /// <summary>
+    /// Return the rectangle that represents the intersection between this rectangle and the given rectangle
+    /// </summary>
+    public readonly Rect Intersect(Rect other)
+    {
+        float minx = MathF.Max(MinX, other.MinX);
+        float maxx = MathF.Min(MaxX, other.MaxX);
+
+        float miny = MathF.Max(MinY, other.MinY);
+        float maxy = MathF.Min(MaxY, other.MaxY);
+
+        if (minx > maxx)
+            maxx = minx;
+
+        if (miny > maxy)
+            maxy = miny;
+
+        var r = new Rect(minx, miny, maxx, maxy);
+        return r;
+    }
 }
