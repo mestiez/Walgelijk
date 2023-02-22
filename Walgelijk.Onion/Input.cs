@@ -20,8 +20,6 @@ public class Input
         else
             rawScrollDelta.Y += state.MouseScrollDelta;
 
-        Config.SmoothScroll = 1f;
-
         if (Config.SmoothScroll > float.Epsilon)
         {
             float speed = 24 / Config.SmoothScroll;

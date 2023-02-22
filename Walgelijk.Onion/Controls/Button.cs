@@ -28,12 +28,17 @@ public struct Button : IControl
 
     public void OnProcess(in ControlParams p)
     {
-        p.Instance.CaptureFlags = CaptureFlags.All;
+        p.Instance.CaptureFlags = CaptureFlags.Hover;
         p.Instance.Rects.Raycast = p.Instance.Rects.Rendered;
-   //     p.Instance.Rects.DrawBounds = p.Instance.Rects.Rendered;
+        p.Instance.Rects.DrawBounds = p.Instance.Rects.Rendered;
 
-        if (p.Instance.State.HasFlag(ControlState.Scroll))
-            p.Instance.InnerScrollOffset += Onion.Input.ScrollDelta;
+        this.ConsiderParentScroll();
+
+        //TODO misschien moet hier een utility voor zijn of moet het automatisch gebeuren ofzo... weet ik het
+
+        //if (p.Instance.State.HasFlag(ControlState.Scroll))
+        //    p.Instance.InnerScrollOffset += Onion.Input.ScrollDelta; 
+        //TODO dit moet ergens anders... 
     }
 
     public void OnRender(in ControlParams p)
@@ -44,14 +49,13 @@ public struct Button : IControl
         animation = Easings.Cubic.InOut(animation);
 
         instance.Rects.Rendered = instance.Rects.Target.Scale(Utilities.Lerp(animation, 1, 0.6f));
-        //instance.Rects.Rendered = Utilities.SmoothApproach(instance.Rects.Rendered, instance.Rects.Rendered, instance.Rects.Target.Scale(Utilities.Lerp(animation, 1, 0.6f)), 25, p.GameState.Time.DeltaTime);
 
         switch (instance.State)
         {
             case ControlState.None:
                 Draw.Colour = Colors.Red;
                 break;
-            case ControlState.Hover or ControlState.Scroll or (ControlState.Hover | ControlState.Scroll):
+            case ControlState.Hover or ControlState.Scroll or (ControlState.Hover | ControlState.Scroll): //TODO dit moet makkelijker kunnen
                 Draw.Colour = Colors.Red.Brightness(0.2f);
                 break;
             case ControlState.Active:

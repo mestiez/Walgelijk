@@ -36,9 +36,9 @@ public class ControlInstance
 
     /// <summary>
     /// Determines what events this control is capable of capturing. 
-    /// Normally set to just <see cref="CaptureFlags.Cursor"/>, it will only capture hover events.
+    /// Normally set to just <see cref="CaptureFlags.Hover"/>, it will only capture hover events.
     /// </summary>
-    public CaptureFlags CaptureFlags = CaptureFlags.Cursor;
+    public CaptureFlags CaptureFlags = CaptureFlags.Hover;
 
     public ControlState State
     {
@@ -79,7 +79,7 @@ public enum CaptureFlags : byte
     /// <summary>
     /// Will capture hover events
     /// </summary>
-    Cursor = 0b001,
+    Hover = 0b001,
     /// <summary>
     /// Will capture scroll events
     /// </summary>

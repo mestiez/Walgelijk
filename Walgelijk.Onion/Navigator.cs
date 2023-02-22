@@ -34,7 +34,7 @@ public class Navigator
     {
         RefreshOrder();
 
-        HoverControl = Raycast(input.MousePosition.X, input.MousePosition.Y, CaptureFlags.Cursor);
+        HoverControl = Raycast(input.MousePosition.X, input.MousePosition.Y, CaptureFlags.Hover);
 
         if (input.ScrollDelta.LengthSquared() > float.Epsilon)
             ScrollControl = Raycast(input.MousePosition, CaptureFlags.Scroll);
