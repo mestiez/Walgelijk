@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using Walgelijk.Onion.Layout;
+﻿using Walgelijk.Onion.Layout;
 
 namespace Walgelijk.Onion;
 
@@ -28,43 +27,4 @@ public static class Onion
      *      tab: cycle through all controls chronologically
      *      arrows: move from control to control based on position in space
     */
-}
-
-public class Input
-{
-    public Vector2 ScrollDelta;
-    public Vector2 MousePosition;
-
-    private Vector2 rawScrollDelta;
-    private Configuration Config => Onion.Configuration;
-
-    public void Update(in InputState state, float dt)
-    {
-        MousePosition = state.WindowMousePosition;
-
-        rawScrollDelta = Vector2.Zero;
-        if (state.IsKeyHeld(Config.ScrollHorizontal))
-            rawScrollDelta.X -= state.MouseScrollDelta;
-        else
-            rawScrollDelta.Y += state.MouseScrollDelta;
-
-        Config.SmoothScroll = 1;
-
-        if (Config.SmoothScroll > float.Epsilon)
-        {
-            float speed = 24 / Config.SmoothScroll;
-            ScrollDelta += rawScrollDelta / Config.SmoothScroll;
-            ScrollDelta = Utilities.SmoothApproach(ScrollDelta, Vector2.Zero, speed, dt);
-        }
-        else
-            ScrollDelta = rawScrollDelta * Config.ScrollSensitivity;
-    }
-}
-
-public class Configuration
-{
-    public int RenderLayer = RenderOrder.UI.Layer;
-    public float ScrollSensitivity = 24;
-    public Key ScrollHorizontal = Key.LeftShift;
-    public float SmoothScroll = 1;
 }
