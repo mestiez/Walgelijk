@@ -20,7 +20,13 @@ public readonly struct PositionLayout : IConstraint
     public void Apply(in ControlParams p)
     {
         // TODO hij moet heel de control meebewegen want nu rekt hij het gewoon uit, niet goed
-        p.Instance.Rects.Intermediate.MinX = Position.X;
-        p.Instance.Rects.Intermediate.MinY = Position.Y;
+        var offsetX = Position.X + p.Instance.Rects.Intermediate.MinX;
+        var offsetY = Position.Y + p.Instance.Rects.Intermediate.MinY;
+
+        p.Instance.Rects.Intermediate.MinX += offsetX;
+        p.Instance.Rects.Intermediate.MinY += offsetY;
+
+        p.Instance.Rects.Intermediate.MaxX += offsetX;
+        p.Instance.Rects.Intermediate.MaxY += offsetY;
     }
 }

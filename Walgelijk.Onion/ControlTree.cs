@@ -59,6 +59,8 @@ public class ControlTree
             node.Alive = true;
             Nodes.Add(id, node);
             behaviour?.OnAdd(new ControlParams(node, inst));
+            if (CurrentNode != null)
+                node.SiblingIndex = CurrentNode.Children.Count;
         }
 
         if (node.Behaviour is not T)
@@ -79,6 +81,10 @@ public class ControlTree
 
         node.Behaviour.OnStart(p);
         inst.Rects.Intermediate = inst.Rects.Local;
+
+        if (node.Parent != null && node.Parent.ChildrenLayout != null)
+            foreach (var layout in node.Parent.ChildrenLayout)
+                layout.Apply(new ControlParams(node.Parent, EnsureInstance(node.Parent.Identity)), node.SiblingIndex, id);
 
         node.SetLayout(Onion.Layout.Constraints, Onion.Layout.Layouts);
         Onion.Layout.Apply(p);

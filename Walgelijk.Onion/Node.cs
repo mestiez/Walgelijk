@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.Numerics;
+using System.Xml.Linq;
 using Walgelijk.Onion.Controls;
 using Walgelijk.Onion.Layout;
 using Walgelijk.SimpleDrawing;
@@ -30,6 +31,7 @@ public class Node
     public int RequestedLocalOrder;
 
     public int ChronologicalPosition;
+    public int SiblingIndex;
     public bool Alive;
     public bool AliveLastFrame;
     public float SecondsAlive;
@@ -192,6 +194,7 @@ public class Node
         // remove dead children from the child list
         var toDelete = ArrayPool<int>.Shared.Rent(Children.Count);
         var length = 0;
+        int siblingIndex = 0;
         foreach (var item in GetChildren())
         {
             var childInst = tree.EnsureInstance(item.Identity);
@@ -201,8 +204,11 @@ public class Node
                     toDelete[length++] = item.Identity;
             }
             else
+            {
                 //living child should count towards child content rect
                 inst.Rects.ChildContent = inst.Rects.ChildContent.StretchToContain(childInst.Rects.Intermediate);
+                item.SiblingIndex = siblingIndex++;
+            }
         }
         for (int i = 0; i < length; i++)
             Children.Remove(toDelete[i]);

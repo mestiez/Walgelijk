@@ -4,5 +4,5 @@ namespace Walgelijk.Onion.Layout;
 
 public interface ILayout
 {
-    public void Apply(in ControlParams p, int index);
+    public void Apply(in ControlParams p, int index, int childId);
 }

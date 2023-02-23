@@ -25,7 +25,7 @@ public struct IMGUIScene : ISceneCreator
             OrthographicSize = 1,
             ClearColour = new Color("#272830")
         });
-        game.UpdateRate = 120;
+        game.UpdateRate = 60;
         return scene;
     }
 
@@ -81,11 +81,13 @@ public struct IMGUIScene : ISceneCreator
             {
                 Onion.Layout.Size(128, Window.Height / 2);
                 Onion.Layout.Position(Window.Width / 2, 64);
+                Onion.Layout.HorizontalLayout();
+
                 Onion.Tree.Start(75, new ScrollView());
                 for (int i = 0; i < 12; i++)
                 {
-                    Onion.Layout.Position(0, i * (32 + 8));
-                    Onion.Layout.Size(128, 32);
+                    Onion.Layout.Size(0, 32);
+                    Onion.Layout.FitContainer(1, null);
                     if (Walgelijk.Onion.Controls.Button.Click("Ik besta ook", i))
                         Audio.PlayOnce(Sound.Beep);
                 }
