@@ -150,6 +150,11 @@ public class Node
 
             var remainingSpaceAbove = MathF.Max(newLocal.MinY - rects.ChildContent.MinY, 0);
             var remainingSpaceBelow = MathF.Max(rects.ChildContent.MaxY - newLocal.MaxY, 0);
+
+            // TODO elastic clamping?
+            //if (p.Instance.InnerScrollOffset.Y > remainingSpaceAbove)
+            //    p.Instance.InnerScrollOffset.Y = Utilities.SmoothApproach(p.Instance.InnerScrollOffset.Y, remainingSpaceAbove, 16, p.GameState.Time.DeltaTime);
+
             p.Instance.InnerScrollOffset.Y = MathF.Min(p.Instance.InnerScrollOffset.Y, remainingSpaceAbove);
             p.Instance.InnerScrollOffset.Y = MathF.Max(p.Instance.InnerScrollOffset.Y, -remainingSpaceBelow);
         }

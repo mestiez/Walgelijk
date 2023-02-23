@@ -41,11 +41,11 @@ public struct IMGUIScene : ISceneCreator
             //if (Gui.ClickButton("Hello World", new Vector2(32), new Vector2(128, 32), HorizontalTextAlign.Center, VerticalTextAlign.Middle))
             //  Audio.PlayOnce(Sound.Beep);
 
-            //{
-            //    Onion.Layout.Position(8, 8);
-            //    Onion.Layout.Size(128, 32);
-            //    Walgelijk.Onion.Controls.Button.Click("Hallo wereld!");
-            //}
+            {
+                Onion.Layout.Position(8, 8);
+                Onion.Layout.Size(128, 32);
+                Walgelijk.Onion.Controls.Button.Click("Hallo wereld!");
+            }
 
             ////Onion.Tree.Start(23);
             ////Onion.Tree.Start(5);
@@ -77,10 +77,10 @@ public struct IMGUIScene : ISceneCreator
             //}
             //Onion.Tree.End();
 
-            Onion.Layout.Size(128, Window.Height);
-            Onion.Layout.Position(Window.Width / 2, 8);
+            Onion.Layout.Position(Window.Width / 2, 64);
+            Onion.Layout.Size(128, Window.Height / 2);
             Onion.Tree.Start(75, new ScrollView());
-            for (int i = 0; i < 32; i++)
+            for (int i = 0; i < 12; i++)
             {
                 Onion.Layout.Position(0, i * (32 + 8));
                 Onion.Layout.Size(128, 32);

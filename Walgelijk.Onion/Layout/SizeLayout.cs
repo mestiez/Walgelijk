@@ -20,6 +20,6 @@ public readonly struct SizeLayout : IConstraint
     public void Apply(in ControlParams p)
     {
         p.Instance.Rects.Intermediate.MaxX = p.Instance.Rects.Intermediate.MinX + Size.X;
-        p.Instance.Rects.Intermediate.MinY = p.Instance.Rects.Intermediate.MaxY + Size.Y;
+        p.Instance.Rects.Intermediate.MaxY = p.Instance.Rects.Intermediate.MinY + Size.Y;
     }
 }
