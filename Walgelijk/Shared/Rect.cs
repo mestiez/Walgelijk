@@ -181,6 +181,12 @@ public struct Rect
         point.X > MinX - expand && point.X < MaxX + expand && point.Y > MinY - expand && point.Y < MaxY + expand;
 
     /// <summary>
+    /// Does the rectangle contain the given rectangle? Note that if the given rectangle is identical to the instance, this function will return true
+    /// </summary>
+    public readonly bool ContainsRect(Rect other) => 
+        other.MinX >= MinX && other.MaxX <= MaxX && other.MinY >= MinY && other.MaxY <= MaxY;
+
+    /// <summary>
     /// Does the rectangle overlap with the given rectangle?
     /// </summary>
     public readonly bool IntersectsRectangle(Rect b) => !(MaxX < b.MinX || MinX > b.MaxX || MinY > b.MaxY || MaxY < b.MinY);

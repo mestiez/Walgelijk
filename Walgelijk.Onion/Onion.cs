@@ -4,7 +4,7 @@ namespace Walgelijk.Onion;
 
 public static class Onion
 {
-    public static readonly LayoutState Layout = new();
+    public static readonly Layout.Layout Layout = new();
     public static readonly ControlTree Tree = new();
     public static readonly Navigator Navigator = new();
     public static readonly Input Input = new();
@@ -12,6 +12,7 @@ public static class Onion
 
     /*TODO 
      * ClearEverything();
+     * Windows!! draggables
      * style
      *      style moet textures meer supporten, niet alleen kleuren 
      *      misschien zelfs iets anders dan quads

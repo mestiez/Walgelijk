@@ -4082,6 +4082,11 @@
             Does the rectangle, optionally expanded, contain the given point?
             </summary>
         </member>
+        <member name="M:Walgelijk.Rect.ContainsRect(Walgelijk.Rect)">
+            <summary>
+            Does the rectangle contain the given rectangle? Note that if the given rectangle is identical to the instance, this function will return true
+            </summary>
+        </member>
         <member name="M:Walgelijk.Rect.IntersectsRectangle(Walgelijk.Rect)">
             <summary>
             Does the rectangle overlap with the given rectangle?

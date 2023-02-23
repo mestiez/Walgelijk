@@ -7,12 +7,20 @@ public class Input
     public Vector2 ScrollDelta;
     public Vector2 MousePosition;
 
+    public bool MousePrimaryPressed;
+    public bool MousePrimaryHeld;
+    public bool MousePrimaryRelease;
+
     private Vector2 rawScrollDelta;
     private Configuration Config => Onion.Configuration;
 
     public void Update(in InputState state, float dt)
     {
         MousePosition = state.WindowMousePosition;
+
+        MousePrimaryPressed = state.IsButtonPressed(Button.Left);
+        MousePrimaryHeld = state.IsButtonHeld(Button.Left);
+        MousePrimaryRelease = state.IsButtonReleased(Button.Left);
 
         rawScrollDelta = Vector2.Zero;
         if (state.IsKeyHeld(Config.ScrollHorizontal))

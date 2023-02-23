@@ -13,11 +13,3 @@ public interface IControl
 
     public void OnRemove(in ControlParams p);
 }
-
-public static class IControlExtensions
-{
-    public static void ConsiderParentScroll(this IControl c)
-    {
-        TODO!!
-    }
-}

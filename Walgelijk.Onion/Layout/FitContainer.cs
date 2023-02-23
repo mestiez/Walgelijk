@@ -2,7 +2,7 @@
 
 namespace Walgelijk.Onion.Layout;
 
-public readonly struct FitContainer : ILayout
+public readonly struct FitContainer : IConstraint
 {
     public readonly float? WidthRatio = 1;
     public readonly float? HeightRatio = 1;
@@ -13,16 +13,16 @@ public readonly struct FitContainer : ILayout
         HeightRatio = heightRatio;
     }
 
-    void ILayout.CalculateEither(in ControlParams p)
+    public void Apply(in ControlParams p)
     {
         if (p.Node.Parent == null)
             return;
 
-        var parent = p.ControlTree.EnsureInstance(p.Node.Parent.Identity);
+        var parent = p.Tree.EnsureInstance(p.Node.Parent.Identity);
 
         if (WidthRatio.HasValue)
-            p.Instance.Rects.Target.Width = WidthRatio.Value * parent.Rects.Target.Width;
+            p.Instance.Rects.Intermediate.Width = WidthRatio.Value * parent.Rects.Intermediate.Width;
         if (HeightRatio.HasValue)
-            p.Instance.Rects.Target.Height = HeightRatio.Value * parent.Rects.Target.Height;
+            p.Instance.Rects.Intermediate.Height = HeightRatio.Value * parent.Rects.Intermediate.Height;
     }
 }
