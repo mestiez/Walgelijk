@@ -126,7 +126,7 @@ public class Node
             p.Instance.Rects.ComputedGlobal = p.Instance.Rects.ComputedGlobal.Translate(parentInst.Rects.ComputedGlobal.BottomLeft);
 
         Behaviour.OnProcess(p);
-        var childContent = p.Instance.Rects.ChildContent;
+        var childContent = p.Instance.Rects.ChildContent;//.Expand(5);
         bool childrenFitInsideParent =
             childContent.MinX >= 0 && childContent.MaxX <= p.Instance.Rects.Intermediate.MaxX &&
             childContent.MinY >= 0 && childContent.MaxY <= p.Instance.Rects.Intermediate.MaxY;
@@ -143,13 +143,13 @@ public class Node
             newLocal.MaxY -= rects.Intermediate.MinY;
             newLocal.MinX = newLocal.MinY = 0;
 
-            var remainingSpaceLeft = MathF.Max(newLocal.MinX - rects.ChildContent.MinX, 0);
-            var remainingSpaceRight = MathF.Max(rects.ChildContent.MaxX - newLocal.MaxX, 0);
+            var remainingSpaceLeft = MathF.Max(newLocal.MinX - childContent.MinX, 0);
+            var remainingSpaceRight = MathF.Max(childContent.MaxX - newLocal.MaxX, 0);
             p.Instance.InnerScrollOffset.X = MathF.Min(p.Instance.InnerScrollOffset.X, remainingSpaceLeft);
             p.Instance.InnerScrollOffset.X = MathF.Max(p.Instance.InnerScrollOffset.X, -remainingSpaceRight);
 
-            var remainingSpaceAbove = MathF.Max(newLocal.MinY - rects.ChildContent.MinY, 0);
-            var remainingSpaceBelow = MathF.Max(rects.ChildContent.MaxY - newLocal.MaxY, 0);
+            var remainingSpaceAbove = MathF.Max(newLocal.MinY - childContent.MinY, 0);
+            var remainingSpaceBelow = MathF.Max(childContent.MaxY - newLocal.MaxY, 0);
 
             // TODO elastic clamping?
             //if (p.Instance.InnerScrollOffset.Y > remainingSpaceAbove)
@@ -182,11 +182,8 @@ public class Node
                     toDelete[length++] = item.Identity;
             }
             else
-            {
                 //living child should count towards child content rect
-                //  Alle controls moeten relative zijn.
                 inst.Rects.ChildContent = inst.Rects.ChildContent.StretchToContain(childInst.Rects.Intermediate);
-            }
         }
         for (int i = 0; i < length; i++)
             Children.Remove(toDelete[i]);
