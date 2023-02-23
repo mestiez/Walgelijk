@@ -126,6 +126,29 @@ public class Node
             p.Instance.Rects.ComputedGlobal = p.Instance.Rects.ComputedGlobal.Translate(parentInst.Rects.ComputedGlobal.BottomLeft);
 
         Behaviour.OnProcess(p);
+
+        AdjustRaycastRect(p);
+        EnforceScrollBounds(p);
+
+        foreach (var child in GetChildren())
+            child.Process(
+                new ControlParams(child, p.Tree.EnsureInstance(child.Identity)));
+    }
+
+    private void AdjustRaycastRect(in ControlParams p)
+    {
+        if (!p.Instance.Rects.Raycast.HasValue)
+            return;
+
+        var newRect = p.Instance.Rects.Raycast.Value.Intersect(p.Instance.Rects.ComputedDrawBounds);
+        if (newRect.Width <= 0 || newRect.Height <= 0)
+            p.Instance.Rects.Raycast = null;
+        else
+            p.Instance.Rects.Raycast = newRect;
+    }
+
+    private static void EnforceScrollBounds(in ControlParams p)
+    {
         var childContent = p.Instance.Rects.ChildContent;//.Expand(5);
         bool childrenFitInsideParent =
             childContent.MinX >= 0 && childContent.MaxX <= p.Instance.Rects.Intermediate.MaxX &&
@@ -158,10 +181,6 @@ public class Node
             p.Instance.InnerScrollOffset.Y = MathF.Min(p.Instance.InnerScrollOffset.Y, remainingSpaceAbove);
             p.Instance.InnerScrollOffset.Y = MathF.Max(p.Instance.InnerScrollOffset.Y, -remainingSpaceBelow);
         }
-
-        foreach (var child in GetChildren())
-            child.Process(
-                new ControlParams(child, p.Tree.EnsureInstance(child.Identity)));
     }
 
     public void RefreshChildrenList(ControlTree tree, float dt)

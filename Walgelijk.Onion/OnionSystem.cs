@@ -77,7 +77,8 @@ public class OnionSystem : Walgelijk.System
             Draw.Colour = Colors.Purple.WithAlpha(0.1f);
             Draw.OutlineColour = Colors.Purple;
             Draw.OutlineWidth = 4;
-            Draw.Quad(inst.Rects.Rendered);
+            if (inst.Rects.Raycast.HasValue)
+            Draw.Quad(inst.Rects.Raycast.Value);
             Draw.OutlineWidth = 0;
 
             offset.X += 32;

@@ -77,17 +77,20 @@ public struct IMGUIScene : ISceneCreator
             //}
             //Onion.Tree.End();
 
-            Onion.Layout.Position(Window.Width / 2, 64);
-            Onion.Layout.Size(128, Window.Height / 2);
-            Onion.Tree.Start(75, new ScrollView());
-            for (int i = 0; i < 12; i++)
+            if (!Input.IsKeyHeld(Key.L))
             {
-                Onion.Layout.Position(0, i * (32 + 8));
-                Onion.Layout.Size(128, 32);
-                if (Walgelijk.Onion.Controls.Button.Click("Ik besta ook", i))
-                    Audio.PlayOnce(Sound.Beep);
+                Onion.Layout.Size(128, Window.Height / 2);
+                Onion.Layout.Position(Window.Width / 2, 64);
+                Onion.Tree.Start(75, new ScrollView());
+                for (int i = 0; i < 12; i++)
+                {
+                    Onion.Layout.Position(0, i * (32 + 8));
+                    Onion.Layout.Size(128, 32);
+                    if (Walgelijk.Onion.Controls.Button.Click("Ik besta ook", i))
+                        Audio.PlayOnce(Sound.Beep);
+                }
+                Onion.Tree.End();
             }
-            Onion.Tree.End();
 
             //Onion.Tree.Start(535);
             //Onion.Tree.End();
