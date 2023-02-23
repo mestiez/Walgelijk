@@ -26,12 +26,3 @@ public readonly struct FitContainer : IConstraint
             p.Instance.Rects.Intermediate.Height = HeightRatio.Value * parent.Rects.Intermediate.Height;
     }
 }
-
-public readonly struct HorizontalLayout : ILayout
-{
-    public void Apply(in ControlParams p, int index, int childId)
-    {
-        var child = p.Tree.EnsureInstance(childId);
-        child.Rects.Intermediate = child.Rects.Intermediate.Translate(0, index * 40);
-    }
-}

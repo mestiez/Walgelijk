@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using Newtonsoft.Json.Bson;
+using System.Buffers;
 using System.Numerics;
 using System.Xml.Linq;
 using Walgelijk.Onion.Controls;
@@ -106,6 +107,16 @@ public class Node
                 new ControlParams(child, p.Tree.EnsureInstance(child.Identity)));
 
         p.Tree.DrawboundStack.Pop();
+    }
+
+    public void ApplyParentLayout(in ControlParams p)
+    {
+        if (Parent != null && Parent.ChildrenLayout != null)
+            foreach (var layout in Parent.ChildrenLayout)
+                layout.Apply(new ControlParams(Parent, p.Tree.EnsureInstance(Parent.Identity)), SiblingIndex, Identity);
+
+        foreach (var child in GetChildren())
+            child.ApplyParentLayout(new ControlParams(child, p.Tree.EnsureInstance(child.Identity)));
     }
 
     public void Process(in ControlParams p)

@@ -25,7 +25,7 @@ public struct IMGUIScene : ISceneCreator
             OrthographicSize = 1,
             ClearColour = new Color("#272830")
         });
-        game.UpdateRate = 60;
+        game.UpdateRate = 1;
         return scene;
     }
 
@@ -81,7 +81,7 @@ public struct IMGUIScene : ISceneCreator
             {
                 Onion.Layout.Size(128, Window.Height / 2);
                 Onion.Layout.Position(Window.Width / 2, 64);
-                Onion.Layout.HorizontalLayout();
+                Onion.Layout.VerticalLayout();
 
                 Onion.Tree.Start(75, new ScrollView());
                 for (int i = 0; i < 12; i++)

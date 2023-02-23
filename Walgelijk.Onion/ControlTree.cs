@@ -82,10 +82,6 @@ public class ControlTree
         node.Behaviour.OnStart(p);
         inst.Rects.Intermediate = inst.Rects.Local;
 
-        if (node.Parent != null && node.Parent.ChildrenLayout != null)
-            foreach (var layout in node.Parent.ChildrenLayout)
-                layout.Apply(new ControlParams(node.Parent, EnsureInstance(node.Parent.Identity)), node.SiblingIndex, id);
-
         node.SetLayout(Onion.Layout.Constraints, Onion.Layout.Layouts);
         Onion.Layout.Apply(p);
         Onion.Layout.Reset();
@@ -115,9 +111,10 @@ public class ControlTree
             if (!node.AliveLastFrame && node.SecondsDead > CacheTimeToLive)
                 toDelete.Enqueue(node);
         }
-
+        var p = new ControlParams(Root, EnsureInstance(Root.Identity));
+        Root.ApplyParentLayout(p);
         Root.RefreshChildrenList(this, dt);
-        Root.Process(new ControlParams(Root, EnsureInstance(Root.Identity)));
+        Root.Process(p);
         incrementor = 0;
 
         while (toDelete.TryDequeue(out var node))

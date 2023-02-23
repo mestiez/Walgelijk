@@ -58,4 +58,9 @@ public class Layout
     {
         Layouts.Enqueue(new HorizontalLayout());
     }
+
+    public void VerticalLayout()
+    {
+        Layouts.Enqueue(new VerticalLayout());
+    }
 }
