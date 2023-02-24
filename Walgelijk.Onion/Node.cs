@@ -1,7 +1,5 @@
-﻿using Newtonsoft.Json.Bson;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Numerics;
-using System.Xml.Linq;
 using Walgelijk.Onion.Controls;
 using Walgelijk.Onion.Layout;
 using Walgelijk.SimpleDrawing;
@@ -15,7 +13,7 @@ public class Node
 {
     public readonly int Identity;
     public readonly Node? Parent;
-    public readonly SortedSet<int> Children = new();
+    public readonly SortedSet<int> Children = new(new NodeComparer());
 
     public IEnumerable<Node> GetChildren()
     {
@@ -98,13 +96,15 @@ public class Node
         Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, p.Node.ComputedGlobalOrder);
         Draw.DrawBounds = new DrawBounds(drawBounds.GetSize(), drawBounds.BottomLeft, true);
         p.Instance.Rects.ComputedDrawBounds = drawBounds;
-
         p.Instance.Rects.Rendered = p.Instance.Rects.ComputedGlobal;
 
-        Behaviour.OnRender(p);
-        foreach (var child in GetChildren())
-            child.Render(
-                new ControlParams(child, p.Tree.EnsureInstance(child.Identity)));
+        if (drawBounds.Width > 0 && drawBounds.Height > 0)
+        {
+            Behaviour.OnRender(p);
+            foreach (var child in GetChildren())
+                child.Render(
+                    new ControlParams(child, p.Tree.EnsureInstance(child.Identity)));
+        }
 
         p.Tree.DrawboundStack.Pop();
     }
@@ -189,7 +189,10 @@ public class Node
 
             // TODO elastic clamping?
             //if (p.Instance.InnerScrollOffset.Y > remainingSpaceAbove)
-            //    p.Instance.InnerScrollOffset.Y = Utilities.SmoothApproach(p.Instance.InnerScrollOffset.Y, remainingSpaceAbove, 16, p.GameState.Time.DeltaTime);
+            //    p.Instance.InnerScrollOffset.Y = Utilities.SmoothApproach(p.Instance.InnerScrollOffset.Y, remainingSpaceAbove, 25, p.GameState.Time.DeltaTime);
+
+            //if (p.Instance.InnerScrollOffset.Y < -remainingSpaceBelow)
+            //    p.Instance.InnerScrollOffset.Y = Utilities.SmoothApproach(p.Instance.InnerScrollOffset.Y, -remainingSpaceBelow, 25, p.GameState.Time.DeltaTime);
 
             p.Instance.InnerScrollOffset.Y = MathF.Min(p.Instance.InnerScrollOffset.Y, remainingSpaceAbove);
             p.Instance.InnerScrollOffset.Y = MathF.Max(p.Instance.InnerScrollOffset.Y, -remainingSpaceBelow);

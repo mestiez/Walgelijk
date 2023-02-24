@@ -87,6 +87,11 @@ public struct Rect
     }
 
     /// <summary>
+    /// Equivalent to Width * Height
+    /// </summary>
+    public float Area => Width * Height;
+
+    /// <summary>
     /// Returns the center of the rectangle. Calculated using (min + max) * 0.5
     /// </summary>
     public readonly Vector2 GetCenter() => new((MinX + MaxX) * 0.5f, (MinY + MaxY) * 0.5f);

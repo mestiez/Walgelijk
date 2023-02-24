@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Xml.Linq;
 using Walgelijk.Onion.Controls;
 using Walgelijk.SimpleDrawing;
@@ -8,7 +9,7 @@ namespace Walgelijk.Onion;
 
 public class OnionSystem : Walgelijk.System
 {
-    public bool DebugOverlay = true;
+    public UiDebugOverlay DebugOverlay = UiDebugOverlay.None;
 
     public override void Initialise()
     {
@@ -25,7 +26,7 @@ public class OnionSystem : Walgelijk.System
         Onion.Navigator.Process(Onion.Input);
 
         if (Input.IsKeyReleased(Key.F9))
-            DebugOverlay = !DebugOverlay;
+            DebugOverlay = (UiDebugOverlay)(((int)DebugOverlay + 1) % Enum.GetValues<UiDebugOverlay>().Length);
 
         // next frame
         Onion.Layout.Position(0, 0);
@@ -38,14 +39,33 @@ public class OnionSystem : Walgelijk.System
     {
         Onion.Tree.Render();
 
-        if (DebugOverlay)
+        if (DebugOverlay != UiDebugOverlay.None)
         {
             Draw.Reset();
             Draw.ScreenSpace = true;
             Draw.Order = RenderOrder.DebugUI;
 
-            DrawCaptures();
-            DrawControlTree();
+            Draw.Text(DebugOverlay.ToString(), new Vector2(Window.Width / 2, 8), Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Top);
+
+            switch (DebugOverlay)
+            {
+                case UiDebugOverlay.CapturedEvents:
+                    DrawCaptures();
+                    break;
+                case UiDebugOverlay.ControlTree:
+                    DrawControlTree();
+                    break;
+                case UiDebugOverlay.LocalRect:
+                case UiDebugOverlay.IntermediateRect:
+                case UiDebugOverlay.GlobalRect:
+                case UiDebugOverlay.RenderedRect:
+                case UiDebugOverlay.RaycastRect:
+                case UiDebugOverlay.ChildContentRect:
+                case UiDebugOverlay.DrawBounds:
+                case UiDebugOverlay.ComputedDrawBounds:
+                    DrawRects(DebugOverlay);
+                    break;
+            }
         }
     }
 
@@ -57,6 +77,52 @@ public class OnionSystem : Walgelijk.System
         Draw.Text($"SCROLL: {((Onion.Navigator.ScrollControl?.ToString()) ?? "none")}", p += new Vector2(0, 14), Vector2.One, HorizontalTextAlign.Right, VerticalTextAlign.Top);
         Draw.Text($"FOCUS:  {((Onion.Navigator.FocusedControl?.ToString()) ?? "none")}", p += new Vector2(0, 14), Vector2.One, HorizontalTextAlign.Right, VerticalTextAlign.Top);
         Draw.Text($"ACTIVE: {((Onion.Navigator.ActiveControl?.ToString()) ?? "none")}", p += new Vector2(0, 14), Vector2.One, HorizontalTextAlign.Right, VerticalTextAlign.Top);
+    }
+
+    private void DrawRects(UiDebugOverlay overlay)
+    {
+        draw(Onion.Tree.Root);
+        void draw(Node node)
+        {
+            var inst = Onion.Tree.EnsureInstance(node.Identity);
+
+            Draw.OutlineColour = Colors.Purple;
+            Draw.OutlineWidth = 4;
+            Draw.Colour = Colors.Transparent;
+
+            Rect rect = default;
+            switch (overlay)
+            {
+                case UiDebugOverlay.LocalRect:
+                    rect = inst.Rects.Local;
+                    break;
+                case UiDebugOverlay.IntermediateRect:
+                    rect = inst.Rects.Intermediate;
+                    break;
+                case UiDebugOverlay.GlobalRect:
+                    rect = inst.Rects.ComputedGlobal;
+                    break;
+                case UiDebugOverlay.RenderedRect:
+                    rect = inst.Rects.Rendered;
+                    break;
+                case UiDebugOverlay.RaycastRect:
+                    rect = inst.Rects.Raycast ?? default;
+                    break;
+                case UiDebugOverlay.ChildContentRect:
+                    rect = inst.Rects.ChildContent;
+                    break;
+                case UiDebugOverlay.DrawBounds:
+                    rect = inst.Rects.DrawBounds ?? default;
+                    break;
+                case UiDebugOverlay.ComputedDrawBounds:
+                    rect = inst.Rects.ComputedDrawBounds;
+                    break;
+            }
+            Draw.Quad(rect);
+
+            foreach (var item in node.GetChildren())
+                draw(item);
+        }
     }
 
     private void DrawControlTree()
@@ -77,14 +143,6 @@ public class OnionSystem : Walgelijk.System
                 Draw.Text($"Scroll: {inst.InnerScrollOffset.X}, {inst.InnerScrollOffset.Y}, Y: {inst.Rects.ComputedGlobal.MinY}", offset, Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Bottom);
             else
                 Draw.Text((node.ToString() ?? "[untitled]") + " D: " + node.ComputedGlobalOrder, offset, Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Bottom);
-
-            Draw.Colour = Colors.Purple.WithAlpha(0.1f);
-            Draw.OutlineColour = Colors.Purple;
-            Draw.OutlineWidth = 4;
-            //if (inst.Rects.Raycast.HasValue)
-                Draw.Quad(inst.Rects.ChildContent);
-            Draw.OutlineWidth = 0;
-
             offset.X += 32;
             h += 0.15f;
             foreach (var item in node.GetChildren())

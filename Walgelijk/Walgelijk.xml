@@ -4022,6 +4022,11 @@
             The bottom left of the rectangle
             </summary>
         </member>
+        <member name="P:Walgelijk.Rect.Area">
+            <summary>
+            Equivalent to Width * Height
+            </summary>
+        </member>
         <member name="M:Walgelijk.Rect.GetCenter">
             <summary>
             Returns the center of the rectangle. Calculated using (min + max) * 0.5

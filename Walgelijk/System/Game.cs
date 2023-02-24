@@ -197,7 +197,6 @@ public class Game
                 Scene?.UpdateSystems();
             }
 
-            Profiling.Tick();
             Compositor.Render(Window.RenderQueue);
             Window.LoopCycle();
 

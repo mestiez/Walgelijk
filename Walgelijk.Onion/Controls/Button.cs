@@ -1,13 +1,21 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion.Controls;
 
 public struct Button : IControl
 {
-    public static bool Click(string name, int identity = 0, [CallerLineNumber] int site = 0)
+    public readonly string Label;
+
+    public Button(string label)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Button).GetHashCode(), identity, site), new Button());
+        Label = label;
+    }
+
+    public static bool Click(string label, int identity = 0, [CallerLineNumber] int site = 0)
+    {
+        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Button).GetHashCode(), identity, site), new Button(label));
         Onion.Tree.End();
         return instance.State.HasFlag(ControlState.Hover) && Onion.Input.MousePrimaryPressed;
     }
@@ -46,6 +54,9 @@ public struct Button : IControl
 
         Draw.Colour.A = (animation * animation * animation);
         Draw.Quad(instance.Rects.Rendered);
+        Draw.Colour = Colors.White;
+        //Verzin een betere manier om data van Click() naar hier te brengen
+        Draw.Text(Label, instance.Rects.Rendered.GetCenter(), Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.Rendered.Width);
     }
 
     public void OnEnd(in ControlParams p)
