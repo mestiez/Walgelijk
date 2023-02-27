@@ -20,6 +20,8 @@ public class ControlTree
 
     private int incrementor;
     private readonly Queue<Node> toDelete = new();
+    private float focusAnimationProgress = 0;
+    private int? lastFocus;
 
     public ControlTree()
     {
@@ -119,6 +121,13 @@ public class ControlTree
 
         while (toDelete.TryDequeue(out var node))
             Nodes.Remove(node.Identity);
+
+        focusAnimationProgress = Utilities.Clamp(focusAnimationProgress + dt, 0, 1);
+
+        if (lastFocus != Onion.Navigator.FocusedControl && Onion.Navigator.FocusedControl != null)
+            focusAnimationProgress = 0;
+
+        lastFocus = Onion.Navigator.FocusedControl;
     }
 
     public void Render()
@@ -126,6 +135,26 @@ public class ControlTree
         Draw.Reset();
         Draw.ScreenSpace = true;
         Root.Render(new ControlParams(Root, EnsureInstance(Root.Identity)));
+
+        var focus = Onion.Navigator.FocusedControl;
+        if (focus.HasValue && Instances.TryGetValue(focus.Value, out var inst))
+        {
+            const float expand = 5;
+
+            if (inst.Rects.ComputedDrawBounds.Width > 0 && inst.Rects.ComputedDrawBounds.Height > 0)
+            {
+                var drawBounds = inst.Rects.ComputedDrawBounds.Expand(expand);
+                Draw.DrawBounds = new DrawBounds(
+                    drawBounds.GetSize(),
+                    drawBounds.BottomLeft);
+
+                Draw.Colour = Colors.Transparent;
+                Draw.OutlineColour = Colors.Cyan.WithAlpha(Utilities.MapRange(1, 0, 0.6f, 1, Easings.Cubic.In(focusAnimationProgress)));
+                Draw.OutlineWidth = 4;
+                Draw.Quad(inst.Rects.Rendered.Expand(expand), 0, expand);
+                Draw.OutlineWidth = 0;
+            }
+        }
     }
 
     public bool IsAlive(int value)

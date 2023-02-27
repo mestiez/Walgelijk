@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using SixLabors.ImageSharp;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using Walgelijk.SimpleDrawing;
 
@@ -6,16 +7,10 @@ namespace Walgelijk.Onion.Controls;
 
 public struct Button : IControl
 {
-    public readonly string Label;
-
-    public Button(string label)
-    {
-        Label = label;
-    }
-
     public static bool Click(string label, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Button).GetHashCode(), identity, site), new Button(label));
+        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Button).GetHashCode(), identity, site), new Button());
+        instance.Name = label;
         Onion.Tree.End();
         return instance.State.HasFlag(ControlState.Hover) && Onion.Input.MousePrimaryPressed;
     }
@@ -41,7 +36,9 @@ public struct Button : IControl
     {
         (ControlTree tree, Layout.Layout layout, Input input, GameState state, Node node, ControlInstance instance) = p;
 
-        var animation = node.Alive ? Utilities.Clamp(node.SecondsAlive / instance.AllowedDeadTime) : 1 - Utilities.Clamp(node.SecondsDead / instance.AllowedDeadTime);
+        var animation = node.Alive ?
+            Utilities.Clamp(node.SecondsAlive / instance.AllowedDeadTime) :
+            1 - Utilities.Clamp(node.SecondsDead / instance.AllowedDeadTime);
         animation = Easings.Cubic.InOut(animation);
 
         instance.Rects.Rendered = instance.Rects.Rendered.Scale(Utilities.Lerp(animation, 1, 0.6f));
@@ -54,9 +51,10 @@ public struct Button : IControl
 
         Draw.Colour.A = (animation * animation * animation);
         Draw.Quad(instance.Rects.Rendered);
-        Draw.Colour = Colors.White;
+        Draw.Colour = Colors.White with { A = Draw.Colour.A };
         //Verzin een betere manier om data van Click() naar hier te brengen
-        Draw.Text(Label, instance.Rects.Rendered.GetCenter(), Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.Rendered.Width);
+        if (animation > 0.5f)
+        Draw.Text(instance.Name, instance.Rects.Rendered.GetCenter(), Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.Rendered.Width);
     }
 
     public void OnEnd(in ControlParams p)

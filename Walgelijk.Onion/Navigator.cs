@@ -33,7 +33,9 @@ public class Navigator
     public void Process(Input input)
     {
         RefreshOrder();
+
         HoverControl = Raycast(input.MousePosition.X, input.MousePosition.Y, CaptureFlags.Hover);
+
         if (input.ScrollDelta.LengthSquared() > float.Epsilon)
             ScrollControl = Raycast(input.MousePosition, CaptureFlags.Scroll);
         else
@@ -42,6 +44,14 @@ public class Navigator
         if (ActiveControl.HasValue)
             if (!Onion.Tree.IsAlive(ActiveControl.Value))
                 ActiveControl = null;
+
+        if (FocusedControl.HasValue)
+        {
+            if (!Onion.Tree.IsAlive(FocusedControl.Value))
+                FocusedControl = null;
+            else if (HoverControl == null && input.MousePrimaryPressed)
+                FocusedControl = null;
+        }
     }
 
     public void ComputeGlobalOrder()

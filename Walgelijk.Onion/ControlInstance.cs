@@ -12,6 +12,11 @@ public class ControlInstance
     public readonly int Identity;
 
     /// <summary>
+    /// The name of this control. Sometimes used as a label.
+    /// </summary>
+    public string Name = "Untitled";
+
+    /// <summary>
     /// The active rectangles that define the areas on the screen that represent this control for different purposes.
     /// </summary>
     public ControlRects Rects;

@@ -88,7 +88,7 @@ public struct IMGUIScene : ISceneCreator
                 {
                     Onion.Layout.Size(0, 32);
                     Onion.Layout.FitContainer(1, null);
-                    if (Walgelijk.Onion.Controls.Button.Click("Ik besta ook" + i, i))
+                    if (Walgelijk.Onion.Controls.Button.Click("Ik besta ook " + i, i))
                         Audio.PlayOnce(Sound.Beep);
                 }
                 Onion.Tree.End();

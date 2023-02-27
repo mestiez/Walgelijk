@@ -9,6 +9,7 @@ public static class Onion
     public static readonly Navigator Navigator = new();
     public static readonly Input Input = new();
     public static readonly Configuration Configuration = new();
+    public static readonly StyleCascade Style = new();
 
     /*TODO 
      * ClearEverything();
@@ -25,4 +26,42 @@ public static class Onion
      *      tab: cycle through all controls chronologically
      *      arrows: move from control to control based on position in space
     */
+}
+
+public class StyleCascade : Style
+{
+    public void SetStyle(Style style)
+    {
+
+    }
+}
+
+public class Style
+{
+    public Appearance Background;
+    public Color Foreground;
+
+    dit
+}
+
+public struct Appearance
+{
+    public Color Color;
+    public IReadableTexture Texture;
+
+    public Appearance(Color color, IReadableTexture? texture = null)
+    {
+        Color = color;
+        Texture = texture ?? Walgelijk.Texture.White;
+    }
+
+    public Appearance(IReadableTexture texture)
+    {
+        Color = Colors.White;
+        Texture = texture;
+    }
+
+    public static implicit operator Appearance(Color color) => new(color);
+    public static implicit operator Appearance(Texture texture) => new(texture);
+    public static implicit operator Appearance(RenderTexture texture) => new(texture);
 }

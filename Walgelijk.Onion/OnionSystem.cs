@@ -25,14 +25,13 @@ public class OnionSystem : Walgelijk.System
         Onion.Input.Update(Input, Time.DeltaTime);
         Onion.Navigator.Process(Onion.Input);
 
-        if (Input.IsKeyReleased(Key.F9))
-            DebugOverlay = (UiDebugOverlay)(((int)DebugOverlay + 1) % Enum.GetValues<UiDebugOverlay>().Length);
-
         // next frame
         Onion.Layout.Position(0, 0);
         Onion.Layout.Size(Window.Width, Window.Height);
         Onion.Tree.Start(0, new Dummy()); //Root node
 
+        if (Input.IsKeyReleased(Key.F9))
+            DebugOverlay = (UiDebugOverlay)(((int)DebugOverlay + 1) % Enum.GetValues<UiDebugOverlay>().Length);
     }
 
     public override void Render()

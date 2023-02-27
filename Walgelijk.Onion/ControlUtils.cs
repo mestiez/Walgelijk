@@ -11,7 +11,11 @@ public readonly struct ControlUtils
         p.Instance.Rects.DrawBounds = p.Instance.Rects.ComputedGlobal;
 
         if (Onion.Navigator.ActiveControl == null && p.Instance.State.HasFlag(ControlState.Hover) && p.Input.MousePrimaryHeld)
+        {
+            Onion.Navigator.FocusedControl = p.Instance.Identity;
             Onion.Navigator.ActiveControl = p.Instance.Identity;
+        }
+
         if (p.Instance.State.HasFlag(ControlState.Active) && !p.Input.MousePrimaryHeld)
             Onion.Navigator.ActiveControl = null;
     }
