@@ -134,24 +134,27 @@ public class ControlTree
     {
         Draw.Reset();
         Draw.ScreenSpace = true;
+        Draw.Material = Onion.ControlMaterial;
+
         Root.Render(new ControlParams(Root, EnsureInstance(Root.Identity)));
 
         var focus = Onion.Navigator.FocusedControl;
         if (focus.HasValue && Instances.TryGetValue(focus.Value, out var inst))
         {
-            const float expand = 5;
+            float expand = Onion.Theme.FocusBoxSize;
 
             if (inst.Rects.ComputedDrawBounds.Width > 0 && inst.Rects.ComputedDrawBounds.Height > 0)
             {
                 var drawBounds = inst.Rects.ComputedDrawBounds.Expand(expand);
+
                 Draw.DrawBounds = new DrawBounds(
                     drawBounds.GetSize(),
                     drawBounds.BottomLeft);
 
                 Draw.Colour = Colors.Transparent;
-                Draw.OutlineColour = Colors.Cyan.WithAlpha(Utilities.MapRange(1, 0, 0.6f, 1, Easings.Cubic.In(focusAnimationProgress)));
-                Draw.OutlineWidth = 4;
-                Draw.Quad(inst.Rects.Rendered.Expand(expand), 0, expand);
+                Draw.OutlineColour = Onion.Theme.FocusBoxColour.Get().WithAlpha(Utilities.MapRange(1, 0, 0.6f, 1, Easings.Cubic.In(focusAnimationProgress)));
+                Draw.OutlineWidth = Onion.Theme.FocusBoxWidth;
+                Draw.Quad(inst.Rects.Rendered.Expand(expand), 0, Onion.Theme.Rounding + expand);
                 Draw.OutlineWidth = 0;
             }
         }

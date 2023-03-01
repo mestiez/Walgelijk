@@ -33,11 +33,13 @@ public struct IMGUIScene : ISceneCreator
     {
         public override void Initialise()
         {
-
+            Onion.Theme.Font.Push(Resources.Load<Font>("inter.fnt"));
         }
 
         public override void Update()
         {
+ 
+
             //if (Gui.ClickButton("Hello World", new Vector2(32), new Vector2(128, 32), HorizontalTextAlign.Center, VerticalTextAlign.Middle))
             //  Audio.PlayOnce(Sound.Beep);
 
@@ -99,6 +101,8 @@ public struct IMGUIScene : ISceneCreator
 
             //Onion.Tree.Start(42);
             //Onion.Tree.End();
+
+            //Onion.Theme.Font.Pop();
         }
 
         public override void Render()

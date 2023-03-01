@@ -43,18 +43,23 @@ public struct Button : IControl
 
         instance.Rects.Rendered = instance.Rects.Rendered.Scale(Utilities.Lerp(animation, 1, 0.6f));
 
-        Draw.Colour = Colors.Red;
+        var fg = Onion.Theme.Foreground.Get();
+        Draw.Colour = fg.Color;
+        Draw.Texture = fg.Texture;
+
         if (instance.State.HasFlag(ControlState.Hover))
-            Draw.Colour = Colors.Orange;
+            Draw.Colour = fg.Color.Brightness(1.2f);
         if (instance.State.HasFlag(ControlState.Active))
-            Draw.Colour = Colors.Red.Brightness(0.4f);
+            Draw.Colour = fg.Color.Brightness(0.9f);
 
         Draw.Colour.A = (animation * animation * animation);
-        Draw.Quad(instance.Rects.Rendered);
-        Draw.Colour = Colors.White with { A = Draw.Colour.A };
-        //Verzin een betere manier om data van Click() naar hier te brengen
+        Draw.Quad(instance.Rects.Rendered, 0, Onion.Theme.Rounding);
+        Draw.ResetTexture();
+
+        Draw.Font = Onion.Theme.Font;
+        Draw.Colour = Onion.Theme.Text.Get() with { A = Draw.Colour.A };
         if (animation > 0.5f)
-        Draw.Text(instance.Name, instance.Rects.Rendered.GetCenter(), Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.Rendered.Width);
+            Draw.Text(instance.Name, instance.Rects.Rendered.GetCenter(), Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.Rendered.Width);
     }
 
     public void OnEnd(in ControlParams p)

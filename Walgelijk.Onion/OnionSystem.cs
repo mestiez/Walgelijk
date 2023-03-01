@@ -1,7 +1,4 @@
 ﻿using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Xml.Linq;
 using Walgelijk.Onion.Controls;
 using Walgelijk.SimpleDrawing;
 

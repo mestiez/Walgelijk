@@ -19,10 +19,12 @@ public readonly struct FitContainer : IConstraint
             return;
 
         var parent = p.Tree.EnsureInstance(p.Node.Parent.Identity);
+        var padding = Onion.Theme.Padding * 2;
 
         if (WidthRatio.HasValue)
-            p.Instance.Rects.Intermediate.Width = WidthRatio.Value * parent.Rects.Intermediate.Width;
+            p.Instance.Rects.Intermediate.Width = WidthRatio.Value * (parent.Rects.Intermediate.Width - padding);
+
         if (HeightRatio.HasValue)
-            p.Instance.Rects.Intermediate.Height = HeightRatio.Value * parent.Rects.Intermediate.Height;
+            p.Instance.Rects.Intermediate.Height = HeightRatio.Value * (parent.Rects.Intermediate.Height - padding);
     }
 }

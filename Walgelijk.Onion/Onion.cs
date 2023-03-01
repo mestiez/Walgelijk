@@ -1,6 +1,4 @@
-﻿using Walgelijk.Onion.Layout;
-
-namespace Walgelijk.Onion;
+﻿namespace Walgelijk.Onion;
 
 public static class Onion
 {
@@ -9,7 +7,88 @@ public static class Onion
     public static readonly Navigator Navigator = new();
     public static readonly Input Input = new();
     public static readonly Configuration Configuration = new();
-    public static readonly StyleCascade Style = new();
+    public static readonly Theme Theme = new();
+
+    public static readonly Material ControlMaterial;
+
+    static Onion()
+    {
+        ControlMaterial = new(new Shader(
+@"
+#version 460
+
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec2 texcoord;
+layout(location = 2) in vec4 color;
+
+out vec2 uv;
+out vec4 vertexColor;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+void main()
+{
+   uv = texcoord;
+   vertexColor = color;
+   gl_Position = projection * view * model * vec4(position, 1.0);
+}
+",
+
+@$"
+#version 460
+
+in vec2 uv;
+in vec4 vertexColor;
+
+out vec4 color;
+
+uniform vec2 {SimpleDrawing.DrawingMaterialCreator.ScaleUniform};
+uniform float {SimpleDrawing.DrawingMaterialCreator.RoundednessUniform} = 0;
+
+uniform float {SimpleDrawing.DrawingMaterialCreator.OutlineWidthUniform} = 0;
+uniform vec4 {SimpleDrawing.DrawingMaterialCreator.OutlineColourUniform} = vec4(0,0,0,0);
+
+uniform sampler2D {SimpleDrawing.DrawingMaterialCreator.MainTexUniform};
+uniform vec4 {SimpleDrawing.DrawingMaterialCreator.TintUniform} = vec4(1, 1, 1, 1);
+
+// The MIT License
+// Copyright (C) 2015 Inigo Quilez
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the ""Software""), 
+// to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, 
+// and to permit persons to whom the Software is furnished to do so, subject to the following conditions: 
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. 
+// THE SOFTWARE IS PROVIDED ""AS IS"", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// https://www.youtube.com/c/InigoQuilez
+// https://iquilezles.org
+
+float sdRoundBox( in vec2 p, in vec2 b, in float r ) 
+{{
+    vec2 q = abs(p - 0.5) * 2.0 * b -b + r;
+    return min(max(q.x,q.y),0.0) + length(max(q,0.0)) - r;
+}}
+
+void main()
+{{
+    float corner = 1;
+    float outline = 0;
+
+    float clampedRoundness = clamp({SimpleDrawing.DrawingMaterialCreator.RoundednessUniform}, 0, min(scale.x / 2, scale.y / 2));
+    float d = sdRoundBox(uv, scale, clampedRoundness * 2.0);
+
+    corner = d < 0 ? 1 : 0;
+    outline = d < -{SimpleDrawing.DrawingMaterialCreator.OutlineWidthUniform} ? 0 : 1;
+
+    color = vertexColor * texture({SimpleDrawing.DrawingMaterialCreator.MainTexUniform}, uv) * mix(tint, {SimpleDrawing.DrawingMaterialCreator.OutlineColourUniform}, outline * {SimpleDrawing.DrawingMaterialCreator.OutlineColourUniform}.a);
+    color.a *= corner;
+}}
+"
+));
+    }
 
     /*TODO 
      * ClearEverything();
@@ -28,23 +107,50 @@ public static class Onion
     */
 }
 
-public class StyleCascade : Style
+public class Theme
 {
-    public void SetStyle(Style style)
+    public readonly ThemeProperty<Appearance> Background = new(new Color("#022525"));
+    public readonly ThemeProperty<Appearance> Foreground = new(new Color("#055555"));
+    public readonly ThemeProperty<Color> Text = new(new Color("#fcffff"));
+    public readonly ThemeProperty<Color> Accent = new(new Color("#de3a67"));
+
+    public readonly ThemeProperty<Font> Font = new(Walgelijk.Font.Default);
+    public readonly ThemeProperty<int> FontSize = new(12);
+
+    public readonly ThemeProperty<float> Padding = new(5);
+    public readonly ThemeProperty<float> Rounding = new(1);
+
+    public readonly ThemeProperty<Color> FocusBoxColour = new(new Color("#3adeda"));
+    public float FocusBoxSize = 5;
+    public float FocusBoxWidth = 4;
+}
+
+public class ThemeProperty<T> where T : notnull
+{
+    public readonly T Default;
+
+    public ThemeProperty(in T @default)
     {
-
+        Default = @default;
     }
+
+    private readonly Stack<T> stack = new();
+
+    public void Push(T val) => stack.Push(val);
+
+    public T Pop() => stack.Pop();
+
+    public T Get()
+    {
+        if (stack.TryPeek(out var val))
+            return val;
+        return Default;
+    }
+
+    public static implicit operator T(ThemeProperty<T> theme) => theme.Get();
 }
 
-public class Style
-{
-    public Appearance Background;
-    public Color Foreground;
-
-    dit
-}
-
-public struct Appearance
+public struct Appearance : IEquatable<Appearance>
 {
     public Color Color;
     public IReadableTexture Texture;
@@ -64,4 +170,30 @@ public struct Appearance
     public static implicit operator Appearance(Color color) => new(color);
     public static implicit operator Appearance(Texture texture) => new(texture);
     public static implicit operator Appearance(RenderTexture texture) => new(texture);
+
+    public static bool operator ==(Appearance left, Appearance right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Appearance left, Appearance right)
+    {
+        return !(left == right);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is Appearance appearance && Equals(appearance);
+    }
+
+    public bool Equals(Appearance other)
+    {
+        return Color.Equals(other.Color) &&
+               EqualityComparer<IReadableTexture>.Default.Equals(Texture, other.Texture);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Color, Texture);
+    }
 }
