@@ -34,7 +34,7 @@ public class Layout
         Constraints.Clear();
     }
 
-    public void Position(float x, float y)
+    public void Offset(float x, float y)
     {
         Constraints.Enqueue(new PositionLayout(x, y));
     }
@@ -52,6 +52,11 @@ public class Layout
     public void FitContainer(float? w, float? h)
     {
         Constraints.Enqueue(new FitContainer(w, h));
+    }
+
+    public void Center(bool vertically, bool horizontally)
+    {
+        Constraints.Enqueue(new CenterInParent(vertically, horizontally));
     }
 
     public void HorizontalLayout()

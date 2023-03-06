@@ -12,4 +12,9 @@ public interface IControl
     public void OnEnd(in ControlParams p);
 
     public void OnRemove(in ControlParams p);
+
+    public static void SetCursor(DefaultCursor cursor)
+    {
+        Game.Main.Window.CursorStack.SetCursor(cursor);
+    }
 }

@@ -23,12 +23,15 @@ public class OnionSystem : Walgelijk.System
         Onion.Navigator.Process(Onion.Input);
 
         // next frame
-        Onion.Layout.Position(0, 0);
+        Onion.Layout.Offset(0, 0);
         Onion.Layout.Size(Window.Width, Window.Height);
         Onion.Tree.Start(0, new Dummy()); //Root node
 
         if (Input.IsKeyReleased(Key.F9))
             DebugOverlay = (UiDebugOverlay)(((int)DebugOverlay + 1) % Enum.GetValues<UiDebugOverlay>().Length);
+
+        if (Onion.Configuration.ProcessCursorStack)
+            Window.CursorAppearance = Window.CursorStack.ProcessRequests();
     }
 
     public override void Render()

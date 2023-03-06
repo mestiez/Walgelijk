@@ -163,9 +163,11 @@ public class Node
     private static void EnforceScrollBounds(in ControlParams p)
     {
         var childContent = p.Instance.Rects.ChildContent;//.Expand(5);
-        bool childrenFitInsideParent =
-            childContent.MinX >= 0 && childContent.MaxX <= p.Instance.Rects.Intermediate.MaxX &&
-            childContent.MinY >= 0 && childContent.MaxY <= p.Instance.Rects.Intermediate.MaxY;
+        //bool childrenFitInsideParent =
+        //    childContent.MinX >= 0 && childContent.MaxX <= p.Instance.Rects.Intermediate.MaxX &&
+        //    childContent.MinY >= 0 && childContent.MaxY <= p.Instance.Rects.Intermediate.MaxY;
+
+        bool childrenFitInsideParent = p.Instance.Rects.Intermediate.ContainsRect(childContent);
 
         if (childrenFitInsideParent)
             p.Instance.InnerScrollOffset = Vector2.Zero;
@@ -175,8 +177,8 @@ public class Node
 
             //all we need is the size lol
             var newLocal = rects.Intermediate;
-            newLocal.MaxX -= rects.Intermediate.MinX;
-            newLocal.MaxY -= rects.Intermediate.MinY;
+            newLocal.MaxX -= rects.Intermediate.MinX + Onion.Theme.Padding;
+            newLocal.MaxY -= rects.Intermediate.MinY + Onion.Theme.Padding;
             newLocal.MinX = newLocal.MinY = 0;
 
             var remainingSpaceLeft = MathF.Max(newLocal.MinX - childContent.MinX, 0);

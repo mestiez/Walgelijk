@@ -1,19 +1,8 @@
 ﻿namespace Walgelijk.Onion;
 
-public static class Onion
+public readonly struct OnionMaterial
 {
-    public static readonly Layout.Layout Layout = new();
-    public static readonly ControlTree Tree = new();
-    public static readonly Navigator Navigator = new();
-    public static readonly Input Input = new();
-    public static readonly Configuration Configuration = new();
-    public static readonly Theme Theme = new();
-
-    public static readonly Material ControlMaterial;
-
-    static Onion()
-    {
-        ControlMaterial = new(new Shader(
+    public static readonly Shader Shader = new Shader(
 @"
 #version 460
 
@@ -86,13 +75,26 @@ void main()
     color = vertexColor * texture({SimpleDrawing.DrawingMaterialCreator.MainTexUniform}, uv) * mix(tint, {SimpleDrawing.DrawingMaterialCreator.OutlineColourUniform}, outline * {SimpleDrawing.DrawingMaterialCreator.OutlineColourUniform}.a);
     color.a *= corner;
 }}
-"
-));
-    }
+");
+
+    public static Material CreateNew() => new(Shader);
+}
+
+public static class Onion
+{
+    public static readonly Layout.Layout Layout = new();
+    public static readonly ControlTree Tree = new();
+    public static readonly Navigator Navigator = new();
+    public static readonly Input Input = new();
+    public static readonly Configuration Configuration = new();
+    public static Theme Theme = new();
+
+    public static readonly Material ControlMaterial = OnionMaterial.CreateNew();
 
     /*TODO 
      * ClearEverything();
      * Windows!! draggables
+     * scrollbars etc. (pseudo controls)
      * style
      *      style moet textures meer supporten, niet alleen kleuren 
      *      misschien zelfs iets anders dan quads
@@ -109,18 +111,18 @@ void main()
 
 public class Theme
 {
-    public readonly ThemeProperty<Appearance> Background = new(new Color("#022525"));
-    public readonly ThemeProperty<Appearance> Foreground = new(new Color("#055555"));
-    public readonly ThemeProperty<Color> Text = new(new Color("#fcffff"));
-    public readonly ThemeProperty<Color> Accent = new(new Color("#de3a67"));
+    public Appearance Background = new Color("#022525");
+    public Appearance Foreground = new Color("#055555");
+    public Color Text = new Color("#fcffff");
+    public Color Accent = new Color("#de3a67");
 
-    public readonly ThemeProperty<Font> Font = new(Walgelijk.Font.Default);
-    public readonly ThemeProperty<int> FontSize = new(12);
+    public Font Font = Walgelijk.Font.Default;
+    public int FontSize = 12;
 
-    public readonly ThemeProperty<float> Padding = new(5);
-    public readonly ThemeProperty<float> Rounding = new(1);
+    public float Padding = 5;
+    public float Rounding = 1;
 
-    public readonly ThemeProperty<Color> FocusBoxColour = new(new Color("#3adeda"));
+    public Color FocusBoxColour = new Color("#3adeda");
     public float FocusBoxSize = 5;
     public float FocusBoxWidth = 4;
 }
@@ -148,52 +150,4 @@ public class ThemeProperty<T> where T : notnull
     }
 
     public static implicit operator T(ThemeProperty<T> theme) => theme.Get();
-}
-
-public struct Appearance : IEquatable<Appearance>
-{
-    public Color Color;
-    public IReadableTexture Texture;
-
-    public Appearance(Color color, IReadableTexture? texture = null)
-    {
-        Color = color;
-        Texture = texture ?? Walgelijk.Texture.White;
-    }
-
-    public Appearance(IReadableTexture texture)
-    {
-        Color = Colors.White;
-        Texture = texture;
-    }
-
-    public static implicit operator Appearance(Color color) => new(color);
-    public static implicit operator Appearance(Texture texture) => new(texture);
-    public static implicit operator Appearance(RenderTexture texture) => new(texture);
-
-    public static bool operator ==(Appearance left, Appearance right)
-    {
-        return left.Equals(right);
-    }
-
-    public static bool operator !=(Appearance left, Appearance right)
-    {
-        return !(left == right);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is Appearance appearance && Equals(appearance);
-    }
-
-    public bool Equals(Appearance other)
-    {
-        return Color.Equals(other.Color) &&
-               EqualityComparer<IReadableTexture>.Default.Equals(Texture, other.Texture);
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Color, Texture);
-    }
 }

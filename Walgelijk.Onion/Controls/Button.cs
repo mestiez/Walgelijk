@@ -43,12 +43,15 @@ public struct Button : IControl
 
         instance.Rects.Rendered = instance.Rects.Rendered.Scale(Utilities.Lerp(animation, 1, 0.6f));
 
-        var fg = Onion.Theme.Foreground.Get();
+        var fg = Onion.Theme.Foreground;
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
 
         if (instance.State.HasFlag(ControlState.Hover))
+        {
+            IControl.SetCursor(DefaultCursor.Pointer);
             Draw.Colour = fg.Color.Brightness(1.2f);
+        }
         if (instance.State.HasFlag(ControlState.Active))
             Draw.Colour = fg.Color.Brightness(0.9f);
 
@@ -57,7 +60,7 @@ public struct Button : IControl
         Draw.ResetTexture();
 
         Draw.Font = Onion.Theme.Font;
-        Draw.Colour = Onion.Theme.Text.Get() with { A = Draw.Colour.A };
+        Draw.Colour = Onion.Theme.Text with { A = Draw.Colour.A };
         if (animation > 0.5f)
             Draw.Text(instance.Name, instance.Rects.Rendered.GetCenter(), Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.Rendered.Width);
     }

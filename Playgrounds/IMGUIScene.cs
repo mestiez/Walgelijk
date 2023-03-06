@@ -1,9 +1,8 @@
-﻿using System.Numerics;
-using Walgelijk;
+﻿using Walgelijk;
 using Walgelijk.Imgui;
 using Walgelijk.Onion;
 using Walgelijk.Onion.Controls;
-using Walgelijk.Onion.Layout;
+using Walgelijk.SimpleDrawing;
 
 namespace TestWorld;
 
@@ -12,6 +11,7 @@ public struct IMGUIScene : ISceneCreator
     public Scene Load(Game game)
     {
         var scene = new Scene(game);
+        Gui.SetCursorStack = false;
         scene.AddSystem(new TransformSystem());
         scene.AddSystem(new GuiSystem());
         scene.AddSystem(new OnionSystem());
@@ -23,7 +23,7 @@ public struct IMGUIScene : ISceneCreator
         {
             PixelsPerUnit = 1,
             OrthographicSize = 1,
-            ClearColour = new Color("#272830")
+            ClearColour = new Color("#550055")
         });
         game.UpdateRate = 60;
         return scene;
@@ -33,18 +33,21 @@ public struct IMGUIScene : ISceneCreator
     {
         public override void Initialise()
         {
-            Onion.Theme.Font.Push(Resources.Load<Font>("inter.fnt"));
+           //Onion.Theme.Font = Resources.Load<Font>("cambria.fnt");
         }
 
         public override void Update()
         {
- 
-
+            Draw.Reset();
+            Draw.ScreenSpace = true;
+            Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer - 1);
+            Draw.Colour = Onion.Theme.Background.Color;
+            Draw.Quad(new Rect(0, 0, Window.Width, Window.Height));
             //if (Gui.ClickButton("Hello World", new Vector2(32), new Vector2(128, 32), HorizontalTextAlign.Center, VerticalTextAlign.Middle))
             //  Audio.PlayOnce(Sound.Beep);
 
             {
-                Onion.Layout.Position(8, 8);
+                Onion.Layout.Offset(8, 8);
                 Onion.Layout.Size(128, 32);
                 Walgelijk.Onion.Controls.Button.Click("Hallo wereld!");
             }
@@ -82,12 +85,14 @@ public struct IMGUIScene : ISceneCreator
             if (!Input.IsKeyHeld(Key.L))
             {
                 Onion.Layout.Size(128, Window.Height / 2);
-                Onion.Layout.Position(Window.Width / 2, 64);
+                Onion.Layout.Center(true, true);
+                //Onion.Layout.Offset(256, 256);
                 Onion.Layout.VerticalLayout();
 
                 Onion.Tree.Start(75, new ScrollView());
                 for (int i = 0; i < 12; i++)
                 {
+                    Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
                     Onion.Layout.Size(0, 32);
                     Onion.Layout.FitContainer(1, null);
                     if (Walgelijk.Onion.Controls.Button.Click("Ik besta ook " + i, i))

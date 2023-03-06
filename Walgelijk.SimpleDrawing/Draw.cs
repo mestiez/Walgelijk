@@ -216,7 +216,10 @@ namespace Walgelijk.SimpleDrawing
         /// </summary>
         public static void Circle(Vector2 center, Vector2 radius, float degrees = 0)
         {
-            Enqueue(DrawingFor(DrawingPrimitives.Circle, center, new Vector2(MathF.Abs(radius.X), MathF.Abs(radius.Y)), degrees));
+            Enqueue(DrawingFor(DrawingPrimitives.Circle, center, new Vector2(MathF.Abs(radius.X), MathF.Abs(radius.Y)), degrees) with
+            {
+                Roundness = 1
+            });
         }
 
         /// <summary>
