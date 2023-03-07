@@ -41,7 +41,18 @@ public class Layout
 
     public void Size(float w, float h)
     {
-        Constraints.Enqueue(new SizeLayout(w, h));
+        Constraints.Enqueue(new WidthLayout(w));
+        Constraints.Enqueue(new HeightLayout(h));
+    }
+
+    public void Width(float w)
+    {
+        Constraints.Enqueue(new WidthLayout(w));
+    }
+
+    public void Height(float h)
+    {
+        Constraints.Enqueue(new HeightLayout(h));
     }
 
     /// <summary>
@@ -54,9 +65,12 @@ public class Layout
         Constraints.Enqueue(new FitContainer(w, h));
     }
 
-    public void Center(bool vertically, bool horizontally)
+    public void CenterHorizontal() => Center(false, true);
+    public void CenterVertical() => Center(true, false);
+
+    public void Center(bool vertically = true, bool horizontally = true)
     {
-        Constraints.Enqueue(new CenterInParent(vertically, horizontally));
+        Constraints.Enqueue(new CenterInParent(horizontally, vertically));
     }
 
     public void HorizontalLayout()

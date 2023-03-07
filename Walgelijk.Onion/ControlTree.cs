@@ -64,6 +64,8 @@ public class ControlTree
             if (CurrentNode != null)
                 node.SiblingIndex = CurrentNode.Children.Count;
         }
+        else
+            node.Behaviour = behaviour;
 
         if (node.Behaviour is not T)
         {

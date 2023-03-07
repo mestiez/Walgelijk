@@ -31,9 +31,25 @@ public struct IMGUIScene : ISceneCreator
 
     public class IMGUITestSystem : Walgelijk.System
     {
+        public static string[] DropdownOptions =
+        {
+            "Amsterdam", 
+            "Rotterdam", 
+            "Den Haag", 
+            "Utrecht", 
+            "Eindhoven",
+            "Tilburg", 
+            "Groningen", 
+            "Breda", 
+            "Nijmegen", 
+            "Apeldoorn"
+        };
+
+        public static int DropdownSelectedIndex;
+
         public override void Initialise()
         {
-           //Onion.Theme.Font = Resources.Load<Font>("cambria.fnt");
+            //Onion.Theme.Font = Resources.Load<Font>("cambria.fnt");
         }
 
         public override void Update()
@@ -43,50 +59,10 @@ public struct IMGUIScene : ISceneCreator
             Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer - 1);
             Draw.Colour = Onion.Theme.Background.Color;
             Draw.Quad(new Rect(0, 0, Window.Width, Window.Height));
-            //if (Gui.ClickButton("Hello World", new Vector2(32), new Vector2(128, 32), HorizontalTextAlign.Center, VerticalTextAlign.Middle))
-            //  Audio.PlayOnce(Sound.Beep);
 
             {
-                Onion.Layout.Offset(8, 8);
-                Onion.Layout.Size(128, 32);
-                Walgelijk.Onion.Controls.Button.Click("Hallo wereld!");
-            }
-
-            ////Onion.Tree.Start(23);
-            ////Onion.Tree.Start(5);
-            ////Onion.Tree.End();
-            ////Onion.Tree.Start(635);
-            ////Onion.Tree.End();
-            ////Onion.Tree.Start(6235);
-            ////Onion.Tree.End();
-            ////Onion.Tree.End();
-
-            //Onion.Layout.Position(8, 64);
-            //Onion.Layout.Size(1024, 1024);
-            //Onion.Tree.Start(51, new ScrollView());
-            //if (Input.IsKeyHeld(Key.K))
-            //{
-            //    Onion.Layout.Position(0, 0);
-            //    Onion.Layout.Size(128, 32);
-            //    Walgelijk.Onion.Controls.Button.Click("Hallo wereld!");
-            //}
-
-            //if (!Input.IsKeyHeld(Key.L))
-            //{
-            //    Onion.Layout.Position(0, 64);
-            //    Onion.Layout.Size(200, 100);
-            //    if (Input.IsKeyHeld(Key.S))
-            //        Onion.Layout.Constraints.Enqueue(new FitContainer(1, null));
-            //    if (Walgelijk.Onion.Controls.Button.Click("Ik besta ook"))
-            //        Audio.PlayOnce(Sound.Beep); 
-            //}
-            //Onion.Tree.End();
-
-            if (!Input.IsKeyHeld(Key.L))
-            {
+                //Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
                 Onion.Layout.Size(128, Window.Height / 2);
-                Onion.Layout.Center(true, true);
-                //Onion.Layout.Offset(256, 256);
                 Onion.Layout.VerticalLayout();
 
                 Onion.Tree.Start(75, new ScrollView());
@@ -101,13 +77,30 @@ public struct IMGUIScene : ISceneCreator
                 Onion.Tree.End();
             }
 
-            //Onion.Tree.Start(535);
-            //Onion.Tree.End();
+            {
+                Onion.Layout.Size(128, 32);
+                Onion.Layout.Offset(128, Onion.Theme.Padding);
+                Dropdown<string>.Create(DropdownOptions, ref DropdownSelectedIndex);
+            }
 
-            //Onion.Tree.Start(42);
-            //Onion.Tree.End();
+            {
+                const float hotbarHeight = 64;
+                Onion.Layout.FitContainer(1, 0);
+                Onion.Layout.Height(hotbarHeight);
+                Onion.Layout.CenterHorizontal();
+                Onion.Layout.Offset(0, Window.Height - hotbarHeight - Onion.Theme.Padding);
 
-            //Onion.Theme.Font.Pop();
+                Onion.Tree.Start(106, new ScrollView());
+                for (int i = 0; i < 24; i++)
+                {
+                    Onion.Layout.Size(hotbarHeight - Onion.Theme.Padding * 2, hotbarHeight - Onion.Theme.Padding * 2);
+                    Onion.Layout.CenterVertical();
+                    Onion.Layout.Offset(Onion.Theme.Padding + i * (hotbarHeight - Onion.Theme.Padding), 0);
+                    if (Walgelijk.Onion.Controls.ImageButton.Click(Texture.ErrorTexture, ImageContainmentMode.Cover, i))
+                        Audio.PlayOnce(Sound.Beep);
+                }
+                Onion.Tree.End();
+            }
         }
 
         public override void Render()

@@ -21,7 +21,7 @@ public class Node
             yield return Onion.Tree.Nodes[item];
     }
 
-    public readonly IControl Behaviour;
+    public IControl Behaviour;
     public readonly string Name;
 
     /// <summary>
