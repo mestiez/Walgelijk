@@ -10,14 +10,38 @@ public readonly struct ControlUtils
         p.Instance.Rects.Raycast = p.Instance.Rects.ComputedGlobal;
         p.Instance.Rects.DrawBounds = p.Instance.Rects.ComputedGlobal;
 
-        if (Onion.Navigator.ActiveControl == null && p.Instance.State.HasFlag(ControlState.Hover) && p.Input.MousePrimaryHeld)
+        if (p.Instance.State.HasFlag(ControlState.Hover) && p.Input.MousePrimaryHeld)
         {
             Onion.Navigator.FocusedControl = p.Instance.Identity;
-            Onion.Navigator.ActiveControl = p.Instance.Identity;
+            if (Onion.Navigator.ActiveControl == null)
+                Onion.Navigator.ActiveControl = p.Instance.Identity;
         }
 
         if (p.Instance.State.HasFlag(ControlState.Active) && !p.Input.MousePrimaryHeld)
             Onion.Navigator.ActiveControl = null;
+    }
+
+    public static void ProcessToggleLike(in ControlParams p)
+    {
+        p.Instance.CaptureFlags = CaptureFlags.Hover;
+        p.Instance.Rects.Raycast = p.Instance.Rects.ComputedGlobal;
+        p.Instance.Rects.DrawBounds = p.Instance.Rects.ComputedGlobal;
+
+        if (Onion.Navigator.ActiveControl == null && p.Instance.State.HasFlag(ControlState.Hover) && p.Input.MousePrimaryRelease)
+        {
+            Onion.Navigator.FocusedControl = p.Instance.Identity;
+            Onion.Navigator.ActiveControl = p.Instance.Identity;
+        }
+        else
+        {
+            if (p.Instance.State.HasFlag(ControlState.Active) && p.Instance.HasFocus && p.Instance.State.HasFlag(ControlState.Hover) && p.Input.MousePrimaryRelease)
+            {
+            //    Onion.Navigator.ActiveControl = null;
+            }
+
+            if (p.Instance.State.HasFlag(ControlState.Active) && !p.Instance.HasFocus)
+                Onion.Navigator.ActiveControl = null;
+        }
     }
 
     public static void Scrollable(in ControlParams p)

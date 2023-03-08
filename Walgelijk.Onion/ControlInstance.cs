@@ -45,6 +45,11 @@ public class ControlInstance
     /// </summary>
     public CaptureFlags CaptureFlags = CaptureFlags.Hover;
 
+    /// <summary>
+    /// Should this control render the focus box if it has focus
+    /// </summary>
+    public bool RenderFocusBox = true;
+
     public ControlState State
     {
         get

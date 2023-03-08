@@ -136,12 +136,12 @@ public class ControlTree
     {
         Draw.Reset();
         Draw.ScreenSpace = true;
-        Draw.Material = Onion.ControlMaterial;
+        //Draw.Material = Onion.ControlMaterial;
 
         Root.Render(new ControlParams(Root, EnsureInstance(Root.Identity)));
 
         var focus = Onion.Navigator.FocusedControl;
-        if (focus.HasValue && Instances.TryGetValue(focus.Value, out var inst))
+        if (focus.HasValue && Instances.TryGetValue(focus.Value, out var inst) && inst.RenderFocusBox)
         {
             float expand = Onion.Theme.FocusBoxSize;
 
