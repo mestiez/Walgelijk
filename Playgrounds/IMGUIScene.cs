@@ -78,12 +78,6 @@ public struct IMGUIScene : ISceneCreator
             }
 
             {
-                Onion.Layout.Size(128, 32);
-                Onion.Layout.Offset(128, Onion.Theme.Padding);
-                Dropdown<string>.Create(DropdownOptions, ref DropdownSelectedIndex);
-            }
-
-            {
                 const float hotbarHeight = 64;
                 Onion.Layout.FitContainer(1, 0);
                 Onion.Layout.Height(hotbarHeight);
@@ -100,6 +94,19 @@ public struct IMGUIScene : ISceneCreator
                         Audio.PlayOnce(Sound.Beep);
                 }
                 Onion.Tree.End();
+            }
+
+            {
+                Onion.Layout.Size(128, 24);
+                Onion.Layout.Offset(128, Onion.Theme.Padding);
+                Dropdown<string>.Create(DropdownOptions, ref DropdownSelectedIndex);
+            }
+
+            {
+                Onion.Layout.Size(150, 24);
+                Onion.Layout.Offset(128 + 128 + Onion.Theme.Padding, Onion.Theme.Padding);
+                var s = Scene.GetSystem<OnionSystem>();
+                Dropdown<UiDebugOverlay>.CreateForEnum(ref s.DebugOverlay);
             }
         }
 

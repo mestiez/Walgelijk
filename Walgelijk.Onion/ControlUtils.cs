@@ -27,7 +27,7 @@ public readonly struct ControlUtils
         p.Instance.Rects.Raycast = p.Instance.Rects.ComputedGlobal;
         p.Instance.Rects.DrawBounds = p.Instance.Rects.ComputedGlobal;
 
-        if (Onion.Navigator.ActiveControl == null && p.Instance.State.HasFlag(ControlState.Hover) && p.Input.MousePrimaryRelease)
+        if (Onion.Navigator.ActiveControl != p.Instance.Identity && p.Instance.State.HasFlag(ControlState.Hover) && p.Input.MousePrimaryRelease)
         {
             Onion.Navigator.FocusedControl = p.Instance.Identity;
             Onion.Navigator.ActiveControl = p.Instance.Identity;

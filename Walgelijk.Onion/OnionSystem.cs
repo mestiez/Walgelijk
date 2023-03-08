@@ -44,7 +44,8 @@ public class OnionSystem : Walgelijk.System
             Draw.ScreenSpace = true;
             Draw.Order = RenderOrder.DebugUI;
 
-            Draw.Text(DebugOverlay.ToString(), new Vector2(Window.Width / 2, 8), Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Top);
+            Draw.Colour = Colors.White.WithAlpha(0.2f);
+            Draw.Text(DebugOverlay.ToString(), Window.Size / 2, Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Top);
 
             switch (DebugOverlay)
             {

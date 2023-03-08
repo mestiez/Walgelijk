@@ -231,6 +231,14 @@ namespace Walgelijk.SimpleDrawing
         }
 
         /// <summary>
+        /// Draw a <see cref="DrawingPrimitives.CenteredIsoscelesTriangle"/>
+        /// </summary>
+        public static void TriangleIscoCentered(Vector2 center, Vector2 size, float degrees = 0)
+        {
+            Enqueue(DrawingFor(DrawingPrimitives.CenteredIsoscelesTriangle, center, size, degrees));
+        }
+
+        /// <summary>
         /// Draw a <see cref="DrawingPrimitives.RightAngledTriangle"/>
         /// </summary>
         public static void TriangleRight(Vector2 topLeft, Vector2 size, float degrees = 0)

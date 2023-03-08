@@ -33,11 +33,24 @@ public class ControlInstance
     public float AllowedDeadTime = 0.3f;
 
     /// <summary>
-    /// Is this the currently "selected" control? 
-    /// This is different from being Hot or Active because a control can be
-    /// focused regardless of mouse position 
+    /// Returns true if <see cref="Navigator.FocusedControl"/> is <see cref="Identity"/>
     /// </summary>
     public bool HasFocus => Onion.Navigator.FocusedControl == Identity;
+
+    /// <summary>
+    /// Returns true if <see cref="Navigator.HoverControl"/> is <see cref="Identity"/>
+    /// </summary>
+    public bool IsHover => Onion.Navigator.HoverControl == Identity;
+
+    /// <summary>
+    /// Returns true if <see cref="Navigator.ActiveControl"/> is <see cref="Identity"/>
+    /// </summary>
+    public bool IsActive => Onion.Navigator.ActiveControl == Identity;
+
+    /// <summary>
+    /// Returns true if <see cref="Navigator.ScrollControl"/> is <see cref="Identity"/>
+    /// </summary>
+    public bool HasScroll => Onion.Navigator.ScrollControl == Identity;
 
     /// <summary>
     /// Determines what events this control is capable of capturing. 

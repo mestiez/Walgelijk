@@ -49,6 +49,22 @@ namespace Walgelijk.SimpleDrawing
             );
 
         /// <summary>
+        /// Centered isosceles triangle
+        /// </summary>
+        public static readonly VertexBuffer CenteredIsoscelesTriangle = new VertexBuffer(
+                new Vertex[]
+                {
+                    new Vertex(-0.5f, -0.5f) { TexCoords = new Vector2(0,0) } ,
+                    new Vertex(0, 0.5f) { TexCoords = new Vector2(0.5f,1) },
+                    new Vertex(0.5f, -0.5f) { TexCoords = new Vector2(1,0) },
+                },
+                new uint[]
+                {
+                    0, 1, 2
+                }
+            );
+
+        /// <summary>
         /// Top left right angled triangle
         /// </summary>
         public static readonly VertexBuffer RightAngledTriangle = new VertexBuffer(
