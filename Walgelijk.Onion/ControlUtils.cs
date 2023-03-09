@@ -34,10 +34,10 @@ public readonly struct ControlUtils
         }
         else
         {
-            if (p.Instance.State.HasFlag(ControlState.Active) && p.Instance.HasFocus && p.Instance.State.HasFlag(ControlState.Hover) && p.Input.MousePrimaryRelease)
-            {
-            //    Onion.Navigator.ActiveControl = null;
-            }
+            //if (p.Instance.State.HasFlag(ControlState.Active) && p.Instance.HasFocus && p.Instance.State.HasFlag(ControlState.Hover) && p.Input.MousePrimaryRelease)
+            //{
+            ////    Onion.Navigator.ActiveControl = null;
+            //}
 
             if (p.Instance.State.HasFlag(ControlState.Active) && !p.Instance.HasFocus)
                 Onion.Navigator.ActiveControl = null;

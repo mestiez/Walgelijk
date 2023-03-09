@@ -29,6 +29,13 @@ public class Node
     /// </summary>
     public int RequestedLocalOrder;
 
+    /// <summary>
+    /// This control will always be considered to be on top if this is true. 
+    /// Used for things like tooltips or dropdown menus.
+    /// Note that the behaviour of this is undefined if multiple nodes are always on top.
+    /// </summary>
+    public bool AlwaysOnTop;
+
     public int ChronologicalPosition;
     public int SiblingIndex;
     public bool Alive;

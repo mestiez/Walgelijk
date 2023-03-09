@@ -58,17 +58,20 @@ public class Navigator
     {
         orderStack.Clear();
         int counter = 0;
-        mark(Onion.Tree.Root);
+        RecurseNodeOrder(Onion.Tree.Root, ref counter);
+    }
 
-        void mark(Node node)
-        {
-            orderStack.Push(node.ComputedGlobalOrder = GetGlobalDepth(node.RequestedLocalOrder + counter++));
+    private void RecurseNodeOrder(Node node, ref int counter)
+    {
+        je moet global order doen
+        var globalOrder = node.ComputedGlobalOrder = node.AlwaysOnTop ? 10000 : GetGlobalDepth(node.RequestedLocalOrder + counter);
+        counter++;
+        orderStack.Push(globalOrder);
 
-            foreach (var child in node.GetChildren())
-                mark(child);
+        foreach (var child in node.GetChildren())
+            RecurseNodeOrder(child, ref counter);
 
-            orderStack.Pop();
-        }
+        orderStack.Pop();
     }
 
     private int GetGlobalDepth(int depth)

@@ -99,6 +99,8 @@ public readonly struct Dropdown<T> : IControl
         ControlUtils.ProcessToggleLike(p);
         p.Instance.CaptureFlags |= CaptureFlags.Scroll;
 
+        p.Node.AlwaysOnTop = p.Instance.IsActive;
+
         if (instance.IsActive != o)
             currentState.TimeSinceFocus = 0;
         else

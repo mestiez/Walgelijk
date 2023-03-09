@@ -33,19 +33,28 @@ public struct IMGUIScene : ISceneCreator
     {
         public static string[] DropdownOptions =
         {
-            "Amsterdam", 
-            "Rotterdam", 
-            "Den Haag", 
-            "Utrecht", 
+            "Amsterdam",
+            "Rotterdam",
+            "Den Haag",
+            "Utrecht",
             "Eindhoven",
-            "Tilburg", 
-            "Groningen", 
-            "Breda", 
-            "Nijmegen", 
+            "Tilburg",
+            "Groningen",
+            "Breda",
+            "Nijmegen",
             "Apeldoorn"
         };
 
         public static int DropdownSelectedIndex;
+
+        private const string textRectContents =
+            "This paper presents a software capable of visualizing large amounts of Diffusion MRI tractography data. " +
+            "The application can render three-dimensional streamlines to represent white matter tracts inside the human brain, and provide tools for exploring and investigating the 3D visualization in real-time. " +
+            "It also provides several methods of visualization that are suited for various investigative purposes, including interactivity such as camera movement (moving, rotating, dragging and zooming) " +
+            "and visualizing the streamlines intersecting with an arbitrary sphere. To facilitate this, the software must be able to read TCK files, perform preprocessing tasks, " +
+            "apply domain specific filters and tooling for analysis, use signed distance fields for rendering, generate curved tubes meshes, utilize GPU raymarching and raycasting, " +
+            "use simple shading techniques appropriate for this context, employ voxels and raycasting to reinterpret the data to make it less costly to render, perform line culling to reduce occluded lines, " +
+            "utilize instanced rendering of meshes using vertex attributes, and implement level of detail rendering.";
 
         public override void Initialise()
         {
@@ -108,6 +117,11 @@ public struct IMGUIScene : ISceneCreator
                 var s = Scene.GetSystem<OnionSystem>();
                 Dropdown<UiDebugOverlay>.CreateForEnum(ref s.DebugOverlay);
             }
+
+            Onion.Layout.Size(128 + 150, 256);
+            Onion.Layout.Offset(128, 24 + Onion.Theme.Padding);
+
+            TextRect.Create(textRectContents, HorizontalTextAlign.Left, VerticalTextAlign.Top);
         }
 
         public override void Render()
