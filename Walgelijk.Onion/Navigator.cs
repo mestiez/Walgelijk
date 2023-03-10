@@ -5,7 +5,7 @@ namespace Walgelijk.Onion;
 
 public class Navigator
 {
-    public const int MaxDepth = 8;
+    public const int MaxDepth = 7;
 
     /// <summary>
     /// Control currently capturing the cursor
@@ -63,8 +63,13 @@ public class Navigator
 
     private void RecurseNodeOrder(Node node, ref int counter)
     {
-        je moet global order doen
-        var globalOrder = node.ComputedGlobalOrder = node.AlwaysOnTop ? 10000 : GetGlobalDepth(node.RequestedLocalOrder + counter);
+        //je moet global order doen
+        int globalOrder;
+        if (node.AlwaysOnTop)
+            globalOrder = node.ComputedGlobalOrder = (int)MathF.Pow(10, MaxDepth + 1);
+        else
+            globalOrder = node.ComputedGlobalOrder = GetGlobalDepth(node.RequestedLocalOrder + counter);
+
         counter++;
         orderStack.Push(globalOrder);
 
