@@ -2,11 +2,11 @@
 
 namespace Walgelijk.Onion.Layout;
 
-public readonly struct WidthLayout : IConstraint
+public readonly struct WidthConstraint : IConstraint
 {
     public readonly float Width;
 
-    public WidthLayout(float w)
+    public WidthConstraint(float w)
     {
         Width = w;
     }

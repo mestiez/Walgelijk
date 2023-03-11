@@ -97,7 +97,11 @@ public readonly struct Dropdown<T> : IControl
         var currentState = currentStates[instance.Identity];
         var o = instance.IsActive;
         ControlUtils.ProcessToggleLike(p);
-        p.Instance.CaptureFlags |= CaptureFlags.Scroll;
+
+        if (p.Input.CtrlHeld)
+            p.Instance.CaptureFlags |= CaptureFlags.Scroll;
+        else
+            p.Instance.CaptureFlags &= ~CaptureFlags.Scroll;
 
         p.Node.AlwaysOnTop = p.Instance.IsActive;
 

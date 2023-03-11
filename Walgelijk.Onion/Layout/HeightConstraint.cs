@@ -2,11 +2,11 @@
 
 namespace Walgelijk.Onion.Layout;
 
-public readonly struct HeightLayout : IConstraint
+public readonly struct HeightConstraint : IConstraint
 {
     public readonly float Height;
 
-    public HeightLayout(float h)
+    public HeightConstraint(float h)
     {
         Height = h;
     }

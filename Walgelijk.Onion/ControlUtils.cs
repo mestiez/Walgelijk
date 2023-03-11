@@ -10,15 +10,36 @@ public readonly struct ControlUtils
         p.Instance.Rects.Raycast = p.Instance.Rects.ComputedGlobal;
         p.Instance.Rects.DrawBounds = p.Instance.Rects.ComputedGlobal;
 
-        if (p.Instance.State.HasFlag(ControlState.Hover) && p.Input.MousePrimaryHeld)
+        if (p.Instance.IsHover && p.Input.MousePrimaryHeld)
         {
             Onion.Navigator.FocusedControl = p.Instance.Identity;
-            if (Onion.Navigator.ActiveControl == null)
-                Onion.Navigator.ActiveControl = p.Instance.Identity;
+            Onion.Navigator.ActiveControl ??= p.Instance.Identity;
         }
 
-        if (p.Instance.State.HasFlag(ControlState.Active) && !p.Input.MousePrimaryHeld)
+        if (p.Instance.IsActive && !p.Input.MousePrimaryHeld)
             Onion.Navigator.ActiveControl = null;
+    }
+
+    public static void ProcessDraggable(in ControlParams p, in Rect globalDraggableArea)
+    {
+        p.Instance.CaptureFlags = CaptureFlags.Hover;
+        p.Instance.Rects.Raycast = globalDraggableArea;
+        p.Instance.Rects.DrawBounds = p.Instance.Rects.ComputedGlobal;
+
+        if (p.Instance.IsHover && p.Input.MousePrimaryPressed)
+        {
+            Onion.Navigator.FocusedControl = p.Instance.Identity;
+            Onion.Navigator.ActiveControl ??= p.Instance.Identity;
+        }
+
+        if (p.Instance.IsActive)
+        {
+            p.Instance.Rects.Local = p.Instance.Rects.Local.Translate(p.Input.MouseDelta);
+
+            if (p.Input.MousePrimaryRelease)
+                Onion.Navigator.ActiveControl = null;
+        }
+
     }
 
     public static void ProcessToggleLike(in ControlParams p)
@@ -27,7 +48,7 @@ public readonly struct ControlUtils
         p.Instance.Rects.Raycast = p.Instance.Rects.ComputedGlobal;
         p.Instance.Rects.DrawBounds = p.Instance.Rects.ComputedGlobal;
 
-        if (Onion.Navigator.ActiveControl != p.Instance.Identity && p.Instance.State.HasFlag(ControlState.Hover) && p.Input.MousePrimaryRelease)
+        if (Onion.Navigator.ActiveControl != p.Instance.Identity && p.Instance.IsHover && p.Input.MousePrimaryRelease)
         {
             Onion.Navigator.FocusedControl = p.Instance.Identity;
             Onion.Navigator.ActiveControl = p.Instance.Identity;
@@ -46,7 +67,7 @@ public readonly struct ControlUtils
 
     public static void Scrollable(in ControlParams p)
     {
-        if (p.Instance.State.HasFlag(ControlState.Scroll))
+        if (p.Instance.HasScroll)
             p.Instance.InnerScrollOffset += p.Input.ScrollDelta;
     }
 

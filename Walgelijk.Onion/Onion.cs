@@ -27,7 +27,6 @@ public static class Onion
     }
 
     /*TODO 
-     * ClearEverything();
      * Windows!! draggables
      * scrollbars etc. (pseudo controls)
      * style

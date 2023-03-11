@@ -6,6 +6,7 @@ public class Input
 {
     public Vector2 ScrollDelta;
     public Vector2 MousePosition;
+    public Vector2 MouseDelta;
 
     public bool MousePrimaryPressed;
     public bool MousePrimaryHeld;
@@ -13,15 +14,16 @@ public class Input
 
     public bool TabReleased;
     public bool ShiftHeld;
+    public bool CtrlHeld;
 
     public Vector2 DirectionKeyReleased;
-
     private Vector2 rawScrollDelta;
     private Configuration Config => Onion.Configuration;
 
     public void Update(in InputState state, float dt)
     {
         MousePosition = state.WindowMousePosition;
+        MouseDelta = state.WindowMouseDelta;
 
         MousePrimaryPressed = state.IsButtonPressed(Button.Left);
         MousePrimaryHeld = state.IsButtonHeld(Button.Left);
@@ -59,5 +61,6 @@ public class Input
 
         ShiftHeld = state.IsKeyHeld(Key.LeftShift);
         TabReleased = state.IsKeyReleased(Key.Tab);
+        CtrlHeld = state.IsKeyHeld(Key.LeftControl);
     }
 }

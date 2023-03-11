@@ -43,6 +43,7 @@ public class Node
     public bool AliveLastFrame;
     public float SecondsAlive;
     public float SecondsDead;
+
     /// <summary>
     /// Actual global order
     /// </summary>
@@ -79,11 +80,12 @@ public class Node
 
     public Rect GetFinalDrawBounds(ControlTree tree)
     {
-        var rects = tree.EnsureInstance(Identity).Rects;
+        var inst = tree.EnsureInstance(Identity);
+        var rects = inst.Rects;
         Rect previous;
         if (rects.DrawBounds.HasValue)
         {
-            if (tree.DrawboundStack.TryPeek(out previous)) // i have a parent with drawbounds!!
+            if (!AlwaysOnTop && tree.DrawboundStack.TryPeek(out previous)) // i have a parent with drawbounds!!
                 return rects.DrawBounds.Value.Intersect(previous);
             return rects.DrawBounds.Value;
         }

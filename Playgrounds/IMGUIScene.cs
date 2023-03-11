@@ -69,6 +69,27 @@ public struct IMGUIScene : ISceneCreator
             Draw.Colour = Onion.Theme.Background.Color;
             Draw.Quad(new Rect(0, 0, Window.Width, Window.Height));
 
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    Onion.Layout.Offset(i * 64, i * 64);
+            //    Onion.Layout.Size(256, 128);
+            //    DragWindow.Start("Cool title", i);
+            //    {
+            //         Onion.Layout.FitContainer(1, 1);
+            //         Onion.Layout.OffsetSize(0, -32);
+            //         Onion.Tree.Start(2830 + i, new ScrollView());
+
+            //        Onion.Layout.Size(128, 24);
+            //        Onion.Layout.Offset(Onion.Theme.Padding * 2, Onion.Theme.Padding * 2 + 24);
+            //        Dropdown<string>.Create(DropdownOptions, ref DropdownSelectedIndex, identity: i);
+
+            //          Onion.Tree.End(); //end container child
+            //    }
+            //    Onion.Tree.End();
+            //}
+
+            //return;
+
             {
                 //Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
                 Onion.Layout.Size(128, Window.Height / 2);
@@ -94,12 +115,12 @@ public struct IMGUIScene : ISceneCreator
                 Onion.Layout.Offset(0, Window.Height - hotbarHeight - Onion.Theme.Padding);
 
                 Onion.Tree.Start(106, new ScrollView());
-                for (int i = 0; i < 24; i++)
+                for (int i = 0; i < 8; i++)
                 {
                     Onion.Layout.Size(hotbarHeight - Onion.Theme.Padding * 2, hotbarHeight - Onion.Theme.Padding * 2);
                     Onion.Layout.CenterVertical();
                     Onion.Layout.Offset(Onion.Theme.Padding + i * (hotbarHeight - Onion.Theme.Padding), 0);
-                    if (Walgelijk.Onion.Controls.ImageButton.Click(Texture.ErrorTexture, ImageContainmentMode.Cover, i))
+                    if (ImageButton.Click(Texture.ErrorTexture, ImageContainmentMode.Cover, i))
                         Audio.PlayOnce(Sound.Beep);
                 }
                 Onion.Tree.End();
@@ -120,8 +141,28 @@ public struct IMGUIScene : ISceneCreator
 
             Onion.Layout.Size(128 + 150, 256);
             Onion.Layout.Offset(128, 24 + Onion.Theme.Padding);
-
             TextRect.Create(textRectContents, HorizontalTextAlign.Left, VerticalTextAlign.Top);
+
+            for (int i = 0; i < 2; i++)
+            {
+                Onion.Layout.Offset(i * 64, i * 64);
+                Onion.Layout.Size(256, 128);
+                DragWindow.Start("Cool title", i);
+                {
+                    Onion.Layout.FitContainer(1, 1);
+                    Onion.Layout.OffsetSize(0, -24);
+                    Onion.Layout.Offset(0, 24);
+                    Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
+                    Onion.Tree.Start(2830 + i, new ScrollView());
+
+                    Onion.Layout.Size(128, 32);
+                    Onion.Layout.Offset(Onion.Theme.Padding * 2, Onion.Theme.Padding * 2 + 24);
+                    Dropdown<string>.Create(DropdownOptions, ref DropdownSelectedIndex, identity: i);
+
+                    Onion.Tree.End(); //end container child
+                }
+                Onion.Tree.End();
+            }
         }
 
         public override void Render()

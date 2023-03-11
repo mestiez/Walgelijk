@@ -263,6 +263,11 @@ public struct Rect : IEquatable<Rect>
         return HashCode.Combine(MinX, MinY, MaxX, MaxY);
     }
 
+    public Rect Translate(object mouseDelta)
+    {
+        throw new NotImplementedException();
+    }
+
     public static bool operator ==(Rect left, Rect right)
     {
         return left.Equals(right);
