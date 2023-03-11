@@ -52,7 +52,7 @@ namespace Walgelijk.Imgui.Controls
             PositioningUtils.ApplyRaycastRect(id, new Rect(rectTopLeft.X, rectTopLeft.Y, rectTopLeft.X + rectSize.X, rectTopLeft.Y + rectSize.Y), true);
 
             Gui.PrepareDrawer();
-            Draw.Colour = Gui.GetTextColour(style, State.Inactive).WithAlpha(Utilities.Clamp((float)id.Lifetime.TotalSeconds));
+            Draw.Colour = Gui.GetTextColour(style, State.Inactive);//.WithAlpha(Utilities.Clamp((float)id.Lifetime.TotalSeconds));
             Draw.FontSize = Gui.GetFontSize(style, State.Inactive);
             Draw.Font = Gui.GetFont(style);
             Draw.Text(text, topLeft, Vector2.One, halign, valign, wrapWidth);

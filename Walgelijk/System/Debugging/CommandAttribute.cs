@@ -7,8 +7,7 @@ namespace Walgelijk
     /// </summary>
     public class CommandAttribute : Attribute
     {
-        //public string Alias = null;
-        //TODO alias
+        public string? Alias = null;
 
         /// <summary>
         /// String that is displayed when the command is incorrectly used or when help is requested

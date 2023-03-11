@@ -199,3 +199,28 @@ public struct RandomLifespan : IParticleInitialiser
         particle.MaxLife += LifeRange.GetRandom();
     }
 }
+
+public struct RandomFrameSheet : IParticleInitialiser
+{
+    public bool Disabled { get; set; }
+    public int Columns = 4;
+    public int Rows = 4;
+    public Vector2 TextureSize;
+
+    public RandomFrameSheet(int columns, int rows, Vector2 textureSize) : this()
+    {
+        Columns = columns;
+        Rows = rows;
+        TextureSize = textureSize;
+    }
+
+    public void Initialise(ref Particle particle, in GameState gameState, ParticlesComponent component, TransformComponent transform)
+    {
+        float c = Utilities.RandomInt(0, Columns);
+        float r = Utilities.RandomInt(0, Rows);
+
+        
+
+        particle.UvOffset = new Vector4(c / Columns, r / Columns, 1f / Columns, 1f / Rows);
+    }
+}

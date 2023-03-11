@@ -36,15 +36,7 @@ public class Program
         Resources.SetBasePathForType<Texture>("textures");
         Resources.SetBasePathForType<Font>("fonts");
 
-        //game.Scene = SplashScreen.CreateScene(Resources.Load<Texture>("opening_bg.png"), new[]
-        //{
-        //    new SplashScreen.Logo(Resources.Load<Texture>("splash1.png"), new Vector2(180, 0), 5, new Sound(Resources.Load<AudioData>("opening.wav"), false, false)),
-        //    new SplashScreen.Logo(Resources.Load<Texture>("splash2.png"), new Vector2(180, 0), 3f),
-        //    new SplashScreen.Logo(Resources.Load<Texture>("splash3.png"), new Vector2(180, 0), 3f),
-        //
-        //}, () => game.Scene = new AudioWaveScene().Load(game), SplashScreen.Transition.FadeInOut);
-
-        game.Scene = new TextureGeneratorScene().Load(game);
+        game.Scene = new IMGUIScene().Load(game);
 
 #if DEBUG
         game.DevelopmentMode = true;

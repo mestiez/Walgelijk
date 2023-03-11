@@ -87,6 +87,11 @@ public struct Rect
     }
 
     /// <summary>
+    /// Equivalent to Width * Height
+    /// </summary>
+    public float Area => Width * Height;
+
+    /// <summary>
     /// Returns the center of the rectangle. Calculated using (min + max) * 0.5
     /// </summary>
     public readonly Vector2 GetCenter() => new((MinX + MaxX) * 0.5f, (MinY + MaxY) * 0.5f);
@@ -181,6 +186,12 @@ public struct Rect
         point.X > MinX - expand && point.X < MaxX + expand && point.Y > MinY - expand && point.Y < MaxY + expand;
 
     /// <summary>
+    /// Does the rectangle contain the given rectangle? Note that if the given rectangle is identical to the instance, this function will return true
+    /// </summary>
+    public readonly bool ContainsRect(Rect other) => 
+        other.MinX >= MinX && other.MaxX <= MaxX && other.MinY >= MinY && other.MaxY <= MaxY;
+
+    /// <summary>
     /// Does the rectangle overlap with the given rectangle?
     /// </summary>
     public readonly bool IntersectsRectangle(Rect b) => !(MaxX < b.MinX || MinX > b.MaxX || MinY > b.MaxY || MaxY < b.MinY);
@@ -211,5 +222,35 @@ public struct Rect
     public readonly Rect StretchToContain(Rect rect)
     {
         return StretchToContain(rect.TopLeft).StretchToContain(rect.TopRight).StretchToContain(rect.BottomLeft).StretchToContain(rect.BottomRight);
+    }
+
+    /// <summary>
+    /// This will return a copy of this rectangle scaled in each direction by the given value ranging, 1 meaning 100%
+    /// </summary>
+    public readonly Rect Scale(float scale)
+    {
+        return new Rect(GetCenter(), GetSize() * scale);
+    }
+
+
+    /// <summary>
+    /// Return the rectangle that represents the intersection between this rectangle and the given rectangle
+    /// </summary>
+    public readonly Rect Intersect(Rect other)
+    {
+        float minx = MathF.Max(MinX, other.MinX);
+        float maxx = MathF.Min(MaxX, other.MaxX);
+
+        float miny = MathF.Max(MinY, other.MinY);
+        float maxy = MathF.Min(MaxY, other.MaxY);
+
+        if (minx > maxx)
+            maxx = minx;
+
+        if (miny > maxy)
+            maxy = miny;
+
+        var r = new Rect(minx, miny, maxx, maxy);
+        return r;
     }
 }

@@ -7,13 +7,15 @@ using Walgelijk.Imgui;
 using Walgelijk.Localisation;
 using Walgelijk.OpenTK.MotionTK;
 using Walgelijk.SimpleDrawing;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace TestWorld;
 
 public struct TestScene2
 {
     private static Video videos;
+    private static Sound streamTest;
+
+    public static AudioVisualiser visualiser;
 
     public static Scene Load(Game game)
     {
@@ -34,6 +36,11 @@ public struct TestScene2
             ClearColour = new Color("#a8a3c1")
         });
 
+        streamTest = new Sound(Resources.Load<StreamAudioData>("Party_Level_Theme_4.ogg"), false, false);
+        game.AudioRenderer.Play(streamTest);
+
+        visualiser = new AudioVisualiser(streamTest, 1024 * 4, 1024, 1024);
+
         return scene;
     }
 
@@ -50,8 +57,40 @@ public struct TestScene2
             sw.Start();
         }
 
+        public static void FrequencyWarp(ReadOnlySpan<float> input, Span<float> warped, float minFrequency, float maxFrequency)
+        {
+            for (int i = 0; i < input.Length; i++)
+            {
+                float frequency = minFrequency + (maxFrequency - minFrequency) * (float)i / (float)input.Length;
+                warped[i] = input[i] * MathF.Log(frequency);
+            }
+        }
+
         public override void Update()
         {
+            Draw.Reset();
+            Draw.Order = new RenderOrder(350, 0);
+            Draw.ScreenSpace = true;
+            Draw.Colour = Colors.Red;
+            Draw.Text(Audio.GetTime(streamTest).ToString(), new Vector2(32, 32), Vector2.One);
+            Draw.Colour = Colors.Purple;
+
+            visualiser.Update(Audio, Time.DeltaTime);
+
+            int index = 0;
+            foreach (var val in visualiser.GetVisualiserData())
+            {
+                float width = Window.Width / (float)visualiser.BinCount;
+                if (val > .001f)
+                {
+                    var a = new Vector2(15 + index * width, Window.Height);
+                    var b = new Vector2(15 + index * width, Window.Height - MathF.Log10(val) * 50);
+                    Draw.Colour = index % 2 == 0 ? Colors.Red : Colors.Orange;//.WithAlpha(f * f * 5 + 0.2f);
+                    Draw.Line(a, b, width, 0);
+                }
+                index++;
+            }
+
             if (Input.IsKeyReleased(Key.O))
                 Window.IsCursorLocked = !Window.IsCursorLocked;
 
@@ -64,6 +103,24 @@ public struct TestScene2
 
             if (Input.IsKeyReleased(Key.D4))
                 Window.CustomCursor = TexGen.Noise(64, 64, 0.7f, 2.354f, Colors.Magenta, Colors.Cyan);
+
+            if (Input.IsKeyReleased(Key.K))
+            {
+                if (Audio.IsPlaying(streamTest))
+                    Audio.Stop(streamTest);
+                else
+                    Audio.Play(streamTest);
+            }
+
+            if (Input.IsKeyReleased(Key.M))
+            {
+                Audio.Pause(streamTest);
+            }
+
+            if (Input.IsKeyReleased(Key.Period))
+                Audio.SetTime(streamTest, Audio.GetTime(streamTest) + 1f);
+            if (Input.IsKeyReleased(Key.Comma))
+                Audio.SetTime(streamTest, Audio.GetTime(streamTest) - 1f);
 
             Draw.Reset();
             Draw.Order = new RenderOrder(50, 0);

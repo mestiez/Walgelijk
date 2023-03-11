@@ -7,7 +7,7 @@
     <RepositoryUrl>https://github.com/mestiez/Walgelijk</RepositoryUrl>
     <Company>Studio Minus</Company>
     <Authors>mestiez</Authors>
-    <Version>0.8.3</Version>
+    <Version>0.9.1</Version>
     <Description>Studio Minus game engine</Description>
     <PackageIcon>cirkel avatar.png</PackageIcon>
     <Nullable>enable</Nullable>
@@ -73,7 +73,7 @@
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="pushd $(SolutionDir)&#xD;&#xA;cd&#xD;&#xA;dotnet script increment_version.csx&#xD;&#xA;popd" />
-  </Target>
+  </Target>-->
 </Project>

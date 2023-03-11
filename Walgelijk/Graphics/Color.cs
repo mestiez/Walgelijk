@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Threading;
 
 namespace Walgelijk;
 
@@ -203,6 +204,19 @@ public struct Color : IEquatable<Color>
                G == other.G &&
                B == other.B &&
                A == other.A;
+    }
+
+    public Color Brightness(float multiplier)
+    {
+        multiplier = MathF.Max(0, multiplier);
+        var c = new Color(R * multiplier, G * multiplier, B * multiplier, A);
+        return c;
+    }
+
+    public Color Saturation(float multiplier)
+    {
+        multiplier = MathF.Max(0, multiplier);
+        return new Vector4(Vector3.Lerp(RGB, new((R + G + B) / 3f), multiplier), A);
     }
 
     public static bool operator ==(Color left, Color right)

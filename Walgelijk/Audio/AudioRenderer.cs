@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace Walgelijk;
@@ -64,6 +65,12 @@ public abstract class AudioRenderer
     public abstract void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1, AudioTrack? track = null);
 
     /// <summary>
+    /// Populates the given array with the most recently played samples of the given sound.
+    /// Returns the amount of samples.
+    /// </summary>
+    public abstract int GetCurrentSamples(Sound sound, Span<float> arr);
+
+    /// <summary>
     /// Set world position of the sound (if it is spatial)
     /// </summary>
     public abstract void SetPosition(Sound sound, Vector2 worldPosition);
@@ -119,9 +126,14 @@ public abstract class AudioRenderer
     public abstract float GetTime(Sound sound);
 
     /// <summary>
-    /// Load a sound from file
+    /// Load an sound from file at once
     /// </summary>
-    public abstract AudioData LoadSound(string path, bool streaming = false);
+    public abstract FixedAudioData LoadSound(string path);
+
+    /// <summary>
+    /// Load a streaming sound from file
+    /// </summary>
+    public abstract StreamAudioData LoadStream(string path);
 
     /// <summary>
     /// Release all resources used by the audio engine

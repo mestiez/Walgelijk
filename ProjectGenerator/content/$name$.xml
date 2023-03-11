@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="$(ProjectDir)resources\**" CopyToOutputDirectory="Always" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Walgelijk\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />
+		<ProjectReference Include="..\Walgelijk\Walgelijk.ParticleSystem\Walgelijk.ParticleSystem.csproj" />
+		<ProjectReference Include="..\Walgelijk\Walgelijk.SimpleDrawing\Walgelijk.SimpleDrawing.csproj" />
+		<ProjectReference Include="..\Walgelijk\Walgelijk\Walgelijk.csproj" />
+	</ItemGroup>
+
+</Project>

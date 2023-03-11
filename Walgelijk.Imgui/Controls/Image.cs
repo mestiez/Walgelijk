@@ -78,6 +78,7 @@ namespace Walgelijk.Imgui.Controls
             Gui.PrepareDrawer();
             Gui.ResetAnchor();
             ImageBox(topLeft, size, texture, background, containmentMode, style, site, optionalId + 1);
+            id.Cursor = ImguiUtils.GetCursorForState(state);
 
             if (state == State.Hover)
             {

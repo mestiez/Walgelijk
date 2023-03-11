@@ -216,7 +216,10 @@ namespace Walgelijk.SimpleDrawing
         /// </summary>
         public static void Circle(Vector2 center, Vector2 radius, float degrees = 0)
         {
-            Enqueue(DrawingFor(DrawingPrimitives.Circle, center, new Vector2(MathF.Abs(radius.X), MathF.Abs(radius.Y)), degrees));
+            Enqueue(DrawingFor(DrawingPrimitives.Circle, center, new Vector2(MathF.Abs(radius.X), MathF.Abs(radius.Y)), degrees) with
+            {
+                Roundness = 1
+            });
         }
 
         /// <summary>
@@ -225,6 +228,14 @@ namespace Walgelijk.SimpleDrawing
         public static void TriangleIsco(Vector2 topLeft, Vector2 size, float degrees = 0)
         {
             Enqueue(DrawingFor(DrawingPrimitives.IsoscelesTriangle, topLeft, size, degrees));
+        }
+
+        /// <summary>
+        /// Draw a <see cref="DrawingPrimitives.CenteredIsoscelesTriangle"/>
+        /// </summary>
+        public static void TriangleIscoCentered(Vector2 center, Vector2 size, float degrees = 0)
+        {
+            Enqueue(DrawingFor(DrawingPrimitives.CenteredIsoscelesTriangle, center, size, degrees));
         }
 
         /// <summary>

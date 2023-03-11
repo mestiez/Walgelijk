@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -7,15 +8,18 @@ using System.IO;
 namespace Walgelijk;
 
 /// <summary>
-/// Global path based resource storage. It's recommended to use the <see cref="Assets"/> system to interface with this instead of using this directly.
+/// Global file based resource storage
 /// </summary>
 public static class Resources
 {
     private static bool initialised;
     private static readonly Stopwatch stopwatch = new();
-    private static readonly Dictionary<Type, Func<string, object>> loadFunctions = new();
-    private static readonly Dictionary<string, object> resources = new();
-    private static readonly Dictionary<Type, string> basePathByType = new();
+    private static readonly ConcurrentDictionary<Type, Func<string, object>> loadFunctions = new();
+    private static readonly ConcurrentDictionary<int, object> resources = new();
+    private static readonly ConcurrentDictionary<Type, string> basePathByType = new();
+
+    private static readonly ConcurrentDictionary<string, int> ids = new();
+    private static readonly ConcurrentDictionary<int, FileInfo> fileById = new();
 
     /// <summary>
     /// Event invoked when a resource has been requested
@@ -32,14 +36,15 @@ public static class Resources
     /// </summary>
     internal static void Initialise()
     {
-        if (initialised) return;
+        if (initialised)
+            return;
         initialised = true;
 
-        RegisterType(typeof(Texture), (string path) => TextureLoader.FromFile(path));
-        RegisterType(typeof(Font), Font.Load);
-        RegisterType(typeof(string), File.ReadAllText);
-        RegisterType(typeof(string[]), File.ReadAllLines);
-        RegisterType(typeof(byte[]), File.ReadAllBytes);
+            RegisterType(typeof(Texture), (string path) => TextureLoader.FromFile(path));
+            RegisterType(typeof(Font), Font.Load);
+            RegisterType(typeof(string), File.ReadAllText);
+            RegisterType(typeof(string[]), File.ReadAllLines);
+            RegisterType(typeof(byte[]), File.ReadAllBytes);
     }
 
     /// <summary>
@@ -54,10 +59,10 @@ public static class Resources
             path = ParseFullPathForType<T>(path);
 
         path = Path.GetFullPath(path);
-
+        var id = GetID(path);
         OnStartLoad?.Invoke(typeof(T), path);
 
-        if (resources.TryGetValue(path, out var obj))
+        if (resources.TryGetValue(id, out var obj))
         {
             if (obj is T typed)
                 return typed;
@@ -68,7 +73,8 @@ public static class Resources
         var newObject = CreateNew(path, typeof(T));
         if (newObject is T result)
         {
-            resources.Add(path, result);
+            if (!resources.TryAdd(id, result))
+                throw new Exception("Failed to add the resource to the resource map");
             return result;
         }
 
@@ -81,13 +87,12 @@ public static class Resources
     public static T Load<T>(string path, Func<string, T> loadFunction, bool ignoreBasePaths = false)
     {
         if (!ignoreBasePaths)
-        {
             path = ParseFullPathForType<T>(path);
-        }
 
+        var id = GetID(path);
         OnStartLoad?.Invoke(typeof(T), path);
 
-        if (resources.TryGetValue(path, out var obj))
+        if (resources.TryGetValue(id, out var obj))
         {
             if (obj is T typed)
                 return typed;
@@ -99,18 +104,19 @@ public static class Resources
         if (newObject == null)
             throw new Exception($"The object at \"{path}\" is null");
 
-        resources.Add(path, newObject);
+        if (!resources.TryAdd(id, newObject))
+            throw new Exception("Failed to add the resource to the resource map");
         return newObject;
     }
 
     /// <summary>
-    /// Return the path that a given resource was loaded with. Returns null if it could not be found.
+    /// Return the full path to a resource. Returns null if it could not be found.
     /// </summary>
     public static string? GetPathAssociatedWith(object obj)
     {
         foreach (var item in resources)
             if (item.Value == obj)
-                return item.Key;
+                return GetFileFromID(item.Key).FullName;
         return null;
     }
 
@@ -130,6 +136,44 @@ public static class Resources
     {
         path = Path.Combine(BasePath, path);
         return path;
+    }
+
+    /// <summary>
+    /// Returns all IDs without duplicates
+    /// </summary>
+    public static IEnumerable<int> GetAllIDs() => fileById.Keys;
+
+    /// <summary>
+    /// Returns the ID for the object at the given path. 
+    /// This function does not take any of the base paths into account. 
+    /// You can provide absolute paths or paths relative to the game executable.
+    /// </summary>
+    public static int GetID(string path)
+    {
+        if (ids.TryGetValue(path, out var id))
+            return id;
+
+        var file = new FileInfo(path);
+        id = Hashes.MurmurHash1(file.FullName);
+
+        if (!fileById.ContainsKey(id))
+            if (!fileById.TryAdd(id, file))
+                throw new Exception("Failed to add FileInfo for resource to the id file cache");
+
+        if (!ids.TryAdd(path, id))
+            throw new Exception("Failed to add resource path ID to id cache");
+        return id;
+    }
+
+    /// <summary>
+    /// Returns the <see cref="FileInfo"/> associated with the resource id
+    /// </summary>
+    public static FileInfo GetFileFromID(int id)
+    {
+        if (fileById.TryGetValue(id, out var file))
+            return file;
+
+        throw new Exception($"No resource with ID {id} found");
     }
 
     /// <summary>
@@ -192,12 +236,13 @@ public static class Resources
     /// </summary>
     public static void Unload(string key)
     {
-        if (resources.TryGetValue(key, out var obj))
+        var id = GetID(key);
+        if (resources.TryGetValue(id, out var obj))
         {
             if (obj is IDisposable disp)
                 disp.Dispose();
 
-            resources.Remove(key);
+            resources.Remove(id, out _);
         }
     }
 

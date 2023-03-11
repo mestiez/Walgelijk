@@ -51,6 +51,7 @@ public class ParticlesComponent : Component
         VertexBuffer = new VertexBuffer(PrimitiveMeshes.CenteredQuad.Vertices, PrimitiveMeshes.CenteredQuad.Indices, new VertexAttributeArray[]{
             new Matrix4x4AttributeArray(new Matrix4x4[MaxParticleCount]), // transform
             new Vector4AttributeArray(new Vector4[MaxParticleCount]), // color
+            new Vector4AttributeArray(new Vector4[MaxParticleCount]), // uv (x offset, y offset, x scale ,y scale)
         });
 
         RenderTask = new InstancedShapeRenderTask(VertexBuffer, material: Material);
@@ -86,29 +87,7 @@ public class ParticlesComponent : Component
         return default;
     }
 
-    //public Vec2Range Gravity = new(new Vector2(0, -9.81f));
-    //public FloatRange SpawnRadius = new(0.2f, 1f);
-    //public FloatRange LifeRange = new(1, 3);
-
-    //public FloatRange StartSize = new(1);
-    //public FloatRange StartRotation = new(0);
-    //public Vec2Range StartVelocity = new(Vector2.One * -4, Vector2.One * 4);
-    //public FloatRange StartRotationalVelocity = new(-4, 4);
-    //public ColorRange StartColor = new(Colors.White);
-    //public FloatRange Dampening = new(0.1f);
-    //public FloatRange RotationalDampening = new(0.1f);
-
-    //public FloatCurve SizeOverLife = new(new Curve<float>.Key(1, 1));
-    //public ColorCurve ColorOverLife = new(new Curve<Color>.Key(Colors.White, 1));
-
-    //public float? FloorLevel = null;
-    //public float FloorBounceFactor = 0.4f;
-    //public float FloorCollisionDampeningFactor = 0.4f;
-    //public Hook<Particle> OnHitFloor = new();
-
-    //public bool CircularStartVelocity = false;
     public float SimulationSpeed = 1;
-    //public float EmissionRate = 150;
     public bool WorldSpace;
     public bool ScreenSpace; //TODO enum shit
 
@@ -125,6 +104,7 @@ public class ParticlesComponent : Component
             Size = 1,
             Color = Colors.White,
             Active = true,
+            UvOffset = new Vector4(0, 0, 1, 1)
         };
 
         foreach (var initialiser in Initalisers)

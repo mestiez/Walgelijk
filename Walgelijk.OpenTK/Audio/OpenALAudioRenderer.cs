@@ -1,7 +1,10 @@
-﻿using OpenTK.Audio.OpenAL;
+﻿using NVorbis;
+using OpenTK.Audio.OpenAL;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Numerics;
+using System.Threading;
 
 namespace Walgelijk.OpenTK;
 
@@ -45,7 +48,6 @@ internal class TemporarySourcePool : Pool<TemporarySource?, TemporarySourceArgs>
 
 public class OpenALAudioRenderer : AudioRenderer
 {
-    internal const int StreamingBufferSize = 1024;
     public readonly int MaxTempSourceCount = 256;
 
     private ALDevice device;
@@ -85,7 +87,15 @@ public class OpenALAudioRenderer : AudioRenderer
         MaxTempSourceCount = maxTempSourceCount;
         temporarySources = new(MaxTempSourceCount);
         temporySourceBuffer = new TemporarySource[MaxTempSourceCount];
-        Resources.RegisterType(typeof(AudioData), d => LoadSound(d));
+        Resources.RegisterType(typeof(FixedAudioData), d => LoadSound(d));
+        Resources.RegisterType(typeof(StreamAudioData), d => LoadStream(d));
+        Resources.RegisterType(typeof(AudioData), d =>
+        {
+            var s = new FileInfo(d);
+            if (s.Length >= 1_000_000) //this is fucked but if the file is more than or equal to 1 MB it should probably be streamed. or be explicit and do not use the AudioData base class
+                return LoadStream(d);
+            return LoadSound(d);
+        });
         canEnumerateDevices = AL.IsExtensionPresent("ALC_ENUMERATION_EXT");
         Initialise();
     }
@@ -129,13 +139,10 @@ public class OpenALAudioRenderer : AudioRenderer
         AL.Source(source, ALSourcef.Gain, (sound.Track?.Muted ?? false) ? 0 : (sound.Volume * (sound.Track?.Volume ?? 1)));
     }
 
-    public override AudioData LoadSound(string path, bool streaming = false)
+    public override FixedAudioData LoadSound(string path)
     {
         var ext = path.AsSpan()[path.LastIndexOf('.')..];
         AudioFileData data;
-
-        if (streaming)
-            throw new NotImplementedException("This audio renderer can not stream yet.");
 
         try
         {
@@ -150,8 +157,24 @@ public class OpenALAudioRenderer : AudioRenderer
         {
             throw new AggregateException($"Failed to load audio file: {path}", e);
         }
-        var audio = new AudioData(data.Data, data.SampleRate, data.NumChannels, data.SampleCount);
+        var audio = new FixedAudioData(data.Data, data.SampleRate, data.NumChannels, data.SampleCount);
         return audio;
+    }
+
+    public override StreamAudioData LoadStream(string path)
+    {
+        var ext = path.AsSpan()[path.LastIndexOf('.')..];
+        AudioFileData data;
+
+        if (!ext.Equals(".ogg", StringComparison.InvariantCultureIgnoreCase))
+            throw new Exception($"This is not a supported audio file. Only Ogg Vorbis can be streamed.");
+
+        string absolutePath = Path.GetFullPath(path);
+        using var reader = new NVorbis.VorbisReader(absolutePath);
+        data = VorbisFileReader.ReadMetadata(reader);
+        reader.Dispose();
+
+        return new StreamAudioData(absolutePath, data.SampleRate, data.NumChannels, data.SampleCount);
     }
 
     public override void Pause(Sound sound)
@@ -160,7 +183,8 @@ public class OpenALAudioRenderer : AudioRenderer
             return;
 
         UpdateIfRequired(sound, out int id);
-        AL.SourcePause(id);
+        sound.State = SoundState.Paused;
+        //AL.SourcePause(id);
     }
 
     public override void Play(Sound sound, float volume = 1)
@@ -172,7 +196,9 @@ public class OpenALAudioRenderer : AudioRenderer
         sound.ForceUpdate();
         EnforceCorrectTrack(sound);
         UpdateIfRequired(sound, out int s);
-        AL.SourcePlay(s);
+        sound.State = SoundState.Playing;
+        if (!sound.Looping && sound.Data is FixedAudioData)
+            AL.SourcePlay(s);
     }
 
     public override void Play(Sound sound, Vector2 worldPosition, float volume = 1)
@@ -188,7 +214,9 @@ public class OpenALAudioRenderer : AudioRenderer
             AL.Source(s, ALSource3f.Position, worldPosition.X, 0, worldPosition.Y);
         else
             Logger.Warn("Attempt to play a non-spatial sound in space!");
-        AL.SourcePlay(s);
+        sound.State = SoundState.Playing;
+        if (!sound.Looping && sound.Data is FixedAudioData)
+            AL.SourcePlay(s);
     }
 
     private int CreateTempSource(Sound sound, float volume, Vector2 worldPosition, float pitch, AudioTrack? track = null)
@@ -212,6 +240,9 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public override void PlayOnce(Sound sound, float volume = 1, float pitch = 1, AudioTrack? track = null)
     {
+        if (sound.Data is not FixedAudioData)
+            throw new Exception("Only fixed buffer audio sources can be overlapped using PlayOnce");
+
         if (!canPlayAudio || sound.Data == null || (track?.Muted ?? false))
             return;
 
@@ -221,6 +252,9 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1, AudioTrack? track = null)
     {
+        if (sound.Data is not FixedAudioData)
+            throw new Exception("Only fixed buffer audio sources can be overlapped using PlayOnce");
+
         if (!canPlayAudio || sound.Data == null || (track?.Muted ?? false))
             return;
 
@@ -236,7 +270,8 @@ public class OpenALAudioRenderer : AudioRenderer
             return;
 
         UpdateIfRequired(sound, out int s);
-        AL.SourceStop(s);
+        sound.State = SoundState.Stopped;
+        //AL.SourceStop(s);
     }
 
     public override void StopAll()
@@ -244,8 +279,8 @@ public class OpenALAudioRenderer : AudioRenderer
         if (!canPlayAudio)
             return;
 
-        foreach (var sound in AudioObjects.Sources.GetAllLoaded())
-            AL.SourceStop(sound);
+        foreach (var sound in AudioObjects.Sources.GetAllUnloaded())
+            Stop(sound);
 
         foreach (var item in temporarySources.GetAllInUse())
         {
@@ -256,7 +291,22 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public override void Release()
     {
+        if (!canPlayAudio)
+            return;
         canPlayAudio = false;
+
+        foreach (var streamer in AudioObjects.OggStreamers.GetAllLoaded())
+            streamer.Dispose();
+
+        foreach (var item in AudioObjects.FixedBuffers.GetAllUnloaded())
+            DisposeOf(item);
+
+        foreach (var item in AudioObjects.Sources.GetAllUnloaded())
+            DisposeOf(item);
+
+        AudioObjects.OggStreamers.UnloadAll();
+        AudioObjects.FixedBuffers.UnloadAll();
+        AudioObjects.Sources.UnloadAll();
 
         if (device != ALDevice.Null)
             ALC.CloseDevice(device);
@@ -266,15 +316,6 @@ public class OpenALAudioRenderer : AudioRenderer
             ALC.MakeContextCurrent(ALContext.Null);
             ALC.DestroyContext(context);
         }
-
-        foreach (var item in AudioObjects.Buffers.GetAllUnloaded())
-            DisposeOf(item);
-
-        foreach (var item in AudioObjects.Sources.GetAllUnloaded())
-            DisposeOf(item);
-
-        AudioObjects.Buffers.UnloadAll();
-        AudioObjects.Sources.UnloadAll();
     }
 
     public override void Process(Game game)
@@ -282,12 +323,44 @@ public class OpenALAudioRenderer : AudioRenderer
         if (!canPlayAudio)
             return;
 
+        foreach (var item in AudioObjects.Sources.GetAll())
+        {
+            var sound = item.Item1;
+            var source = item.Item2;
+
+            if (sound.Data is StreamAudioData)
+                continue;
+
+            var sourceState = AL.GetSourceState(source);
+            switch (sound.State)
+            {
+                case SoundState.Idle:
+                    break;
+                case SoundState.Playing:
+                    if (sourceState != ALSourceState.Playing && sound.Looping)
+                        AL.SourcePlay(source);
+                    break;
+                case SoundState.Paused:
+                    if (sourceState != ALSourceState.Paused)
+                        AL.SourcePause(source);
+                    break;
+                case SoundState.Stopped:
+                    if (sourceState != ALSourceState.Stopped)
+                        AL.SourceStop(source);
+                    break;
+            }
+        }
+
+        //foreach (var streamer in AudioObjects.OggStreamers.GetAllLoaded())
+        //    streamer.Update();
+
         int i = 0;
         foreach (var v in temporarySources.GetAllInUse())
             temporySourceBuffer[i++] = v;
 
-        foreach (var v in temporySourceBuffer.AsSpan()[0..i])
+        for (int j = 0; j < i; j++)
         {
+            var v = temporySourceBuffer[j];
             if (v.CurrentLifetime > v.Duration)
             {
                 AL.DeleteSource(v.Source);
@@ -302,7 +375,7 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public override bool IsPlaying(Sound sound)
     {
-        return AL.GetSourceState(AudioObjects.Sources.Load(sound)) == ALSourceState.Playing;
+        return sound.State == SoundState.Playing || AL.GetSourceState(AudioObjects.Sources.Load(sound)) == ALSourceState.Playing;
     }
 
     public override void DisposeOf(AudioData audioData)
@@ -310,12 +383,13 @@ public class OpenALAudioRenderer : AudioRenderer
         if (audioData != null)
         {
             audioData.DisposeLocalCopy();
-            AudioObjects.Buffers.Unload(audioData);
+            if (audioData is FixedAudioData fixedAudioData)
+                AudioObjects.FixedBuffers.Unload(fixedAudioData);
+
             Resources.Unload(audioData);
+            if (audioData is IDisposable d)
+                d.Dispose();
         }
-        //TODO dispose of vorbis reader if applicable
-        //if (AudioObjects.VorbisReaderCache.Has())
-        //AudioObjects.VorbisReaderCache.Unload(audioData);
     }
 
     public override void DisposeOf(Sound sound)
@@ -451,14 +525,31 @@ public class OpenALAudioRenderer : AudioRenderer
     public override void SetTime(Sound sound, float seconds)
     {
         UpdateIfRequired(sound, out var source);
-        AL.Source(source, ALSourcef.SecOffset, seconds);
+
+        switch (sound.Data)
+        {
+            case StreamAudioData stream:
+                var streamer = AudioObjects.OggStreamers.Load((source, sound));
+                streamer.CurrentTime = TimeSpan.FromSeconds(seconds);
+                break;
+            default:
+                AL.Source(source, ALSourcef.SecOffset, seconds);
+                break;
+        }
     }
 
     public override float GetTime(Sound sound)
     {
         UpdateIfRequired(sound, out var source);
-        AL.GetSource(source, ALSourcef.SecOffset, out var offset);
-        return offset;
+        switch (sound.Data)
+        {
+            case StreamAudioData stream:
+                var streamer = AudioObjects.OggStreamers.Load((source, sound));
+                return (float)streamer.CurrentTime.TotalSeconds;
+            default:
+                AL.GetSource(source, ALSourcef.SecOffset, out var offset);
+                return offset;
+        }
     }
 
     public override void SetPosition(Sound sound, Vector2 worldPosition)
@@ -468,5 +559,40 @@ public class OpenALAudioRenderer : AudioRenderer
             AL.Source(source, ALSource3f.Position, worldPosition.X, 0, worldPosition.Y);
         else
             Logger.Error("Attempt to set position for non-spatial sound");
+    }
+
+    /// <summary>
+    /// Populates the array with the most recently played samples ranging from -1 to 1
+    /// </summary>
+    /// <param name="sound"></param>
+    /// <param name="arr"></param>
+    /// <returns></returns>
+    public override int GetCurrentSamples(Sound sound, Span<float> arr)
+    {
+        UpdateIfRequired(sound, out var source);
+
+        switch (sound.Data)
+        {
+            case StreamAudioData stream:
+                {
+                    var streamer = AudioObjects.OggStreamers.Load((source, sound));
+                    streamer.LastSamples.AsSpan(0, arr.Length).CopyTo(arr);
+                    return Math.Min(streamer.LastSamples.Length, arr.Length);
+                }
+            case FixedAudioData fixedData:
+                {
+                    const int amount = 1024;
+                    float progress = GetTime(sound) / (float)sound.Data.Duration.TotalSeconds;
+                    int total = fixedData.Data.Length - amount;
+                    int cursor = Utilities.Clamp((int)(total * progress), 0, fixedData.Data.Length);
+                    int maxReturnSize = fixedData.Data.Length - cursor;
+                    var section = fixedData.Data.AsSpan(cursor, Math.Min(arr.Length, Math.Min(maxReturnSize, amount)));
+                    for (int i = 0; i < section.Length; i++)
+                        arr[i] = Utilities.MapRange(0, byte.MaxValue, -1, 1, arr[i]);
+                    return section.Length;
+                }
+            default:
+                return 0;
+        }
     }
 }

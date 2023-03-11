@@ -2,8 +2,10 @@
 {
     internal static class ParticleMaterialInitialiser
     {
-        public static readonly Shader DefaultShader = new Shader(
-    @"
+        public static readonly Shader DefaultShader = new(
+
+//vertex
+@"
 #version 460
 
 layout(location = 0) in vec3 position;
@@ -12,6 +14,7 @@ layout(location = 2) in vec4 color;
 
 layout(location = 3) in mat4 particleModel;
 layout(location = 7) in vec4 particleColor;
+layout(location = 8) in vec4 particleUvOffset;
 
 out vec2 uv;
 out vec4 vertexColor;
@@ -22,11 +25,13 @@ uniform mat4 projection;
 
 void main()
 {
-   uv = texcoord;
+   uv = (texcoord * particleUvOffset.zw) + particleUvOffset.xy;
    vertexColor = color * particleColor;
    
    gl_Position = projection * view * (model * particleModel) * vec4(position, 1.0);
 }",
+
+//fragment
     @"
 #version 460
 

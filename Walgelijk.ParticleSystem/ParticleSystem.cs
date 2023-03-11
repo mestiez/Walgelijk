@@ -103,6 +103,7 @@ public class ParticleSystem : Walgelijk.System
     {
         var posArray = particles.VertexBuffer.GetAttribute<Matrix4x4AttributeArray>(0) ?? throw new Exception("Particle system vertex buffer attribute 0 is not of the correct type");
         var colArray = particles.VertexBuffer.GetAttribute<Vector4AttributeArray>(1) ?? throw new Exception("Particle system vertex buffer attribute 1 is not of the correct type");
+        var uvArray = particles.VertexBuffer.GetAttribute<Vector4AttributeArray>(2) ?? throw new Exception("Particle system vertex buffer attribute 2 is not of the correct type");
 
         int activeIndex = 0;
 
@@ -119,6 +120,7 @@ public class ParticleSystem : Walgelijk.System
 
             posArray.Data[activeIndex] = new Matrix4x4(model);
             colArray.Data[activeIndex] = particle.RenderedColor;
+            uvArray.Data[activeIndex] = particle.UvOffset;
 
             activeIndex++;
         }

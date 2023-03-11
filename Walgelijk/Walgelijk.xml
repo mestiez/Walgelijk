@@ -29,29 +29,9 @@
             Duration of the sound
             </summary>
         </member>
-        <member name="P:Walgelijk.AudioData.KeepInMemory">
-            <summary>
-            Use <see cref="P:Walgelijk.AudioData.DisposeLocalCopyAfterUpload"/> instead
-            </summary>
-        </member>
-        <member name="P:Walgelijk.AudioData.Streaming">
-            <summary>
-            Was this audio data configured to be streamed?
-            </summary>
-        </member>
         <member name="P:Walgelijk.AudioData.DisposeLocalCopyAfterUpload">
             <summary>
             Should the data be cleared from memory and only remain in the audio engine?
-            </summary>
-        </member>
-        <member name="M:Walgelijk.AudioData.#ctor(System.Byte[],System.Int32,System.Int32,System.Int64,System.Boolean,System.Boolean)">
-            <summary>
-            Create a sound from raw data
-            </summary>
-        </member>
-        <member name="M:Walgelijk.AudioData.ForceClearData">
-            <summary>
-            Use <see cref="M:Walgelijk.AudioData.DisposeLocalCopy"/> instead
             </summary>
         </member>
         <member name="M:Walgelijk.AudioData.DisposeLocalCopy">
@@ -62,6 +42,11 @@
         <member name="M:Walgelijk.AudioData.GetData">
             <summary>
             Get a readonly collection of the raw audio data. This can be null if it has been disposed.
+            </summary>
+        </member>
+        <member name="T:Walgelijk.AudioGen">
+            <summary>
+            Audio generation and manipulation functions. These only work on 16 bit audio.
             </summary>
         </member>
         <member name="T:Walgelijk.AudioRenderer">
@@ -124,6 +109,12 @@
             Play sound at a position in the world and let it overlap itself
             </summary>
         </member>
+        <member name="M:Walgelijk.AudioRenderer.GetCurrentSamples(Walgelijk.Sound,System.Span{System.Single})">
+            <summary>
+            Populates the given array with the most recently played samples of the given sound.
+            Returns the amount of samples.
+            </summary>
+        </member>
         <member name="M:Walgelijk.AudioRenderer.SetPosition(Walgelijk.Sound,System.Numerics.Vector2)">
             <summary>
             Set world position of the sound (if it is spatial)
@@ -179,9 +170,14 @@
             Get time in seconds for the sound if it is playing
             </summary>
         </member>
-        <member name="M:Walgelijk.AudioRenderer.LoadSound(System.String,System.Boolean)">
+        <member name="M:Walgelijk.AudioRenderer.LoadSound(System.String)">
             <summary>
-            Load a sound from file
+            Load an sound from file at once
+            </summary>
+        </member>
+        <member name="M:Walgelijk.AudioRenderer.LoadStream(System.String)">
+            <summary>
+            Load a streaming sound from file
             </summary>
         </member>
         <member name="M:Walgelijk.AudioRenderer.Release">
@@ -239,6 +235,46 @@
             Empty audio renderer that is used when none is set
             </summary>
         </member>
+        <member name="F:Walgelijk.FixedAudioData.Data">
+            <summary>
+            Raw data for the audio. This doesn't necessarily contain all audio data as it could be used as a streaming buffer.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.FixedAudioData.#ctor(System.Byte[],System.Int32,System.Int32,System.Int64,System.Boolean)">
+            <summary>
+            Create a sound from raw data
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FixedAudioData.Beep">
+            <summary>
+            Beep audio data
+            </summary>
+        </member>
+        <member name="T:Walgelijk.SoundState">
+            <summary>
+            States that a sound can be in
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SoundState.Idle">
+            <summary>
+            Untouched by audio engine.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SoundState.Playing">
+            <summary>
+            Currently playing.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SoundState.Paused">
+            <summary>
+            Not playing but not stopped either. This sound can be resumed.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SoundState.Stopped">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="T:Walgelijk.Sound">
             <summary>
             A sound that can be played. It does not contain audio data, but is instead linked to an <see cref="T:Walgelijk.AudioData"/>
@@ -246,7 +282,7 @@
         </member>
         <member name="F:Walgelijk.Sound.Data">
             <summary>
-            Reference to the actual audio data that this sound plays. This is a shared object, so other sounds that share this data will also sound different
+            Reference to the actual audio data that this sound plays. This is a shared object, so other sounds that share this data will also sound different if you manipulate it
             </summary>
         </member>
         <member name="F:Walgelijk.Sound.Looping">
@@ -274,6 +310,11 @@
             Is the sound affected by the listener position? True by default. Set to false for things like UI SFX.
             </summary>
         </member>
+        <member name="F:Walgelijk.Sound.State">
+            <summary>
+            Currrent sound state
+            </summary>
+        </member>
         <member name="F:Walgelijk.Sound.Track">
             <summary>
             The audio track this sound is playing on
@@ -287,6 +328,21 @@
         <member name="M:Walgelijk.Sound.ForceUpdate">
             <summary>
             Sets <see cref="F:Walgelijk.Sound.RequiresUpdate"/> to true, forcing the audio engine to synchronise the property change
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Sound.Beep">
+            <summary>
+            Beep sound
+            </summary>
+        </member>
+        <member name="M:Walgelijk.StreamAudioData.DisposeLocalCopy">
+            <summary>
+            This does nothing because the stream is managed by the audio renderer
+            </summary>
+        </member>
+        <member name="M:Walgelijk.StreamAudioData.GetData">
+            <summary>
+            Returns an empty span because this object has no knowledge of the data being read other than its source
             </summary>
         </member>
         <member name="T:Walgelijk.Background">
@@ -3305,6 +3361,11 @@
             Returns every unloaded item ever loaded
             </summary>
         </member>
+        <member name="M:Walgelijk.Cache`2.GetAll">
+            <summary>
+            Returns every unloaded item ever loaded
+            </summary>
+        </member>
         <member name="T:Walgelijk.Curve`1">
             <summary>
             Linear curve
@@ -3961,6 +4022,11 @@
             The bottom left of the rectangle
             </summary>
         </member>
+        <member name="P:Walgelijk.Rect.Area">
+            <summary>
+            Equivalent to Width * Height
+            </summary>
+        </member>
         <member name="M:Walgelijk.Rect.GetCenter">
             <summary>
             Returns the center of the rectangle. Calculated using (min + max) * 0.5
@@ -4021,6 +4087,11 @@
             Does the rectangle, optionally expanded, contain the given point?
             </summary>
         </member>
+        <member name="M:Walgelijk.Rect.ContainsRect(Walgelijk.Rect)">
+            <summary>
+            Does the rectangle contain the given rectangle? Note that if the given rectangle is identical to the instance, this function will return true
+            </summary>
+        </member>
         <member name="M:Walgelijk.Rect.IntersectsRectangle(Walgelijk.Rect)">
             <summary>
             Does the rectangle overlap with the given rectangle?
@@ -4039,6 +4110,16 @@
         <member name="M:Walgelijk.Rect.StretchToContain(Walgelijk.Rect)">
             <summary>
             This will return a copy of this rectangle that is stretched just enough to contain the given rect
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.Scale(System.Single)">
+            <summary>
+            This will return a copy of this rectangle scaled in each direction by the given value ranging, 1 meaning 100%
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.Intersect(Walgelijk.Rect)">
+            <summary>
+            Return the rectangle that represents the intersection between this rectangle and the given rectangle
             </summary>
         </member>
         <member name="T:Walgelijk.SDF">
@@ -4089,6 +4170,11 @@
         <member name="M:Walgelijk.Utilities.Lerp(System.Single,System.Single,System.Single)">
             <summary>
             Linearly interpolate between two floats
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.Lerp(Walgelijk.Rect@,Walgelijk.Rect@,System.Single)">
+            <summary>
+            Linearly interpolate between two rects
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.Lerp(System.Numerics.Vector4,System.Numerics.Vector4,System.Single)">
@@ -4250,6 +4336,13 @@
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.SmoothApproach(System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Smoothly approaches a value to a target value given a speed and dt
+            <br></br>
+            By luispedrofonseca
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.SmoothApproach(Walgelijk.Rect@,Walgelijk.Rect@,Walgelijk.Rect@,System.Single,System.Single)">
             <summary>
             Smoothly approaches a value to a target value given a speed and dt
             <br></br>
@@ -4439,6 +4532,11 @@
         <member name="F:Walgelijk.CommandAttribute.HelpString">
             <summary>
             String that is displayed when the command is incorrectly used or when help is requested
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ManualCrashException">
+            <summary>
+            Throwing this exception from a command invocation will crash the game
             </summary>
         </member>
         <member name="T:Walgelijk.CommandProcessor">
@@ -4874,6 +4972,11 @@
             Exit the game
             </summary>
         </member>
+        <member name="T:Walgelijk.Hashes">
+            <summary>
+            Utility struct that provides hashing functions that take a string and return an int
+            </summary>
+        </member>
         <member name="T:Walgelijk.Hook`1">
             <summary>
             Event that can be dispatched and listened to
@@ -4951,7 +5054,7 @@
         </member>
         <member name="T:Walgelijk.Resources">
             <summary>
-            Global path based resource storage. It's recommended to use the <see cref="T:Walgelijk.Assets"/> system to interface with this instead of using this directly.
+            Global file based resource storage
             </summary>
         </member>
         <member name="E:Walgelijk.Resources.OnStartLoad">
@@ -4984,12 +5087,29 @@
         </member>
         <member name="M:Walgelijk.Resources.GetPathAssociatedWith(System.Object)">
             <summary>
-            Return the path that a given resource was loaded with. Returns null if it could not be found.
+            Return the full path to a resource. Returns null if it could not be found.
             </summary>
         </member>
         <member name="M:Walgelijk.Resources.ParseFullPathForType``1(System.String)">
             <summary>
             Get the full path for a path, considering its type and set base paths
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Resources.GetAllIDs">
+            <summary>
+            Returns all IDs without duplicates
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Resources.GetID(System.String)">
+            <summary>
+            Returns the ID for the object at the given path. 
+            This function does not take any of the base paths into account. 
+            You can provide absolute paths or paths relative to the game executable.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Resources.GetFileFromID(System.Int32)">
+            <summary>
+            Returns the <see cref="T:System.IO.FileInfo"/> associated with the resource id
             </summary>
         </member>
         <member name="M:Walgelijk.Resources.TryGetBasePathForType(System.Type,System.String@)">

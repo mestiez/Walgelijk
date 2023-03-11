@@ -245,6 +245,7 @@ public class OpenTKWindow : Window
                 Game.DebugDraw.Render();
             Graphics.CurrentTarget = RenderTarget;
             Game.Console.Render();
+            Game.Profiling.Tick();
             RenderQueue.RenderAndReset(internalGraphics);
         }
     }
