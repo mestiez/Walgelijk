@@ -1,13 +1,9 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.Json.Serialization;
-using System.Threading;
 
 namespace Walgelijk;
 
@@ -224,7 +220,7 @@ public class BasicSystemCollection : ISystemCollection
 
     public void InitialiseNewSystems()
     {
-        while(toInitialise.TryTake(out var wr))
+        while (toInitialise.TryTake(out var wr))
             if (wr.TryGetTarget(out var system))
                 system.Initialise();
     }

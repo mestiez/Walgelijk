@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using Walgelijk.Onion.Controls;
+﻿using Walgelijk.Onion.Controls;
 
 namespace Walgelijk.Onion.Layout;
 

@@ -95,8 +95,8 @@
         /// <summary>
         /// Run logic at <see cref="Game.UpdateRate"/> Hz
         /// </summary>
-        public virtual void Update() { }   
-        
+        public virtual void Update() { }
+
         /// <summary>
         /// Run logic at <see cref="Game.FixedUpdateRate"/> Hz
         /// </summary>

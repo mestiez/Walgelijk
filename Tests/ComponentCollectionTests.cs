@@ -31,8 +31,8 @@ public class ComponentCollectionTests
 
         coll.Remove<CameraComponent>(ent1); // non existent component
         coll.SyncBuffers();
-        Assert.AreEqual(1, coll.Count);       
-        
+        Assert.AreEqual(1, coll.Count);
+
         coll.Remove<TransformComponent>(ent2);// wrong entity
         coll.SyncBuffers();
         Assert.AreEqual(1, coll.Count);
@@ -40,8 +40,8 @@ public class ComponentCollectionTests
         coll.Remove<TransformComponent>(ent1);
         Assert.IsTrue(coll.Has<TransformComponent>(ent2)); //dingen verwijderen is instant
         coll.SyncBuffers();
-        Assert.AreEqual(0, coll.Count);   
-        
+        Assert.AreEqual(0, coll.Count);
+
         coll.Remove<TransformComponent>(ent1);// try to remove the same thing
         coll.SyncBuffers();
         Assert.AreEqual(0, coll.Count);
@@ -88,7 +88,7 @@ public class ComponentCollectionTests
         Assert.IsTrue(everythingOnEntity1.Contains(e1blob));
         Assert.IsTrue(everythingOnEntity1.Contains(e1hand));
         Assert.IsTrue(everythingOnEntity1.Contains(e1breadboard));
-        
+
         var inheritance = coll.GetAllOfType<BoardComponent>();
         Assert.IsTrue(inheritance.Contains(e3board));
         Assert.IsTrue(inheritance.Contains(e1breadboard));
@@ -112,7 +112,7 @@ public class ComponentCollectionTests
 
         var transform = coll.Attach(ent1, new TransformComponent());
 
-        Assert.AreEqual(1, coll.Count); 
+        Assert.AreEqual(1, coll.Count);
         coll.SyncBuffers();
         Assert.AreEqual(1, coll.Count);
         Assert.IsFalse(coll.Contains<CameraComponent>());

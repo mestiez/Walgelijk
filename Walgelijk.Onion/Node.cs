@@ -171,14 +171,13 @@ public class Node
     private static void EnforceScrollBounds(in ControlParams p)
     {
         var childContent = p.Instance.Rects.ChildContent;//.Expand(5);
-        //bool childrenFitInsideParent =
-        //    childContent.MinX >= 0 && childContent.MaxX <= p.Instance.Rects.Intermediate.MaxX &&
-        //    childContent.MinY >= 0 && childContent.MaxY <= p.Instance.Rects.Intermediate.MaxY;
-
         bool childrenFitInsideParent = p.Instance.Rects.Intermediate.ContainsRect(childContent);
 
         if (childrenFitInsideParent)
+        {
             p.Instance.InnerScrollOffset = Vector2.Zero;
+            p.Instance.Rects.ComputedScrollBounds = default;
+        }
         else
         {
             var rects = p.Instance.Rects;
@@ -206,6 +205,15 @@ public class Node
 
             p.Instance.InnerScrollOffset.Y = MathF.Min(p.Instance.InnerScrollOffset.Y, remainingSpaceAbove);
             p.Instance.InnerScrollOffset.Y = MathF.Max(p.Instance.InnerScrollOffset.Y, -remainingSpaceBelow);
+
+            p.Instance.Rects.ComputedScrollBounds = new Rect
+            {
+                MinY = -remainingSpaceBelow,
+                MaxY = remainingSpaceAbove,
+
+                MinX = -remainingSpaceRight,
+                MaxX = remainingSpaceLeft,
+            };
         }
     }
 

@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Walgelijk;
 
@@ -211,7 +210,7 @@ public class Game
                 //Logger.Debug($"TTS: {timeToSleep.TotalSeconds} s because we need to wait {1d/UpdateRate} s and the frame took {elapsed.TotalSeconds} s.");
                 if (msToSleep > 1)
                     Thread.Sleep((int)msToSleep / 2); //Waarom deel ik door twee?
-                while (clock.Elapsed < expected) 
+                while (clock.Elapsed < expected)
                     Thread.Sleep(0); //Dit is niet echt slapen.. het gebruikt alsnog CPU maar het is nodig voor de laatste beetjes om de wachttijd perfect te maken
             }
 
@@ -241,7 +240,7 @@ public class Game
         Logger.Dispose();
     }
 
-    [Command(HelpString ="Prints the game and engine versions")]
+    [Command(HelpString = "Prints the game and engine versions")]
     private static string Version()
     {
 #if DEBUG

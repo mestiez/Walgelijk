@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Numerics;
 
 namespace Walgelijk;
@@ -7,7 +6,7 @@ namespace Walgelijk;
 /// <summary>
 /// Simple rectangle structure
 /// </summary>
-public struct Rect
+public struct Rect : IEquatable<Rect>
 {
     /// <summary>
     /// Minimum X point
@@ -188,7 +187,7 @@ public struct Rect
     /// <summary>
     /// Does the rectangle contain the given rectangle? Note that if the given rectangle is identical to the instance, this function will return true
     /// </summary>
-    public readonly bool ContainsRect(Rect other) => 
+    public readonly bool ContainsRect(Rect other) =>
         other.MinX >= MinX && other.MaxX <= MaxX && other.MinY >= MinY && other.MaxY <= MaxY;
 
     /// <summary>
@@ -252,5 +251,25 @@ public struct Rect
 
         var r = new Rect(minx, miny, maxx, maxy);
         return r;
+    }
+
+    public bool Equals(Rect other)
+    {
+        return other.MinY == MinY && other.MinX == MinX && other.MaxX == MaxX && other.MaxY == MaxY;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(MinX, MinY, MaxX, MaxY);
+    }
+
+    public static bool operator ==(Rect left, Rect right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Rect left, Rect right)
+    {
+        return !(left == right);
     }
 }

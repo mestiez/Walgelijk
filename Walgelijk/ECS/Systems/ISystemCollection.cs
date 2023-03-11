@@ -17,11 +17,11 @@ public interface ISystemCollection : IEnumerable<System>, IDisposable
     /// <summary>
     /// Adds a system of type T to the collection.
     /// </summary>
-    public T Add<T>(T s) where T : System;   
+    public T Add<T>(T s) where T : System;
     /// <summary>
     /// Remove a system of type T from the collection.
     /// </summary>
-    public bool Remove<T>() where T : System;   
+    public bool Remove<T>() where T : System;
     /// <summary>
     /// Remove a system of the given type from the collection.
     /// </summary>

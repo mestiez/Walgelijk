@@ -1,5 +1,4 @@
-﻿using FFmpeg.AutoGen;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace MotionTK;
 

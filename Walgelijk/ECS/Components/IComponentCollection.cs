@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
@@ -13,7 +12,7 @@ public interface IComponentCollection : IDisposable
     /// <summary>
     /// Attach component to entity
     /// </summary>
-    T Attach<T>(Entity entity, T component) where T: Component;
+    T Attach<T>(Entity entity, T component) where T : Component;
     /// <summary>
     /// Detach component from entity and dispose
     /// </summary>

@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace Walgelijk.Onion;
+﻿namespace Walgelijk.Onion;
 
 public struct ControlRects
 {
@@ -19,8 +17,8 @@ public struct ControlRects
     /// <br></br>
     /// Defined in global (screen) space
     /// </summary>
-    public Rect ComputedGlobal; 
-    
+    public Rect ComputedGlobal;
+
     /// <summary>
     /// The final rectangle that represents the rendered area of this control on the window.
     /// Do note that this rectangle may be obstructed by other rectangles, so this is not 
@@ -46,6 +44,13 @@ public struct ControlRects
     /// Defined in local (parent) space
     /// </summary>
     public Rect ChildContent;
+
+    /// <summary>
+    /// The rectangle that is determined by the minimum and maximum values of <see cref="ControlInstance.InnerScrollOffset"/>
+    /// <br></br>
+    /// Defined in local (parent) space
+    /// </summary>
+    public Rect ComputedScrollBounds;
 
     /// <summary>
     /// This rectangle determines the area in which it and its children can be drawn. 

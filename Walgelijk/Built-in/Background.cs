@@ -81,7 +81,7 @@ namespace Walgelijk
 
                     bg.RenderTask.Material = bg.Material;
                     bg.RenderTask.ModelMatrix = Matrix3x2.CreateScale(imageSize) * Matrix3x2.CreateTranslation(
-                        bg.Offset.X * windowSize.X + imagePos.X, 
+                        bg.Offset.X * windowSize.X + imagePos.X,
                         bg.Offset.Y * windowSize.Y + imagePos.Y) * stretch;
                     //bg.RenderTask.ModelMatrix = stretch * Matrix3x2.CreateTranslation(bg.Offset.X * windowSize.X, bg.Offset.Y * windowSize.Y);
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Numerics;
-using System.Text;
 using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Imgui;

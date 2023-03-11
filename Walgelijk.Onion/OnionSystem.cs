@@ -61,6 +61,7 @@ public class OnionSystem : Walgelijk.System
                 case UiDebugOverlay.RenderedRect:
                 case UiDebugOverlay.RaycastRect:
                 case UiDebugOverlay.ChildContentRect:
+                case UiDebugOverlay.ComputedScrollBounds:
                 case UiDebugOverlay.DrawBounds:
                 case UiDebugOverlay.ComputedDrawBounds:
                     DrawRects(DebugOverlay);
@@ -116,6 +117,9 @@ public class OnionSystem : Walgelijk.System
                     break;
                 case UiDebugOverlay.ComputedDrawBounds:
                     rect = inst.Rects.ComputedDrawBounds;
+                    break;
+                case UiDebugOverlay.ComputedScrollBounds:
+                    rect = inst.Rects.ComputedScrollBounds;
                     break;
             }
             Draw.Quad(rect);

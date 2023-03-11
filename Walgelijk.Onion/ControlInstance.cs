@@ -72,7 +72,7 @@ public class ControlInstance
             if (Onion.Navigator.HoverControl == Identity)
                 state |= ControlState.Hover;
 
-            if (Onion.Navigator.ScrollControl== Identity)
+            if (Onion.Navigator.ScrollControl == Identity)
                 state |= ControlState.Scroll;
 
             if (Onion.Navigator.FocusedControl == Identity)

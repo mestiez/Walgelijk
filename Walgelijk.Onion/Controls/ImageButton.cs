@@ -24,7 +24,7 @@ public readonly struct ImageButton : IControl
         return CreateButton(texture, containmentMode, identity, site).HasFlag(ControlState.Hover) && Onion.Input.MousePrimaryPressed;
     }
 
-    private static ControlState CreateButton(IReadableTexture texture, ImageContainmentMode containmentMode , int identity = 0, int site = 0)
+    private static ControlState CreateButton(IReadableTexture texture, ImageContainmentMode containmentMode, int identity = 0, int site = 0)
     {
         var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(ImageButton).GetHashCode(), identity, site), new ImageButton(texture, containmentMode));
         instance.RenderFocusBox = false;

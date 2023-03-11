@@ -30,7 +30,7 @@ public class SourceCache : Cache<Sound, SourceHandle>
             case StreamAudioData streamData:
                 var s = AL.GenSource();
                 AudioObjects.OggStreamers.Load((s, sound));
-                return s; 
+                return s;
         }
 
         throw new global::System.Exception("AudioData of type " + sound.Data.GetType().Name + $" is not supported. Only {nameof(FixedAudioData)} and {nameof(StreamAudioData)} are understood.");

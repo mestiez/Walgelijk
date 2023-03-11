@@ -119,7 +119,7 @@ namespace Walgelijk
 
             if (overlayLife < ConsoleNotificationDuration && overlay.RenderTask != null)
             {
-                overlay.RenderTask.ModelMatrix = textModel * 
+                overlay.RenderTask.ModelMatrix = textModel *
                     Matrix3x2.CreateTranslation(debugConsole.Game.Window.Size.X - overlay.LocalBoundingBox.Width - 5, 5);
 
                 if (overlayLife > ConsoleNotificationDuration * .75f)

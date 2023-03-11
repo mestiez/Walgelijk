@@ -112,7 +112,7 @@ namespace Walgelijk.Imgui
             {
                 float padding = Gui.GetPadding(style, Gui.GetStateFor(parent));
                 var v = parent.TopLeft + new Vector2(
-                    parent.LayoutCursorPosition + parent.Size.X / 2 - (parent.ChildSizeSum.X + padding * parent.PreviousChildCount) / 2 + padding * 2f, 
+                    parent.LayoutCursorPosition + parent.Size.X / 2 - (parent.ChildSizeSum.X + padding * parent.PreviousChildCount) / 2 + padding * 2f,
                     padding
                     );
                 parent.LayoutCursorPosition += identity.Size.X + padding;

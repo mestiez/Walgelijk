@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 
 namespace Walgelijk;
 
@@ -19,6 +17,7 @@ public class Compositor
     private IRenderTask targetBufferTask;
     private IRenderTask targetWindowTask;
     private IRenderTask blitBufferTask;
+    private ulong framesRendered = 0;
 
     public Compositor(Game game)
     {
@@ -59,14 +58,14 @@ public class Compositor
 
     public void Render(RenderQueue queue)
     {
-        if (ForceUpdateTargets || buffer == null)
+        if (framesRendered != 0 && (ForceUpdateTargets || buffer == null))
         {
             buffer?.Dispose();
             buffer = new RenderTexture(game.Window.Width, game.Window.Height, hdr: true);
             targetBufferTask = new TargetRenderTask(buffer);
         }
 
-       // queue.Add(targetBufferTask, passes.Min(static p => p.InclusiveStart));
+        // queue.Add(targetBufferTask, passes.Min(static p => p.InclusiveStart));
 
         foreach (var pass in passes)
         {
@@ -79,11 +78,13 @@ public class Compositor
             }
         }
 
-     //   var end = passes.Max(static p => p.ExclusiveEnd);
-      //  queue.Add(targetWindowTask, end);
-      //  queue.Add(blitBufferTask, end);
+        //   var end = passes.Max(static p => p.ExclusiveEnd);
+        //  queue.Add(targetWindowTask, end);
+        //  queue.Add(blitBufferTask, end);
 
         ForceUpdateTargets = false;
+
+        framesRendered++;
     }
 
     private void BlitBuffer(IGraphics g)

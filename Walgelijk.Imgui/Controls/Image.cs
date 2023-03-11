@@ -54,7 +54,7 @@ namespace Walgelijk.Imgui.Controls
             if (texture != null)
             {
                 Draw.Colour = Colors.White;
-               // padding *= 5;
+                // padding *= 5;
                 Draw.Image(texture, new Rect(rect.MinX + padding, rect.MinY + padding, rect.MaxX - padding, rect.MaxY - padding), containmentMode);
             }
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices;
 
 namespace Walgelijk.Selection;
 
@@ -333,8 +332,8 @@ public class MultiSelectionManager<T> where T : class, ISelectable
             SelectedObjects.Clear();
 
         SelectedObjects.Add(obj);
-    } 
-    
+    }
+
     /// <summary>
     /// Select the given objects
     /// </summary>

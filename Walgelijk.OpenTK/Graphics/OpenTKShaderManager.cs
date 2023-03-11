@@ -1,7 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL;
-using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Vector2 = System.Numerics.Vector2;

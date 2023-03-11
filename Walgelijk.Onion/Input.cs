@@ -36,7 +36,7 @@ public class Input
         if (Config.SmoothScroll > float.Epsilon)
         {
             float speed = 24 / Config.SmoothScroll;
-            var delta = (rawScrollDelta * Config.ScrollSensitivity) / Config.SmoothScroll ;
+            var delta = (rawScrollDelta * Config.ScrollSensitivity) / Config.SmoothScroll;
             ScrollDelta += delta; //TODO vogel uit hoe die deltatime en scroll speed gedoe
             ScrollDelta = Utilities.SmoothApproach(ScrollDelta, Vector2.Zero, speed, dt);
         }

@@ -31,7 +31,7 @@ void main()
    gl_Position = projection * view * (model * particleModel) * vec4(position, 1.0);
 }",
 
-//fragment
+    //fragment
     @"
 #version 460
 

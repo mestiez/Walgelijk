@@ -22,66 +22,66 @@ namespace Walgelijk.OpenTK
                     GL.BlendFuncSeparate(
                         BlendingFactorSrc.One,
                         BlendingFactorDest.One,
-                        BlendingFactorSrc.One, 
+                        BlendingFactorSrc.One,
                         BlendingFactorDest.One);
 
                     GL.BlendEquationSeparate(
-                        BlendEquationMode.FuncSubtract, 
+                        BlendEquationMode.FuncSubtract,
                         BlendEquationMode.FuncAdd);
                     break;
                 case BlendMode.Lighten:
                     GL.BlendFuncSeparate(
                         BlendingFactorSrc.SrcAlpha,
                         BlendingFactorDest.OneMinusSrcAlpha,
-                        BlendingFactorSrc.SrcAlpha, 
+                        BlendingFactorSrc.SrcAlpha,
                         BlendingFactorDest.One);
 
                     GL.BlendEquationSeparate(
-                        BlendEquationMode.Max, 
+                        BlendEquationMode.Max,
                         BlendEquationMode.FuncAdd);
                     break;
                 case BlendMode.Multiply:
                     GL.BlendFuncSeparate(
                         BlendingFactorSrc.DstColor,
                         BlendingFactorDest.OneMinusSrcAlpha,
-                        BlendingFactorSrc.SrcAlpha, 
+                        BlendingFactorSrc.SrcAlpha,
                         BlendingFactorDest.One);
 
                     GL.BlendEquationSeparate(
-                        BlendEquationMode.FuncAdd, 
+                        BlendEquationMode.FuncAdd,
                         BlendEquationMode.FuncAdd);
                     break;
                 case BlendMode.Screen:
                     GL.BlendFuncSeparate(
                         BlendingFactorSrc.DstAlpha,
                         BlendingFactorDest.OneMinusSrcColor,
-                        BlendingFactorSrc.SrcAlpha, 
+                        BlendingFactorSrc.SrcAlpha,
                         BlendingFactorDest.One);
 
                     GL.BlendEquationSeparate(
-                        BlendEquationMode.FuncAdd, 
+                        BlendEquationMode.FuncAdd,
                         BlendEquationMode.FuncAdd);
                     break;
                 case BlendMode.Addition:
                     GL.BlendFuncSeparate(
                         BlendingFactorSrc.SrcAlpha,
                         BlendingFactorDest.One,
-                        BlendingFactorSrc.SrcAlpha, 
+                        BlendingFactorSrc.SrcAlpha,
                         BlendingFactorDest.One);
 
                     GL.BlendEquationSeparate(
-                        BlendEquationMode.FuncAdd, 
+                        BlendEquationMode.FuncAdd,
                         BlendEquationMode.FuncAdd);
                     break;
                 default:
                 case BlendMode.AlphaBlend:
                     GL.BlendFuncSeparate(
-                        BlendingFactorSrc.SrcAlpha, 
-                        BlendingFactorDest.OneMinusSrcAlpha, 
-                        BlendingFactorSrc.One, 
+                        BlendingFactorSrc.SrcAlpha,
+                        BlendingFactorDest.OneMinusSrcAlpha,
+                        BlendingFactorSrc.One,
                         BlendingFactorDest.OneMinusSrcAlpha);
                     GL.BlendEquationSeparate(
-                        BlendEquationMode.FuncAdd, 
+                        BlendEquationMode.FuncAdd,
                         BlendEquationMode.FuncAdd);
                     break;
             }

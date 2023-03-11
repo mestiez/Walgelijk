@@ -1,6 +1,5 @@
 ﻿using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
-using System.Collections.Generic;
 using Vector2 = System.Numerics.Vector2;
 
 namespace Walgelijk.OpenTK
