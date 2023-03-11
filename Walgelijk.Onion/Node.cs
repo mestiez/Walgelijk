@@ -36,6 +36,7 @@ public class Node
     /// </summary>
     public bool AlwaysOnTop;
 
+    public int ChronologicalPositionLastFrame;
     public int ChronologicalPosition;
     public int SiblingIndex;
     public bool Alive;

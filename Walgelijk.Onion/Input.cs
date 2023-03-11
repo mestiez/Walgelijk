@@ -11,6 +11,11 @@ public class Input
     public bool MousePrimaryHeld;
     public bool MousePrimaryRelease;
 
+    public bool TabReleased;
+    public bool ShiftHeld;
+
+    public Vector2 DirectionKeyReleased;
+
     private Vector2 rawScrollDelta;
     private Configuration Config => Onion.Configuration;
 
@@ -37,5 +42,22 @@ public class Input
         }
         else
             ScrollDelta = rawScrollDelta * Config.ScrollSensitivity;
+
+        DirectionKeyReleased = default;
+
+        if (state.IsKeyReleased(Key.Right))
+            DirectionKeyReleased.X += 1;
+
+        if (state.IsKeyReleased(Key.Left))
+            DirectionKeyReleased.X -= 1;
+
+        if (state.IsKeyReleased(Key.Up))
+            DirectionKeyReleased.Y += 1;
+
+        if (state.IsKeyReleased(Key.Down))
+            DirectionKeyReleased.Y -= 1;
+
+        ShiftHeld = state.IsKeyHeld(Key.LeftShift);
+        TabReleased = state.IsKeyReleased(Key.Tab);
     }
 }

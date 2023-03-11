@@ -109,6 +109,7 @@ public class ControlTree
     {
         foreach (var node in Nodes.Values)
         {
+            node.ChronologicalPositionLastFrame = node.ChronologicalPosition;
             node.AliveLastFrame = node.Alive;
             node.Alive = false;
 

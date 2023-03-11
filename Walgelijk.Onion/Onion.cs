@@ -23,9 +23,6 @@ public static class Onion
      * Stack<Style> en dan bouw je voor elke control een final style misschien?
      * heel veel basic functies hier (label, button. etc.)
      * Animation system (IAnimation) deel van style? nee toch??? weet ik het 
-     * navigation (arrows, tab)
-     *      tab: cycle through all controls chronologically
-     *      arrows: move from control to control based on position in space
     */
 }
 
@@ -35,6 +32,7 @@ public class Theme
     public Appearance Foreground = new Color("#055555");
     public Color Text = new Color("#fcffff");
     public Color Accent = new Color("#de3a67");
+    public Color Highlight = new Color("#ffffff");
 
     public Font Font = Walgelijk.Font.Default;
     public int FontSize = 12;

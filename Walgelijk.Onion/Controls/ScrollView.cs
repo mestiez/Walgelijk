@@ -9,7 +9,7 @@ public struct ScrollView : IControl
 
     public void OnStart(in ControlParams p)
     {
-        p.Instance.CaptureFlags = CaptureFlags.Scroll | CaptureFlags.Hover;
+        p.Instance.CaptureFlags = CaptureFlags.Scroll;
     }
 
     public void OnProcess(in ControlParams p)

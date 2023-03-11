@@ -20,7 +20,7 @@ public class OnionSystem : Walgelijk.System
         // process
         Onion.Tree.Process(Time.DeltaTime);
         Onion.Input.Update(Input, Time.DeltaTime);
-        Onion.Navigator.Process(Onion.Input);
+        Onion.Navigator.Process(Onion.Input, Time.DeltaTime);
 
         // next frame
         Onion.Layout.Offset(0, 0);
