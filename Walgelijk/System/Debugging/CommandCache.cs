@@ -2,88 +2,86 @@
 using System.Linq;
 using System.Reflection;
 
-namespace Walgelijk
+namespace Walgelijk;
+
+public record CommandEntry(MethodInfo Method, CommandAttribute CommandAttr, string Name);
+
+internal class CommandCache : Cache<string, CommandEntry>
 {
-    internal class CommandCache : Cache<string, (MethodInfo method, CommandAttribute cmd)>
+    private readonly HashSet<CommandEntry> methods = new();
+    private bool initialised;
+
+    protected override CommandEntry CreateNew(string raw)
     {
-        private readonly HashSet<(MethodInfo method, CommandAttribute cmd)> methods = new();
-        private bool initialised;
+        if (!initialised)
+            Initialise();
 
-        protected override (MethodInfo method, CommandAttribute cmd) CreateNew(string raw)
+        foreach (var entry in methods)
         {
-            if (!initialised)
-                Initialise();
+            if (entry.Name.Equals(raw, global::System.StringComparison.InvariantCultureIgnoreCase))
+                return entry;
+        }
 
-            raw = raw.ToLower();
+        return null!;
+    }
 
-            foreach (var (method, cmd) in methods)
+    public new IEnumerable<(string, CommandEntry)> GetAll()
+    {
+        foreach (var item in methods)
+            yield return (item.Name, item);
+    }
+
+    private void Initialise()
+    {
+        RegisterAssembly(Assembly.GetEntryAssembly());
+        RegisterAssembly(Assembly.GetAssembly(typeof(CommandCache)));
+
+        initialised = true;
+    }
+
+    public void RegisterAssembly(Assembly? ass)
+    {
+        if (ass == null)
+        {
+            Logger.Warn("Attempt to register null assembly to command cache");
+            return;
+        }
+        else
+            Logger.Log("Registering commands in assembly " + ass.FullName);
+
+        foreach (var type in ass.GetTypes())
+        {
+            var allMethods = type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+
+            foreach (var method in allMethods)
             {
-                if (method.Name.ToLower() != raw) 
+                var cmd = method.GetCustomAttribute<CommandAttribute>();
+                if (cmd == null)
                     continue;
-                return (method, cmd);
-            }
 
-            return default;
-        }
+                var commandName = cmd.Alias ?? method.Name;
 
-        public new IEnumerable<(string, (MethodInfo method, CommandAttribute cmd))> GetAll()
-        {
-            foreach (var item in methods)
-                yield return (item.method.Name, item);
-        }
-
-        private void Initialise()
-        {
-            RegisterAssembly(Assembly.GetEntryAssembly());
-            RegisterAssembly(Assembly.GetAssembly(typeof(CommandCache)));
-
-            initialised = true;
-        }
-
-        public void RegisterAssembly(Assembly? ass)
-        {
-            if (ass == null)
-            {
-                Logger.Warn("Attempt to register null assembly to command cache");
-                return;
-            }
-            else
-                Logger.Log("Registering commands in assembly " + ass.FullName);
-
-            foreach (var type in ass.GetTypes())
-            {
-                var allMethods = type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-
-                foreach (var method in allMethods)
+                if (!method.IsStatic)
                 {
-                    var cmd = method.GetCustomAttribute<CommandAttribute>();
-                    if (cmd == null)
-                        continue;
-
-                    //TODO alias
-
-                    if (!method.IsStatic)
-                    {
-                        Logger.Warn("Non-static methods may not be registered as commands (\"" + method.Name + "\")");
-                        continue;
-                    }
-
-                    methods.Add((method, cmd));
-                    Logger.Log("Command registered: (\"" + method.Name + "\")");
+                    Logger.Warn("Non-static methods may not be registered as commands (\"" + commandName + "\")");
+                    continue;
                 }
+
+                methods.Add(new CommandEntry(method, cmd, commandName));
+                Logger.Log("Command registered: (\"" + commandName + "\")");
             }
-
-            foreach (var a in methods)
-                foreach (var b in methods)
-                {
-                    if (a != b && a.method.Name.ToLower() == b.method.Name.ToLower())
-                        Logger.Warn($"Command \"{b.method.Name}\" has two entries. Only one of them will work. This behaviour is undefined.");
-                }
         }
 
-        protected override void DisposeOf((MethodInfo method, CommandAttribute cmd) _)
-        {
-            //hier hoeft niks te gebeuren
-        }
+        foreach (var a in methods)
+            foreach (var b in methods)
+            {
+                if (a != b && a.Name.Equals(b.Name, global::System.StringComparison.InvariantCultureIgnoreCase))
+                    Logger.Warn($"Command \"{b.Name}\" has two entries. Only one of them will work. This behaviour is undefined.");
+            }
+    }
+
+    protected override void DisposeOf(CommandEntry _)
+    {
+        //hier hoeft niks te gebeuren
     }
 }

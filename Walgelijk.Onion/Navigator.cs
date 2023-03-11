@@ -56,41 +56,47 @@ public class Navigator
             else if (HoverControl == null && input.MousePrimaryPressed)
                 FocusedControl = null;
             else
+                ProcessKeyboardNavigation(input);
+        }
+    }
+
+    private void ProcessKeyboardNavigation(Input input)
+    {
+        if (!FocusedControl.HasValue)
+            return;
+
+        if (input.TabReleased)
+        {
+            int targetOrder = Onion.Tree.Nodes[FocusedControl.Value].ChronologicalPositionLastFrame;
+            bool greaterThan = !input.ShiftHeld;
+            Func<Node, bool> predicate = greaterThan ?
+                (Node n) => n.ChronologicalPositionLastFrame > targetOrder :
+                (Node n) => n.ChronologicalPositionLastFrame < targetOrder;
+
+            var found = Onion.Tree.Nodes
+                .Select(static c => c.Value)
+                .Where(static c =>
+                {
+                    var n = Onion.Tree.EnsureInstance(c.Identity);
+                    return (c.AliveLastFrame &&
+                            n.CaptureFlags.HasFlag(CaptureFlags.Hover) &&
+                            n.Rects.Raycast.HasValue &&
+                            n.Rects.Raycast.Value.Area > float.Epsilon);
+                })
+                .OrderBy(c => greaterThan ? c.ChronologicalPositionLastFrame : -c.ChronologicalPositionLastFrame)
+                .FirstOrDefault(predicate);
+
+            if (found != null)
             {
-                if (input.TabReleased)
-                {
-                    int targetOrder = Onion.Tree.Nodes[FocusedControl.Value].ChronologicalPositionLastFrame;
-                    bool greaterThan = !input.ShiftHeld;
-                    Func<Node, bool> predicate = greaterThan ? 
-                        (Node n) => n.ChronologicalPositionLastFrame > targetOrder : 
-                        (Node n) => n.ChronologicalPositionLastFrame < targetOrder;
-
-                    var found = Onion.Tree.Nodes
-                        .Select(static c => c.Value)
-                        .Where(static c =>
-                        {
-                            var n = Onion.Tree.EnsureInstance(c.Identity);
-                            return (c.AliveLastFrame &&
-                                    n.CaptureFlags.HasFlag(CaptureFlags.Hover) &&
-                                    n.Rects.Raycast.HasValue && 
-                                    n.Rects.Raycast.Value.Area > float.Epsilon);
-                        })
-                        .OrderBy(c => greaterThan ? c.ChronologicalPositionLastFrame : -c.ChronologicalPositionLastFrame)
-                        .FirstOrDefault(predicate);
-
-                    if (found != null)
-                    {
-                        FocusedControl = found.Identity;
-                        HighlightControl(found.Identity, 0.5f);
-                    }
-                }
-                else if (input.DirectionKeyReleased.LengthSquared() > 0)
-                {
-                    var hit = FindInDirection(FocusedControl.Value, input.DirectionKeyReleased);
-                    if (hit.HasValue)
-                        FocusedControl = hit;
-                }
+                FocusedControl = found.Identity;
+                HighlightControl(found.Identity, 0.5f);
             }
+        }
+        else if (input.DirectionKeyReleased.LengthSquared() > 0)
+        {
+            var hit = FindInDirection(FocusedControl.Value, input.DirectionKeyReleased);
+            if (hit.HasValue)
+                FocusedControl = hit;
         }
     }
 
@@ -263,6 +269,13 @@ public class Navigator
             HighlightControl(v.Value, 0.5f);
 
         return v;
+    }
+
+    public void Clear()
+    {
+        orderStack.Clear();
+        highlightControls.Clear();
+        sortedByDepth = null;
     }
 
     private readonly struct DirectionalNode

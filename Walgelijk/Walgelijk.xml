@@ -4534,6 +4534,11 @@
             String that is displayed when the command is incorrectly used or when help is requested
             </summary>
         </member>
+        <member name="T:Walgelijk.ManualCrashException">
+            <summary>
+            Throwing this exception from a command invocation will crash the game
+            </summary>
+        </member>
         <member name="T:Walgelijk.CommandProcessor">
             <summary>
             Object responsible for command processing. Only has static methods.

@@ -1,4 +1,6 @@
-﻿namespace Walgelijk.Onion;
+﻿using System.Reflection;
+
+namespace Walgelijk.Onion;
 
 public static class Onion
 {
@@ -10,6 +12,19 @@ public static class Onion
     public static Theme Theme = new();
 
     public static readonly Material ControlMaterial = OnionMaterial.CreateNew();
+
+    static Onion()
+    {
+        CommandProcessor.RegisterAssembly(Assembly.GetAssembly(typeof(Onion)) ?? throw new Exception("I do not exist."));
+    }
+
+    [Command(Alias = "OnionClear", HelpString = "Clears the Onion UI cache, effectively resetting the UI scene")]
+    public static void ClearCache()
+    {
+        Layout.Reset();
+        Tree.Clear();
+        Navigator.Clear();
+    }
 
     /*TODO 
      * ClearEverything();

@@ -169,4 +169,17 @@ public class ControlTree
             return n.AliveLastFrame;
         return false;
     }
+
+    public void Clear()
+    {
+        CurrentNode = null;
+        incrementor = 0;
+        DrawboundStack.Clear();
+        toDelete.Clear();
+        foreach (var item in Nodes)
+            item.Value.Children.Clear();
+        Nodes.Clear();
+        Nodes.Add(0, Root);
+        Instances.Clear();
+    }
 }
