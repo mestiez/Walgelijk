@@ -25,7 +25,17 @@ public readonly struct DragWindow : IControl
     {
         //var d = p.Instance.Rects.ComputedGlobal;
         //d.MaxY = d.MinY + 32;
+        //bool wasActive = p.Instance.IsActive;
+
         ControlUtils.ProcessDraggable(p, p.Instance.Rects.ComputedGlobal);
+
+        //if (p.Instance.IsActive && !wasActive)
+        //{
+        //    var topMost =
+        //        (p.Node.Parent == null ? Onion.Tree.Root.GetChildren() : p.Node.Parent.GetChildren()).
+        //        Min(static n => n.RequestedLocalOrder);
+        //    p.Node.RequestedLocalOrder = topMost - 1;
+        //}
     }
 
     public void OnRender(in ControlParams p)
@@ -59,6 +69,6 @@ public readonly struct DragWindow : IControl
 
     public void OnEnd(in ControlParams p)
     {
-      
+
     }
 }
