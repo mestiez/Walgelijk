@@ -46,21 +46,54 @@ public static class Onion
 
     public class Animations
     {
+        public readonly IList<IAnimation> Default = new IAnimation[] { new FadeAnimation() };
+        public float DefaultDurationSeconds = 0.3f;
+
         public readonly Queue<IAnimation> AnimationQueue = new();
+        internal float TargetDurationSeconds = 0;
+        internal bool ForceNoAnimation = false;
+
+        public void SetDuration(float seconds)
+        {
+            TargetDurationSeconds = seconds;
+        }
 
         public void Add(in IAnimation anim)
         {
             AnimationQueue.Enqueue(anim);
         }
 
+        public void DoNotAnimate() => ForceNoAnimation = true;
+
         public void Process(ControlInstance inst)
         {
-            if (inst.Animations.All.Length != AnimationQueue.Count)
-                inst.Animations.All = new IAnimation[AnimationQueue.Count];
+            if (!ForceNoAnimation)
+            {
+                if (AnimationQueue.Count == 0)
+                {
+                    if (inst.Animations.All.Length != Default.Count)
+                        inst.Animations.All = new IAnimation[Default.Count];
+                    for (int i = 0; i < Default.Count; i++)
+                        inst.Animations.All[i] = Default[i];
+                }
+                else
+                {
+                    int i = 0;
+                    if (inst.Animations.All.Length != AnimationQueue.Count)
+                        inst.Animations.All = new IAnimation[AnimationQueue.Count];
+                    while (AnimationQueue.TryDequeue(out var next))
+                        inst.Animations.All[i++] = next;
+                }
+            }
+            else
+            {
+                AnimationQueue.Clear();
+                inst.Animations.All = Array.Empty<IAnimation>();
+            }
 
-            int i = 0;
-            while (AnimationQueue.TryDequeue(out var next))
-                inst.Animations.All[i++] = next;
+            inst.AllowedDeadTime = TargetDurationSeconds < 0 ? DefaultDurationSeconds : TargetDurationSeconds;
+            TargetDurationSeconds = -1;
+            ForceNoAnimation = false;
         }
     }
 }

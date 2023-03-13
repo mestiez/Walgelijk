@@ -105,7 +105,6 @@ public class ControlTree
 
         var inst = EnsureInstance(CurrentNode.Identity);
         var p = new ControlParams(CurrentNode, inst);
-        var b = CurrentNode.Behaviour;
 
         //if (b is ISetupChildren sc)
         //    sc.OnEndChildren(p);
@@ -132,7 +131,8 @@ public class ControlTree
         incrementor = 0;
 
         while (toDelete.TryDequeue(out var node))
-            Nodes.Remove(node.Identity);
+            if (!Nodes.Remove(node.Identity))
+                Logger.Warn($"Onion: failed to delete {node}");
 
         focusAnimationProgress = Utilities.Clamp(focusAnimationProgress + dt, 0, 1);
 

@@ -1,4 +1,4 @@
-﻿using static Walgelijk.Onion.Onion;
+﻿using System.Numerics;
 
 namespace Walgelijk.Onion.Animations;
 
@@ -9,7 +9,7 @@ public interface IAnimation
     public void AnimateAlpha(ref float alpha, float t);
     public bool ShouldRenderText(float t);
 
-    public static float GetProgress(float t) => Utilities.Clamp(Easings.Cubic.InOut(t));
+    public static float GetProgress(float t) => Easings.Cubic.InOut(Utilities.Clamp(t));
 }
 
 public class AnimationCollection : IAnimation
@@ -68,6 +68,27 @@ public readonly struct ShrinkAnimation : IAnimation
     public void AnimateRect(ref Rect rect, float t)
     {
         rect = rect.Scale(Utilities.Lerp(IAnimation.GetProgress(t), 1, 0.6f));
+    }
+
+    public bool ShouldRenderText(float t) => true;
+}
+
+public readonly struct MoveInAnimation : IAnimation
+{
+    public readonly Vector2 Origin;
+
+    public MoveInAnimation(Vector2 origin)
+    {
+        Origin = origin;
+    }
+
+    public void AnimateAlpha(ref float alpha, float t) { }
+    public void AnimateColour(ref Color color, float t) { }
+
+    public void AnimateRect(ref Rect rect, float t)
+    {
+        var from = new Rect(Origin, rect.GetSize());
+        rect = Utilities.Lerp(from, rect, IAnimation.GetProgress(t));
     }
 
     public bool ShouldRenderText(float t) => true;

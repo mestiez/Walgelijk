@@ -105,7 +105,7 @@ public struct IMGUIScene : ISceneCreator
                     Onion.Layout.FitContainer(1, null);
                     if (Walgelijk.Onion.Controls.Button.Click("Ik besta ook " + i, i))
                     {
-                        WindowsOpen[i % WindowsOpen.Length] = true;
+                        WindowsOpen[i % WindowsOpen.Length] = !WindowsOpen[i % WindowsOpen.Length];
                         Audio.PlayOnce(Sound.Beep);
                     }
                 }
@@ -152,7 +152,7 @@ public struct IMGUIScene : ISceneCreator
             {
                 Onion.Layout.Offset(i * 64, i * 64);
                 Onion.Layout.Size(256, 128);
-              //  Onion.Layout.Clamp();
+                //Onion.Layout.Clamp();
                 DragWindow.Start("Cool title", ref WindowsOpen[i], i);
                 {
                     Onion.Layout.FitContainer(1, 1);
@@ -160,6 +160,7 @@ public struct IMGUIScene : ISceneCreator
                     Onion.Layout.Offset(0, 24);
                     Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
                     Onion.Tree.Start(1435 + i, new ScrollView());
+                    if (WindowsOpen[i])
                     {
                         Onion.Layout.Size(128, 32);
                         Onion.Layout.Offset(Onion.Theme.Padding * 2, Onion.Theme.Padding * 2 + 24);

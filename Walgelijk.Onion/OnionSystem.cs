@@ -133,20 +133,39 @@ public class OnionSystem : Walgelijk.System
     {
         float h = 0.5f;
         var offset = new Vector2(32, 32);
+        int c = 0;
+
         draw(Onion.Tree.Root);
+
+        Draw.Colour = Colors.Magenta;
+        Draw.Text(
+            $"Real node count:  {Onion.Tree.Nodes.Count}",
+            new Vector2(Window.Width - 32, 32),
+            Vector2.One * 2, HorizontalTextAlign.Right, VerticalTextAlign.Top);
+
+        Draw.Text(
+            $"Tree node count:  {c}",
+            new Vector2(Window.Width - 32, 32 * 2),
+            Vector2.One * 2, HorizontalTextAlign.Right, VerticalTextAlign.Top);
+
         void draw(Node node)
         {
+            c++;
             var inst = Onion.Tree.EnsureInstance(node.Identity);
+            var t = (node.ToString() ?? "[untitled]") + " Order: " + node.ComputedGlobalOrder;
+
+            Draw.Colour = Colors.Black.WithAlpha(0.9f);
+            var w = Draw.CalculateTextWidth(t);
+            Draw.Quad(new Rect(offset.X, offset.Y - 16, offset.X + w, offset.Y));
+
             Draw.Colour = Colors.Gray;
             if (node.AliveLastFrame)
                 Draw.Colour = Colors.Yellow;
             if (node.Alive)
                 Draw.Colour = Color.FromHsv(h, 0.6f, 1);
 
-            if (Input.IsKeyHeld(Key.Space))
-                Draw.Text($"Scroll: {inst.InnerScrollOffset.X}, {inst.InnerScrollOffset.Y}, Y: {inst.Rects.ComputedGlobal.MinY}", offset, Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Bottom);
-            else
-                Draw.Text((node.ToString() ?? "[untitled]") + " D: " + node.ComputedGlobalOrder, offset, Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Bottom);
+            Draw.Text(t, offset, Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Bottom);
+
             offset.X += 32;
             h += 0.15f;
             foreach (var item in node.GetChildren())
