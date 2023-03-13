@@ -1,14 +1,40 @@
 ﻿using System.Runtime.CompilerServices;
+using Walgelijk.Onion.Layout;
 using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion.Controls;
 
 public readonly struct DragWindow : IControl
 {
+    public readonly bool IsOpen;
+
+    public DragWindow(bool isOpen)
+    {
+        IsOpen = isOpen;
+    }
+
     public static ControlState Start(string title, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(DragWindow).GetHashCode(), identity, site), new DragWindow());
+        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(DragWindow).GetHashCode(), identity, site), new DragWindow(true));
         instance.Name = title;
+        return instance.State;
+    }
+
+    public static ControlState Start(string title, ref bool isOpen, int identity = 0, [CallerLineNumber] int site = 0)
+    {
+        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(DragWindow).GetHashCode(), identity, site), new DragWindow(isOpen));
+        instance.Name = title;
+
+        // Onion.Layout.Offset(5, 5);
+        Onion.Layout.Size(18, 18);
+        Onion.Layout.Enqueue(new StickTop());
+        Onion.Layout.Enqueue(new StickRight());
+
+        if (Button.Click("X", instance.Identity))
+            isOpen = !isOpen;
+
+        //if (!Openness.TryGetValue(instance.Identity, out isOpen))
+        //    Openness.AddOrSet(identity, isOpen);
         return instance.State;
     }
 
@@ -23,11 +49,18 @@ public readonly struct DragWindow : IControl
 
     public void OnProcess(in ControlParams p)
     {
-        //var d = p.Instance.Rects.ComputedGlobal;
-        //d.MaxY = d.MinY + 32;
-        //bool wasActive = p.Instance.IsActive;
-
-        ControlUtils.ProcessDraggable(p, p.Instance.Rects.ComputedGlobal);
+        if (IsOpen)
+        {
+            var d = p.Instance.Rects.ComputedGlobal;
+            d.MaxY = d.MinY + 24 + Onion.Theme.Padding * 2;
+            ControlUtils.ProcessDraggable(p, d);
+        }
+        else
+        {
+            p.Instance.CaptureFlags = CaptureFlags.None;
+            p.Instance.Rects.Raycast = default;
+            p.Instance.Rects.ComputedGlobal = default;
+        }
 
         //if (p.Instance.IsActive && !wasActive)
         //{
@@ -40,6 +73,9 @@ public readonly struct DragWindow : IControl
 
     public void OnRender(in ControlParams p)
     {
+        if (!IsOpen)
+            return;
+
         (ControlTree tree, Layout.Layout layout, Input input, GameState state, Node node, ControlInstance instance) = p;
 
         instance.Rects.Rendered = instance.Rects.ComputedGlobal;

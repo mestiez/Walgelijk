@@ -23,4 +23,8 @@ public enum ControlState : byte
     /// The user is actively interacting with this control. <see cref="Navigator.ActiveControl"/>
     /// </summary>
     Active = 8,
+    /// <summary>
+    /// The control is in a "second phase" of interactivity. <see cref="Navigator.TriggeredControl"/>
+    /// </summary>
+    Triggered = 16
 }

@@ -53,6 +53,11 @@ public class ControlInstance
     public bool HasScroll => Onion.Navigator.ScrollControl == Identity;
 
     /// <summary>
+    /// Returns true if <see cref="Navigator.TriggeredControl"/> is <see cref="Identity"/>
+    /// </summary>
+    public bool IsTriggered => Onion.Navigator.TriggeredControl == Identity;
+
+    /// <summary>
     /// Determines what events this control is capable of capturing. 
     /// Normally set to just <see cref="CaptureFlags.Hover"/>, it will only capture hover events.
     /// </summary>

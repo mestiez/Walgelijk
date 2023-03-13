@@ -25,7 +25,7 @@ public struct IMGUIScene : ISceneCreator
             OrthographicSize = 1,
             ClearColour = new Color("#550055")
         });
-        game.UpdateRate = 60;
+        game.UpdateRate = 144;
         return scene;
     }
 
@@ -46,6 +46,8 @@ public struct IMGUIScene : ISceneCreator
         };
 
         public static int DropdownSelectedIndex;
+
+        public static bool[] WindowsOpen = { true, true };
 
         private const string textRectContents =
             "This paper presents a software capable of visualizing large amounts of Diffusion MRI tractography data. " +
@@ -96,13 +98,16 @@ public struct IMGUIScene : ISceneCreator
                 Onion.Layout.VerticalLayout();
 
                 Onion.Tree.Start(75, new ScrollView());
-                for (int i = 0; i < 12; i++)
+                for (int i = 0; i < 7; i++)
                 {
                     Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
                     Onion.Layout.Size(0, 32);
                     Onion.Layout.FitContainer(1, null);
                     if (Walgelijk.Onion.Controls.Button.Click("Ik besta ook " + i, i))
+                    {
+                        WindowsOpen[i % WindowsOpen.Length] = true;
                         Audio.PlayOnce(Sound.Beep);
+                    }
                 }
                 Onion.Tree.End();
             }
@@ -115,7 +120,7 @@ public struct IMGUIScene : ISceneCreator
                 Onion.Layout.Offset(0, Window.Height - hotbarHeight - Onion.Theme.Padding);
 
                 Onion.Tree.Start(106, new ScrollView());
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     Onion.Layout.Size(hotbarHeight - Onion.Theme.Padding * 2, hotbarHeight - Onion.Theme.Padding * 2);
                     Onion.Layout.CenterVertical();
@@ -147,18 +152,19 @@ public struct IMGUIScene : ISceneCreator
             {
                 Onion.Layout.Offset(i * 64, i * 64);
                 Onion.Layout.Size(256, 128);
-                DragWindow.Start("Cool title", i);
+              //  Onion.Layout.Clamp();
+                DragWindow.Start("Cool title", ref WindowsOpen[i], i);
                 {
                     Onion.Layout.FitContainer(1, 1);
                     Onion.Layout.OffsetSize(0, -24);
                     Onion.Layout.Offset(0, 24);
                     Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
-                    Onion.Tree.Start(2830 + i, new ScrollView());
-
-                    Onion.Layout.Size(128, 32);
-                    Onion.Layout.Offset(Onion.Theme.Padding * 2, Onion.Theme.Padding * 2 + 24);
-                    Dropdown<string>.Create(DropdownOptions, ref DropdownSelectedIndex, identity: i);
-
+                    Onion.Tree.Start(1435 + i, new ScrollView());
+                    {
+                        Onion.Layout.Size(128, 32);
+                        Onion.Layout.Offset(Onion.Theme.Padding * 2, Onion.Theme.Padding * 2 + 24);
+                        Dropdown<string>.Create(DropdownOptions, ref DropdownSelectedIndex, identity: i);
+                    }
                     Onion.Tree.End(); //end container child
                 }
                 Onion.Tree.End();

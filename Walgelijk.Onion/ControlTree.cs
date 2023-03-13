@@ -1,4 +1,5 @@
-﻿using Walgelijk.Onion.Controls;
+﻿using System.Xml.Linq;
+using Walgelijk.Onion.Controls;
 using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion;
@@ -89,7 +90,15 @@ public class ControlTree
         Onion.Layout.Apply(p);
         Onion.Layout.Reset();
 
+        //if (node.Behaviour is ISetupChildren sc)
+        //    sc.OnSetupChildren(p);
+
         return (inst, node);
+    }
+
+    public void SetAnimation(in IAnimation animation)
+    {
+
     }
 
     public void End()
@@ -97,10 +106,14 @@ public class ControlTree
         if (CurrentNode == null)
             return;
 
-        CurrentNode.Behaviour.OnEnd(
-            new ControlParams(CurrentNode, EnsureInstance(CurrentNode.Identity))
-            );
+        var inst = EnsureInstance(CurrentNode.Identity);
+        var p = new ControlParams(CurrentNode, inst);
+        var b = CurrentNode.Behaviour;
 
+        //if (b is ISetupChildren sc)
+        //    sc.OnEndChildren(p);
+
+        CurrentNode.Behaviour.OnEnd(p);
         CurrentNode = CurrentNode.Parent;
     }
 

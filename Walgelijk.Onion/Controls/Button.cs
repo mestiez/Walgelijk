@@ -72,7 +72,8 @@ public readonly struct Button : IControl
         Draw.Font = Onion.Theme.Font;
         Draw.Colour = Onion.Theme.Text with { A = Draw.Colour.A };
         if (animation > 0.5f)
-            Draw.Text(instance.Name, instance.Rects.Rendered.GetCenter(), Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.ComputedGlobal.Width);
+            Draw.Text(instance.Name, instance.Rects.Rendered.GetCenter(), Vector2.One, 
+                HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.ComputedGlobal.Width);
     }
 
     public void OnEnd(in ControlParams p)

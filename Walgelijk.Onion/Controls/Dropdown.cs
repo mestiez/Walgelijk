@@ -16,7 +16,7 @@ public readonly struct Dropdown<T> : IControl
     {
         public int SelectedIndex;
         public Rect DropdownRect = default;
-        public float TimeSinceFocus = float.MaxValue;
+        public float TimeSinceTriggered = float.MaxValue;
 
         public CurrentState(int selectedIndex)
         {
@@ -55,7 +55,7 @@ public readonly struct Dropdown<T> : IControl
         if (currentStates.TryGetValue(instance.Identity, out var currentState))
             dropdownRect = currentState.DropdownRect;
 
-        if (instance.IsActive)
+        if (instance.IsTriggered)
         {
             float height = instance.Rects.ComputedGlobal.Height;
 
@@ -71,9 +71,7 @@ public readonly struct Dropdown<T> : IControl
                 Onion.Layout.Width(instance.Rects.ComputedGlobal.Width - Onion.Theme.Padding * 2);
                 Onion.Layout.CenterHorizontal();
                 if (Button.Click(values[i]?.ToString() ?? "???", i + instance.Identity))
-                {
                     currentStates[instance.Identity].SelectedIndex = i;
-                }
             }
 
             Onion.Tree.End();
@@ -95,20 +93,20 @@ public readonly struct Dropdown<T> : IControl
     {
         var instance = p.Instance;
         var currentState = currentStates[instance.Identity];
-        var o = instance.IsActive;
-        ControlUtils.ProcessToggleLike(p);
+        var old = instance.IsTriggered;
+        ControlUtils.ProcessTriggerable(p);
 
         if (p.Input.CtrlHeld)
             p.Instance.CaptureFlags |= CaptureFlags.Scroll;
         else
             p.Instance.CaptureFlags &= ~CaptureFlags.Scroll;
 
-        p.Node.AlwaysOnTop = p.Instance.IsActive;
+        p.Node.AlwaysOnTop = p.Instance.IsTriggered;
 
-        if (instance.IsActive != o)
-            currentState.TimeSinceFocus = 0;
+        if (instance.IsTriggered != old)
+            currentState.TimeSinceTriggered = 0;
         else
-            currentState.TimeSinceFocus += p.GameState.Time.DeltaTime;
+            currentState.TimeSinceTriggered += p.GameState.Time.DeltaTime;
 
         var computedGlobal = instance.Rects.ComputedGlobal;
 
@@ -126,15 +124,13 @@ public readonly struct Dropdown<T> : IControl
             }
         }
 
-        if (instance.IsActive)
+        if (instance.IsTriggered)
         {
             var dropdownRect = new Rect(computedGlobal.MinX, computedGlobal.MaxY, computedGlobal.MaxX, computedGlobal.MaxY);
             var dropdownRectTargetHeight = instance.Rects.Rendered.Height * Values.Count + Onion.Theme.Padding * 2;
 
-            dropdownRectTargetHeight *= Easings.Quad.Out(Utilities.Clamp(currentState.TimeSinceFocus / 0.1f));
-
+            dropdownRectTargetHeight *= Easings.Quad.Out(Utilities.Clamp(currentState.TimeSinceTriggered / 0.1f));
             dropdownRectTargetHeight = MathF.Min(dropdownRectTargetHeight, ((Game.Main.Window.Height - Onion.Theme.Padding * 2) - computedGlobal.MaxY));
-
             dropdownRect.MaxY += dropdownRectTargetHeight;
 
             if (instance.Rects.DrawBounds.HasValue)
@@ -145,8 +141,15 @@ public readonly struct Dropdown<T> : IControl
 
             currentState.DropdownRect = dropdownRect;
 
-            if (currentState.TimeSinceFocus > 0.1f && p.Instance.State.HasFlag(ControlState.Hover) && p.Input.MousePrimaryRelease)
-                Onion.Navigator.FocusedControl = null;
+            if (Onion.Navigator.TriggeredControl.HasValue &&
+                currentState.TimeSinceTriggered > 0.1f &&
+                p.Input.MousePrimaryRelease)
+            {
+               // var focusedInst = p.Tree.EnsureInstance(Onion.Navigator.FocusedControl.Value);
+                //var focusedNode = p.Tree.Nodes[Onion.Navigator.FocusedControl.Value];
+                //if (!instance.HasFocus && focusedNode.Parent != null && focusedNode.Parent.Identity == instance.Identity)
+                    Onion.Navigator.TriggeredControl = null;
+            }
         }
     }
 
@@ -172,7 +175,8 @@ public readonly struct Dropdown<T> : IControl
             IControl.SetCursor(DefaultCursor.Pointer);
             Draw.Colour = fg.Color.Brightness(1.2f);
         }
-        if (instance.IsActive)
+
+        if (instance.IsTriggered)
             Draw.Colour = fg.Color.Brightness(0.9f);
 
         Draw.Colour.A = (animation * animation * animation);
@@ -186,10 +190,10 @@ public readonly struct Dropdown<T> : IControl
             arrowPos.X -= instance.Rects.Rendered.Height / 2;
             Draw.Colour = Onion.Theme.Accent;
             Draw.ResetTexture();
-            Draw.TriangleIscoCentered(arrowPos, new Vector2(arrowSize), instance.IsActive ? 0 : 180);
+            Draw.TriangleIscoCentered(arrowPos, new Vector2(arrowSize), instance.IsTriggered ? 0 : 180);
         }
 
-        if (instance.IsActive)
+        if (instance.IsTriggered)
         {
             Draw.Colour = c;
             Draw.Texture = fg.Texture;

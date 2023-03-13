@@ -24,9 +24,14 @@ public class Navigator
     public int? FocusedControl;
 
     /// <summary>
-    /// Control that is actively being used (buttons held, dropdowns open, sliders sliding, etc.)
+    /// Control that is actively being used (buttons held, dropdowns held, sliders sliding, etc.)
     /// </summary>
     public int? ActiveControl;
+
+    /// <summary>
+    /// Control that is ready for extended interactivity (dropdowns open)
+    /// </summary>
+    public int? TriggeredControl;
 
     private readonly Stack<int> orderStack = new();
     private SortedNode[]? sortedByDepth = null;

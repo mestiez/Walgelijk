@@ -165,6 +165,27 @@ public struct Rect : IEquatable<Rect>
     }
 
     /// <summary>
+    /// Returns a copy of the rectangle that is clamped inside the given container rectangle, 
+    /// by translating the current rectangle by the necessary offset.
+    /// </summary>
+    public readonly Rect ClampInside(in Rect container)
+    {
+        var offset = Vector2.Zero;
+
+        if (MinX < container.MinX)
+            offset.X += container.MinX - MinX;
+        if (MinY < container.MinY)
+            offset.Y += container.MinY - MinY;
+
+        if (MaxX > container.MaxX)
+            offset.X += container.MaxX - MaxX;
+        if (MaxY > container.MaxY)
+            offset.Y += container.MaxY - MaxY;
+
+        return Translate(offset);
+    }
+
+    /// <summary>
     /// Return a copy of the rectangle expanded in all directions by the given amount
     /// </summary>
     public readonly Rect Expand(float f)

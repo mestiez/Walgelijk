@@ -4072,6 +4072,12 @@
             Return a copy of the rectangle but translated by the given amount
             </summary>
         </member>
+        <member name="M:Walgelijk.Rect.ClampInside(Walgelijk.Rect@)">
+            <summary>
+            Returns a copy of the rectangle that is clamped inside the given container rectangle, 
+            by translating the current rectangle by the necessary offset.
+            </summary>
+        </member>
         <member name="M:Walgelijk.Rect.Expand(System.Single)">
             <summary>
             Return a copy of the rectangle expanded in all directions by the given amount

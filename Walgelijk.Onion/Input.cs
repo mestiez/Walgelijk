@@ -64,3 +64,12 @@ public class Input
         CtrlHeld = state.IsKeyHeld(Key.LeftControl);
     }
 }
+
+public interface IAnimation
+{
+    public float Duration { get; set; }
+
+    public float AnimateRect(ref Rect rect, float t);
+    public float AnimateColour(ref Color color, float t);
+    public float AnimateAlpha(ref float alpha, float t);
+}
