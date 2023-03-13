@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Walgelijk.Onion.Animations;
 
 namespace Walgelijk.Onion;
 
@@ -9,6 +10,7 @@ public static class Onion
     public static readonly Navigator Navigator = new();
     public static readonly Input Input = new();
     public static readonly Configuration Configuration = new();
+    public static readonly Animations Animation = new();
     public static Theme Theme = new();
 
     public static readonly Material ControlMaterial = OnionMaterial.CreateNew();
@@ -41,6 +43,26 @@ public static class Onion
      * heel veel basic functies hier (label, button. etc.)
      * Animation system (IAnimation) deel van style? nee toch??? weet ik het 
     */
+
+    public class Animations
+    {
+        public readonly Queue<IAnimation> AnimationQueue = new();
+
+        public void Add(in IAnimation anim)
+        {
+            AnimationQueue.Enqueue(anim);
+        }
+
+        public void Process(ControlInstance inst)
+        {
+            if (inst.Animations.All.Length != AnimationQueue.Count)
+                inst.Animations.All = new IAnimation[AnimationQueue.Count];
+
+            int i = 0;
+            while (AnimationQueue.TryDequeue(out var next))
+                inst.Animations.All[i++] = next;
+        }
+    }
 }
 
 public class Theme

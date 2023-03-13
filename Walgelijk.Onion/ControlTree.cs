@@ -90,15 +90,12 @@ public class ControlTree
         Onion.Layout.Apply(p);
         Onion.Layout.Reset();
 
+        Onion.Animation.Process(inst);
+
         //if (node.Behaviour is ISetupChildren sc)
         //    sc.OnSetupChildren(p);
 
         return (inst, node);
-    }
-
-    public void SetAnimation(in IAnimation animation)
-    {
-
     }
 
     public void End()

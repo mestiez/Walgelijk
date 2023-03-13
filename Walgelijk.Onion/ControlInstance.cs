@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Walgelijk.Onion.Animations;
 
 namespace Walgelijk.Onion;
 
@@ -67,6 +68,11 @@ public class ControlInstance
     /// Should this control render the focus box if it has focus
     /// </summary>
     public bool RenderFocusBox = true;
+
+    /// <summary>
+    /// List of visual animations to apply to this control
+    /// </summary>
+    public readonly AnimationCollection Animations = new();
 
     public ControlState State
     {
