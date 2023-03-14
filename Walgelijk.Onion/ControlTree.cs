@@ -130,9 +130,9 @@ public class ControlTree
         Root.Process(p);
         incrementor = 0;
 
-        while (toDelete.TryDequeue(out var node))
-            if (!Nodes.Remove(node.Identity))
-                Logger.Warn($"Onion: failed to delete {node}");
+        //while (toDelete.TryDequeue(out var node))
+        //    if (!Nodes.Remove(node.Identity))
+        //        Logger.Warn($"Onion: failed to delete {node}");
 
         focusAnimationProgress = Utilities.Clamp(focusAnimationProgress + dt, 0, 1);
 

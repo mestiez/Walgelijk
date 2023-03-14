@@ -1,6 +1,9 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.Numerics;
+using System.Xml.Linq;
 using Walgelijk.SimpleDrawing;
+using static Walgelijk.Onion.Navigator;
 
 namespace Walgelijk.Onion;
 
@@ -34,7 +37,11 @@ public class Navigator
     public int? TriggeredControl;
 
     private readonly Stack<int> orderStack = new();
-    private SortedNode[]? sortedByDepth = null;
+    private SortedNode[]? sortedByDepthRaw = null;
+    private int sortedByDepthCount = 0;
+
+    public ReadOnlySpan<SortedNode> SortedByDepth => sortedByDepthRaw.AsSpan(0, sortedByDepthCount);
+
     private readonly Dictionary<int, float> highlightControls = new();
 
     public void Process(Input input, float dt)
@@ -144,67 +151,56 @@ public class Navigator
             highlightControls[id] = duration;
     }
 
-    public void ComputeGlobalOrder()
-    {
-        orderStack.Clear();
-        int counter = 0;
-        RecurseNodeOrder(Onion.Tree.Root, ref counter);
-    }
-
-    private void RecurseNodeOrder(Node node, ref int counter)
+    private void RecurseNodeOrder(Node node, ref int index)
     {
         //je moet global order doen
         int globalOrder;
-        if (node.AlwaysOnTop)
-            globalOrder = node.ComputedGlobalOrder = (int)MathF.Pow(10, MaxDepth + 1);
-        else
-            globalOrder = node.ComputedGlobalOrder = GetGlobalDepth(node.RequestedLocalOrder + counter);
+        //if (node.AlwaysOnTop)
+        //    globalOrder = node.ComputedGlobalOrder = (int)MathF.Pow(10, MaxDepth + 1);
+        //else
+        globalOrder = node.ComputedGlobalOrder = Math.Max(node.AlwaysOnTop ? 1000 : node.RequestedLocalOrder, orderStack.Peek());
 
-        counter++;
+        sortedByDepthRaw![index++] = new SortedNode(node.Identity, globalOrder);
+
         orderStack.Push(globalOrder);
-
         foreach (var child in node.GetChildren())
-            RecurseNodeOrder(child, ref counter);
-
+            RecurseNodeOrder(child, ref index);
         orderStack.Pop();
-    }
-
-    private int GetGlobalDepth(int depth)
-    {
-        depth = Math.Max(depth, 0);
-        if (orderStack.Count == 0)
-            return depth * (int)MathF.Pow(10, MaxDepth);
-        return orderStack.Peek() + depth * (int)MathF.Pow(10, MaxDepth - orderStack.Count);
     }
 
     private void RefreshOrder()
     {
-        ComputeGlobalOrder();
+        if (sortedByDepthRaw == null)
+            sortedByDepthRaw = new SortedNode[Onion.Tree.Nodes.Count];
+        else if (sortedByDepthRaw.Length != Onion.Tree.Nodes.Count)
+            Array.Resize(ref sortedByDepthRaw, Onion.Tree.Nodes.Count);
 
-        if (sortedByDepth == null)
-            sortedByDepth = new SortedNode[Onion.Tree.Nodes.Count];
-        else if (sortedByDepth.Length != Onion.Tree.Nodes.Count)
-            Array.Resize(ref sortedByDepth, Onion.Tree.Nodes.Count);
+        orderStack.Clear();
 
-        int i = 0;
-        foreach (var item in Onion.Tree.Nodes.Values)
-            sortedByDepth[i++] = new SortedNode(item.Identity, item.ComputedGlobalOrder);
+        orderStack.Push(0);
+        sortedByDepthCount = 0;
+        RecurseNodeOrder(Onion.Tree.Root, ref sortedByDepthCount);
+        orderStack.Pop();
 
-        Array.Sort(sortedByDepth, static (a, b) => a.Order - b.Order);
+        //int i = 0;
+        //foreach (var node in Onion.Tree.Nodes.Values)
+        //    sortedByDepth![i++] = new SortedNode(node.Identity, node.ComputedGlobalOrder);
+
+        //Array.Sort(sortedByDepth, static (a, b) => a.Order - b.Order);
     }
 
     public int? Raycast(Vector2 pos, CaptureFlags captureFlags) => Raycast(pos.X, pos.Y, captureFlags);
 
     public int? Raycast(float x, float y, CaptureFlags captureFlags)
     {
-        if (sortedByDepth == null)
+        if (sortedByDepthRaw == null)
             return null;
 
         var v = new Vector2(x, y);
 
-        for (int i = sortedByDepth.Length - 1; i >= 0; i--)
+        for (int i = SortedByDepth.Length - 1; i >= 0; i--)
         {
-            var c = sortedByDepth[i];
+            var c = SortedByDepth[i];
             var node = Onion.Tree.Nodes[c.Identity];
             if (!node.AliveLastFrame)
                 continue;
@@ -279,7 +275,7 @@ public class Navigator
     {
         orderStack.Clear();
         highlightControls.Clear();
-        sortedByDepth = null;
+        sortedByDepthRaw = null;
     }
 
     private readonly struct DirectionalNode

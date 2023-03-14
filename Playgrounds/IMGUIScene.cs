@@ -150,6 +150,9 @@ public struct IMGUIScene : ISceneCreator
 
             for (int i = 0; i < 2; i++)
             {
+                if (!WindowsOpen[i])
+                    continue;
+
                 Onion.Layout.Offset(i * 64, i * 64);
                 Onion.Layout.Size(256, 128);
                 //Onion.Layout.Clamp();
@@ -160,7 +163,6 @@ public struct IMGUIScene : ISceneCreator
                     Onion.Layout.Offset(0, 24);
                     Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
                     Onion.Tree.Start(1435 + i, new ScrollView());
-                    if (WindowsOpen[i])
                     {
                         Onion.Layout.Size(128, 32);
                         Onion.Layout.Offset(Onion.Theme.Padding * 2, Onion.Theme.Padding * 2 + 24);

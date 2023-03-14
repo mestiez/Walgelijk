@@ -142,20 +142,22 @@ public class Node
             SecondsDead += p.GameState.Time.DeltaTime;
         }
 
-        ControlUtils.ConsiderParentScroll(p);
+        if (AliveLastFrame || SecondsDead <= p.Instance.AllowedDeadTime)
+        {
+            ControlUtils.ConsiderParentScroll(p);
 
-        p.Instance.Rects.ComputedGlobal = p.Instance.Rects.Intermediate;
-        if (Parent != null && p.Tree.Instances.TryGetValue(Parent.Identity, out var parentInst))
-            p.Instance.Rects.ComputedGlobal = p.Instance.Rects.ComputedGlobal.Translate(parentInst.Rects.ComputedGlobal.BottomLeft);
+            p.Instance.Rects.ComputedGlobal = p.Instance.Rects.Intermediate;
+            if (Parent != null && p.Tree.Instances.TryGetValue(Parent.Identity, out var parentInst))
+                p.Instance.Rects.ComputedGlobal = p.Instance.Rects.ComputedGlobal.Translate(parentInst.Rects.ComputedGlobal.BottomLeft);
 
-        Behaviour.OnProcess(p);
+            Behaviour.OnProcess(p);
 
-        AdjustRaycastRect(p);
-        EnforceScrollBounds(p);
+            AdjustRaycastRect(p);
+            EnforceScrollBounds(p);
 
+        }
         foreach (var child in GetChildren())
-            child.Process(
-                new ControlParams(child, p.Tree.EnsureInstance(child.Identity)));
+            child.Process(new ControlParams(child, p.Tree.EnsureInstance(child.Identity)));
     }
 
     private void AdjustRaycastRect(in ControlParams p)
@@ -244,8 +246,8 @@ public class Node
                 item.SiblingIndex = siblingIndex++;
             }
         }
-        for (int i = 0; i < length; i++)
-            Children.Remove(toDelete[i]);
+        //for (int i = 0; i < length; i++)
+        //    Children.Remove(toDelete[i]);
         ArrayPool<int>.Shared.Return(toDelete);
 
         foreach (var item in GetChildren())

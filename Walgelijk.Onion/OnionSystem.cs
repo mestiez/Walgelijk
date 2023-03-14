@@ -153,24 +153,32 @@ public class OnionSystem : Walgelijk.System
             c++;
             var inst = Onion.Tree.EnsureInstance(node.Identity);
             var t = (node.ToString() ?? "[untitled]") + " Order: " + node.ComputedGlobalOrder;
+            var deadAnim =
+                Input.IsKeyHeld(Key.F2) ?
+                    0 :
+                    Easings.Cubic.InOut(Utilities.Clamp(node.AliveLastFrame ? (1 - node.SecondsAlive * 4) : node.SecondsDead * 4 - 1));
 
-            Draw.Colour = Colors.Black.WithAlpha(0.9f);
-            var w = Draw.CalculateTextWidth(t);
-            Draw.Quad(new Rect(offset.X, offset.Y - 16, offset.X + w, offset.Y));
+            if (deadAnim < 0.999f)
+            {
+                Draw.Colour = Colors.Black.WithAlpha(0.9f * (1 - deadAnim));
+                var w = Draw.CalculateTextWidth(t);
+                Draw.Quad(new Rect(offset.X, offset.Y - 16, offset.X + w, offset.Y));
 
-            Draw.Colour = Colors.Gray;
-            if (node.AliveLastFrame)
-                Draw.Colour = Colors.Yellow;
-            if (node.Alive)
-                Draw.Colour = Color.FromHsv(h, 0.6f, 1);
+                Draw.Colour = Colors.Gray;
+                if (node.AliveLastFrame)
+                    Draw.Colour = Colors.Yellow;
+                if (node.Alive)
+                    Draw.Colour = Color.FromHsv(h, 0.6f, 1);
 
-            Draw.Text(t, offset, Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Bottom);
+                Draw.Colour.A *= 1 - deadAnim;
+                Draw.Text(t, offset, Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Bottom);
+            }
 
             offset.X += 32;
+            offset.Y += MathF.Max(0, Utilities.Lerp(16, 0, deadAnim));
             h += 0.15f;
             foreach (var item in node.GetChildren())
             {
-                offset.Y += 16;
                 draw(item);
             }
             h -= 0.15f;

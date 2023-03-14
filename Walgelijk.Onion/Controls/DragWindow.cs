@@ -36,9 +36,7 @@ public readonly struct DragWindow : IControl
         Onion.Layout.Enqueue(new StickRight());
 
         if (Button.Click("X", instance.Identity))
-        {
-            //isOpen = !isOpen;
-        }
+            isOpen = !isOpen;
 
         //if (!Openness.TryGetValue(instance.Identity, out isOpen))
         //    Openness.AddOrSet(identity, isOpen);
