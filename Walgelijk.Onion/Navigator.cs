@@ -153,11 +153,7 @@ public class Navigator
 
     private void RecurseNodeOrder(Node node, ref int index)
     {
-        //je moet global order doen
         int globalOrder;
-        //if (node.AlwaysOnTop)
-        //    globalOrder = node.ComputedGlobalOrder = (int)MathF.Pow(10, MaxDepth + 1);
-        //else
         globalOrder = node.ComputedGlobalOrder = Math.Max(node.AlwaysOnTop ? 1000 : node.RequestedLocalOrder, orderStack.Peek());
 
         sortedByDepthRaw![index++] = new SortedNode(node.Identity, globalOrder);
@@ -181,12 +177,6 @@ public class Navigator
         sortedByDepthCount = 0;
         RecurseNodeOrder(Onion.Tree.Root, ref sortedByDepthCount);
         orderStack.Pop();
-
-        //int i = 0;
-        //foreach (var node in Onion.Tree.Nodes.Values)
-        //    sortedByDepth![i++] = new SortedNode(node.Identity, node.ComputedGlobalOrder);
-
-        //Array.Sort(sortedByDepth, static (a, b) => a.Order - b.Order);
     }
 
     public int? Raycast(Vector2 pos, CaptureFlags captureFlags) => Raycast(pos.X, pos.Y, captureFlags);

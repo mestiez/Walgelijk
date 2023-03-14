@@ -60,13 +60,11 @@ public readonly struct DragWindow : IControl
         //if (IsOpen)
             ControlUtils.ProcessDraggable(p, d);
 
-        //if (p.Instance.IsActive && !wasActive)
-        //{
-        //    var topMost =
-        //        (p.Node.Parent == null ? Onion.Tree.Root.GetChildren() : p.Node.Parent.GetChildren()).
-        //        Min(static n => n.RequestedLocalOrder);
-        //    p.Node.RequestedLocalOrder = topMost - 1;
-        //}
+        if (p.Instance.IsActive && p.Input.MousePrimaryPressed && (p.Instance.Rects.Raycast?.ContainsPoint(p.Input.MousePosition) ?? false))
+        {
+            var topMost = Onion.Tree.Nodes.Values.Max(static n => n.RequestedLocalOrder);
+            p.Node.RequestedLocalOrder = topMost + 1;
+        }
     }
 
     public void OnRender(in ControlParams p)
