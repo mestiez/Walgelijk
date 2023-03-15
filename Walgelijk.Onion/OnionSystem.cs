@@ -86,6 +86,8 @@ public class OnionSystem : Walgelijk.System
         void draw(Node node)
         {
             var inst = Onion.Tree.EnsureInstance(node.Identity);
+            if (node.GetAnimationTime() <= float.Epsilon)
+                return;
 
             Draw.OutlineColour = Colors.Purple;
             Draw.OutlineWidth = 4;
