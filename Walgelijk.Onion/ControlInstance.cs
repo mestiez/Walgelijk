@@ -70,6 +70,11 @@ public class ControlInstance
     public bool RenderFocusBox = true;
 
     /// <summary>
+    /// This control will not play any of the state change sounds if this set to true
+    /// </summary>
+    public bool Muted = false;
+
+    /// <summary>
     /// List of visual animations to apply to this control
     /// </summary>
     public readonly AnimationCollection Animations = new();

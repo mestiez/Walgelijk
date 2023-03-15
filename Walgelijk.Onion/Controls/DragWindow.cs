@@ -10,6 +10,7 @@ public readonly struct DragWindow : IControl
 {
     public readonly bool IsOpen;
 
+
     public DragWindow(bool isOpen)
     {
         IsOpen = isOpen;
@@ -24,14 +25,16 @@ public readonly struct DragWindow : IControl
 
     public static ControlState Start(string title, ref bool isOpen, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        Onion.Animation.SetDuration(0.1f);
+        //Onion.Animation.SetDuration(1.1f);
         Onion.Animation.Add(new FadeAnimation());
-        Onion.Animation.Add(new ShrinkAnimation());
+        Onion.Animation.Add(new ShrinkAnimation(0.9f));
         var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(DragWindow).GetHashCode(), identity, site), new DragWindow(true));
         instance.Name = title;
+        instance.Muted = true;
+        instance.RenderFocusBox = false;
 
-        // Onion.Layout.Offset(5, 5);
-        Onion.Layout.Size(18, 18);
+        float buttonSize = Onion.Theme.WindowTitleBarHeight - Onion.Theme.Padding ;
+        Onion.Layout.Size(buttonSize, buttonSize);
         Onion.Layout.Enqueue(new StickTop());
         Onion.Layout.Enqueue(new StickRight());
 
@@ -55,10 +58,9 @@ public readonly struct DragWindow : IControl
     public void OnProcess(in ControlParams p)
     {
         var d = p.Instance.Rects.ComputedGlobal;
-        d.MaxY = d.MinY + 24 + Onion.Theme.Padding * 2;
+        d.MaxY = d.MinY + Onion.Theme.WindowTitleBarHeight + Onion.Theme.Padding * 2;
 
-        //if (IsOpen)
-            ControlUtils.ProcessDraggable(p, d);
+        ControlUtils.ProcessDraggable(p, d);
 
         if (p.Instance.IsActive && p.Input.MousePrimaryPressed && (p.Instance.Rects.Raycast?.ContainsPoint(p.Input.MousePosition) ?? false))
         {
@@ -72,7 +74,11 @@ public readonly struct DragWindow : IControl
         (ControlTree tree, Layout.Layout layout, Input input, GameState state, Node node, ControlInstance instance) = p;
 
         instance.Rects.Rendered = instance.Rects.ComputedGlobal;
-        var t = node.SecondsAlive / instance.AllowedDeadTime;
+        var t = node.GetAnimationTime();
+
+        if (t <= float.Epsilon)
+            return;
+
         var anim = instance.Animations;
 
         var fg = Onion.Theme.Foreground;
@@ -82,10 +88,7 @@ public readonly struct DragWindow : IControl
         if (instance.State.HasFlag(ControlState.Active))
             Draw.Colour = fg.Color.Brightness(0.9f);
         else if (instance.State.HasFlag(ControlState.Hover))
-        {
-            IControl.SetCursor(DefaultCursor.Pointer);
             Draw.Colour = fg.Color.Brightness(1.2f);
-        }
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
         anim.AnimateColour(ref Draw.Colour, t);
@@ -95,15 +98,16 @@ public readonly struct DragWindow : IControl
         anim.AnimateColour(ref Draw.Colour, t);
 
         Draw.Text(
-            instance.Name, instance.Rects.ComputedGlobal.BottomLeft + new Vector2(Onion.Theme.Padding), 
+            instance.Name, instance.Rects.Rendered.BottomLeft + new Vector2(Onion.Theme.Padding),
             Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Top, instance.Rects.ComputedGlobal.Width);
 
         var bg = Onion.Theme.Background;
         Draw.Colour = bg.Color;
         Draw.Texture = bg.Texture;
         anim.AnimateColour(ref Draw.Colour, t);
+
         var container = instance.Rects.Rendered.Expand(-Onion.Theme.Padding);
-        container.MinY += 24;
+        container.MinY += Onion.Theme.WindowTitleBarHeight;
         anim.AnimateRect(ref container, t);
         Draw.Quad(container, 0, Onion.Theme.Rounding);
     }

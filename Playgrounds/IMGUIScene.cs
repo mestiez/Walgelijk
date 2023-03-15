@@ -106,7 +106,6 @@ public struct IMGUIScene : ISceneCreator
                     if (Walgelijk.Onion.Controls.Button.Click("Ik besta ook " + i, i))
                     {
                         WindowsOpen[i % WindowsOpen.Length] = !WindowsOpen[i % WindowsOpen.Length];
-                        Audio.PlayOnce(Sound.Beep);
                     }
                 }
                 Onion.Tree.End();
@@ -126,7 +125,9 @@ public struct IMGUIScene : ISceneCreator
                     Onion.Layout.CenterVertical();
                     Onion.Layout.Offset(Onion.Theme.Padding + i * (hotbarHeight - Onion.Theme.Padding), 0);
                     if (ImageButton.Click(Texture.ErrorTexture, ImageContainmentMode.Cover, i))
-                        Audio.PlayOnce(Sound.Beep);
+                    {
+
+                    }
                 }
                 Onion.Tree.End();
             }

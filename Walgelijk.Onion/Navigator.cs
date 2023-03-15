@@ -1,46 +1,84 @@
 ﻿using System;
 using System.Buffers;
 using System.Numerics;
-using System.Xml.Linq;
 using Walgelijk.SimpleDrawing;
-using static Walgelijk.Onion.Navigator;
 
 namespace Walgelijk.Onion;
 
 public class Navigator
 {
-    public const int MaxDepth = 7;
-
     /// <summary>
     /// Control currently capturing the cursor
     /// </summary>
-    public int? HoverControl;
-
+    public int? HoverControl
+    {
+        get => hoverControl; set
+        {
+            if (hoverControl != value && value != null && !Onion.Tree.EnsureInstance(value.Value).Muted)
+                Onion.PlaySound(ControlState.Hover);
+            hoverControl = value;
+        }
+    }
     /// <summary>
     /// Control currently capturing the scroll wheel (scroll view, sliders, dropdowns, etc.)
     /// </summary>
-    public int? ScrollControl;
-
+    public int? ScrollControl
+    {
+        get => scrollControl; set
+        {
+            if (scrollControl != value && value != null && !Onion.Tree.EnsureInstance(value.Value).Muted)
+                Onion.PlaySound(ControlState.Scroll);
+            scrollControl = value;
+        }
+    }
     /// <summary>
     /// Control that is currently selected (textboxes, dropdowns, sliders, etc.)
     /// </summary>
-    public int? FocusedControl;
-
+    public int? FocusedControl
+    {
+        get => focusedControl; set
+        {
+            if (focusedControl != value && value != null && !Onion.Tree.EnsureInstance(value.Value).Muted)
+                Onion.PlaySound(ControlState.Focus);
+            focusedControl = value;
+        }
+    }
     /// <summary>
     /// Control that is actively being used (buttons held, dropdowns held, sliders sliding, etc.)
     /// </summary>
-    public int? ActiveControl;
-
+    public int? ActiveControl
+    {
+        get => activeControl; set
+        {
+            if (activeControl != value && value != null && !Onion.Tree.EnsureInstance(value.Value).Muted)
+                Onion.PlaySound(ControlState.Active);
+            activeControl = value;
+        }
+    }
     /// <summary>
     /// Control that is ready for extended interactivity (dropdowns open)
     /// </summary>
-    public int? TriggeredControl;
+    public int? TriggeredControl
+    {
+        get => triggeredControl; set
+        {
+            if (triggeredControl != value && value != null && !Onion.Tree.EnsureInstance(value.Value).Muted)
+                Onion.PlaySound(ControlState.Triggered);
+            triggeredControl = value;
+        }
+    }
+
+    public ReadOnlySpan<SortedNode> SortedByDepth => sortedByDepthRaw.AsSpan(0, sortedByDepthCount);
+
+    private int? hoverControl;
+    private int? scrollControl;
+    private int? focusedControl;
+    private int? activeControl;
+    private int? triggeredControl;
 
     private readonly Stack<int> orderStack = new();
     private SortedNode[]? sortedByDepthRaw = null;
     private int sortedByDepthCount = 0;
-
-    public ReadOnlySpan<SortedNode> SortedByDepth => sortedByDepthRaw.AsSpan(0, sortedByDepthCount);
 
     private readonly Dictionary<int, float> highlightControls = new();
 
@@ -68,6 +106,15 @@ public class Navigator
                 FocusedControl = null;
             else
                 ProcessKeyboardNavigation(input);
+        }
+
+        if (Game.Main.State.Input.IsKeyReleased(Key.F4))
+        {
+            float d = 1;
+            foreach (var id in RaycastAll(input.MousePosition.X, input.MousePosition.Y, CaptureFlags.Hover))
+            {
+                HighlightControl(id, 5 / (d *= 2));
+            }
         }
     }
 
@@ -151,16 +198,22 @@ public class Navigator
             highlightControls[id] = duration;
     }
 
-    private void RecurseNodeOrder(Node node, ref int index)
+    private void RecurseNodeOrder(Node node, ref int index, ref int treeDepth)
     {
+        if (!node.AliveLastFrame)
+            return;
+
         int globalOrder;
         globalOrder = node.ComputedGlobalOrder = Math.Max(node.AlwaysOnTop ? 1000 : node.RequestedLocalOrder, orderStack.Peek());
 
-        sortedByDepthRaw![index++] = new SortedNode(node.Identity, globalOrder);
+        sortedByDepthRaw![index++] = new SortedNode(node.Identity, globalOrder, treeDepth);
 
         orderStack.Push(globalOrder);
+        treeDepth++;
         foreach (var child in node.GetChildren())
-            RecurseNodeOrder(child, ref index);
+            RecurseNodeOrder(child, ref index, ref treeDepth);
+        treeDepth--;
+
         orderStack.Pop();
     }
 
@@ -175,8 +228,13 @@ public class Navigator
 
         orderStack.Push(0);
         sortedByDepthCount = 0;
-        RecurseNodeOrder(Onion.Tree.Root, ref sortedByDepthCount);
+        int treeDepth = 0;
+        RecurseNodeOrder(Onion.Tree.Root, ref sortedByDepthCount, ref treeDepth);
         orderStack.Pop();
+
+        //sortedByDepthRaw.AsSpan(0, sortedByDepthCount).Reverse();
+        sortedByDepthRaw.AsSpan(0, sortedByDepthCount).Sort(static (a, b) => b.ChronologicalOrder - a.ChronologicalOrder);
+        sortedByDepthRaw.AsSpan(0, sortedByDepthCount).Sort(static (a, b) => b.Order - a.Order);
     }
 
     public int? Raycast(Vector2 pos, CaptureFlags captureFlags) => Raycast(pos.X, pos.Y, captureFlags);
@@ -188,7 +246,7 @@ public class Navigator
 
         var v = new Vector2(x, y);
 
-        for (int i = SortedByDepth.Length - 1; i >= 0; i--)
+        for (int i = 0; i < SortedByDepth.Length; i++)
         {
             var c = SortedByDepth[i];
             var node = Onion.Tree.Nodes[c.Identity];
@@ -204,6 +262,29 @@ public class Navigator
         }
 
         return null;
+    }
+
+    public IEnumerable<int> RaycastAll(float x, float y, CaptureFlags captureFlags)
+    {
+        if (sortedByDepthRaw == null)
+            yield break;
+
+        var v = new Vector2(x, y);
+
+        for (int i = 0; i < SortedByDepth.Length; i++)
+        {
+            var c = SortedByDepth[i];
+            var node = Onion.Tree.Nodes[c.Identity];
+            if (!node.AliveLastFrame)
+                continue;
+
+            var inst = Onion.Tree.EnsureInstance(c.Identity);
+            if (inst.Rects.Raycast.HasValue && (inst.CaptureFlags & captureFlags) != 0)
+            {
+                if (inst.Rects.Raycast.Value.ContainsPoint(v))
+                    yield return c.Identity;
+            }
+        }
     }
 
     public int? FindInDirection(int origin, Vector2 direction)
@@ -288,11 +369,15 @@ public class Navigator
     {
         public readonly int Identity;
         public readonly int Order;
+        public readonly int ChronologicalOrder;
 
-        public SortedNode(int identity, int order)
+        public SortedNode(int identity, int order, int chronologicalOrder)
         {
             Identity = identity;
             Order = order;
+            ChronologicalOrder = chronologicalOrder;
         }
+
+        public override string? ToString() => $"Id: {Identity}, Order: {Order}";
     }
 }

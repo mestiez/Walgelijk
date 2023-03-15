@@ -49,16 +49,14 @@ public readonly struct ImageButton : IControl
     {
         (ControlTree tree, Layout.Layout layout, Input input, GameState state, Node node, ControlInstance instance) = p;
 
-        var animation = node.Alive ?
-            Utilities.Clamp(node.SecondsAlive / instance.AllowedDeadTime) :
-            1 - Utilities.Clamp(node.SecondsDead / instance.AllowedDeadTime);
-        animation = Easings.Cubic.InOut(animation);
-
-        instance.Rects.Rendered = instance.Rects.Rendered.Scale(Utilities.Lerp(animation, 1, 0.6f));
+        var t = node.GetAnimationTime();
+        var anim = instance.Animations;
 
         var fg = Onion.Theme.Foreground;
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
+
+        anim.AnimateRect(ref instance.Rects.Rendered, t);
 
         if (instance.State.HasFlag(ControlState.Hover))
         {
@@ -68,7 +66,7 @@ public readonly struct ImageButton : IControl
         if (instance.State.HasFlag(ControlState.Active))
             Draw.Colour = fg.Color.Brightness(0.9f);
 
-        Draw.Colour.A = (animation * animation * animation);
+        anim.AnimateColour(ref Draw.Colour, t);
         Draw.Quad(instance.Rects.Rendered, 0, Onion.Theme.Rounding);
 
         Draw.ResetMaterial();

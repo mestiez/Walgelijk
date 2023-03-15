@@ -131,6 +131,8 @@ public readonly struct Dropdown<T> : IControl
 
         if (instance.IsTriggered)
         {
+            p.Instance.Rects.Raycast = null;
+
             var dropdownRect = new Rect(computedGlobal.MinX, computedGlobal.MaxY, computedGlobal.MaxX, computedGlobal.MaxY);
             var dropdownRectTargetHeight = instance.Rects.Rendered.Height * Values.Count + Onion.Theme.Padding * 2;
 
@@ -163,7 +165,7 @@ public readonly struct Dropdown<T> : IControl
         (ControlTree tree, Layout.Layout layout, Input input, GameState state, Node node, ControlInstance instance) = p;
 
         var currentState = currentStates[p.Node.Identity];
-        var t = node.SecondsAlive / instance.AllowedDeadTime;
+        var t = node.GetAnimationTime();
         var anim = instance.Animations;
 
         var fg = Onion.Theme.Foreground;
@@ -173,11 +175,8 @@ public readonly struct Dropdown<T> : IControl
         anim.AnimateRect(ref instance.Rects.Rendered, t);
 
         if (instance.IsHover)
-        {
-            IControl.SetCursor(DefaultCursor.Pointer);
             Draw.Colour = fg.Color.Brightness(1.2f);
-        }
-        if (instance.State.HasFlag(ControlState.Active))
+        if (instance.IsActive)
             Draw.Colour = fg.Color.Brightness(0.9f);
         if (instance.IsTriggered)
             Draw.Colour = fg.Color.Brightness(0.9f);

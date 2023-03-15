@@ -7,6 +7,7 @@ public interface IAnimation
     public void AnimateRect(ref Rect rect, float t);
     public void AnimateColour(ref Color color, float t);
     public void AnimateAlpha(ref float alpha, float t);
+    public Matrix3x2 GetTransform(float t);
     public bool ShouldRenderText(float t);
 
     public static float GetProgress(float t) => Easings.Cubic.InOut(Utilities.Clamp(t));
@@ -34,6 +35,11 @@ public class AnimationCollection : IAnimation
             All[i].AnimateRect(ref rect, t);
     }
 
+    public Matrix3x2 GetTransform(float t)
+    {
+        throw new NotImplementedException();
+    }
+
     public bool ShouldRenderText(float t)
     {
         bool a = true;
@@ -57,20 +63,32 @@ public readonly struct FadeAnimation : IAnimation
 
     public void AnimateRect(ref Rect rect, float t) { }
 
+    public Matrix3x2 GetTransform(float t) => Matrix3x2.Identity;
+
     public bool ShouldRenderText(float t) => t > 0.5f;
 }
 
 public readonly struct ShrinkAnimation : IAnimation
 {
-    public void AnimateAlpha(ref float alpha, float t) { }
-    public void AnimateColour(ref Color color, float t) { }
+    public readonly float TargetSize;
 
-    public void AnimateRect(ref Rect rect, float t)
+    public ShrinkAnimation()
     {
-        rect = rect.Scale(Utilities.Lerp(IAnimation.GetProgress(t), 1, 0.6f));
+        TargetSize = 0.9f;
     }
 
+    public ShrinkAnimation(float minSize)
+    {
+        TargetSize = minSize;
+    }
+
+    public void AnimateAlpha(ref float alpha, float t) { }
+    public void AnimateColour(ref Color color, float t) { }
+    public void AnimateRect(ref Rect rect, float t) => rect = rect.Scale(GetScaling(t));
+    public Matrix3x2 GetTransform(float t) => Matrix3x2.CreateScale(GetScaling(t));
     public bool ShouldRenderText(float t) => true;
+
+    private float GetScaling(float t) => Utilities.Lerp(IAnimation.GetProgress(t), 1, TargetSize);
 }
 
 public readonly struct MoveInAnimation : IAnimation
@@ -90,6 +108,8 @@ public readonly struct MoveInAnimation : IAnimation
         var from = new Rect(Origin, rect.GetSize());
         rect = Utilities.Lerp(from, rect, IAnimation.GetProgress(t));
     }
+
+    public Matrix3x2 GetTransform(float t) => Matrix3x2.Identity;
 
     public bool ShouldRenderText(float t) => true;
 }

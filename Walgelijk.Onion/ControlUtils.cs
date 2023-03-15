@@ -10,10 +10,14 @@ public readonly struct ControlUtils
         p.Instance.Rects.Raycast = p.Instance.Rects.ComputedGlobal;
         p.Instance.Rects.DrawBounds = p.Instance.Rects.ComputedGlobal;
 
-        if (p.Instance.IsHover && p.Input.MousePrimaryPressed)
+        if (p.Instance.IsHover)
         {
-            Onion.Navigator.FocusedControl = p.Instance.Identity;
-            Onion.Navigator.ActiveControl ??= p.Instance.Identity;
+            IControl.SetCursor(DefaultCursor.Pointer);
+            if (p.Input.MousePrimaryPressed)
+            {
+                Onion.Navigator.FocusedControl = p.Instance.Identity;
+                Onion.Navigator.ActiveControl ??= p.Instance.Identity;
+            }
         }
 
         if (p.Instance.IsActive && !p.Input.MousePrimaryHeld)
@@ -23,15 +27,22 @@ public readonly struct ControlUtils
     public static void ProcessDraggable(in ControlParams p, in Rect globalDraggableArea/*, bool stayInsideParent = true*/)
     {
         p.Instance.CaptureFlags = CaptureFlags.Hover;
-        p.Instance.Rects.Raycast = globalDraggableArea;
+        p.Instance.Rects.Raycast = p.Instance.Rects.ComputedGlobal;
         p.Instance.Rects.DrawBounds = p.Instance.Rects.ComputedGlobal;
 
-        if (p.Instance.IsHover && p.Input.MousePrimaryPressed)
+        var hoverDraggable = globalDraggableArea.ContainsPoint(p.Input.MousePosition) && p.Instance.IsHover;
+
+        if (hoverDraggable)
         {
-            if (globalDraggableArea.ContainsPoint(p.Input.MousePosition))
+            IControl.SetCursor(DefaultCursor.Pointer);
+
+            if (p.Input.MousePrimaryPressed)
             {
-                Onion.Navigator.FocusedControl = p.Instance.Identity;
-                Onion.Navigator.ActiveControl ??= p.Instance.Identity;
+                if (globalDraggableArea.ContainsPoint(p.Input.MousePosition))
+                {
+                    Onion.Navigator.FocusedControl = p.Instance.Identity;
+                    Onion.Navigator.ActiveControl ??= p.Instance.Identity;
+                }
             }
         }
 
@@ -61,6 +72,8 @@ public readonly struct ControlUtils
 
         if (p.Instance.IsHover)
         {
+            IControl.SetCursor(DefaultCursor.Pointer);
+
             if (p.Input.MousePrimaryPressed)
             {
                 Onion.Navigator.FocusedControl = p.Instance.Identity;

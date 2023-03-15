@@ -47,7 +47,7 @@ public readonly struct Button : IControl
     {
         (ControlTree tree, Layout.Layout layout, Input input, GameState state, Node node, ControlInstance instance) = p;
 
-        var t = node.SecondsAlive / instance.AllowedDeadTime;
+        var t = node.GetAnimationTime();
         var anim = instance.Animations;
 
         var fg = Onion.Theme.Foreground;
@@ -57,10 +57,7 @@ public readonly struct Button : IControl
         anim.AnimateRect(ref instance.Rects.Rendered, t);
 
         if (instance.State.HasFlag(ControlState.Hover))
-        {
-            IControl.SetCursor(DefaultCursor.Pointer);
             Draw.Colour = fg.Color.Brightness(1.2f);
-        }
         if (instance.State.HasFlag(ControlState.Active))
             Draw.Colour = fg.Color.Brightness(0.9f);
 
