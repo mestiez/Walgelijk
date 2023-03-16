@@ -16,7 +16,7 @@ public readonly struct Dropdown<T> : IControl
     private record CurrentState
     {
         public int SelectedIndex;
-        public bool HasChanged;
+        public bool IncomingChange;
         public Rect DropdownRect = default;
         public float TimeSinceTriggered = float.MaxValue;
 
@@ -87,11 +87,11 @@ public readonly struct Dropdown<T> : IControl
         if (!currentStates.TryAdd(instance.Identity, new CurrentState(selectedIndex)))
         {
             var s = currentStates[instance.Identity];
-            if (s.HasChanged)
+            if (s.IncomingChange)
                 selectedIndex = s.SelectedIndex;
             else
                 s.SelectedIndex = selectedIndex;
-            s.HasChanged = false;
+            s.IncomingChange = false;
         }
         return instance.State;
     }
@@ -136,7 +136,7 @@ public readonly struct Dropdown<T> : IControl
                     currentState.SelectedIndex = Values.Count - 1;
             }
 
-            currentState.HasChanged = true;
+            currentState.IncomingChange = true;
         }
 
         if (instance.IsTriggered)

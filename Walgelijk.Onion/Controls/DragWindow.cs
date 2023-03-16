@@ -20,6 +20,7 @@ public readonly struct DragWindow : IControl
     {
         var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(DragWindow).GetHashCode(), identity, site), new DragWindow(true));
         instance.Name = title;
+        node.RequestedLocalOrder = Math.Max(1, node.RequestedLocalOrder);
         return instance.State;
     }
 

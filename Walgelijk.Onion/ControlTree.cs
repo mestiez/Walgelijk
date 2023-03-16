@@ -151,6 +151,7 @@ public class ControlTree
         Root.Render(new ControlParams(Root, EnsureInstance(Root.Identity)));
 
         var focus = Onion.Navigator.FocusedControl;
+        Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, int.MaxValue);
         if (focus.HasValue && Instances.TryGetValue(focus.Value, out var inst) && inst.RenderFocusBox)
         {
             float expand = Onion.Theme.FocusBoxSize;

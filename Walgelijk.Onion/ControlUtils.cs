@@ -24,7 +24,7 @@ public readonly struct ControlUtils
             Onion.Navigator.ActiveControl = null;
     }
 
-    public static void ProcessDraggable(in ControlParams p, in Rect globalDraggableArea/*, bool stayInsideParent = true*/)
+    public static void ProcessDraggable(in ControlParams p, in Rect globalDraggableArea)
     {
         p.Instance.CaptureFlags = CaptureFlags.Hover;
         p.Instance.Rects.Raycast = p.Instance.Rects.ComputedGlobal;
@@ -49,19 +49,9 @@ public readonly struct ControlUtils
         if (p.Instance.IsActive)
         {
             p.Instance.Rects.Local = p.Instance.Rects.Local.Translate(p.Input.MouseDelta);
-
-            //if (stayInsideParent && p.Node.Parent != null)
-            //{
-            //    var layoutOffset = p.Layout.;
-            //    var v = p.Tree.EnsureInstance(p.Node.Parent.Identity).Rects.Intermediate;
-            //    v = new Rect(0, 0, v.Width, v.Height).Translate(-layoutOffset);
-            //    p.Instance.Rects.Local = p.Instance.Rects.Local.ClampInside(v);
-            //}
-
             if (p.Input.MousePrimaryRelease)
                 Onion.Navigator.ActiveControl = null;
         }
-
     }
 
     public static void ProcessTriggerable(in ControlParams p)

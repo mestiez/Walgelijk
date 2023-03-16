@@ -31,7 +31,7 @@ public struct IMGUIScene : ISceneCreator
 
     public class IMGUITestSystem : Walgelijk.System
     {
-        public static string[] DropdownOptions =
+        public readonly static string[] DropdownOptions =
         {
             "Amsterdam",
             "Rotterdam",
@@ -47,9 +47,9 @@ public struct IMGUIScene : ISceneCreator
 
         public static int DropdownSelectedIndex;
 
-        public static bool[] WindowsOpen = { true, true };
+        public readonly static bool[] WindowsOpen = { true, true };
 
-        private const string textRectContents =
+        private string textRectContents =
             "This paper presents a software capable of visualizing large amounts of Diffusion MRI tractography data. " +
             "The application can render three-dimensional streamlines to represent white matter tracts inside the human brain, and provide tools for exploring and investigating the 3D visualization in real-time. " +
             "It also provides several methods of visualization that are suited for various investigative purposes, including interactivity such as camera movement (moving, rotating, dragging and zooming) " +
@@ -57,6 +57,8 @@ public struct IMGUIScene : ISceneCreator
             "apply domain specific filters and tooling for analysis, use signed distance fields for rendering, generate curved tubes meshes, utilize GPU raymarching and raycasting, " +
             "use simple shading techniques appropriate for this context, employ voxels and raycasting to reinterpret the data to make it less costly to render, perform line culling to reduce occluded lines, " +
             "utilize instanced rendering of meshes using vertex attributes, and implement level of detail rendering.";
+
+        private string textBoxContent = "This is the only reliable way to contact us.";
 
         public override void Initialise()
         {
@@ -70,27 +72,6 @@ public struct IMGUIScene : ISceneCreator
             Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer - 1);
             Draw.Colour = Onion.Theme.Background.Color;
             Draw.Quad(new Rect(0, 0, Window.Width, Window.Height));
-
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    Onion.Layout.Offset(i * 64, i * 64);
-            //    Onion.Layout.Size(256, 128);
-            //    DragWindow.Start("Cool title", i);
-            //    {
-            //         Onion.Layout.FitContainer(1, 1);
-            //         Onion.Layout.OffsetSize(0, -32);
-            //         Onion.Tree.Start(2830 + i, new ScrollView());
-
-            //        Onion.Layout.Size(128, 24);
-            //        Onion.Layout.Offset(Onion.Theme.Padding * 2, Onion.Theme.Padding * 2 + 24);
-            //        Dropdown<string>.Create(DropdownOptions, ref DropdownSelectedIndex, identity: i);
-
-            //          Onion.Tree.End(); //end container child
-            //    }
-            //    Onion.Tree.End();
-            //}
-
-            //return;
 
             {
                 //Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
@@ -155,8 +136,7 @@ public struct IMGUIScene : ISceneCreator
                     continue;
 
                 Onion.Layout.Offset(i * 64, i * 64);
-                Onion.Layout.Size(256, 128);
-                //Onion.Layout.Clamp();
+                Onion.Layout.Size(300, 128);
                 DragWindow.Start("Cool title", ref WindowsOpen[i], i);
                 {
                     Onion.Layout.FitContainer(1, 1);
@@ -168,6 +148,10 @@ public struct IMGUIScene : ISceneCreator
                         Onion.Layout.Size(128, 32);
                         Onion.Layout.Offset(Onion.Theme.Padding * 2, Onion.Theme.Padding * 2 + 24);
                         Dropdown<string>.Create(DropdownOptions, ref DropdownSelectedIndex, identity: i);
+
+                        Onion.Layout.Size(128, 32);
+                        Onion.Layout.Offset(Onion.Theme.Padding * 3 + 128, Onion.Theme.Padding * 2 + 24);
+                        TextBox.Create(ref textBoxContent, new TextBoxOptions(), identity: i);
                     }
                     Onion.Tree.End(); //end container child
                 }
