@@ -16,6 +16,7 @@ public readonly struct Dropdown<T> : IControl
     private record CurrentState
     {
         public int SelectedIndex;
+        public bool HasChanged;
         public Rect DropdownRect = default;
         public float TimeSinceTriggered = float.MaxValue;
 
@@ -76,7 +77,7 @@ public readonly struct Dropdown<T> : IControl
                 Onion.Animation.Add(new MoveInAnimation(instance.Rects.ComputedGlobal.GetCenter()));
                 //Onion.Animation.Add(new ShrinkAnimation());
                 if (Button.Click(values[i]?.ToString() ?? "???", i + instance.Identity))
-                    currentStates[instance.Identity].SelectedIndex = i;
+                    selectedIndex = i;
             }
 
             Onion.Tree.End();
@@ -84,7 +85,14 @@ public readonly struct Dropdown<T> : IControl
 
         Onion.Tree.End();
         if (!currentStates.TryAdd(instance.Identity, new CurrentState(selectedIndex)))
-            selectedIndex = currentStates[instance.Identity].SelectedIndex;
+        {
+            var s = currentStates[instance.Identity];
+            if (s.HasChanged)
+                selectedIndex = s.SelectedIndex;
+            else
+                s.SelectedIndex = selectedIndex;
+            s.HasChanged = false;
+        }
         return instance.State;
     }
 
@@ -127,6 +135,8 @@ public readonly struct Dropdown<T> : IControl
                 if (currentState.SelectedIndex < 0)
                     currentState.SelectedIndex = Values.Count - 1;
             }
+
+            currentState.HasChanged = true;
         }
 
         if (instance.IsTriggered)
