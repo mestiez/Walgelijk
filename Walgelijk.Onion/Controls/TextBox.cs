@@ -1,5 +1,4 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using Walgelijk.SimpleDrawing;
@@ -19,10 +18,12 @@ public readonly struct TextBox : IControl
     private record TextBoxState(bool IncomingChange);
     private static readonly Dictionary<int, TextBoxState> states = new();
 
-    private static float TextOffset;
-    private static int CursorIndex;
-    private static float CursorPos;
+    private static float textOffset;
+    private static int cursorIndex;
+    private static float cursorPosition;
     private static float slowTimer = 0;
+    private static (int MinInc, int MaxExc)? selection;
+    private static float cursorBlinkTimer;
 
     public static ControlState Create(ref string text, in TextBoxOptions options, int identity = 0, [CallerLineNumber] int site = 0)
     {
@@ -62,38 +63,140 @@ public readonly struct TextBox : IControl
         p.Instance.CaptureFlags |= CaptureFlags.Scroll;
 
         if (hadFocus != p.Instance.HasFocus)
-            TextOffset = 0;
+            textOffset = 0;
 
         if (p.Instance.IsActive)
         {
+            //we dont use MoveCursor here because this is a special case where the mouse input determines the cursor position
             slowTimer += p.GameState.Time.DeltaTime;
+            cursorBlinkTimer = 0;
 
             var local = p.Input.MousePosition - p.Instance.Rects.ComputedGlobal.BottomLeft;
-            //local.X -= Onion.Theme.Padding;
-            local.X -= TextOffset;
+            local.X -= textOffset;
+            local.X -= Onion.Theme.Padding;
 
-            CursorIndex = GetIndexFromOffset(p.Instance.Name, local.X, out CursorPos);
+            cursorIndex = OffsetToIndex(p.Instance.Name, local.X, out cursorPosition);
 
-            if (slowTimer > 0.1f)
+            if (slowTimer > 0.05f)
             {
                 slowTimer = 0;
-                if (CursorPos < -TextOffset)
-                    TextOffset += Onion.Theme.FontSize;
-                else if (CursorPos > -TextOffset + p.Instance.Rects.Rendered.Width)
-                    TextOffset -= Onion.Theme.FontSize;
+                if (cursorPosition < -textOffset)
+                    textOffset += Onion.Theme.FontSize;
+                else if (cursorPosition > -textOffset + p.Instance.Rects.Rendered.Width)
+                    textOffset -= Onion.Theme.FontSize;
             }
         }
 
         if (p.Instance.HasFocus)
         {
+            cursorBlinkTimer += p.GameState.Time.DeltaTime;
+
+            p.Instance.CaptureFlags |= CaptureFlags.Key;
+
+            if (p.Instance.HasKey)
+            {
+                // cursor movement with directional keys
+                var dir = (int)(p.Input.DirectionKeyReleased.X > float.Epsilon ? 1 : (p.Input.DirectionKeyReleased.X < -float.Epsilon ? -1 : 0));
+                if (dir != 0)
+                    MoveCursor(p, cursorIndex + dir);
+
+                if (p.Input.TextEntered.Length > 0)
+                {
+                    string textToAdd = string.Empty;
+                    int backspaceCount = 0;
+                    int deleteCount = 0;
+                    for (int i = 0; i < p.Input.TextEntered.Length; i++)
+                    {
+                        var c = p.Input.TextEntered[i];
+                        switch (c)
+                        {
+                            case (char)0x7F:
+                                deleteCount++;
+                                break;
+                            case '\b':
+                                backspaceCount++;
+                                break;
+                            default:
+                                textToAdd += c;
+                                break;
+                        }
+                    }
+
+                    if (textToAdd.Length > 0)
+                        AppendText(p, textToAdd);
+                    for (int i = 0; i < backspaceCount; i++)
+                        Backspace(p);
+                }
+
+                if (p.Instance.Name.Length > 0)
+                {
+                    //if (cursorIndex > 0 & p.Input.BackspacePressed)
+                    //{
+                    //    p.Instance.Name = p.Instance.Name[..(cursorIndex-1)] + p.Instance.Name[cursorIndex..];
+                    //    states[p.Instance.Identity] = new TextBoxState(true);
+                    //}
+
+                    if (p.Input.DeletePressed)
+                        Delete(p);
+                }
+            }
+
             if (p.Instance.HasScroll)
             {
-                TextOffset += Onion.Input.ScrollDelta.Y;
-                TextOffset = Utilities.Clamp(
-                    TextOffset,
-                    -Draw.CalculateTextWidth(p.Instance.Name) + p.Instance.Rects.Rendered.Width - Onion.Theme.Padding * 2, 0);
+                var textWidth = Draw.CalculateTextWidth(p.Instance.Name);
+                var maxWidth = p.Instance.Rects.ComputedGlobal.Width - Onion.Theme.Padding* 2;
+
+                if (textWidth > maxWidth)
+                {
+                    textOffset += Onion.Input.ScrollDelta.Y;
+                    textOffset = Utilities.Clamp(
+                        textOffset,
+                        -textWidth + maxWidth , 0);
+                }
+                else
+                    textOffset = 0;
             }
         }
+        else
+            p.Instance.CaptureFlags &= ~CaptureFlags.Key;
+    }
+
+    private static void AppendText(in ControlParams p, ReadOnlySpan<char> text)
+    {
+        p.Instance.Name = p.Instance.Name.Insert(cursorIndex, new string(p.Input.TextEntered.Where(static c => !char.IsControl(c)).ToArray()));
+        states[p.Instance.Identity] = new TextBoxState(true);
+        MoveCursor(p, cursorIndex + p.Input.TextEntered.Length);
+    }
+
+    private static void Backspace(in ControlParams p)
+    {
+        if (cursorIndex < 1)
+            return;
+
+        MoveCursor(p, cursorIndex - 1);
+        Delete(p);
+    }
+
+    private static void Delete(in ControlParams p)
+    {
+        if (cursorIndex >= p.Instance.Name.Length)
+            return;
+
+        p.Instance.Name = p.Instance.Name[..cursorIndex] + p.Instance.Name[(cursorIndex + 1)..];
+        states[p.Instance.Identity] = new TextBoxState(true);
+    }
+
+    private static void MoveCursor(in ControlParams p, int targetIndex)
+    {
+        cursorIndex = targetIndex;
+        cursorPosition = IndexToOffset(p.Instance.Name, cursorIndex);
+        cursorIndex = Utilities.Clamp(cursorIndex, 0, p.Instance.Name.Length);
+
+        if (cursorPosition < -textOffset)
+            textOffset += Onion.Theme.FontSize;
+        else if (cursorPosition > -textOffset + p.Instance.Rects.Rendered.Width)
+            textOffset -= Onion.Theme.FontSize;
+        cursorBlinkTimer = 0;
     }
 
     public void OnRender(in ControlParams p)
@@ -103,7 +206,7 @@ public readonly struct TextBox : IControl
         var t = node.GetAnimationTime();
         var anim = instance.Animations;
 
-        float d = instance.HasFocus ? TextOffset : 0;
+        float d = instance.HasFocus ? textOffset : 0;
 
         var fg = Onion.Theme.Foreground;
         Draw.Colour = fg.Color;
@@ -138,33 +241,37 @@ public readonly struct TextBox : IControl
             offset.X += (int)d;
             Draw.Text(instance.Name, offset, new Vector2(ratio), HorizontalTextAlign.Left, VerticalTextAlign.Middle);
 
-            if (instance.HasFocus && state.Time.SecondsSinceLoad % 1 > 0.3f)
+            if (instance.HasFocus && cursorBlinkTimer % 1 < 0.3f)
             {
                 var rect = new Rect(default, new Vector2(1, instance.Rects.Rendered.Height - Onion.Theme.Padding * 2)).Translate(
-                    instance.Rects.ComputedGlobal.MinX + TextOffset,
+                    instance.Rects.ComputedGlobal.MinX + textOffset,
                     (instance.Rects.ComputedGlobal.MinY + instance.Rects.ComputedGlobal.MaxY) / 2
                     );
 
-                Draw.Quad(rect.Translate(CursorPos, 0), 0, 0);
+                Draw.Quad(rect.Translate(cursorPosition + Onion.Theme.Padding, 0), 0, 0);
             }
         }
     }
 
-    public static int GetIndexFromOffset(ReadOnlySpan<char> input, float x, out float real)
+    public static int OffsetToIndex(ReadOnlySpan<char> input, float x, out float snappedOffset)
     {
-        real = 0;
-        for (int i = 1; i <= input.Length; i++)
+        for (int i = 0; i < input.Length; i++)
         {
-            real = Draw.CalculateTextWidth(input[..i]);
-            if (real >= x)
+            snappedOffset = Draw.CalculateTextWidth(input[..i]);
+            if (snappedOffset >= x)
                 return Math.Max(0, i);
         }
-        real = Draw.CalculateTextWidth(input) + Draw.CalculateTextWidth(input[^1..^0]);
-        return input.Length + 1;
+        snappedOffset = Draw.CalculateTextWidth(input); //entire width plus last character again
+        return input.Length;
     }
 
-    public static float GetOffsetForChar(ReadOnlySpan<char> input, int index)
+    public static float IndexToOffset(ReadOnlySpan<char> input, int index)
     {
+        if (input.IsEmpty)
+            return 0;
+        if (index >= input.Length)
+            return Draw.CalculateTextWidth(input);
+        index = Utilities.Clamp(index, 0, input.Length - 1);
         return Draw.CalculateTextWidth(input[..index]);
     }
 

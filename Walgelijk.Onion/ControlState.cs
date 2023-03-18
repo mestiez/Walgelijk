@@ -26,5 +26,9 @@ public enum ControlState : byte
     /// <summary>
     /// The control is in a "second phase" of interactivity. <see cref="Navigator.TriggeredControl"/>
     /// </summary>
-    Triggered = 16
+    Triggered = 16,
+    /// <summary>
+    /// The control is capturing key events. <see cref="Navigator.KeyControl"/>
+    /// </summary>
+    Key = 32,
 }

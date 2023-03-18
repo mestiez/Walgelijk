@@ -59,6 +59,11 @@ public class ControlInstance
     public bool IsTriggered => Onion.Navigator.TriggeredControl == Identity;
 
     /// <summary>
+    /// Returns true if <see cref="Navigator.KeyControl"/> is <see cref="Identity"/>
+    /// </summary>
+    public bool HasKey => Onion.Navigator.KeyControl == Identity;
+
+    /// <summary>
     /// Determines what events this control is capable of capturing. 
     /// Normally set to just <see cref="CaptureFlags.Hover"/>, it will only capture hover events.
     /// </summary>
@@ -96,6 +101,9 @@ public class ControlInstance
 
             if (Onion.Navigator.ActiveControl == Identity)
                 state |= ControlState.Active;
+            
+            if (Onion.Navigator.KeyControl == Identity)
+                state |= ControlState.Key;
 
             return state;
         }

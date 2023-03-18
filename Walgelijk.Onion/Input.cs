@@ -15,6 +15,11 @@ public class Input
     public bool TabReleased;
     public bool ShiftHeld;
     public bool CtrlHeld;
+    public bool EscapePressed;
+    public bool DeletePressed;
+    public bool BackspacePressed;
+
+    public string TextEntered = string.Empty;
 
     public Vector2 DirectionKeyReleased;
     private Vector2 rawScrollDelta;
@@ -59,8 +64,13 @@ public class Input
         if (state.IsKeyReleased(Key.Down))
             DirectionKeyReleased.Y -= 1;
 
+        EscapePressed = state.IsKeyPressed(Key.Escape);
+        DeletePressed = state.IsKeyPressed(Key.Delete);
+        BackspacePressed = state.IsKeyPressed(Key.Backspace);
         ShiftHeld = state.IsKeyHeld(Key.LeftShift);
         TabReleased = state.IsKeyReleased(Key.Tab);
         CtrlHeld = state.IsKeyHeld(Key.LeftControl);
+
+        TextEntered = state.TextEntered;
     }
 }

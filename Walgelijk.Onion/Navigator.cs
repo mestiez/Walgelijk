@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Drawing;
 using System.Numerics;
 using Walgelijk.SimpleDrawing;
 
@@ -67,6 +68,18 @@ public class Navigator
             triggeredControl = value;
         }
     }
+    /// <summary>
+    /// Control that is ready for extended interactivity (dropdowns open)
+    /// </summary>
+    public int? KeyControl
+    {
+        get => keyControl; set
+        {
+            if (keyControl != value && value != null && !Onion.Tree.EnsureInstance(value.Value).Muted)
+                Onion.PlaySound(ControlState.Key);
+            keyControl = value;
+        }
+    }
 
     public ReadOnlySpan<SortedNode> SortedByDepth => sortedByDepthRaw.AsSpan(0, sortedByDepthCount);
 
@@ -75,6 +88,7 @@ public class Navigator
     private int? focusedControl;
     private int? activeControl;
     private int? triggeredControl;
+    private int? keyControl;
 
     private readonly Stack<int> orderStack = new();
     private SortedNode[]? sortedByDepthRaw = null;
@@ -85,8 +99,18 @@ public class Navigator
     public void Process(Input input, float dt)
     {
         ProcessHighlights(dt);
-
         RefreshOrder();
+
+        if (input.EscapePressed)
+        {
+            focusedControl = null;
+            scrollControl = null;
+            activeControl = null;
+            triggeredControl = null;
+            hoverControl = null;
+            return;
+        }
+
         HoverControl = Raycast(input.MousePosition.X, input.MousePosition.Y, CaptureFlags.Hover);
 
         if (input.ScrollDelta.LengthSquared() > float.Epsilon)
@@ -94,34 +118,83 @@ public class Navigator
         else
             ScrollControl = null;
 
+        //if (input.DirectionKeyReleased.LengthSquared() > 0 || input.TextEntered.Length > 0)
+        //    KeyControl = Raycast(input.MousePosition.X, input.MousePosition.Y, CaptureFlags.Key);
+        //else 
+        KeyControl = null;
+
         if (ActiveControl.HasValue)
             if (!Onion.Tree.IsAlive(ActiveControl.Value))
                 ActiveControl = null;
 
         if (FocusedControl.HasValue)
         {
+            var inst = Onion.Tree.EnsureInstance(FocusedControl.Value);
+
+            if (inst.CaptureFlags.HasFlag(CaptureFlags.Key))
+                KeyControl = inst.Identity;
+
             if (!Onion.Tree.IsAlive(FocusedControl.Value))
                 FocusedControl = null;
             else if (HoverControl == null && input.MousePrimaryPressed)
                 FocusedControl = null;
-            else
+            else if (KeyControl == null)
                 ProcessKeyboardNavigation(input);
         }
+        else
+            ProcessKeyboardNavigation(input);
 
+#if DEBUG
         if (Game.Main.State.Input.IsKeyReleased(Key.F4))
         {
             float d = 1;
             foreach (var id in RaycastAll(input.MousePosition.X, input.MousePosition.Y, CaptureFlags.Hover))
-            {
                 HighlightControl(id, 5 / (d *= 2));
-            }
         }
+#endif
     }
 
     private void ProcessKeyboardNavigation(Input input)
     {
         if (!FocusedControl.HasValue)
+        {
+            if (input.TabReleased)
+                FocusedControl = Onion.Tree.Nodes.Values.Where(static c =>
+                {
+                    //TODO voor de een of andere reden pakt hij de eerste niet
+                    var n = Onion.Tree.EnsureInstance(c.Identity);
+                    return (c.AliveLastFrame &&
+                            n.CaptureFlags.HasFlag(CaptureFlags.Hover) &&
+                            n.Rects.Raycast.HasValue &&
+                            n.Rects.Raycast.Value.Area > float.Epsilon);
+                }).FirstOrDefault()?.Identity ?? null; //TODO dit kan mooier
+            else if (input.DirectionKeyReleased.LengthSquared() > 0)
+            {
+                var minDist = float.MaxValue;
+                ControlInstance? nearest = null;
+
+                foreach (var item in Onion.Tree.Instances.Values)
+                {
+                    var node = Onion.Tree.Nodes[item.Identity];
+                    if (!node.AliveLastFrame)
+                        continue;
+                    var dist = Vector2.DistanceSquared(item.Rects.Rendered.GetCenter(), input.MousePosition);
+                    if (dist < minDist)
+                    {
+                        minDist = dist;
+                        nearest = item;
+                    }
+                }
+
+                if (nearest != null)
+                {
+                    FocusedControl = nearest.Identity;
+                    HighlightControl(nearest.Identity, 0.5f);
+                }
+            }
+
             return;
+        }
 
         if (input.TabReleased)
         {
@@ -130,7 +203,7 @@ public class Navigator
             Func<Node, bool> predicate = greaterThan ?
                 (Node n) => n.ChronologicalPositionLastFrame > targetOrder :
                 (Node n) => n.ChronologicalPositionLastFrame < targetOrder;
-
+            //TODO dit kan ook mooier
             var found = Onion.Tree.Nodes
                 .Select(static c => c.Value)
                 .Where(static c =>
