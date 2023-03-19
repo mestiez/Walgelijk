@@ -1,8 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Walgelijk.SimpleDrawing
 {
+    internal static class ArrayExtensions
+    {
+        public static bool SequenceEqualsNullable<T>(this T[]? a, T[]? b)
+        {
+            if (a == null && b == null)
+                return true;
+            if (a == null && b != null)
+                return false;
+            if (a != null && b == null)
+                return false;
+
+            return a!.SequenceEqual(b!);
+        }
+    }
+
     public struct CachableTextDrawing : IEquatable<CachableTextDrawing>
     {
         public string Text;
@@ -24,7 +40,7 @@ namespace Walgelijk.SimpleDrawing
             return Text == drawing.Text &&
                     EqualityComparer<Color>.Default.Equals(Color, drawing.Color) &&
                     EqualityComparer<Font>.Default.Equals(Font, drawing.Font) &&
-                    ColourInstructions == drawing.ColourInstructions &&
+                    ColourInstructions.SequenceEqualsNullable(drawing.ColourInstructions) &&
                     TextBoxWidth == drawing.TextBoxWidth &&
                     VerticalAlign == drawing.VerticalAlign &&
                     HorizontalAlign == drawing.HorizontalAlign;
@@ -92,7 +108,7 @@ namespace Walgelijk.SimpleDrawing
             return Text == drawing.Text &&
                    EqualityComparer<Font?>.Default.Equals(Font, drawing.Font) &&
                    TextBoxWidth == drawing.TextBoxWidth &&
-                   ColourInstructions == drawing.ColourInstructions &&
+                    ColourInstructions.SequenceEqualsNullable(drawing.ColourInstructions) &&
                    VerticalAlign == drawing.VerticalAlign &&
                    HorizontalAlign == drawing.HorizontalAlign;
         }
