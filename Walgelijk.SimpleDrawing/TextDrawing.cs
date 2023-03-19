@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Walgelijk.SimpleDrawing
 {
-    public struct CachableTextDrawing
+    public struct CachableTextDrawing : IEquatable<CachableTextDrawing>
     {
         public string Text;
         public Color Color;
@@ -11,21 +11,28 @@ namespace Walgelijk.SimpleDrawing
         public float TextBoxWidth;
         public VerticalTextAlign VerticalAlign;
         public HorizontalTextAlign HorizontalAlign;
+        public TextMeshGenerator.ColourInstruction[]? ColourInstructions;
 
         public override bool Equals(object? obj)
         {
-            return obj is CachableTextDrawing drawing &&
-                   Text == drawing.Text &&
-                   EqualityComparer<Color>.Default.Equals(Color, drawing.Color) &&
-                   EqualityComparer<Font>.Default.Equals(Font, drawing.Font) &&
-                   TextBoxWidth == drawing.TextBoxWidth &&
-                   VerticalAlign == drawing.VerticalAlign &&
-                   HorizontalAlign == drawing.HorizontalAlign;
+            return obj is CachableTextDrawing drawing && Equals(drawing);
+
+        }
+
+        public bool Equals(CachableTextDrawing drawing)
+        {
+            return Text == drawing.Text &&
+                    EqualityComparer<Color>.Default.Equals(Color, drawing.Color) &&
+                    EqualityComparer<Font>.Default.Equals(Font, drawing.Font) &&
+                    ColourInstructions == drawing.ColourInstructions &&
+                    TextBoxWidth == drawing.TextBoxWidth &&
+                    VerticalAlign == drawing.VerticalAlign &&
+                    HorizontalAlign == drawing.HorizontalAlign;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Text, Color, Font, TextBoxWidth, VerticalAlign, HorizontalAlign);
+            return HashCode.Combine(Text, Color, Font, TextBoxWidth, VerticalAlign, HorizontalAlign, ColourInstructions);
         }
 
         public static bool operator ==(CachableTextDrawing left, CachableTextDrawing right)
@@ -42,7 +49,7 @@ namespace Walgelijk.SimpleDrawing
     /// <summary>
     /// A drawing instruction for text
     /// </summary>
-    public struct TextDrawing
+    public struct TextDrawing : IEquatable<TextDrawing>
     {
         /// <summary>
         /// The text
@@ -70,19 +77,29 @@ namespace Walgelijk.SimpleDrawing
         /// </summary>
         public float TextDrawRatio;
 
+        /// <summary>
+        /// The <see cref="ColourInstructions"/> that are used for the mesh generation
+        /// </summary>
+        public TextMeshGenerator.ColourInstruction[]? ColourInstructions;
+
         public override bool Equals(object? obj)
         {
-            return obj is TextDrawing drawing &&
-                   Text == drawing.Text &&
+            return obj is TextDrawing drawing && Equals(drawing);
+        }
+
+        public bool Equals(TextDrawing drawing)
+        {
+            return Text == drawing.Text &&
                    EqualityComparer<Font?>.Default.Equals(Font, drawing.Font) &&
                    TextBoxWidth == drawing.TextBoxWidth &&
+                   ColourInstructions == drawing.ColourInstructions &&
                    VerticalAlign == drawing.VerticalAlign &&
                    HorizontalAlign == drawing.HorizontalAlign;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Text, Font, TextBoxWidth, VerticalAlign, HorizontalAlign);
+            return HashCode.Combine(Text, Font, TextBoxWidth, VerticalAlign, HorizontalAlign, ColourInstructions);
         }
 
         public static bool operator ==(TextDrawing left, TextDrawing right)

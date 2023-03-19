@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using Walgelijk.SimpleDrawing;
 
@@ -24,6 +25,7 @@ public readonly struct TextBox : IControl
     private static float slowTimer = 0;
     private static (int MinInc, int MaxExc)? selection;
     private static float cursorBlinkTimer;
+    private static readonly TextMeshGenerator.ColourInstruction[] textColourInstructions = new TextMeshGenerator.ColourInstruction[2];
 
     public static ControlState Create(ref string text, in TextBoxOptions options, int identity = 0, [CallerLineNumber] int site = 0)
     {
@@ -63,7 +65,10 @@ public readonly struct TextBox : IControl
         p.Instance.CaptureFlags |= CaptureFlags.Scroll;
 
         if (hadFocus != p.Instance.HasFocus)
+        {
+            selection = null;
             textOffset = 0;
+        }
 
         if (p.Instance.IsActive)
         {
@@ -94,64 +99,19 @@ public readonly struct TextBox : IControl
             p.Instance.CaptureFlags |= CaptureFlags.Key;
 
             if (p.Instance.HasKey)
-            {
-                // cursor movement with directional keys
-                var dir = (int)(p.Input.DirectionKeyReleased.X > float.Epsilon ? 1 : (p.Input.DirectionKeyReleased.X < -float.Epsilon ? -1 : 0));
-                if (dir != 0)
-                    MoveCursor(p, cursorIndex + dir);
-
-                if (p.Input.TextEntered.Length > 0)
-                {
-                    string textToAdd = string.Empty;
-                    int backspaceCount = 0;
-                    int deleteCount = 0;
-                    for (int i = 0; i < p.Input.TextEntered.Length; i++)
-                    {
-                        var c = p.Input.TextEntered[i];
-                        switch (c)
-                        {
-                            case (char)0x7F:
-                                deleteCount++;
-                                break;
-                            case '\b':
-                                backspaceCount++;
-                                break;
-                            default:
-                                textToAdd += c;
-                                break;
-                        }
-                    }
-
-                    if (textToAdd.Length > 0)
-                        AppendText(p, textToAdd);
-                    for (int i = 0; i < backspaceCount; i++)
-                        Backspace(p);
-                }
-
-                if (p.Instance.Name.Length > 0)
-                {
-                    //if (cursorIndex > 0 & p.Input.BackspacePressed)
-                    //{
-                    //    p.Instance.Name = p.Instance.Name[..(cursorIndex-1)] + p.Instance.Name[cursorIndex..];
-                    //    states[p.Instance.Identity] = new TextBoxState(true);
-                    //}
-
-                    if (p.Input.DeletePressed)
-                        Delete(p);
-                }
-            }
+                ProcessKeyInput(p);
 
             if (p.Instance.HasScroll)
             {
                 var textWidth = Draw.CalculateTextWidth(p.Instance.Name);
-                var maxWidth = p.Instance.Rects.ComputedGlobal.Width - Onion.Theme.Padding* 2;
+                var maxWidth = p.Instance.Rects.ComputedGlobal.Width - Onion.Theme.Padding * 2;
 
                 if (textWidth > maxWidth)
                 {
                     textOffset += Onion.Input.ScrollDelta.Y;
                     textOffset = Utilities.Clamp(
                         textOffset,
-                        -textWidth + maxWidth , 0);
+                        -textWidth + maxWidth, 0);
                 }
                 else
                     textOffset = 0;
@@ -161,8 +121,56 @@ public readonly struct TextBox : IControl
             p.Instance.CaptureFlags &= ~CaptureFlags.Key;
     }
 
+    private static void ProcessKeyInput(in ControlParams p)
+    {
+        // cursor movement with directional keys
+        var dir = (int)(p.Input.DirectionKeyReleased.X > float.Epsilon ? 1 : (p.Input.DirectionKeyReleased.X < -float.Epsilon ? -1 : 0));
+        if (dir != 0)
+            MoveCursor(p, cursorIndex + dir);
+
+        if (p.Input.CtrlHeld && p.Input.AlphanumericalHeld.Contains(Key.A))
+        {
+            selection = (0, p.Instance.Name.Length);
+        }
+
+        // process input text
+        if (p.Input.TextEntered.Length > 0)
+        {
+            string textToAdd = string.Empty;
+            int backspaceCount = 0;
+            int deleteCount = 0;
+            for (int i = 0; i < p.Input.TextEntered.Length; i++)
+            {
+                var c = p.Input.TextEntered[i];
+                switch (c)
+                {
+                    case (char)0x7F:
+                        deleteCount++;
+                        break;
+                    case '\b':
+                        backspaceCount++;
+                        break;
+                    default:
+                        if (!char.IsControl(c))
+                            textToAdd += c;
+                        break;
+                }
+            }
+
+            if (textToAdd.Length > 0)
+                AppendText(p, textToAdd);
+            for (int i = 0; i < backspaceCount; i++)
+                Backspace(p);
+        }
+
+        // process delete
+        if (p.Input.DeletePressed)
+            Delete(p);
+    }
+
     private static void AppendText(in ControlParams p, ReadOnlySpan<char> text)
     {
+        selection = null;
         p.Instance.Name = p.Instance.Name.Insert(cursorIndex, new string(p.Input.TextEntered.Where(static c => !char.IsControl(c)).ToArray()));
         states[p.Instance.Identity] = new TextBoxState(true);
         MoveCursor(p, cursorIndex + p.Input.TextEntered.Length);
@@ -171,6 +179,9 @@ public readonly struct TextBox : IControl
     private static void Backspace(in ControlParams p)
     {
         if (cursorIndex < 1)
+            return;
+
+        if (DeleteSelection(p))
             return;
 
         MoveCursor(p, cursorIndex - 1);
@@ -182,8 +193,23 @@ public readonly struct TextBox : IControl
         if (cursorIndex >= p.Instance.Name.Length)
             return;
 
+        if (DeleteSelection(p))
+            return;
+
         p.Instance.Name = p.Instance.Name[..cursorIndex] + p.Instance.Name[(cursorIndex + 1)..];
         states[p.Instance.Identity] = new TextBoxState(true);
+    }
+
+    private static bool DeleteSelection(in ControlParams p)
+    {
+        if (!selection.HasValue || selection.Value.MinInc >= selection.Value.MaxExc)
+            return false;
+
+        p.Instance.Name = p.Instance.Name.Remove(selection.Value.MinInc, (selection.Value.MaxExc - selection.Value.MinInc));
+        states[p.Instance.Identity] = new TextBoxState(true);
+        selection = null;
+        MoveCursor(p, 0);
+        return true;
     }
 
     private static void MoveCursor(in ControlParams p, int targetIndex)
@@ -236,10 +262,32 @@ public readonly struct TextBox : IControl
             if (!instance.HasFocus)
                 Draw.Colour.A *= 0.5f;
 
+            var col = Draw.Colour;
+
             var ratio = instance.Rects.Rendered.Area / instance.Rects.ComputedGlobal.Area;
             var offset = new Vector2(instance.Rects.Rendered.MinX + Onion.Theme.Padding, 0.5f * (instance.Rects.Rendered.MinY + instance.Rects.Rendered.MaxY));
             offset.X += (int)d;
-            Draw.Text(instance.Name, offset, new Vector2(ratio), HorizontalTextAlign.Left, VerticalTextAlign.Middle);
+
+            bool drawSelectionTextColour = false;
+            if (p.Instance.HasFocus && selection.HasValue && selection.Value.MinInc < selection.Value.MaxExc)
+            {
+                Draw.Colour = (Vector4.One - fg.Color) with { W = col.A };
+                var selRect = instance.Rects.Rendered.Expand(-Onion.Theme.Padding);
+
+                selRect.MinX += IndexToOffset(instance.Name, selection.Value.MinInc);
+                selRect.MaxX = selRect.MinX + IndexToOffset(instance.Name, selection.Value.MaxExc);
+
+                Draw.Quad(selRect);
+                //textInvertRange = (selection.Value.MinInc, selection.Value.MaxExc);
+                textColourInstructions[0] = new TextMeshGenerator.ColourInstruction(selection.Value.MinInc, fg.Color);
+                textColourInstructions[1] = new TextMeshGenerator.ColourInstruction(selection.Value.MaxExc, Colors.White);
+                drawSelectionTextColour = true;
+            }
+
+            Draw.Colour = col;
+            Draw.Text(instance.Name, offset, new Vector2(ratio), 
+                HorizontalTextAlign.Left, VerticalTextAlign.Middle, 
+                colours: drawSelectionTextColour ? textColourInstructions : null);
 
             if (instance.HasFocus && cursorBlinkTimer % 1 < 0.3f)
             {
@@ -248,6 +296,7 @@ public readonly struct TextBox : IControl
                     (instance.Rects.ComputedGlobal.MinY + instance.Rects.ComputedGlobal.MaxY) / 2
                     );
 
+                Draw.Colour = Colors.White;
                 Draw.Quad(rect.Translate(cursorPosition + Onion.Theme.Padding, 0), 0, 0);
             }
         }

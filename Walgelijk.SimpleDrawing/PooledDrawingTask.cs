@@ -58,7 +58,8 @@ namespace Walgelijk.SimpleDrawing
                             HorizontalAlign = textDrawing.HorizontalAlign,
                             VerticalAlign = textDrawing.VerticalAlign,
                             Text = text,
-                            TextBoxWidth = textDrawing.TextBoxWidth
+                            TextBoxWidth = textDrawing.TextBoxWidth,
+                            ColourInstructions = textDrawing.ColourInstructions
                         };
 
                         if (count > Draw.CacheTextMeshes)

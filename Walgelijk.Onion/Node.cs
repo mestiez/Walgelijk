@@ -103,6 +103,7 @@ public class Node
         var drawBounds = GetFinalDrawBounds(p.Tree);
         p.Tree.DrawboundStack.Push(drawBounds);
 
+        Draw.BlendMode = BlendMode.AlphaBlend;
         Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, p.Node.ComputedGlobalOrder);
         Draw.DrawBounds = new DrawBounds(drawBounds.GetSize(), drawBounds.BottomLeft, true);
         p.Instance.Rects.ComputedDrawBounds = drawBounds;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using static Walgelijk.TextMeshGenerator;
 #pragma warning disable CA2211 // Non-constant fields should not be visible
 
 namespace Walgelijk.SimpleDrawing
@@ -256,7 +257,9 @@ namespace Walgelijk.SimpleDrawing
         /// <param name="valign">How to vertically align the text to the pivot point</param>
         /// <param name="textBoxWidth">The width before the text starts wrapping</param>
         /// <param name="degrees">Text rotation in degrees</param>
-        public static void Text(string text, Vector2 pivot, Vector2 scale, HorizontalTextAlign halign = HorizontalTextAlign.Left, VerticalTextAlign valign = VerticalTextAlign.Top, float textBoxWidth = float.PositiveInfinity, float degrees = 0)
+        public static void Text(
+            string text, Vector2 pivot, Vector2 scale, HorizontalTextAlign halign = HorizontalTextAlign.Left, VerticalTextAlign valign = VerticalTextAlign.Top, 
+            float textBoxWidth = float.PositiveInfinity, float degrees = 0, ColourInstruction[]? colours = null)
         {
             Vector2 calculatedScale = scale * (FontSize / Font.Size);
             TextDrawing textDrawing = new()
@@ -266,7 +269,8 @@ namespace Walgelijk.SimpleDrawing
                 HorizontalAlign = halign,
                 VerticalAlign = valign,
                 TextBoxWidth = textBoxWidth / calculatedScale.X,
-                TextDrawRatio = TextDrawRatio
+                TextDrawRatio = TextDrawRatio,
+                ColourInstructions = colours
             };
             Enqueue(new Drawing(textMesh, pivot, calculatedScale, degrees * Utilities.DegToRad, Colour, ScreenSpace, textDrawing, DrawBounds)
             {

@@ -20,6 +20,7 @@ public class Input
     public bool BackspacePressed;
 
     public string TextEntered = string.Empty;
+    public readonly HashSet<Key> AlphanumericalHeld = new();
 
     public Vector2 DirectionKeyReleased;
     private Vector2 rawScrollDelta;
@@ -70,6 +71,12 @@ public class Input
         ShiftHeld = state.IsKeyHeld(Key.LeftShift);
         TabReleased = state.IsKeyReleased(Key.Tab);
         CtrlHeld = state.IsKeyHeld(Key.LeftControl);
+
+        AlphanumericalHeld.Clear();
+        if (state.KeysHeld != null)
+            foreach (var key in state.KeysHeld)
+                if (((int)key >= (int)Key.A && (int)key <= (int)Key.Z) || ((int)key >= (int)Key.D0 && (int)key <= (int)Key.D9))
+                    AlphanumericalHeld.Add(key);
 
         TextEntered = state.TextEntered;
     }
