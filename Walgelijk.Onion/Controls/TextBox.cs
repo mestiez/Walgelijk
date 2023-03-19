@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
@@ -23,15 +24,16 @@ public readonly struct TextBox : IControl
     private static int cursorIndex;
     private static float cursorPosition;
     private static float slowTimer = 0;
-    private static (int MinInc, int MaxExc)? selection;
+    private static SelectionRange? selection;
     private static float cursorBlinkTimer;
-    private static int selectionInitialIndex //TODO want je weet wel als je sleep select doet
+    private static int selectionInitialIndex;
     private static readonly TextMeshGenerator.ColourInstruction[] textColourInstructions = new TextMeshGenerator.ColourInstruction[3];
 
     public static ControlState Create(ref string text, in TextBoxOptions options, int identity = 0, [CallerLineNumber] int site = 0)
     {
         var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(TextBox).GetHashCode(), identity, site), new TextBox());
         instance.RenderFocusBox = true;
+        instance.Muted = true;
         Onion.Tree.End();
         if (states.TryGetValue(instance.Identity, out var state))
         {
@@ -70,14 +72,13 @@ public readonly struct TextBox : IControl
             if (hadFocus)
                 selection = null;
             textOffset = 0;
+            selectionInitialIndex = -1;
         }
 
-        if (p.Instance.IsActive)
+        if (p.Input.DoubleClicked && p.Instance.IsHover)
+            SelectWordAt(p, cursorIndex);
+        else if (p.Instance.IsActive)
         {
-            if (p.Input.MousePrimaryPressed)
-                selection = null;
-
-            //we dont use MoveCursor here because this is a special case where the mouse input determines the cursor position
             slowTimer += p.GameState.Time.DeltaTime;
             cursorBlinkTimer = 0;
 
@@ -85,17 +86,16 @@ public readonly struct TextBox : IControl
             local.X -= textOffset;
             local.X -= Onion.Theme.Padding;
 
+            //we dont use MoveCursor here because this is a special case where the mouse input determines the cursor position
             cursorIndex = OffsetToIndex(p.Instance.Name, local.X, out cursorPosition);
 
-            if (selection.HasValue)
+            if (p.Input.MousePrimaryPressed && !p.Input.ShiftHeld && !p.Input.DoubleClicked)
             {
-                if (cursorIndex < selection.Value.MinInc)
-                    selection = (cursorIndex, selection.Value.MaxExc);
-                else if (cursorIndex > selection.Value.MaxExc)
-                    selection = (selection.Value.MinInc, cursorIndex);
+                selectionInitialIndex = cursorIndex;
+                selection = null;
             }
-            else
-                selection = (cursorIndex, cursorIndex);
+
+            SetSelection(selectionInitialIndex, cursorIndex);
 
             if (slowTimer > 0.05f)
             {
@@ -110,8 +110,10 @@ public readonly struct TextBox : IControl
         if (p.Instance.HasFocus)
         {
             cursorBlinkTimer += p.GameState.Time.DeltaTime;
-
             p.Instance.CaptureFlags |= CaptureFlags.Key;
+
+            //if (selection != null)
+            //    Logger.Log($"{selection}: {p.Instance.Name[selection.Value.From..(Math.Min(selection.Value.To, p.Instance.Name.Length))]}");
 
             if (p.Instance.HasKey)
                 ProcessKeyInput(p);
@@ -142,29 +144,66 @@ public readonly struct TextBox : IControl
         var dir = (int)(p.Input.DirectionKeyReleased.X > float.Epsilon ? 1 : (p.Input.DirectionKeyReleased.X < -float.Epsilon ? -1 : 0));
         if (dir != 0)
         {
+            var nextIndex = cursorIndex + dir;
+            if (p.Input.CtrlHeld)
+            {
+                if (dir > 0)
+                {
+                    if (cursorIndex + 1 >= p.Instance.Name.Length)
+                        nextIndex = p.Instance.Name.Length;
+                    else
+                    {
+                        nextIndex = p.Instance.Name.IndexOf(' ', cursorIndex + 1);
+                        if (nextIndex == -1)
+                            nextIndex = p.Instance.Name.Length;
+                        else
+                            nextIndex = Math.Min(p.Instance.Name.Length, nextIndex + 1);
+                    }
+                }
+                else
+                {
+                    nextIndex = p.Instance.Name.AsSpan()[0..cursorIndex].LastIndexOf(' ');
+                    if (nextIndex == -1)
+                        nextIndex = 0;
+                }
+            }
+
             if (p.Input.ShiftHeld)
             {
-                if (selection.HasValue)
-                    selection = (
-                        Math.Min(cursorIndex + dir, Math.Min(selection.Value.MinInc, selection.Value.MaxExc)),
-                        Math.Max(cursorIndex + dir, Math.Max(selection.Value.MinInc, selection.Value.MaxExc)));
-                else
-                    selection = (Math.Min(cursorIndex, cursorIndex + dir), Math.Max(cursorIndex, cursorIndex + dir));
-                MoveCursor(p, cursorIndex + dir);
+                SetSelection(selectionInitialIndex, nextIndex);
+                MoveCursor(p, nextIndex);
             }
             else
             {
-                if (selection.HasValue)
-                    MoveCursor(p, dir > 0 ? selection.Value.MaxExc : selection.Value.MinInc);
+                if (IsSelectionValid())
+                    MoveCursor(p, dir > 0 ? selection.Value.To : selection.Value.From);
                 else
-                    MoveCursor(p, cursorIndex + dir);
+                    MoveCursor(p, nextIndex);
+
                 selection = null;
+                selectionInitialIndex = cursorIndex;
             }
         }
+        else if (p.Input.ShiftHeld && !IsSelectionValid())
+            selectionInitialIndex = cursorIndex;
 
         if (p.Input.CtrlHeld && p.Input.AlphanumericalHeld.Contains(Key.A))
-        {
             selection = (0, p.Instance.Name.Length);
+
+        if (p.Input.HomePressed)
+        {
+            selectionInitialIndex = cursorIndex;
+            MoveCursor(p, 0);
+            if (p.Input.ShiftHeld)
+                StretchSelectionTo(0);
+        }
+
+        if (p.Input.EndPressed)
+        {
+            selectionInitialIndex = cursorIndex;
+            MoveCursor(p, p.Instance.Name.Length);
+            if (p.Input.ShiftHeld)
+                StretchSelectionTo(p.Instance.Name.Length);
         }
 
         // process input text
@@ -195,11 +234,48 @@ public readonly struct TextBox : IControl
                 AppendText(p, textToAdd);
             for (int i = 0; i < backspaceCount; i++)
                 Backspace(p);
+            for (int i = 0; i < deleteCount; i++)
+                Delete(p);
         }
+    }
 
-        // process delete
-        if (p.Input.DeletePressed)
-            Delete(p);
+    [MemberNotNullWhen(true, nameof(selection))]
+    private static bool IsSelectionValid() => selection.HasValue && selection.Value.From < selection.Value.To;
+
+    [MemberNotNull(nameof(selection))]
+    private static void SetSelection(int from, int to)
+    {
+        selection = (
+            Math.Min(to, from),
+            Math.Max(to, from)
+            );
+    }
+
+    [MemberNotNull(nameof(selection))]
+    private static void StretchSelectionTo(int target)
+    {
+        if (!IsSelectionValid())
+            SetSelection(selectionInitialIndex, target);
+
+        if (target < selection.Value.From)
+            selection = (target, selection.Value.To);
+        else if (target > selection.Value.To)
+            selection = (selection.Value.From, target);
+    }
+
+    [MemberNotNull(nameof(selection))]
+    private static void SelectWordAt(in ControlParams p, int index)
+    {
+        var str = p.Instance.Name.AsSpan();
+        var leftSpace = str[..index].LastIndexOf(' ');
+        var rightSpace = str[index..].IndexOf(' ');
+
+        if (rightSpace == -1)
+            rightSpace = p.Instance.Name.Length;
+        else
+            rightSpace += index;
+
+        SetSelection(leftSpace + 1, rightSpace);
     }
 
     private static void AppendText(in ControlParams p, ReadOnlySpan<char> text)
@@ -237,14 +313,15 @@ public readonly struct TextBox : IControl
 
     private static bool DeleteSelection(in ControlParams p)
     {
-        if (!selection.HasValue || selection.Value.MinInc >= selection.Value.MaxExc)
+        if (!IsSelectionValid())
             return false;
 
-        p.Instance.Name = p.Instance.Name.Remove(selection.Value.MinInc, (selection.Value.MaxExc - selection.Value.MinInc));
+        selection = (Math.Max(0, selection.Value.From), Math.Min(p.Instance.Name.Length, selection.Value.To));
+
+        p.Instance.Name = p.Instance.Name.Remove(selection.Value.From, (selection.Value.To - selection.Value.From));
         states[p.Instance.Identity] = new TextBoxState(true);
-        MoveCursor(p, selection.Value.MinInc);
+        MoveCursor(p, selection.Value.From);
         selection = null;
-        textOffset = 0;
         return true;
     }
 
@@ -255,9 +332,9 @@ public readonly struct TextBox : IControl
         cursorIndex = Utilities.Clamp(cursorIndex, 0, p.Instance.Name.Length);
 
         if (cursorPosition < -textOffset)
-            textOffset += Onion.Theme.FontSize;
-        else if (cursorPosition > -textOffset + p.Instance.Rects.Rendered.Width)
-            textOffset -= Onion.Theme.FontSize;
+            textOffset = -cursorPosition;
+        else if (cursorPosition >= -textOffset + p.Instance.Rects.Rendered.Width - Onion.Theme.Padding)
+            textOffset = -cursorPosition + p.Instance.Rects.Rendered.Width - Onion.Theme.Padding;
         cursorBlinkTimer = 0;
     }
 
@@ -305,20 +382,22 @@ public readonly struct TextBox : IControl
             offset.X += (int)d;
 
             bool drawSelectionTextColour = false;
-            if (p.Instance.HasFocus && selection.HasValue && selection.Value.MinInc < selection.Value.MaxExc)
+            if (p.Instance.HasFocus && IsSelectionValid())
             {
                 Draw.Colour = (Vector4.One - fg.Color) with { W = col.A * 0.5f };
                 var selRect = instance.Rects.Rendered;
 
-                var m = selRect.MinX + textOffset;
-                selRect.MinX = m + IndexToOffset(instance.Name, selection.Value.MinInc);
-                selRect.MaxX = m + IndexToOffset(instance.Name, selection.Value.MaxExc + 1);
+                var m = selRect.MinX + textOffset + Onion.Theme.Padding;
+                selRect.MinX = m + IndexToOffset(instance.Name, selection.Value.From);
+                selRect.MaxX = m + IndexToOffset(instance.Name, selection.Value.To);
 
-                Draw.Quad(selRect.Expand(-Onion.Theme.Padding));
-                //textInvertRange = (selection.Value.MinInc, selection.Value.MaxExc);
+                selRect.MaxY -= Onion.Theme.Padding;
+                selRect.MinY += Onion.Theme.Padding;
+
+                Draw.Quad(selRect, 0, Onion.Theme.Rounding);
                 textColourInstructions[0] = new TextMeshGenerator.ColourInstruction(0, Colors.White);
-                textColourInstructions[1] = new TextMeshGenerator.ColourInstruction(selection.Value.MinInc, fg.Color);
-                textColourInstructions[2] = new TextMeshGenerator.ColourInstruction(selection.Value.MaxExc, Colors.White);
+                textColourInstructions[1] = new TextMeshGenerator.ColourInstruction(selection.Value.From, fg.Color);
+                textColourInstructions[2] = new TextMeshGenerator.ColourInstruction(selection.Value.To, Colors.White);
                 drawSelectionTextColour = true;
             }
 
@@ -347,7 +426,7 @@ public readonly struct TextBox : IControl
             if (snappedOffset >= x)
                 return Math.Max(0, i);
         }
-        snappedOffset = Draw.CalculateTextWidth(input); //entire width plus last character again
+        snappedOffset = Draw.CalculateTextWidth(input);
         return input.Length;
     }
 
@@ -355,13 +434,22 @@ public readonly struct TextBox : IControl
     {
         if (input.IsEmpty)
             return 0;
+
         if (index >= input.Length)
             return Draw.CalculateTextWidth(input);
-        index = Utilities.Clamp(index, 0, input.Length - 1);
+
+        index = Utilities.Clamp(index, 0, input.Length);
         return Draw.CalculateTextWidth(input[..index]);
     }
 
     public void OnEnd(in ControlParams p)
     {
     }
+}
+
+public record struct SelectionRange(int From, int To)
+{
+    public static implicit operator (int, int)(SelectionRange value) => (value.From, value.To);
+
+    public static implicit operator SelectionRange((int, int) value) => new SelectionRange(value.Item1, value.Item2);
 }

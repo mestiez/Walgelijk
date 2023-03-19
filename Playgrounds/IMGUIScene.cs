@@ -137,7 +137,7 @@ public struct IMGUIScene : ISceneCreator
 
                 Onion.Layout.Offset(i * 64, i * 64);
                 Onion.Layout.Size(300, 128);
-                DragWindow.Start("Cool title", ref WindowsOpen[i], i);
+                DragWindow.Start(textBoxContent, ref WindowsOpen[i], i);
                 {
                     Onion.Layout.FitContainer(1, 1);
                     Onion.Layout.OffsetSize(0, -24);

@@ -11,6 +11,7 @@ public class Input
     public bool MousePrimaryPressed;
     public bool MousePrimaryHeld;
     public bool MousePrimaryRelease;
+    public bool DoubleClicked;
 
     public bool TabReleased;
     public bool ShiftHeld;
@@ -19,14 +20,19 @@ public class Input
     public bool DeletePressed;
     public bool BackspacePressed;
 
+    public bool EndPressed;
+    public bool HomePressed;
+
     public string TextEntered = string.Empty;
     public readonly HashSet<Key> AlphanumericalHeld = new();
 
     public Vector2 DirectionKeyReleased;
+
     private Vector2 rawScrollDelta;
+    private float lastClickTime;
     private Configuration Config => Onion.Configuration;
 
-    public void Update(in InputState state, float dt)
+    public void Update(in InputState state, float dt, float time)
     {
         MousePosition = state.WindowMousePosition;
         MouseDelta = state.WindowMouseDelta;
@@ -34,6 +40,18 @@ public class Input
         MousePrimaryPressed = state.IsButtonPressed(Button.Left);
         MousePrimaryHeld = state.IsButtonHeld(Button.Left);
         MousePrimaryRelease = state.IsButtonReleased(Button.Left);
+
+        DoubleClicked = false;
+        if (MousePrimaryPressed)
+        {
+            if (time - lastClickTime < Config.DoubleClickTimeWindow.TotalSeconds)
+            {
+                DoubleClicked = true;
+                MousePrimaryPressed = false;
+            }
+            else
+                lastClickTime = time;
+        }
 
         rawScrollDelta = Vector2.Zero;
         if (state.IsKeyHeld(Config.ScrollHorizontal))
@@ -67,6 +85,8 @@ public class Input
 
         EscapePressed = state.IsKeyPressed(Key.Escape);
         DeletePressed = state.IsKeyPressed(Key.Delete);
+        EndPressed = state.IsKeyPressed(Key.End);
+        HomePressed = state.IsKeyPressed(Key.Home);
         BackspacePressed = state.IsKeyPressed(Key.Backspace);
         ShiftHeld = state.IsKeyHeld(Key.LeftShift);
         TabReleased = state.IsKeyReleased(Key.Tab);

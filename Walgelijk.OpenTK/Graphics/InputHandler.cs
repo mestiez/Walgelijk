@@ -70,6 +70,9 @@ namespace Walgelijk.OpenTK
                 case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Tab:
                     InputState.TextEntered += '\t';
                     break;
+                case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Delete:
+                    InputState.TextEntered += '\u007F';
+                    break;
             }
 
             if (e.IsRepeat) return;

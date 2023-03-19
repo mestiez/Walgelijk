@@ -6,5 +6,6 @@ public class Configuration
     public float ScrollSensitivity = 18;
     public Key ScrollHorizontal = Key.LeftShift;
     public float SmoothScroll = 0;
+    public TimeSpan DoubleClickTimeWindow = TimeSpan.FromSeconds(0.2);
     public bool ProcessCursorStack = true;
 }
