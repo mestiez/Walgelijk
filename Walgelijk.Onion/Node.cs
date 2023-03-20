@@ -104,6 +104,8 @@ public class Node
         p.Tree.DrawboundStack.Push(drawBounds);
 
         Draw.BlendMode = BlendMode.AlphaBlend;
+        Draw.Font = Onion.Theme.Font;
+        Draw.FontSize = Onion.Theme.FontSize;
         Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, p.Node.ComputedGlobalOrder);
         Draw.DrawBounds = new DrawBounds(drawBounds.GetSize(), drawBounds.BottomLeft, true);
         p.Instance.Rects.ComputedDrawBounds = drawBounds;

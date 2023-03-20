@@ -100,7 +100,7 @@ public readonly struct DragWindow : IControl
 
         Draw.Text(
             instance.Name, instance.Rects.Rendered.BottomLeft + new Vector2(Onion.Theme.Padding),
-            Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Top, instance.Rects.ComputedGlobal.Width);
+            Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Top);
 
         var bg = Onion.Theme.Background;
         Draw.Colour = bg.Color;

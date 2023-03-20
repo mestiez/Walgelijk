@@ -9,7 +9,7 @@ namespace Walgelijk.SimpleDrawing
     /// </summary>
     public class PooledDrawingTask : IRenderTask
     {
-        private readonly Dictionary<string, int> textFrequencyCounter = new();
+        private static readonly Dictionary<string, int> textFrequencyCounter = new();
 
         /// <summary>
         /// Reference to the drawing
@@ -59,7 +59,6 @@ namespace Walgelijk.SimpleDrawing
                             VerticalAlign = textDrawing.VerticalAlign,
                             Text = text,
                             TextBoxWidth = textDrawing.TextBoxWidth,
-                            ColourInstructions = textDrawing.ColourInstructions
                         };
 
                         if (count > Draw.CacheTextMeshes)

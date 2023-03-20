@@ -9,6 +9,8 @@ public readonly struct ControlParams
     public readonly Node Node;
     public readonly ControlInstance Instance;
 
+    public int Identity => Node.Identity;
+
     public ControlParams(
         ControlTree controlTree,
         Layout.Layout layoutState,

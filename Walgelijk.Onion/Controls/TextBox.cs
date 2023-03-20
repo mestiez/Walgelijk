@@ -1,23 +1,30 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion.Controls;
 
-public struct TextBoxOptions
+public readonly struct TextBoxOptions
 {
-    public string? Placeholder;
-    public int? MaxLength;
-    public Regex? Filter;
-    public bool Password;
+    public readonly string? Placeholder;
+    public readonly int? MaxLength;
+    public readonly Regex? Filter;
+    public readonly bool Password;
+
+    public TextBoxOptions(string? placeholder = null, int? maxLength = null, Regex? filter = null, bool password = false)
+    {
+        Placeholder = placeholder;
+        MaxLength = maxLength;
+        Filter = filter;
+        Password = password;
+    }
 }
 
 public readonly struct TextBox : IControl
 {
-    private record TextBoxState(bool IncomingChange);
+    private record TextBoxState(bool IncomingChange, in TextBoxOptions Options);
     private static readonly Dictionary<int, TextBoxState> states = new();
 
     private static float textOffset;
@@ -40,14 +47,18 @@ public readonly struct TextBox : IControl
             if (state.IncomingChange)
             {
                 text = instance.Name;
-                states[instance.Identity] = new(false);
+                states[instance.Identity] = new(false, options);
             }
-            else instance.Name = text;
+            else
+            {
+                states[instance.Identity] = new(state.IncomingChange, options);
+                instance.Name = text;
+            }
         }
         else
         {
             instance.Name = text;
-            states.Add(instance.Identity, new TextBoxState(false));
+            states.Add(instance.Identity, new TextBoxState(false, options));
         }
 
         return instance.State;
@@ -66,6 +77,9 @@ public readonly struct TextBox : IControl
         var hadFocus = p.Instance.HasFocus;
         ControlUtils.ProcessButtonLike(p);
         p.Instance.CaptureFlags |= CaptureFlags.Scroll;
+        
+        if (p.Instance.IsHover)
+            IControl.SetCursor(DefaultCursor.Text);
 
         if (hadFocus != p.Instance.HasFocus)
         {
@@ -75,7 +89,7 @@ public readonly struct TextBox : IControl
             selectionInitialIndex = -1;
         }
 
-        if (p.Input.DoubleClicked && p.Instance.IsHover)
+        if (p.Input.DoubleClicked && p.Instance.IsHover && !states[p.Identity].Options.Password)
             SelectWordAt(p, cursorIndex);
         else if (p.Instance.IsActive)
         {
@@ -87,7 +101,7 @@ public readonly struct TextBox : IControl
             local.X -= Onion.Theme.Padding;
 
             //we dont use MoveCursor here because this is a special case where the mouse input determines the cursor position
-            cursorIndex = OffsetToIndex(p.Instance.Name, local.X, out cursorPosition);
+            cursorIndex = OffsetToIndex(p, p.Instance.Name, local.X, out cursorPosition);
 
             if (p.Input.MousePrimaryPressed && !p.Input.ShiftHeld && !p.Input.DoubleClicked)
             {
@@ -120,7 +134,7 @@ public readonly struct TextBox : IControl
 
             if (p.Instance.HasScroll)
             {
-                var textWidth = Draw.CalculateTextWidth(p.Instance.Name);
+                var textWidth = GetTextWidth(p, p.Instance.Name);
                 var maxWidth = p.Instance.Rects.ComputedGlobal.Width - Onion.Theme.Padding * 2;
 
                 if (textWidth > maxWidth)
@@ -145,7 +159,7 @@ public readonly struct TextBox : IControl
         if (dir != 0)
         {
             var nextIndex = cursorIndex + dir;
-            if (p.Input.CtrlHeld)
+            if (p.Input.CtrlHeld && !states[p.Identity].Options.Password)
             {
                 if (dir > 0)
                 {
@@ -192,6 +206,7 @@ public readonly struct TextBox : IControl
 
         if (p.Input.HomePressed)
         {
+            selection = null;
             selectionInitialIndex = cursorIndex;
             MoveCursor(p, 0);
             if (p.Input.ShiftHeld)
@@ -200,6 +215,7 @@ public readonly struct TextBox : IControl
 
         if (p.Input.EndPressed)
         {
+            selection = null;
             selectionInitialIndex = cursorIndex;
             MoveCursor(p, p.Instance.Name.Length);
             if (p.Input.ShiftHeld)
@@ -283,7 +299,7 @@ public readonly struct TextBox : IControl
         DeleteSelection(p);
 
         p.Instance.Name = p.Instance.Name.Insert(cursorIndex, new string(p.Input.TextEntered.Where(static c => !char.IsControl(c)).ToArray()));
-        states[p.Instance.Identity] = new TextBoxState(true);
+        MarkIncomingChange(p);
         MoveCursor(p, cursorIndex + p.Input.TextEntered.Length);
     }
 
@@ -308,7 +324,7 @@ public readonly struct TextBox : IControl
             return;
 
         p.Instance.Name = p.Instance.Name[..cursorIndex] + p.Instance.Name[(cursorIndex + 1)..];
-        states[p.Instance.Identity] = new TextBoxState(true);
+        MarkIncomingChange(p);
     }
 
     private static bool DeleteSelection(in ControlParams p)
@@ -319,7 +335,7 @@ public readonly struct TextBox : IControl
         selection = (Math.Max(0, selection.Value.From), Math.Min(p.Instance.Name.Length, selection.Value.To));
 
         p.Instance.Name = p.Instance.Name.Remove(selection.Value.From, (selection.Value.To - selection.Value.From));
-        states[p.Instance.Identity] = new TextBoxState(true);
+        MarkIncomingChange(p);
         MoveCursor(p, selection.Value.From);
         selection = null;
         return true;
@@ -328,7 +344,7 @@ public readonly struct TextBox : IControl
     private static void MoveCursor(in ControlParams p, int targetIndex)
     {
         cursorIndex = targetIndex;
-        cursorPosition = IndexToOffset(p.Instance.Name, cursorIndex);
+        cursorPosition = IndexToOffset(p, p.Instance.Name, cursorIndex);
         cursorIndex = Utilities.Clamp(cursorIndex, 0, p.Instance.Name.Length);
 
         if (cursorPosition < -textOffset)
@@ -336,6 +352,11 @@ public readonly struct TextBox : IControl
         else if (cursorPosition >= -textOffset + p.Instance.Rects.Rendered.Width - Onion.Theme.Padding)
             textOffset = -cursorPosition + p.Instance.Rects.Rendered.Width - Onion.Theme.Padding;
         cursorBlinkTimer = 0;
+    }
+
+    private static void MarkIncomingChange(in ControlParams p)
+    {
+        states[p.Instance.Identity] = new TextBoxState(true, states[p.Instance.Identity].Options);
     }
 
     public void OnRender(in ControlParams p)
@@ -373,7 +394,7 @@ public readonly struct TextBox : IControl
         if (anim.ShouldRenderText(t))
         {
             if (!instance.HasFocus)
-                Draw.Colour.A *= 0.5f;
+                Draw.Colour.A *= 0.7f;
 
             var col = Draw.Colour;
 
@@ -388,8 +409,8 @@ public readonly struct TextBox : IControl
                 var selRect = instance.Rects.Rendered;
 
                 var m = selRect.MinX + textOffset + Onion.Theme.Padding;
-                selRect.MinX = m + IndexToOffset(instance.Name, selection.Value.From);
-                selRect.MaxX = m + IndexToOffset(instance.Name, selection.Value.To);
+                selRect.MinX = m + IndexToOffset(p, instance.Name, selection.Value.From);
+                selRect.MaxX = m + IndexToOffset(p, instance.Name, selection.Value.To);
 
                 selRect.MaxY -= Onion.Theme.Padding;
                 selRect.MinY += Onion.Theme.Padding;
@@ -401,9 +422,29 @@ public readonly struct TextBox : IControl
                 drawSelectionTextColour = true;
             }
 
-            Draw.Colour = col;
-            Draw.Text(instance.Name, offset, new Vector2(ratio),
-                HorizontalTextAlign.Left, VerticalTextAlign.Middle/*,colours: drawSelectionTextColour ? textColourInstructions : null*/);
+            if (p.Instance.Name.Length == 0)
+            {
+                var placeholder = states[node.Identity].Options.Placeholder;
+                if (!string.IsNullOrWhiteSpace(placeholder))
+                {
+                    Draw.Colour = col * 0.5f;
+                    Draw.Text(placeholder, offset, new Vector2(ratio), HorizontalTextAlign.Left, VerticalTextAlign.Middle);
+                }
+            }
+            else
+            {
+                Draw.Colour = col;
+
+                if (states[node.Identity].Options.Password)
+                {
+                    float w = GetPasswordCharWidth();
+                    float r = w * 0.25f;
+                    for (int i = 0; i < instance.Name.Length; i++)
+                        Draw.Circle(offset + new Vector2(i * w + r, 0), new Vector2(r));
+                }
+                else
+                    Draw.Text(instance.Name, offset, new Vector2(ratio), HorizontalTextAlign.Left, VerticalTextAlign.Middle/*,colours: drawSelectionTextColour ? textColourInstructions : null*/);
+            }
 
             if (instance.HasFocus && cursorBlinkTimer % 1 < 0.3f)
             {
@@ -418,29 +459,41 @@ public readonly struct TextBox : IControl
         }
     }
 
-    public static int OffsetToIndex(ReadOnlySpan<char> input, float x, out float snappedOffset)
+    public static int OffsetToIndex(in ControlParams p, ReadOnlySpan<char> input, float x, out float snappedOffset)
     {
         for (int i = 0; i < input.Length; i++)
         {
-            snappedOffset = Draw.CalculateTextWidth(input[..i]);
+            snappedOffset = GetTextWidth(p, input[..i]);
             if (snappedOffset >= x)
                 return Math.Max(0, i);
         }
-        snappedOffset = Draw.CalculateTextWidth(input);
+        snappedOffset = GetTextWidth(p, input);
         return input.Length;
     }
 
-    public static float IndexToOffset(ReadOnlySpan<char> input, int index)
+    public static float IndexToOffset(in ControlParams p, ReadOnlySpan<char> input, int index)
     {
         if (input.IsEmpty)
             return 0;
 
         if (index >= input.Length)
-            return Draw.CalculateTextWidth(input);
+            return GetTextWidth(p, input);
 
         index = Utilities.Clamp(index, 0, input.Length);
-        return Draw.CalculateTextWidth(input[..index]);
+        return GetTextWidth(p, input[..index]);
     }
+
+    private static float GetTextWidth(in ControlParams p, in ReadOnlySpan<char> str)
+    {
+        //Draw.Font = Onion.Theme.Font;
+        //Draw.FontSize = Onion.Theme.FontSize;
+        var state = states[p.Identity];
+        if (state.Options.Password)
+            return str.Length * GetPasswordCharWidth();
+        return Draw.CalculateTextWidth(str);
+    }
+
+    public static float GetPasswordCharWidth() => Onion.Theme.FontSize * 0.7f;
 
     public void OnEnd(in ControlParams p)
     {

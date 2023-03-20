@@ -27,7 +27,6 @@ namespace Walgelijk.SimpleDrawing
         public float TextBoxWidth;
         public VerticalTextAlign VerticalAlign;
         public HorizontalTextAlign HorizontalAlign;
-        public TextMeshGenerator.ColourInstruction[]? ColourInstructions;
 
         public override bool Equals(object? obj)
         {
@@ -40,7 +39,6 @@ namespace Walgelijk.SimpleDrawing
             return Text == drawing.Text &&
                     EqualityComparer<Color>.Default.Equals(Color, drawing.Color) &&
                     EqualityComparer<Font>.Default.Equals(Font, drawing.Font) &&
-                    ColourInstructions.SequenceEqualsNullable(drawing.ColourInstructions) &&
                     TextBoxWidth == drawing.TextBoxWidth &&
                     VerticalAlign == drawing.VerticalAlign &&
                     HorizontalAlign == drawing.HorizontalAlign;
@@ -48,7 +46,7 @@ namespace Walgelijk.SimpleDrawing
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Text, Color, Font, TextBoxWidth, VerticalAlign, HorizontalAlign, ColourInstructions);
+            return HashCode.Combine(Text, Color, Font, TextBoxWidth, VerticalAlign, HorizontalAlign);
         }
 
         public static bool operator ==(CachableTextDrawing left, CachableTextDrawing right)
@@ -93,11 +91,6 @@ namespace Walgelijk.SimpleDrawing
         /// </summary>
         public float TextDrawRatio;
 
-        /// <summary>
-        /// The <see cref="ColourInstructions"/> that are used for the mesh generation
-        /// </summary>
-        public TextMeshGenerator.ColourInstruction[]? ColourInstructions;
-
         public override bool Equals(object? obj)
         {
             return obj is TextDrawing drawing && Equals(drawing);
@@ -108,14 +101,13 @@ namespace Walgelijk.SimpleDrawing
             return Text == drawing.Text &&
                    EqualityComparer<Font?>.Default.Equals(Font, drawing.Font) &&
                    TextBoxWidth == drawing.TextBoxWidth &&
-                    ColourInstructions.SequenceEqualsNullable(drawing.ColourInstructions) &&
                    VerticalAlign == drawing.VerticalAlign &&
                    HorizontalAlign == drawing.HorizontalAlign;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Text, Font, TextBoxWidth, VerticalAlign, HorizontalAlign, ColourInstructions);
+            return HashCode.Combine(Text, Font, TextBoxWidth, VerticalAlign, HorizontalAlign);
         }
 
         public static bool operator ==(TextDrawing left, TextDrawing right)

@@ -1,6 +1,5 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
-using Walgelijk.Onion.Animations;
 using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion.Controls;

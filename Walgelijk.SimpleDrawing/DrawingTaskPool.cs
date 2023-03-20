@@ -41,7 +41,7 @@
             Draw.TextMeshGenerator.HorizontalAlign = drawing.HorizontalAlign;
             Draw.TextMeshGenerator.WrappingWidth = drawing.TextBoxWidth;
 
-            var result = Draw.TextMeshGenerator.Generate(drawing.Text, vertexBuffer.Vertices, vertexBuffer.Indices, drawing.ColourInstructions);
+            var result = Draw.TextMeshGenerator.Generate(drawing.Text, vertexBuffer.Vertices, vertexBuffer.Indices);
             vertexBuffer.AmountOfIndicesToRender = result.IndexCount;
             vertexBuffer.ForceUpdate();
         }

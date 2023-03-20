@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using Walgelijk.Onion.Assets;
+using Walgelijk.Onion.Controls;
 
 namespace Walgelijk.Onion;
 
@@ -30,6 +32,13 @@ public static class Onion
         Navigator.Clear();
     }
 
+    #region Controls
+
+    //public static ControlState Text(string text, HorizontalTextAlign horizontal, VerticalTextAlign vertical, int identity = 0, [CallerLineNumber] int site = 0)
+    //    => TextRect.Create(text, horizontal, vertical, identity, site);
+
+    #endregion
+
     public static void PlaySound(ControlState state)
     {
         switch (state)
@@ -53,7 +62,7 @@ public static class Onion
 
         static void p(Sound? sound)
         {
-            if (sound != null) 
+            if (sound != null)
                 Game.Main.AudioRenderer.PlayOnce(sound, SoundVolume, 1, AudioTrack);
         }
     }

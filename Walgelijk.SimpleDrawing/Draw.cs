@@ -259,7 +259,7 @@ namespace Walgelijk.SimpleDrawing
         /// <param name="degrees">Text rotation in degrees</param>
         public static void Text(
             string text, Vector2 pivot, Vector2 scale, HorizontalTextAlign halign = HorizontalTextAlign.Left, VerticalTextAlign valign = VerticalTextAlign.Top, 
-            float textBoxWidth = float.PositiveInfinity, float degrees = 0, ColourInstruction[]? colours = null)
+            float textBoxWidth = float.PositiveInfinity, float degrees = 0)
         {
             Vector2 calculatedScale = scale * (FontSize / Font.Size);
             TextDrawing textDrawing = new()
@@ -269,8 +269,7 @@ namespace Walgelijk.SimpleDrawing
                 HorizontalAlign = halign,
                 VerticalAlign = valign,
                 TextBoxWidth = textBoxWidth / calculatedScale.X,
-                TextDrawRatio = TextDrawRatio,
-                ColourInstructions = colours
+                TextDrawRatio = TextDrawRatio
             };
             Enqueue(new Drawing(textMesh, pivot, calculatedScale, degrees * Utilities.DegToRad, Colour, ScreenSpace, textDrawing, DrawBounds)
             {

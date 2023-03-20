@@ -46,6 +46,7 @@ public struct IMGUIScene : ISceneCreator
         };
 
         public static int DropdownSelectedIndex;
+        private static bool PasswordCheckbox = true;
 
         public readonly static bool[] WindowsOpen = { true, true };
 
@@ -62,7 +63,8 @@ public struct IMGUIScene : ISceneCreator
 
         public override void Initialise()
         {
-            //Onion.Theme.Font = Resources.Load<Font>("cambria.fnt");
+            //Onion.Theme.FontSize = 12;
+            //Onion.Theme.Font = Resources.Load<Font>("inter-tight.fnt");
         }
 
         public override void Update()
@@ -79,16 +81,21 @@ public struct IMGUIScene : ISceneCreator
                 Onion.Layout.VerticalLayout();
 
                 Onion.Tree.Start(75, new ScrollView());
+
+                Onion.Layout.Size(0, 32);
+                Onion.Layout.FitContainer(1, null);
+                Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
+                Checkbox.Create(ref PasswordCheckbox, "Password text box");
+
                 for (int i = 0; i < 7; i++)
                 {
                     Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
                     Onion.Layout.Size(0, 32);
                     Onion.Layout.FitContainer(1, null);
                     if (Walgelijk.Onion.Controls.Button.Click("Ik besta ook " + i, i))
-                    {
                         WindowsOpen[i % WindowsOpen.Length] = !WindowsOpen[i % WindowsOpen.Length];
-                    }
                 }
+
                 Onion.Tree.End();
             }
 
@@ -107,7 +114,12 @@ public struct IMGUIScene : ISceneCreator
                     Onion.Layout.Offset(Onion.Theme.Padding + i * (hotbarHeight - Onion.Theme.Padding), 0);
                     if (ImageButton.Click(Texture.ErrorTexture, ImageContainmentMode.Cover, i))
                     {
-
+                        var a = Resources.Load<Font>("inter-tight.fnt");
+                        var b = Resources.Load<Font>("roboto mono.fnt");
+                        if (Onion.Theme.Font == b)
+                            Onion.Theme.Font = a;
+                        else
+                            Onion.Theme.Font = b;
                     }
                 }
                 Onion.Tree.End();
@@ -151,7 +163,8 @@ public struct IMGUIScene : ISceneCreator
 
                         Onion.Layout.Size(128, 32);
                         Onion.Layout.Offset(Onion.Theme.Padding * 3 + 128, Onion.Theme.Padding * 2 + 24);
-                        TextBox.Create(ref textBoxContent, new TextBoxOptions(), identity: i);
+                        TextBox.Create(ref textBoxContent, 
+                            new TextBoxOptions(placeholder: "Placeholder!", password: i == 0 && PasswordCheckbox), identity: i);
                     }
                     Onion.Tree.End(); //end container child
                 }

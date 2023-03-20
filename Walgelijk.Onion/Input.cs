@@ -42,13 +42,10 @@ public class Input
         MousePrimaryRelease = state.IsButtonReleased(Button.Left);
 
         DoubleClicked = false;
-        if (MousePrimaryPressed)
+        if (MousePrimaryRelease)
         {
             if (time - lastClickTime < Config.DoubleClickTimeWindow.TotalSeconds)
-            {
                 DoubleClicked = true;
-                MousePrimaryPressed = false;
-            }
             else
                 lastClickTime = time;
         }

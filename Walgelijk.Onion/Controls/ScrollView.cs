@@ -6,7 +6,6 @@ public struct ScrollView : IControl
 {
     public void OnAdd(in ControlParams p) { }
 
-
     public void OnStart(in ControlParams p)
     {
         p.Instance.CaptureFlags = CaptureFlags.Scroll;
