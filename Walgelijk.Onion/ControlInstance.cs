@@ -80,6 +80,12 @@ public class ControlInstance
     public bool Muted = false;
 
     /// <summary>
+    /// This control has changed the value of a given ref parameter in its creation function.
+    /// This is used, for example, when a dropdown does its processing and changes the selection index. <see cref="IncomingChange"/> is set to true and read the next time the creation function is called
+    /// </summary>
+    //public bool IncomingChange;
+
+    /// <summary>
     /// List of visual animations to apply to this control
     /// </summary>
     public readonly AnimationCollection Animations = new();

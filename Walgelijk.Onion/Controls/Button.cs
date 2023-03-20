@@ -29,18 +29,9 @@ public readonly struct Button : IControl
 
     public void OnRemove(in ControlParams p) { }
 
-    public void OnStart(in ControlParams p)
-    {
-    }
+    public void OnStart(in ControlParams p) { }
 
-    public void OnProcess(in ControlParams p)
-    {
-        ControlUtils.ProcessButtonLike(p);
-
-        //if (p.Instance.State.HasFlag(ControlState.Scroll))
-        //    p.Instance.InnerScrollOffset += Onion.Input.ScrollDelta; 
-        //TODO dit moet ergens anders... 
-    }
+    public void OnProcess(in ControlParams p) => ControlUtils.ProcessButtonLike(p);
 
     public void OnRender(in ControlParams p)
     {

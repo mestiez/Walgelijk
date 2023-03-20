@@ -3,6 +3,7 @@ using Walgelijk.Imgui;
 using Walgelijk.Onion;
 using Walgelijk.Onion.Controls;
 using Walgelijk.SimpleDrawing;
+using Button = Walgelijk.Onion.Controls.Button;
 
 namespace TestWorld;
 
@@ -26,6 +27,7 @@ public struct IMGUIScene : ISceneCreator
             ClearColour = new Color("#550055")
         });
         game.UpdateRate = 144;
+        Draw.CacheTextMeshes = -1;
         return scene;
     }
 
@@ -69,6 +71,9 @@ public struct IMGUIScene : ISceneCreator
 
         public override void Update()
         {
+            var layout = Onion.Layout;
+            var gui = Onion.Tree;
+
             Draw.Reset();
             Draw.ScreenSpace = true;
             Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer - 1);
@@ -77,41 +82,42 @@ public struct IMGUIScene : ISceneCreator
 
             {
                 //Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
-                Onion.Layout.Size(128, Window.Height / 2);
-                Onion.Layout.VerticalLayout();
+                layout.Size(128, Window.Height / 2);
+                layout.VerticalLayout();
 
-                Onion.Tree.Start(75, new ScrollView());
+                gui.Start(75, new ScrollView());
 
-                Onion.Layout.Size(0, 32);
-                Onion.Layout.FitContainer(1, null);
-                Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
+                layout.Size(0, 32);
+                layout.FitContainer(1, null);
+                layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
                 Checkbox.Create(ref PasswordCheckbox, "Password text box");
 
                 for (int i = 0; i < 7; i++)
                 {
-                    Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
-                    Onion.Layout.Size(0, 32);
-                    Onion.Layout.FitContainer(1, null);
-                    if (Walgelijk.Onion.Controls.Button.Click("Ik besta ook " + i, i))
+                    layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
+                    layout.Size(0, 32);
+                    layout.FitContainer(1, null);
+
+                    if (Button.Click("Ik besta ook " + i, i))
                         WindowsOpen[i % WindowsOpen.Length] = !WindowsOpen[i % WindowsOpen.Length];
                 }
 
-                Onion.Tree.End();
+                gui.End();
             }
 
             {
                 const float hotbarHeight = 64;
-                Onion.Layout.FitContainer(1, 0);
-                Onion.Layout.Height(hotbarHeight);
-                Onion.Layout.CenterHorizontal();
-                Onion.Layout.Offset(0, Window.Height - hotbarHeight - Onion.Theme.Padding);
+                layout.FitContainer(1, 0);
+                layout.Height(hotbarHeight);
+                layout.CenterHorizontal();
+                layout.Offset(0, Window.Height - hotbarHeight - Onion.Theme.Padding);
 
-                Onion.Tree.Start(106, new ScrollView());
+                gui.Start(106, new ScrollView());
                 for (int i = 0; i < 4; i++)
                 {
-                    Onion.Layout.Size(hotbarHeight - Onion.Theme.Padding * 2, hotbarHeight - Onion.Theme.Padding * 2);
-                    Onion.Layout.CenterVertical();
-                    Onion.Layout.Offset(Onion.Theme.Padding + i * (hotbarHeight - Onion.Theme.Padding), 0);
+                    layout.Size(hotbarHeight - Onion.Theme.Padding * 2, hotbarHeight - Onion.Theme.Padding * 2);
+                    layout.CenterVertical();
+                    layout.Offset(Onion.Theme.Padding + i * (hotbarHeight - Onion.Theme.Padding), 0);
                     if (ImageButton.Click(Texture.ErrorTexture, ImageContainmentMode.Cover, i))
                     {
                         var a = Resources.Load<Font>("inter-tight.fnt");
@@ -122,24 +128,24 @@ public struct IMGUIScene : ISceneCreator
                             Onion.Theme.Font = b;
                     }
                 }
-                Onion.Tree.End();
+                gui.End();
             }
 
             {
-                Onion.Layout.Size(128, 24);
-                Onion.Layout.Offset(128, Onion.Theme.Padding);
+                layout.Size(128, 24);
+                layout.Offset(128, Onion.Theme.Padding);
                 Dropdown<string>.Create(DropdownOptions, ref DropdownSelectedIndex);
             }
 
             {
-                Onion.Layout.Size(150, 24);
-                Onion.Layout.Offset(128 + 128 + Onion.Theme.Padding, Onion.Theme.Padding);
+                layout.Size(150, 24);
+                layout.Offset(128 + 128 + Onion.Theme.Padding, Onion.Theme.Padding);
                 var s = Scene.GetSystem<OnionSystem>();
                 Dropdown<UiDebugOverlay>.CreateForEnum(ref s.DebugOverlay);
             }
 
-            Onion.Layout.Size(128 + 150, 256);
-            Onion.Layout.Offset(128, 24 + Onion.Theme.Padding);
+            layout.Size(128 + 150, 256);
+            layout.Offset(128, 24 + Onion.Theme.Padding);
             TextRect.Create(textRectContents, HorizontalTextAlign.Left, VerticalTextAlign.Top);
 
             for (int i = 0; i < 2; i++)
@@ -147,29 +153,47 @@ public struct IMGUIScene : ISceneCreator
                 if (!WindowsOpen[i])
                     continue;
 
-                Onion.Layout.Offset(i * 64, i * 64);
-                Onion.Layout.Size(300, 128);
+                layout.Offset(i * 64, i * 64);
+                layout.Size(300, 128);
                 DragWindow.Start(textBoxContent, ref WindowsOpen[i], i);
                 {
-                    Onion.Layout.FitContainer(1, 1);
-                    Onion.Layout.OffsetSize(0, -24);
-                    Onion.Layout.Offset(0, 24);
-                    Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
-                    Onion.Tree.Start(1435 + i, new ScrollView());
+                    layout.FitContainer(1, 1);
+                    layout.OffsetSize(0, -24);
+                    layout.Offset(0, 24);
+                    layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
+                    gui.Start(1435 + i, new ScrollView());
                     {
-                        Onion.Layout.Size(128, 32);
-                        Onion.Layout.Offset(Onion.Theme.Padding * 2, Onion.Theme.Padding * 2 + 24);
+                        layout.Size(128, 32);
+                        layout.Offset(Onion.Theme.Padding * 2, Onion.Theme.Padding * 2 + 24);
                         Dropdown<string>.Create(DropdownOptions, ref DropdownSelectedIndex, identity: i);
 
-                        Onion.Layout.Size(128, 32);
-                        Onion.Layout.Offset(Onion.Theme.Padding * 3 + 128, Onion.Theme.Padding * 2 + 24);
+                        layout.Size(128, 32);
+                        layout.Offset(Onion.Theme.Padding * 3 + 128, Onion.Theme.Padding * 2 + 24);
                         TextBox.Create(ref textBoxContent, 
                             new TextBoxOptions(placeholder: "Placeholder!", password: i == 0 && PasswordCheckbox), identity: i);
                     }
-                    Onion.Tree.End(); //end container child
+                    gui.End(); //end container child
                 }
-                Onion.Tree.End();
+
+                gui.End();
             }
+
+            layout.Size(256, 32);
+            layout.Offset(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding);
+            Slider.Float(ref Onion.Theme.Padding, Slider.Direction.Horizontal, new MinMax<float>(0, 8), 0.1f);
+
+            layout.Size(256, 32);
+            layout.Offset(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding * 2 + 32);
+            Slider.Float(ref Onion.Theme.Rounding, Slider.Direction.Horizontal, new MinMax<float>(0, 24), 0.1f);
+
+            layout.Size(256, 32);
+            layout.Offset(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2);
+            Slider.Int(ref Onion.Theme.FontSize, Slider.Direction.Horizontal, new MinMax<int>(8, 24), 1);
+
+            layout.Size(256, 300);
+            layout.StickRight();
+            layout.StickBottom();
+            ColourPicker.Create(ref Onion.Theme.Background.Color);
         }
 
         public override void Render()

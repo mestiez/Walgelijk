@@ -3909,7 +3909,7 @@
         </member>
         <member name="T:Walgelijk.FloatRange">
             <summary>
-            Struct with a minimum and maximum float value
+            Object with a minimum and maximum float value
             </summary>
         </member>
         <member name="M:Walgelijk.FloatRange.#ctor(System.Single,System.Single)">
@@ -3924,7 +3924,7 @@
         </member>
         <member name="T:Walgelijk.IntRange">
             <summary>
-            Struct with a minimum and maximum integer value
+            Object with a minimum and maximum integer value
             </summary>
         </member>
         <member name="M:Walgelijk.IntRange.#ctor(System.Int32,System.Int32)">
@@ -3939,7 +3939,7 @@
         </member>
         <member name="T:Walgelijk.Vec2Range">
             <summary>
-            Struct with a minimum and maximum <see cref="T:System.Numerics.Vector2"/> value
+            Object with a minimum and maximum <see cref="T:System.Numerics.Vector2"/> value
             </summary>
         </member>
         <member name="M:Walgelijk.Vec2Range.#ctor(System.Numerics.Vector2,System.Numerics.Vector2)">
@@ -3954,7 +3954,7 @@
         </member>
         <member name="T:Walgelijk.ColorRange">
             <summary>
-            Struct with a minimum and maximum <see cref="T:Walgelijk.Color"/> value
+            Object with a minimum and maximum <see cref="T:Walgelijk.Color"/> value
             </summary>
         </member>
         <member name="M:Walgelijk.ColorRange.#ctor(Walgelijk.Color,Walgelijk.Color)">

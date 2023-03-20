@@ -24,6 +24,20 @@ public readonly struct TextBoxOptions
 
 public readonly struct TextBox : IControl
 {
+    public static readonly char[] WordDelimiters = //TODO implement
+    {
+        ' ',
+        '\t',
+        '\n',
+        ',',
+        '.',
+        '/',
+        '\\',
+        '-',
+        '(',
+        ')',
+    };
+
     private record TextBoxState(bool IncomingChange, in TextBoxOptions Options);
     private static readonly Dictionary<int, TextBoxState> states = new();
 

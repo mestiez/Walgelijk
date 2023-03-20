@@ -10,7 +10,6 @@ public readonly struct DragWindow : IControl
 {
     public readonly bool IsOpen;
 
-
     public DragWindow(bool isOpen)
     {
         IsOpen = isOpen;

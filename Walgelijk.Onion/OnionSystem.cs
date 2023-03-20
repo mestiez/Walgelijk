@@ -74,12 +74,18 @@ public class OnionSystem : Walgelijk.System
     {
         var p = new Vector2(Window.Width - 32, 32);
         Draw.Colour = Colors.Yellow;
-        Draw.Text($"HOVER:  {((Onion.Navigator.HoverControl?.ToString()) ?? "none")}", p, Vector2.One, HorizontalTextAlign.Right, VerticalTextAlign.Top);
-        Draw.Text($"SCROLL: {((Onion.Navigator.ScrollControl?.ToString()) ?? "none")}", p += new Vector2(0, 14), Vector2.One, HorizontalTextAlign.Right, VerticalTextAlign.Top);
-        Draw.Text($"FOCUS:  {((Onion.Navigator.FocusedControl?.ToString()) ?? "none")}", p += new Vector2(0, 14), Vector2.One, HorizontalTextAlign.Right, VerticalTextAlign.Top);
-        Draw.Text($"ACTIVE: {((Onion.Navigator.ActiveControl?.ToString()) ?? "none")}", p += new Vector2(0, 14), Vector2.One, HorizontalTextAlign.Right, VerticalTextAlign.Top);
-        Draw.Text($"TRIGGERED: {((Onion.Navigator.TriggeredControl?.ToString()) ?? "none")}", p += new Vector2(0, 14), Vector2.One, HorizontalTextAlign.Right, VerticalTextAlign.Top);
-        Draw.Text($"KEY: {((Onion.Navigator.KeyControl?.ToString()) ?? "none")}", p += new Vector2(0, 14), Vector2.One, HorizontalTextAlign.Right, VerticalTextAlign.Top);
+
+        drawStatus("HOVER", Onion.Navigator.HoverControl, ref p);
+        drawStatus("SCROLL", Onion.Navigator.ScrollControl, ref p);
+        drawStatus("FOCUS", Onion.Navigator.FocusedControl, ref p);
+        drawStatus("ACTIVE", Onion.Navigator.ActiveControl, ref p);
+        drawStatus("TRIGGERED", Onion.Navigator.TriggeredControl, ref p);
+        drawStatus("KEY", Onion.Navigator.KeyControl, ref p);
+
+        void drawStatus(string a, int? id, ref Vector2 p)
+        {
+            Draw.Text($"{a}:  {((id?.ToString()) ?? "none")}", p += new Vector2(0, 14), Vector2.One, HorizontalTextAlign.Right, VerticalTextAlign.Top);
+        }
     }
 
     private void DrawRects(UiDebugOverlay overlay)

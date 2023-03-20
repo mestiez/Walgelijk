@@ -306,7 +306,7 @@ public class Navigator
         orderStack.Pop();
 
         //sortedByDepthRaw.AsSpan(0, sortedByDepthCount).Reverse();
-        sortedByDepthRaw.AsSpan(0, sortedByDepthCount).Sort(static (a, b) => b.ChronologicalOrder - a.ChronologicalOrder);
+        sortedByDepthRaw.AsSpan(0, sortedByDepthCount).Sort(static (a, b) => b.TreeDepth - a.TreeDepth);
         sortedByDepthRaw.AsSpan(0, sortedByDepthCount).Sort(static (a, b) => b.Order - a.Order);
     }
 
@@ -442,13 +442,13 @@ public class Navigator
     {
         public readonly int Identity;
         public readonly int Order;
-        public readonly int ChronologicalOrder;
+        public readonly int TreeDepth;
 
         public SortedNode(int identity, int order, int chronologicalOrder)
         {
             Identity = identity;
             Order = order;
-            ChronologicalOrder = chronologicalOrder;
+            TreeDepth = chronologicalOrder;
         }
 
         public override string? ToString() => $"Id: {Identity}, Order: {Order}";
