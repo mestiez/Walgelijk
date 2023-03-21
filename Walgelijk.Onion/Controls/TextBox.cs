@@ -91,7 +91,7 @@ public readonly struct TextBox : IControl
         var hadFocus = p.Instance.HasFocus;
         ControlUtils.ProcessButtonLike(p);
         p.Instance.CaptureFlags |= CaptureFlags.Scroll;
-        
+
         if (p.Instance.IsHover)
             IControl.SetCursor(DefaultCursor.Text);
 
@@ -242,6 +242,7 @@ public readonly struct TextBox : IControl
             string textToAdd = string.Empty;
             int backspaceCount = 0;
             int deleteCount = 0;
+            var regex = states[p.Identity].Options.Filter;
             for (int i = 0; i < p.Input.TextEntered.Length; i++)
             {
                 var c = p.Input.TextEntered[i];
@@ -254,14 +255,17 @@ public readonly struct TextBox : IControl
                         backspaceCount++;
                         break;
                     default:
-                        if (!char.IsControl(c))
+                        if (!char.IsControl(c) && (regex == null || regex.IsMatch(c.ToString())))
                             textToAdd += c;
                         break;
                 }
             }
 
             if (textToAdd.Length > 0)
+            {
                 AppendText(p, textToAdd);
+            }
+
             for (int i = 0; i < backspaceCount; i++)
                 Backspace(p);
             for (int i = 0; i < deleteCount; i++)
@@ -308,11 +312,15 @@ public readonly struct TextBox : IControl
         SetSelection(leftSpace + 1, rightSpace);
     }
 
-    private static void AppendText(in ControlParams p, ReadOnlySpan<char> text)
+    private static void AppendText(in ControlParams p, string text)
     {
         DeleteSelection(p);
+        var s = states[p.Identity];
+        p.Instance.Name = p.Instance.Name.Insert(cursorIndex, text);
 
-        p.Instance.Name = p.Instance.Name.Insert(cursorIndex, new string(p.Input.TextEntered.Where(static c => !char.IsControl(c)).ToArray()));
+        if (s.Options.MaxLength.HasValue && p.Instance.Name.Length >= s.Options.MaxLength)
+            p.Instance.Name = p.Instance.Name[0..s.Options.MaxLength.Value];
+
         MarkIncomingChange(p);
         MoveCursor(p, cursorIndex + p.Input.TextEntered.Length);
     }
