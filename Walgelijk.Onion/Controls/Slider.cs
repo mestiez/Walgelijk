@@ -69,7 +69,7 @@ public readonly struct Slider : IControl
                 v = Utilities.Clamp(Utilities.MapRange(r.MinX, r.MaxX, range.Min, range.Max, m.X), range.Min, range.Max);
                 break;
             case Direction.Vertical:
-                v = Utilities.Clamp(Utilities.MapRange(r.MinY, r.MaxY, range.Min, range.Max, m.Y), range.Min, range.Max);
+                v = Utilities.Clamp(Utilities.MapRange(r.MaxY, r.MinY, range.Min, range.Max, m.Y), range.Min, range.Max);
                 break;
         }
 
@@ -108,11 +108,12 @@ public readonly struct Slider : IControl
                 sliderRect.MaxX = Utilities.MapRange(range.Min, range.Max, sliderRect.MinX, sliderRect.MaxX, states[p.Identity]);
                 break;
             case Direction.Vertical:
-                sliderRect.MaxY = Utilities.MapRange(range.Min, range.Max, sliderRect.MinY, sliderRect.MaxY, states[p.Identity]);
+                sliderRect.MinY = Utilities.MapRange(range.Min, range.Max, sliderRect.MaxY, sliderRect.MinY, states[p.Identity]);
                 break;
         }
 
         sliderRect.MaxX = MathF.Max(sliderRect.MaxX, sliderRect.MinX + Onion.Theme.Padding * 4);
+        sliderRect.MinY = MathF.Min(sliderRect.MinY, sliderRect.MaxY - Onion.Theme.Padding * 4);
 
         Draw.Colour = Onion.Theme.Accent;
         anim.AnimateColour(ref Draw.Colour, t);

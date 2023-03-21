@@ -169,7 +169,7 @@ public struct IMGUIScene : ISceneCreator
 
                         layout.Size(128, 32);
                         layout.Offset(Onion.Theme.Padding * 3 + 128, Onion.Theme.Padding * 2 + 24);
-                        TextBox.Create(ref textBoxContent, 
+                        TextBox.Create(ref textBoxContent,
                             new TextBoxOptions(placeholder: "Placeholder!", password: i == 0 && PasswordCheckbox), identity: i);
                     }
                     gui.End(); //end container child
@@ -189,6 +189,23 @@ public struct IMGUIScene : ISceneCreator
             layout.Size(256, 32);
             layout.Offset(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2);
             Slider.Int(ref Onion.Theme.FontSize, Slider.Direction.Horizontal, new MinMax<int>(8, 24), 1);
+
+            {
+                layout.Size(32, (Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Padding));
+                layout.Offset(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
+                Slider.Float(ref Onion.Theme.Accent.R, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f);
+
+                layout.Size(32, (Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Padding));
+                layout.Offset(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
+                layout.Offset(32 + Onion.Theme.Padding, 0 );
+                Slider.Float(ref Onion.Theme.Accent.B, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f);
+
+                layout.Size(32, (Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Padding));
+                layout.Offset(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
+                layout.Offset(32 + Onion.Theme.Padding, 0 );
+                layout.Offset(32 + Onion.Theme.Padding, 0 );
+                Slider.Float(ref Onion.Theme.Accent.G, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f);
+            }
 
             layout.Size(256, 300);
             layout.StickRight();

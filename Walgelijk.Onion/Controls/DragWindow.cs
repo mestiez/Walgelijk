@@ -33,7 +33,7 @@ public readonly struct DragWindow : IControl
         instance.Muted = true;
         instance.RenderFocusBox = false;
 
-        float buttonSize = Onion.Theme.WindowTitleBarHeight - Onion.Theme.Padding ;
+        float buttonSize = Onion.Theme.WindowTitleBarHeight - Onion.Theme.Padding;
         Onion.Layout.Size(buttonSize, buttonSize);
         Onion.Layout.Enqueue(new StickTop());
         Onion.Layout.Enqueue(new StickRight());
@@ -98,8 +98,8 @@ public readonly struct DragWindow : IControl
         anim.AnimateColour(ref Draw.Colour, t);
 
         Draw.Text(
-            instance.Name, instance.Rects.Rendered.BottomLeft + new Vector2(Onion.Theme.Padding),
-            Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Top);
+            instance.Name, instance.Rects.Rendered.BottomLeft + new Vector2(Onion.Theme.Padding, 0.5f * Onion.Theme.WindowTitleBarHeight),
+            Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Middle);
 
         var bg = Onion.Theme.Background;
         Draw.Colour = bg.Color;
