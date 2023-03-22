@@ -1,27 +1,48 @@
-![logo](https://i.imgur.com/YMGhfSS.png)
+![logo](https://i.imgur.com/EiCDNR7.png)
 
 Een kleine, simpele 2D game engine
 
 ```cs
-Game game = new Game(
-    new OpenTKWindow("Titel", default, new Vector2(1280,720)), 
-    new NAudioRenderer()
-    );
+var game = new Game(
+	new OpenTKWindow("Videogame", new Vector2(-1), new Vector2(1280, 720)),
+	new OpenALAudioRenderer()
+);
 
-game.Window.TargetFrameRate = 120;
-game.Window.TargetUpdateRate = 60;
+game.UpdateRate = 120;
+game.FixedUpdateRate = 60;
 game.Window.VSync = false;
 
-var scene = new Scene();
+TextureLoader.Settings.FilterMode = FilterMode.Linear;
 
+Resources.SetBasePathForType<FixedAudioData>("audio");
+Resources.SetBasePathForType<StreamAudioData>("audio");
+Resources.SetBasePathForType<Texture>("textures");
+Resources.SetBasePathForType<Font>("fonts");
+
+game.Scene = new Scene(game);
+scene.AddSystem(new CameraSystem());
+scene.AddSystem(new TransformSystem());
+		
 var camera = scene.CreateEntity();
 scene.AttachComponent(camera, new TransformComponent());
-scene.AttachComponent(camera, new CameraComponent());
+scene.AttachComponent(camera, new CameraComponent
+{
+    PixelsPerUnit = 1,
+    OrthographicSize = 1,
+    ClearColour = new Color("#a8a3c1")
+});
 
-scene.AddSystem(new TransformSystem());
-scene.AddSystem(new CameraSystem());
+#if DEBUG
+	game.DevelopmentMode = true;
+	game.Console.DrawConsoleNotification = true;
+#else
+	game.DevelopmentMode = false;
+	game.Console.DrawConsoleNotification = false;
+#endif
 
-game.Scene = scene;
+game.Window.SetIcon(Resources.Load<Texture>("icon.png"));
+game.Profiling.DrawQuickProfiler = false;
+
 game.Start();
 ```
 **De [resources](/Walgelijk/resources) folder moet worden gekopieerd wanneer je een nieuw project maakt omdat daar de standaard shaders en fonts in zitten**
