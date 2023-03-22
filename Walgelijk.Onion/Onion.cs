@@ -17,6 +17,8 @@ public static class Onion
     public static float SoundVolume = 0.5f;
     public static AudioTrack? AudioTrack;
 
+    public static bool Initialised { get; private set; }
+
     public static readonly Material ControlMaterial = OnionMaterial.CreateNew();
 
     static Onion()
@@ -24,11 +26,21 @@ public static class Onion
         CommandProcessor.RegisterAssembly(Assembly.GetAssembly(typeof(Onion)) ?? throw new Exception("I do not exist."));
     }
 
+    internal static void Initalise(Game game)
+    {
+        if (Initialised)
+            return;
+
+        Initialised = true;
+        game.OnSceneChange.AddListener(_ => ClearCache());
+    }
+
     [Command(Alias = "OnionClear", HelpString = "Clears the Onion UI cache, effectively resetting the UI scene")]
     public static void ClearCache()
     {
-        Layout.Reset();
         Tree.Clear();
+        Animation.Clear();
+        Layout.Reset();
         Navigator.Clear();
     }
 

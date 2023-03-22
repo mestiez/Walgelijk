@@ -100,6 +100,9 @@ public class Node
 
     public void Render(in ControlParams p)
     {
+        if (p.Node.GetAnimationTime() <= float.Epsilon)
+            return;
+
         var drawBounds = GetFinalDrawBounds(p.Tree);
         p.Tree.DrawboundStack.Push(drawBounds);
 
@@ -159,11 +162,12 @@ public class Node
             EnforceScrollBounds(p);
 
         }
+
         foreach (var child in GetChildren())
             child.Process(new ControlParams(child, p.Tree.EnsureInstance(child.Identity)));
     }
 
-    private void AdjustRaycastRect(in ControlParams p)
+    private static void AdjustRaycastRect(in ControlParams p)
     {
         if (!p.Instance.Rects.Raycast.HasValue)
             return;

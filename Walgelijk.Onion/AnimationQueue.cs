@@ -21,6 +21,11 @@ public class AnimationQueue
         Queue.Enqueue(anim);
     }
 
+    public void Clear()
+    {
+        Queue.Clear();
+    }
+
     public void DoNotAnimate() => ForceNoAnimation = true;
 
     public void Process(ControlInstance inst)

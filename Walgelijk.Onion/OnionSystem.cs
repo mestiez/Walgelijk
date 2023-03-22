@@ -14,6 +14,9 @@ public class OnionSystem : Walgelijk.System
 
     public override void Update()
     {
+        if (!Onion.Initialised)
+            Onion.Initalise(Game);
+
         // end previous frame
         Onion.Tree.End();
 

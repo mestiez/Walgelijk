@@ -6,7 +6,7 @@
     <ApplicationIcon />
     <StartupObject />
     <Nullable>enable</Nullable>
-    <Version>1.23.2</Version>
+    <Version>1.23.3</Version>
     <Authors>mestiez</Authors>
     <Company>Studio Minus</Company>
     <PackageIcon>icon.png</PackageIcon>

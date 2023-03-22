@@ -81,6 +81,10 @@ public class Navigator
         }
     }
 
+    public bool IsBeingUsed => 
+        hoverControl.HasValue || scrollControl.HasValue || focusedControl.HasValue || 
+        activeControl.HasValue || triggeredControl.HasValue || keyControl.HasValue;
+
     public ReadOnlySpan<SortedNode> SortedByDepth => sortedByDepthRaw.AsSpan(0, sortedByDepthCount);
 
     private int? hoverControl;
