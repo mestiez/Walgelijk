@@ -150,9 +150,8 @@ public class Node
 
         if (AliveLastFrame || SecondsDead <= p.Instance.AllowedDeadTime)
         {
-            ControlUtils.ConsiderParentScroll(p);
-
             p.Instance.Rects.ComputedGlobal = p.Instance.Rects.Intermediate;
+            ControlUtils.ConsiderParentScroll(p);
             if (Parent != null && p.Tree.Instances.TryGetValue(Parent.Identity, out var parentInst))
                 p.Instance.Rects.ComputedGlobal = p.Instance.Rects.ComputedGlobal.Translate(parentInst.Rects.ComputedGlobal.BottomLeft);
 

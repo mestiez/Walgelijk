@@ -92,6 +92,6 @@ public readonly struct ControlUtils
     public static void ConsiderParentScroll(in ControlParams p)
     {
         if (p.Node.Parent != null && p.Tree.Instances.TryGetValue(p.Node.Parent.Identity, out var parent))
-            p.Instance.Rects.Intermediate = p.Instance.Rects.Intermediate.Translate(parent.InnerScrollOffset);
+            p.Instance.Rects.ComputedGlobal = p.Instance.Rects.ComputedGlobal.Translate(parent.InnerScrollOffset);
     }
 }

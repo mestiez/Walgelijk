@@ -283,7 +283,11 @@ public class Navigator
         int globalOrder;
         globalOrder = node.ComputedGlobalOrder = Math.Max(node.AlwaysOnTop ? 1000 : node.RequestedLocalOrder, orderStack.Peek());
 
-        sortedByDepthRaw![index++] = new SortedNode(node.Identity, globalOrder, treeDepth);
+        if (sortedByDepthRaw!.Length <= index + 1)
+            Array.Resize(ref sortedByDepthRaw, index + 1);
+
+        sortedByDepthRaw![index] = new SortedNode(node.Identity, globalOrder, treeDepth);
+        index++;
 
         orderStack.Push(globalOrder);
         treeDepth++;
@@ -298,7 +302,7 @@ public class Navigator
     {
         if (sortedByDepthRaw == null)
             sortedByDepthRaw = new SortedNode[Onion.Tree.Nodes.Count];
-        else if (sortedByDepthRaw.Length != Onion.Tree.Nodes.Count)
+        else if (sortedByDepthRaw.Length <= Onion.Tree.Nodes.Count)
             Array.Resize(ref sortedByDepthRaw, Onion.Tree.Nodes.Count);
 
         orderStack.Clear();
