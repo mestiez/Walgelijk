@@ -27,8 +27,8 @@ HashSet<string> projectDirs = new();
 
 foreach (var path in GetChangedFiles())
 {
-	if (path.EndsWith("csproj"))
-		continue;
+	// if (!path.EndsWith("csproj"))
+	// 	continue;
 	var p = new FileInfo(path);
 	var relativeDir = Path.GetRelativePath(Environment.CurrentDirectory, p.DirectoryName);
 	relativeDir = relativeDir.Split(new[]{Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar})[0];

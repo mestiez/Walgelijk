@@ -1,26 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
-	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>0.2</Version>
-		<Description>Simple particlesystem</Description>
-		<DebugType>embedded</DebugType>
-		<Authors>mestiez</Authors>
-		<Company>Studio Minus</Company>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Nullable>enable</Nullable>
-	</PropertyGroup>
-
-	<Target Name="PostClean" AfterTargets="Clean">
-		<RemoveDir Directories="$(BaseIntermediateOutputPath)" />
-		<!-- obj -->
-		<RemoveDir Directories="$(BaseOutputPath)" />
-		<!-- bin -->
-	</Target>
-
-	<ItemGroup>
-		<ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
-	</ItemGroup>
-
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Version>0.2.1</Version>
+    <DebugType>embedded</DebugType>
+    <Authors>mestiez</Authors>
+    <Company>Studio Minus</Company>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Nullable>enable</Nullable>
+    <PackageIcon>icon.png</PackageIcon>
+    <Description>Fast and modular 2D particle system</Description>
+  </PropertyGroup>
+  <Target Name="PostBuild" Condition="'$(Configuration)'=='Release'" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet pack -c Release --no-restore --no-build --output &quot;$(SolutionDir)OutputPackages&quot;" />
+  </Target>
+  <Target Name="PostClean" AfterTargets="Clean">
+    <RemoveDir Directories="$(BaseIntermediateOutputPath)" />
+    <!-- obj -->
+    <RemoveDir Directories="$(BaseOutputPath)" />
+    <!-- bin -->
+  </Target>
+  <ItemGroup>
+    <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
+    <None Include="icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 </Project>

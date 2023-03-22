@@ -1,26 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net5.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>mestiez</Authors>
+    <Authors>mestiez </Authors>
     <Company>Studio Minus</Company>
     <RepositoryUrl>https://github.com/mestiez/Walgelijk</RepositoryUrl>
-    <Version>0.0.3</Version>
-    <Description>NAudio renderer implementatie</Description>
+    <Version>0.0.4</Version>
+    <Description>NAudio renderer implementation</Description>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
-
+  <Target Name="PostBuild" Condition="'$(Configuration)'=='Release'" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet pack -c Release --no-restore --no-build --output &quot;$(SolutionDir)OutputPackages&quot;" />
+  </Target>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>O:\Projects\Walgelijk\Walgelijk.NAudio\Walgelijk.NAudio.xml</DocumentationFile>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="NAudio" Version="1.10.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
   </ItemGroup>
-
 </Project>

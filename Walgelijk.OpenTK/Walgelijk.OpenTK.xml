@@ -4,6 +4,14 @@
         <name>Walgelijk.OpenTK</name>
     </assembly>
     <members>
+        <member name="M:Walgelijk.OpenTK.OpenALAudioRenderer.GetCurrentSamples(Walgelijk.Sound,System.Span{System.Single})">
+            <summary>
+            Populates the array with the most recently played samples ranging from -1 to 1
+            </summary>
+            <param name="sound"></param>
+            <param name="arr"></param>
+            <returns></returns>
+        </member>
         <member name="F:Walgelijk.OpenTK.VertexBufferCacheHandles.VBO">
             <summary>
             Vertex buffer object index
