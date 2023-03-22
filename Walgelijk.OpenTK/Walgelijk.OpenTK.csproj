@@ -1,47 +1,49 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-	<PropertyGroup>
-		<OutputType>Library</OutputType>
-		<TargetFramework>net6.0</TargetFramework>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Authors>mestiez</Authors>
-		<Company>Studio Minus</Company>
-		<RepositoryType>https://github.com/mestiez/Walgelijk</RepositoryType>
-		<Version>0.10</Version>
-		<Description>OpenTK backend for Walgelijk</Description>
-		<DebugType>embedded</DebugType>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-	</PropertyGroup>
-
-	<Target Name="PostClean" AfterTargets="Clean">
-		<RemoveDir Directories="$(BaseIntermediateOutputPath)" />
-		<!-- obj -->
-		<RemoveDir Directories="$(BaseOutputPath)" />
-		<!-- bin -->
-	</Target>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DocumentationFile>Walgelijk.OpenTK.xml</DocumentationFile>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	</PropertyGroup>
-
-	<ItemGroup>
-	  <Compile Remove="Video\**" />
-	  <EmbeddedResource Remove="Video\**" />
-	  <None Remove="Video\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="NVorbis" Version="0.10.5" />
-		<PackageReference Include="OpenTK" Version="4.7.5" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
-	</ItemGroup>
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <Authors>mestiez</Authors>
+    <Company>Studio Minus</Company>
+    <RepositoryType></RepositoryType>
+    <Version>0.10.5</Version>
+    <PackageIcon>icon.png</PackageIcon>
+    <Description>Windowing, input, video, and audio interface for Walgelijk using OpenTK</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  <Target Name="PostClean" AfterTargets="Clean">
+    <RemoveDir Directories="$(BaseIntermediateOutputPath)" />
+    <!-- obj -->
+    <RemoveDir Directories="$(BaseOutputPath)" />
+    <!-- bin -->
+  </Target>
+  <Target Name="PostBuild" Condition="'$(Configuration)'=='Release'" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet pack -c Release --no-restore --no-build --output &quot;$(SolutionDir)OutputPackages&quot;" />
+  </Target>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>Walgelijk.OpenTK.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Video\**" />
+    <EmbeddedResource Remove="Video\**" />
+    <None Remove="Video\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NVorbis" Version="0.10.5" />
+    <PackageReference Include="OpenTK" Version="4.7.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
+    <None Include="icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 </Project>

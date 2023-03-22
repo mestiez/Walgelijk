@@ -219,7 +219,7 @@ public struct RandomFrameSheet : IParticleInitialiser
         float c = Utilities.RandomInt(0, Columns);
         float r = Utilities.RandomInt(0, Rows);
 
-        
+
 
         particle.UvOffset = new Vector4(c / Columns, r / Columns, 1f / Columns, 1f / Rows);
     }

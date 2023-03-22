@@ -51,7 +51,7 @@ public class AreaFileOscillator : IOscillator
     {
         var b = InputData[Loops ? (i++ % InputData.Length) : Utilities.Clamp(i++, 0, InputData.Length - 1)];
         var v = Utilities.MapRange(0, 255, -1, 1, b);
-        foreach (var (x,y) in line(A.x, A.y, B.x, B.y))
+        foreach (var (x, y) in line(A.x, A.y, B.x, B.y))
         {
             field.Get(x, y).ForceSet(v * Volume);
         }

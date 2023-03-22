@@ -418,17 +418,49 @@ public class TextMeshGenerator
     /// <summary>
     /// Instruction that tells the generator when to set a colour
     /// </summary>
-    public struct ColourInstruction
+    public readonly struct ColourInstruction : IEquatable<ColourInstruction>
     {
         /// <summary>
         /// Character index at which to set the colour
         /// </summary>
-        public int CharIndex;
+        public readonly int CharIndex;
 
         /// <summary>
         /// Colour to set when we reach <see cref="CharIndex"/>
         /// </summary>
-        public Color Colour;
+        public readonly Color Colour;
+
+        public ColourInstruction(int charIndex, Color colour)
+        {
+            CharIndex = charIndex;
+            Colour = colour;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is ColourInstruction instruction && Equals(instruction);
+        }
+
+        public bool Equals(ColourInstruction other)
+        {
+            return CharIndex == other.CharIndex &&
+                   Colour.Equals(other.Colour);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(CharIndex, Colour);
+        }
+
+        public static bool operator ==(ColourInstruction left, ColourInstruction right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(ColourInstruction left, ColourInstruction right)
+        {
+            return !(left == right);
+        }
     }
 }
 

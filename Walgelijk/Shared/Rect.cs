@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Numerics;
 
 namespace Walgelijk;
@@ -7,7 +6,7 @@ namespace Walgelijk;
 /// <summary>
 /// Simple rectangle structure
 /// </summary>
-public struct Rect
+public struct Rect : IEquatable<Rect>
 {
     /// <summary>
     /// Minimum X point
@@ -166,6 +165,27 @@ public struct Rect
     }
 
     /// <summary>
+    /// Returns a copy of the rectangle that is clamped inside the given container rectangle, 
+    /// by translating the current rectangle by the necessary offset.
+    /// </summary>
+    public readonly Rect ClampInside(in Rect container)
+    {
+        var offset = Vector2.Zero;
+
+        if (MinX < container.MinX)
+            offset.X += container.MinX - MinX;
+        if (MinY < container.MinY)
+            offset.Y += container.MinY - MinY;
+
+        if (MaxX > container.MaxX)
+            offset.X += container.MaxX - MaxX;
+        if (MaxY > container.MaxY)
+            offset.Y += container.MaxY - MaxY;
+
+        return Translate(offset);
+    }
+
+    /// <summary>
     /// Return a copy of the rectangle expanded in all directions by the given amount
     /// </summary>
     public readonly Rect Expand(float f)
@@ -188,7 +208,7 @@ public struct Rect
     /// <summary>
     /// Does the rectangle contain the given rectangle? Note that if the given rectangle is identical to the instance, this function will return true
     /// </summary>
-    public readonly bool ContainsRect(Rect other) => 
+    public readonly bool ContainsRect(Rect other) =>
         other.MinX >= MinX && other.MaxX <= MaxX && other.MinY >= MinY && other.MaxY <= MaxY;
 
     /// <summary>
@@ -252,5 +272,30 @@ public struct Rect
 
         var r = new Rect(minx, miny, maxx, maxy);
         return r;
+    }
+
+    public bool Equals(Rect other)
+    {
+        return other.MinY == MinY && other.MinX == MinX && other.MaxX == MaxX && other.MaxY == MaxY;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(MinX, MinY, MaxX, MaxY);
+    }
+
+    public Rect Translate(object mouseDelta)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static bool operator ==(Rect left, Rect right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Rect left, Rect right)
+    {
+        return !(left == right);
     }
 }

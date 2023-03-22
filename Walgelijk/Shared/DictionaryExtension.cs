@@ -14,6 +14,12 @@ public static class DictionaryExtension
         return value;
     }
 
+    public static void AddOrSet<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue set)
+    {
+        if (!dict.TryAdd(key, set))
+            dict[key] = set;
+    }
+
     public static TValue Ensure<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, out bool isNew) where TValue : new()
     {
         isNew = true;

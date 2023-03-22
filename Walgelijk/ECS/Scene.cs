@@ -1,9 +1,5 @@
-﻿using SixLabors.ImageSharp.Memory;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Walgelijk;

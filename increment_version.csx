@@ -2,6 +2,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Xml.Linq;
+using System.Text.RegularExpressions;
+
+/*
+Usage: 
+	Increment version of projects with changed files (according to git)
+	> dotnet script increment_version.csx
+
+	Increment version of all projects
+	> dotnet script increment_version.csx all
+*/
 
 List<string> GetChangedFiles()
 {
@@ -24,16 +34,31 @@ List<string> GetChangedFiles()
 }
 
 HashSet<string> projectDirs = new();
+bool doAll = Args.Count == 1 && Args[0] == "all";
 
-foreach (var path in GetChangedFiles())
+if (doAll)
 {
-	if (path.EndsWith("csproj"))
-		continue;
-	var p = new FileInfo(path);
-	var relativeDir = Path.GetRelativePath(Environment.CurrentDirectory, p.DirectoryName);
-	relativeDir = relativeDir.Split(new[]{Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar})[0];
-	projectDirs.Add(relativeDir);
-	Console.WriteLine("Change detected: {0} in solution {1}", path, relativeDir);
+	foreach (var p in Directory.EnumerateFiles(".", "*.csproj", SearchOption.AllDirectories))
+	{
+		if (!Regex.IsMatch(p, @"(Walgelijk)\.?\w+"))
+			continue;
+		var dir = Path.GetDirectoryName(p);
+		projectDirs.Add(dir);
+		Console.WriteLine("Project found {0}, {1}", p, dir);
+	}
+}
+else
+{
+	foreach (var path in GetChangedFiles())
+	{
+		// if (!path.EndsWith("csproj"))
+		// 	continue;
+		var p = new FileInfo(path);
+		var relativeDir = Path.GetRelativePath(Environment.CurrentDirectory, p.DirectoryName);
+		relativeDir = relativeDir.Split(new[]{Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar})[0];
+		projectDirs.Add(relativeDir);
+		Console.WriteLine("Change detected: {0} in solution {1}", path, relativeDir);
+	}
 }
 
 foreach (var project in projectDirs)
@@ -49,5 +74,6 @@ foreach (var project in projectDirs)
 		Console.WriteLine("{0} >> {1}", version, newVersion);
 		versionElement.SetValue(newVersion.ToString());
 		doc.Save(csProj);
-	}else Console.Error.WriteLine("csproj does not exist: {0}", csProj);
+	}else 
+		Console.Error.WriteLine("csproj does not exist: {0}", csProj);
 }

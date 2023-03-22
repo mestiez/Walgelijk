@@ -18,7 +18,7 @@ public abstract class Pool<T, InitialData> where T : class
     /// How many objects have been created
     /// </summary>
     public int CreatedAmount { get; private set; } = 0;
-    
+
     private readonly Stack<T> freeToUse;
     private readonly List<T> currentlyInUse;
 

@@ -7,14 +7,17 @@
     <RepositoryUrl>https://github.com/mestiez/Walgelijk</RepositoryUrl>
     <Company>Studio Minus</Company>
     <Authors>mestiez</Authors>
-    <Version>0.9.1</Version>
-    <Description>Studio Minus game engine</Description>
-    <PackageIcon>cirkel avatar.png</PackageIcon>
+    <Version>0.9.4</Version>
+    <Description>2D game engine</Description>
+    <PackageIcon>icon.png</PackageIcon>
     <Nullable>enable</Nullable>
     <DebugType>embedded</DebugType>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
+  <Target Name="PostBuild" Condition="'$(Configuration)'=='Release'" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet pack -c Release --no-restore --no-build --output &quot;$(SolutionDir)OutputPackages&quot;" />
+  </Target>
   <Target Name="PostClean" AfterTargets="Clean">
     <RemoveDir Directories="$(BaseIntermediateOutputPath)" />
     <!-- obj -->
@@ -33,47 +36,14 @@
     <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <!--<None Update="resources\fonts\arial narrow bold.fnt">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="resources\fonts\arial narrow bold.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="resources\fonts\inconsolata.fnt">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="resources\fonts\inconsolata.png">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="resources\fonts\roboto mono.fnt" Pack="false">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="resources\fonts\roboto mono.png" Pack="false">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="resources\shaders\legacy-font.frag" Pack="false">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="resources\shaders\textured-fragment.frag" Pack="false">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="resources\shaders\worldspace-vertex.vert" Pack="false">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="resources\shaders\sdf-font.frag" Pack="false">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>-->
     <None Include="..\.editorconfig" Link=".editorconfig" />
     <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <None Include="cirkel avatar.png">
+    <None Include="icon.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
-  <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="pushd $(SolutionDir)&#xD;&#xA;cd&#xD;&#xA;dotnet script increment_version.csx&#xD;&#xA;popd" />
-  </Target>-->
 </Project>

@@ -148,7 +148,7 @@ void main()
             if (!game.DevelopmentMode)
                 return;
 
-            var model = Matrix3x2.CreateRotation(rotationDegrees * Utilities.DegToRad) * 
+            var model = Matrix3x2.CreateRotation(rotationDegrees * Utilities.DegToRad) *
                 Matrix3x2.CreateScale(size.X, -size.Y) * Matrix3x2.CreateTranslation(topleft);
             var task = new DebugDrawTask(rect, model, debugMaterial, GetColor(color));
             AddDrawing(duration, renderOrder, task);

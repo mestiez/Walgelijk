@@ -10,8 +10,7 @@ public struct Dummy : IControl
 
     public void OnStart(in ControlParams p)
     {
-        Onion.Layout.Offset(0, 0);
-        Onion.Layout.Constraints.Enqueue(new FitContainer(1, 1));
+        Onion.Layout.FitContainer(1, 1);
         p.Instance.Rects.Local = new Rect(0, 0, 1, 1);
         p.Instance.CaptureFlags = CaptureFlags.None;
         p.Instance.Rects.Raycast = null;

@@ -1,9 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Walgelijk.SimpleDrawing
 {
-    public struct CachableTextDrawing
+    internal static class ArrayExtensions
+    {
+        public static bool SequenceEqualsNullable<T>(this T[]? a, T[]? b)
+        {
+            if (a == null && b == null)
+                return true;
+            if (a == null && b != null)
+                return false;
+            if (a != null && b == null)
+                return false;
+
+            return a!.SequenceEqual(b!);
+        }
+    }
+
+    public struct CachableTextDrawing : IEquatable<CachableTextDrawing>
     {
         public string Text;
         public Color Color;
@@ -14,13 +30,18 @@ namespace Walgelijk.SimpleDrawing
 
         public override bool Equals(object? obj)
         {
-            return obj is CachableTextDrawing drawing &&
-                   Text == drawing.Text &&
-                   EqualityComparer<Color>.Default.Equals(Color, drawing.Color) &&
-                   EqualityComparer<Font>.Default.Equals(Font, drawing.Font) &&
-                   TextBoxWidth == drawing.TextBoxWidth &&
-                   VerticalAlign == drawing.VerticalAlign &&
-                   HorizontalAlign == drawing.HorizontalAlign;
+            return obj is CachableTextDrawing drawing && Equals(drawing);
+
+        }
+
+        public bool Equals(CachableTextDrawing drawing)
+        {
+            return Text == drawing.Text &&
+                    EqualityComparer<Color>.Default.Equals(Color, drawing.Color) &&
+                    EqualityComparer<Font>.Default.Equals(Font, drawing.Font) &&
+                    TextBoxWidth == drawing.TextBoxWidth &&
+                    VerticalAlign == drawing.VerticalAlign &&
+                    HorizontalAlign == drawing.HorizontalAlign;
         }
 
         public override int GetHashCode()
@@ -42,7 +63,7 @@ namespace Walgelijk.SimpleDrawing
     /// <summary>
     /// A drawing instruction for text
     /// </summary>
-    public struct TextDrawing
+    public struct TextDrawing : IEquatable<TextDrawing>
     {
         /// <summary>
         /// The text
@@ -72,8 +93,12 @@ namespace Walgelijk.SimpleDrawing
 
         public override bool Equals(object? obj)
         {
-            return obj is TextDrawing drawing &&
-                   Text == drawing.Text &&
+            return obj is TextDrawing drawing && Equals(drawing);
+        }
+
+        public bool Equals(TextDrawing drawing)
+        {
+            return Text == drawing.Text &&
                    EqualityComparer<Font?>.Default.Equals(Font, drawing.Font) &&
                    TextBoxWidth == drawing.TextBoxWidth &&
                    VerticalAlign == drawing.VerticalAlign &&

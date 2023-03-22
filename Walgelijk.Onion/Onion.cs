@@ -1,4 +1,7 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
+using Walgelijk.Onion.Assets;
+using Walgelijk.Onion.Controls;
 
 namespace Walgelijk.Onion;
 
@@ -9,7 +12,12 @@ public static class Onion
     public static readonly Navigator Navigator = new();
     public static readonly Input Input = new();
     public static readonly Configuration Configuration = new();
+    public static readonly AnimationQueue Animation = new();
     public static Theme Theme = new();
+    public static float SoundVolume = 0.5f;
+    public static AudioTrack? AudioTrack;
+
+    public static bool Initialised { get; private set; }
 
     public static readonly Material ControlMaterial = OnionMaterial.CreateNew();
 
@@ -18,26 +26,62 @@ public static class Onion
         CommandProcessor.RegisterAssembly(Assembly.GetAssembly(typeof(Onion)) ?? throw new Exception("I do not exist."));
     }
 
+    internal static void Initalise(Game game)
+    {
+        if (Initialised)
+            return;
+
+        Initialised = true;
+        game.OnSceneChange.AddListener(_ => ClearCache());
+    }
+
     [Command(Alias = "OnionClear", HelpString = "Clears the Onion UI cache, effectively resetting the UI scene")]
     public static void ClearCache()
     {
-        Layout.Reset();
         Tree.Clear();
+        Animation.Clear();
+        Layout.Reset();
         Navigator.Clear();
     }
 
+    #region Controls
+
+    //public static ControlState Text(string text, HorizontalTextAlign horizontal, VerticalTextAlign vertical, int identity = 0, [CallerLineNumber] int site = 0)
+    //    => TextRect.Create(text, horizontal, vertical, identity, site);
+
+    #endregion
+
+    public static void PlaySound(ControlState state)
+    {
+        switch (state)
+        {
+            case ControlState.Hover:
+                p(Theme.HoverSound);
+                break;
+            case ControlState.Scroll:
+                p(Theme.ScrollSound);
+                break;
+            case ControlState.Focus:
+                p(Theme.FocusSound);
+                break;
+            case ControlState.Active:
+                p(Theme.ActiveSound);
+                break;
+            case ControlState.Triggered:
+                p(Theme.TriggerSound);
+                break;
+        }
+
+        static void p(Sound? sound)
+        {
+            if (sound != null)
+                Game.Main.AudioRenderer.PlayOnce(sound, SoundVolume, 1, AudioTrack);
+        }
+    }
+
     /*TODO 
-     * ClearEverything();
-     * Windows!! draggables
      * scrollbars etc. (pseudo controls)
-     * style
-     *      style moet textures meer supporten, niet alleen kleuren 
-     *      misschien zelfs iets anders dan quads
-     *      uber shader voor alle controls
-     * Sounds :)
-     * Stack<Style> en dan bouw je voor elke control een final style misschien?
      * heel veel basic functies hier (label, button. etc.)
-     * Animation system (IAnimation) deel van style? nee toch??? weet ik het 
     */
 }
 
@@ -54,10 +98,17 @@ public class Theme
 
     public float Padding = 5;
     public float Rounding = 1;
+    public float WindowTitleBarHeight = 24;
 
     public Color FocusBoxColour = new Color("#3adeda");
     public float FocusBoxSize = 5;
     public float FocusBoxWidth = 4;
+
+    public Sound? HoverSound;
+    public Sound? ActiveSound = new(BuiltInAssets.Click, false, false);
+    public Sound? ScrollSound;
+    public Sound? TriggerSound;
+    public Sound? FocusSound;
 }
 
 public class ThemeProperty<T> where T : notnull

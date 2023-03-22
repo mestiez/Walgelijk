@@ -14,12 +14,15 @@ public class OnionSystem : Walgelijk.System
 
     public override void Update()
     {
+        if (!Onion.Initialised)
+            Onion.Initalise(Game);
+
         // end previous frame
         Onion.Tree.End();
 
         // process
         Onion.Tree.Process(Time.DeltaTime);
-        Onion.Input.Update(Input, Time.DeltaTime);
+        Onion.Input.Update(Input, Time.DeltaTime, Time.SecondsSinceLoad);
         Onion.Navigator.Process(Onion.Input, Time.DeltaTime);
 
         // next frame
@@ -61,6 +64,7 @@ public class OnionSystem : Walgelijk.System
                 case UiDebugOverlay.RenderedRect:
                 case UiDebugOverlay.RaycastRect:
                 case UiDebugOverlay.ChildContentRect:
+                case UiDebugOverlay.ComputedScrollBounds:
                 case UiDebugOverlay.DrawBounds:
                 case UiDebugOverlay.ComputedDrawBounds:
                     DrawRects(DebugOverlay);
@@ -73,10 +77,18 @@ public class OnionSystem : Walgelijk.System
     {
         var p = new Vector2(Window.Width - 32, 32);
         Draw.Colour = Colors.Yellow;
-        Draw.Text($"HOVER:  {((Onion.Navigator.HoverControl?.ToString()) ?? "none")}", p, Vector2.One, HorizontalTextAlign.Right, VerticalTextAlign.Top);
-        Draw.Text($"SCROLL: {((Onion.Navigator.ScrollControl?.ToString()) ?? "none")}", p += new Vector2(0, 14), Vector2.One, HorizontalTextAlign.Right, VerticalTextAlign.Top);
-        Draw.Text($"FOCUS:  {((Onion.Navigator.FocusedControl?.ToString()) ?? "none")}", p += new Vector2(0, 14), Vector2.One, HorizontalTextAlign.Right, VerticalTextAlign.Top);
-        Draw.Text($"ACTIVE: {((Onion.Navigator.ActiveControl?.ToString()) ?? "none")}", p += new Vector2(0, 14), Vector2.One, HorizontalTextAlign.Right, VerticalTextAlign.Top);
+
+        drawStatus("HOVER", Onion.Navigator.HoverControl, ref p);
+        drawStatus("SCROLL", Onion.Navigator.ScrollControl, ref p);
+        drawStatus("FOCUS", Onion.Navigator.FocusedControl, ref p);
+        drawStatus("ACTIVE", Onion.Navigator.ActiveControl, ref p);
+        drawStatus("TRIGGERED", Onion.Navigator.TriggeredControl, ref p);
+        drawStatus("KEY", Onion.Navigator.KeyControl, ref p);
+
+        void drawStatus(string a, int? id, ref Vector2 p)
+        {
+            Draw.Text($"{a}:  {((id?.ToString()) ?? "none")}", p += new Vector2(0, 14), Vector2.One, HorizontalTextAlign.Right, VerticalTextAlign.Top);
+        }
     }
 
     private void DrawRects(UiDebugOverlay overlay)
@@ -85,6 +97,8 @@ public class OnionSystem : Walgelijk.System
         void draw(Node node)
         {
             var inst = Onion.Tree.EnsureInstance(node.Identity);
+            if (node.GetAnimationTime() <= float.Epsilon)
+                return;
 
             Draw.OutlineColour = Colors.Purple;
             Draw.OutlineWidth = 4;
@@ -117,6 +131,9 @@ public class OnionSystem : Walgelijk.System
                 case UiDebugOverlay.ComputedDrawBounds:
                     rect = inst.Rects.ComputedDrawBounds;
                     break;
+                case UiDebugOverlay.ComputedScrollBounds:
+                    rect = inst.Rects.ComputedScrollBounds;
+                    break;
             }
             Draw.Quad(rect);
 
@@ -129,25 +146,52 @@ public class OnionSystem : Walgelijk.System
     {
         float h = 0.5f;
         var offset = new Vector2(32, 32);
+        int c = 0;
+
         draw(Onion.Tree.Root);
+
+        Draw.Colour = Colors.Magenta;
+        Draw.Text(
+            $"Real node count:  {Onion.Tree.Nodes.Count}",
+            new Vector2(Window.Width - 32, 32),
+            Vector2.One * 2, HorizontalTextAlign.Right, VerticalTextAlign.Top);
+
+        Draw.Text(
+            $"Tree node count:  {c}",
+            new Vector2(Window.Width - 32, 32 * 2),
+            Vector2.One * 2, HorizontalTextAlign.Right, VerticalTextAlign.Top);
+
         void draw(Node node)
         {
+            c++;
             var inst = Onion.Tree.EnsureInstance(node.Identity);
-            Draw.Colour = Colors.Gray;
-            if (node.AliveLastFrame)
-                Draw.Colour = Colors.Yellow;
-            if (node.Alive)
-                Draw.Colour = Color.FromHsv(h, 0.6f, 1);
+            var t = (node.ToString() ?? "[untitled]") + " Order: " + node.ComputedGlobalOrder;
+            var deadAnim =
+                Input.IsKeyHeld(Key.F2) ?
+                    0 :
+                    Easings.Cubic.InOut(Utilities.Clamp(node.AliveLastFrame ? (1 - node.SecondsAlive * 4) : node.SecondsDead * 4 - 1));
 
-            if (Input.IsKeyHeld(Key.Space))
-                Draw.Text($"Scroll: {inst.InnerScrollOffset.X}, {inst.InnerScrollOffset.Y}, Y: {inst.Rects.ComputedGlobal.MinY}", offset, Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Bottom);
-            else
-                Draw.Text((node.ToString() ?? "[untitled]") + " D: " + node.ComputedGlobalOrder, offset, Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Bottom);
+            if (deadAnim < 0.999f)
+            {
+                Draw.Colour = Colors.Black.WithAlpha(0.9f * (1 - deadAnim));
+                var w = Draw.CalculateTextWidth(t);
+                Draw.Quad(new Rect(offset.X, offset.Y - 16, offset.X + w, offset.Y));
+
+                Draw.Colour = Colors.Gray;
+                if (node.AliveLastFrame)
+                    Draw.Colour = Colors.Yellow;
+                if (node.Alive)
+                    Draw.Colour = Color.FromHsv(h, 0.6f, 1);
+
+                Draw.Colour.A *= 1 - deadAnim;
+                Draw.Text(t, offset, Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Bottom);
+            }
+
             offset.X += 32;
+            offset.Y += MathF.Max(0, Utilities.Lerp(16, 0, deadAnim));
             h += 0.15f;
             foreach (var item in node.GetChildren())
             {
-                offset.Y += 16;
                 draw(item);
             }
             h -= 0.15f;

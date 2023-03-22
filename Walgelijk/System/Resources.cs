@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -40,11 +40,11 @@ public static class Resources
             return;
         initialised = true;
 
-            RegisterType(typeof(Texture), (string path) => TextureLoader.FromFile(path));
-            RegisterType(typeof(Font), Font.Load);
-            RegisterType(typeof(string), File.ReadAllText);
-            RegisterType(typeof(string[]), File.ReadAllLines);
-            RegisterType(typeof(byte[]), File.ReadAllBytes);
+        RegisterType(typeof(Texture), (string path) => TextureLoader.FromFile(path));
+        RegisterType(typeof(Font), Font.Load);
+        RegisterType(typeof(string), File.ReadAllText);
+        RegisterType(typeof(string[]), File.ReadAllLines);
+        RegisterType(typeof(byte[]), File.ReadAllBytes);
     }
 
     /// <summary>

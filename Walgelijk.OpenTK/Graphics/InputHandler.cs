@@ -1,6 +1,5 @@
 ﻿using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
-using System.Collections.Generic;
 using Vector2 = System.Numerics.Vector2;
 
 namespace Walgelijk.OpenTK
@@ -70,6 +69,9 @@ namespace Walgelijk.OpenTK
                     break;
                 case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Tab:
                     InputState.TextEntered += '\t';
+                    break;
+                case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Delete:
+                    InputState.TextEntered += '\u007F';
                     break;
             }
 

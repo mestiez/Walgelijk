@@ -171,8 +171,8 @@ public class Grid<T> : IEnumerable<(int X, int Y, T Value)> where T : notnull
             t /= 4;
         }
 #else
-        x =  d % width;
-        y =  d / width;
+        x = d % width;
+        y = d / width;
 #endif
     }
 

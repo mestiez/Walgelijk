@@ -29,7 +29,7 @@ namespace Walgelijk
             Position = position;
             Enabled = enabled;
         }
-             
+
         /// <summary>
         /// Construct draw bounds settings
         /// </summary>

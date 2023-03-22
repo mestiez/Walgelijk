@@ -41,7 +41,7 @@ namespace Walgelijk
             this.debugConsole = debugConsole;
 
             textColors.Clear();
-            textColors.Add(new ColourInstruction { CharIndex = 0, Colour = DefaultTextColour });
+            textColors.Add(new ColourInstruction(0, DefaultTextColour));
 
             text = new TextComponent();
             text.TrackingMultiplier = 1f;
@@ -119,7 +119,7 @@ namespace Walgelijk
 
             if (overlayLife < ConsoleNotificationDuration && overlay.RenderTask != null)
             {
-                overlay.RenderTask.ModelMatrix = textModel * 
+                overlay.RenderTask.ModelMatrix = textModel *
                     Matrix3x2.CreateTranslation(debugConsole.Game.Window.Size.X - overlay.LocalBoundingBox.Width - 5, 5);
 
                 if (overlayLife > ConsoleNotificationDuration * .75f)
@@ -138,7 +138,7 @@ namespace Walgelijk
                 string s = "";
                 Color c = DefaultTextColour;
                 textColors.Clear();
-                textColors.Add(new ColourInstruction { CharIndex = 0, Colour = c });
+                textColors.Add(new ColourInstruction(0, c));
 
                 foreach (var entry in debugConsole.Log)
                 {
@@ -148,7 +148,7 @@ namespace Walgelijk
                     if (entry.color != c)
                     {
                         c = entry.color;
-                        textColors.Add(new ColourInstruction { CharIndex = s.Length, Colour = entry.color });
+                        textColors.Add(new ColourInstruction(s.Length, entry.color));
                     }
                     s += entry.message + '\n';
                 }

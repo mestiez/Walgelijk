@@ -43,6 +43,7 @@ public class Node
     public bool AliveLastFrame;
     public float SecondsAlive;
     public float SecondsDead;
+
     /// <summary>
     /// Actual global order
     /// </summary>
@@ -79,11 +80,12 @@ public class Node
 
     public Rect GetFinalDrawBounds(ControlTree tree)
     {
-        var rects = tree.EnsureInstance(Identity).Rects;
+        var inst = tree.EnsureInstance(Identity);
+        var rects = inst.Rects;
         Rect previous;
         if (rects.DrawBounds.HasValue)
         {
-            if (tree.DrawboundStack.TryPeek(out previous)) // i have a parent with drawbounds!!
+            if (!AlwaysOnTop && tree.DrawboundStack.TryPeek(out previous)) // i have a parent with drawbounds!!
                 return rects.DrawBounds.Value.Intersect(previous);
             return rects.DrawBounds.Value;
         }
@@ -98,9 +100,15 @@ public class Node
 
     public void Render(in ControlParams p)
     {
+        if (!AliveLastFrame && p.Node.GetAnimationTime() <= float.Epsilon)
+            return;
+
         var drawBounds = GetFinalDrawBounds(p.Tree);
         p.Tree.DrawboundStack.Push(drawBounds);
 
+        Draw.BlendMode = BlendMode.AlphaBlend;
+        Draw.Font = Onion.Theme.Font;
+        Draw.FontSize = Onion.Theme.FontSize;
         Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, p.Node.ComputedGlobalOrder);
         Draw.DrawBounds = new DrawBounds(drawBounds.GetSize(), drawBounds.BottomLeft, true);
         p.Instance.Rects.ComputedDrawBounds = drawBounds;
@@ -140,23 +148,25 @@ public class Node
             SecondsDead += p.GameState.Time.DeltaTime;
         }
 
-        ControlUtils.ConsiderParentScroll(p);
+        if (AliveLastFrame || SecondsDead <= p.Instance.AllowedDeadTime)
+        {
+            p.Instance.Rects.ComputedGlobal = p.Instance.Rects.Intermediate;
+            ControlUtils.ConsiderParentScroll(p);
+            if (Parent != null && p.Tree.Instances.TryGetValue(Parent.Identity, out var parentInst))
+                p.Instance.Rects.ComputedGlobal = p.Instance.Rects.ComputedGlobal.Translate(parentInst.Rects.ComputedGlobal.BottomLeft);
 
-        p.Instance.Rects.ComputedGlobal = p.Instance.Rects.Intermediate;
-        if (Parent != null && p.Tree.Instances.TryGetValue(Parent.Identity, out var parentInst))
-            p.Instance.Rects.ComputedGlobal = p.Instance.Rects.ComputedGlobal.Translate(parentInst.Rects.ComputedGlobal.BottomLeft);
+            Behaviour.OnProcess(p);
 
-        Behaviour.OnProcess(p);
+            AdjustRaycastRect(p);
+            EnforceScrollBounds(p);
 
-        AdjustRaycastRect(p);
-        EnforceScrollBounds(p);
+        }
 
         foreach (var child in GetChildren())
-            child.Process(
-                new ControlParams(child, p.Tree.EnsureInstance(child.Identity)));
+            child.Process(new ControlParams(child, p.Tree.EnsureInstance(child.Identity)));
     }
 
-    private void AdjustRaycastRect(in ControlParams p)
+    private static void AdjustRaycastRect(in ControlParams p)
     {
         if (!p.Instance.Rects.Raycast.HasValue)
             return;
@@ -171,14 +181,13 @@ public class Node
     private static void EnforceScrollBounds(in ControlParams p)
     {
         var childContent = p.Instance.Rects.ChildContent;//.Expand(5);
-        //bool childrenFitInsideParent =
-        //    childContent.MinX >= 0 && childContent.MaxX <= p.Instance.Rects.Intermediate.MaxX &&
-        //    childContent.MinY >= 0 && childContent.MaxY <= p.Instance.Rects.Intermediate.MaxY;
-
         bool childrenFitInsideParent = p.Instance.Rects.Intermediate.ContainsRect(childContent);
 
         if (childrenFitInsideParent)
+        {
             p.Instance.InnerScrollOffset = Vector2.Zero;
+            p.Instance.Rects.ComputedScrollBounds = default;
+        }
         else
         {
             var rects = p.Instance.Rects;
@@ -206,6 +215,15 @@ public class Node
 
             p.Instance.InnerScrollOffset.Y = MathF.Min(p.Instance.InnerScrollOffset.Y, remainingSpaceAbove);
             p.Instance.InnerScrollOffset.Y = MathF.Max(p.Instance.InnerScrollOffset.Y, -remainingSpaceBelow);
+
+            p.Instance.Rects.ComputedScrollBounds = new Rect
+            {
+                MinY = -remainingSpaceBelow,
+                MaxY = remainingSpaceAbove,
+
+                MinX = -remainingSpaceRight,
+                MaxX = remainingSpaceLeft,
+            };
         }
     }
 
@@ -234,8 +252,8 @@ public class Node
                 item.SiblingIndex = siblingIndex++;
             }
         }
-        for (int i = 0; i < length; i++)
-            Children.Remove(toDelete[i]);
+        //for (int i = 0; i < length; i++)
+        //    Children.Remove(toDelete[i]);
         ArrayPool<int>.Shared.Return(toDelete);
 
         foreach (var item in GetChildren())

@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
+using Walgelijk.Onion.Animations;
 using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion.Controls;
@@ -15,8 +16,9 @@ public readonly struct Dropdown<T> : IControl
     private record CurrentState
     {
         public int SelectedIndex;
+        public bool IncomingChange;
         public Rect DropdownRect = default;
-        public float TimeSinceFocus = float.MaxValue;
+        public float TimeSinceTriggered = float.MaxValue;
 
         public CurrentState(int selectedIndex)
         {
@@ -55,7 +57,7 @@ public readonly struct Dropdown<T> : IControl
         if (currentStates.TryGetValue(instance.Identity, out var currentState))
             dropdownRect = currentState.DropdownRect;
 
-        if (instance.IsActive)
+        if (instance.IsTriggered)
         {
             float height = instance.Rects.ComputedGlobal.Height;
 
@@ -70,10 +72,12 @@ public readonly struct Dropdown<T> : IControl
                 Onion.Layout.Height(height);
                 Onion.Layout.Width(instance.Rects.ComputedGlobal.Width - Onion.Theme.Padding * 2);
                 Onion.Layout.CenterHorizontal();
+                //Onion.Animation.SetDuration(0.3f);
+                //Onion.Animation.Add(new FadeAnimation());
+                Onion.Animation.Add(new MoveInAnimation(instance.Rects.ComputedGlobal.GetCenter()));
+                //Onion.Animation.Add(new ShrinkAnimation());
                 if (Button.Click(values[i]?.ToString() ?? "???", i + instance.Identity))
-                {
-                    currentStates[instance.Identity].SelectedIndex = i;
-                }
+                    selectedIndex = i;
             }
 
             Onion.Tree.End();
@@ -81,7 +85,14 @@ public readonly struct Dropdown<T> : IControl
 
         Onion.Tree.End();
         if (!currentStates.TryAdd(instance.Identity, new CurrentState(selectedIndex)))
-            selectedIndex = currentStates[instance.Identity].SelectedIndex;
+        {
+            var s = currentStates[instance.Identity];
+            if (s.IncomingChange)
+                selectedIndex = s.SelectedIndex;
+            else
+                s.SelectedIndex = selectedIndex;
+            s.IncomingChange = false;
+        }
         return instance.State;
     }
 
@@ -95,16 +106,20 @@ public readonly struct Dropdown<T> : IControl
     {
         var instance = p.Instance;
         var currentState = currentStates[instance.Identity];
-        var o = instance.IsActive;
-        ControlUtils.ProcessToggleLike(p);
-        p.Instance.CaptureFlags |= CaptureFlags.Scroll;
+        var old = instance.IsTriggered;
+        ControlUtils.ProcessTriggerable(p);
 
-        p.Node.AlwaysOnTop = p.Instance.IsActive;
-
-        if (instance.IsActive != o)
-            currentState.TimeSinceFocus = 0;
+        if (p.Input.CtrlHeld)
+            p.Instance.CaptureFlags |= CaptureFlags.Scroll;
         else
-            currentState.TimeSinceFocus += p.GameState.Time.DeltaTime;
+            p.Instance.CaptureFlags &= ~CaptureFlags.Scroll;
+
+        p.Node.AlwaysOnTop = p.Instance.IsTriggered;
+
+        if (instance.IsTriggered != old)
+            currentState.TimeSinceTriggered = 0;
+        else
+            currentState.TimeSinceTriggered += p.GameState.Time.DeltaTime;
 
         var computedGlobal = instance.Rects.ComputedGlobal;
 
@@ -120,17 +135,19 @@ public readonly struct Dropdown<T> : IControl
                 if (currentState.SelectedIndex < 0)
                     currentState.SelectedIndex = Values.Count - 1;
             }
+
+            currentState.IncomingChange = true;
         }
 
-        if (instance.IsActive)
+        if (instance.IsTriggered)
         {
+            p.Instance.Rects.Raycast = null;
+
             var dropdownRect = new Rect(computedGlobal.MinX, computedGlobal.MaxY, computedGlobal.MaxX, computedGlobal.MaxY);
             var dropdownRectTargetHeight = instance.Rects.Rendered.Height * Values.Count + Onion.Theme.Padding * 2;
 
-            dropdownRectTargetHeight *= Easings.Quad.Out(Utilities.Clamp(currentState.TimeSinceFocus / 0.1f));
-
+            dropdownRectTargetHeight *= Easings.Quad.Out(Utilities.Clamp(currentState.TimeSinceTriggered / 0.1f));
             dropdownRectTargetHeight = MathF.Min(dropdownRectTargetHeight, ((Game.Main.Window.Height - Onion.Theme.Padding * 2) - computedGlobal.MaxY));
-
             dropdownRect.MaxY += dropdownRectTargetHeight;
 
             if (instance.Rects.DrawBounds.HasValue)
@@ -141,8 +158,15 @@ public readonly struct Dropdown<T> : IControl
 
             currentState.DropdownRect = dropdownRect;
 
-            if (currentState.TimeSinceFocus > 0.1f && p.Instance.State.HasFlag(ControlState.Hover) && p.Input.MousePrimaryRelease)
-                Onion.Navigator.FocusedControl = null;
+            if (Onion.Navigator.TriggeredControl.HasValue &&
+                currentState.TimeSinceTriggered > 0.1f &&
+                p.Input.MousePrimaryRelease)
+            {
+                // var focusedInst = p.Tree.EnsureInstance(Onion.Navigator.FocusedControl.Value);
+                //var focusedNode = p.Tree.Nodes[Onion.Navigator.FocusedControl.Value];
+                //if (!instance.HasFocus && focusedNode.Parent != null && focusedNode.Parent.Identity == instance.Identity)
+                Onion.Navigator.TriggeredControl = null;
+            }
         }
     }
 
@@ -151,54 +175,55 @@ public readonly struct Dropdown<T> : IControl
         (ControlTree tree, Layout.Layout layout, Input input, GameState state, Node node, ControlInstance instance) = p;
 
         var currentState = currentStates[p.Node.Identity];
-
-        var animation = node.Alive ?
-            Utilities.Clamp(node.SecondsAlive / instance.AllowedDeadTime) :
-            1 - Utilities.Clamp(node.SecondsDead / instance.AllowedDeadTime);
-        animation = Easings.Cubic.InOut(animation);
-
-        instance.Rects.Rendered = instance.Rects.Rendered.Scale(Utilities.Lerp(animation, 1, 0.6f));
+        var t = node.GetAnimationTime();
+        var anim = instance.Animations;
 
         var fg = Onion.Theme.Foreground;
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
 
+        anim.AnimateRect(ref instance.Rects.Rendered, t);
+
         if (instance.IsHover)
-        {
-            IControl.SetCursor(DefaultCursor.Pointer);
             Draw.Colour = fg.Color.Brightness(1.2f);
-        }
         if (instance.IsActive)
             Draw.Colour = fg.Color.Brightness(0.9f);
+        if (instance.IsTriggered)
+            Draw.Colour = fg.Color.Brightness(0.9f);
 
-        Draw.Colour.A = (animation * animation * animation);
-        var c = Draw.Colour;
+        anim.AnimateColour(ref Draw.Colour, t);
+
         Draw.Quad(instance.Rects.Rendered, 0, Onion.Theme.Rounding);
 
-        if (DrawArrow)
+        if (instance.IsTriggered)
         {
-            const float arrowSize = 8;
-            var arrowPos = new Vector2(instance.Rects.Rendered.MaxX, (instance.Rects.Rendered.MinY + instance.Rects.Rendered.MaxY) / 2);
-            arrowPos.X -= instance.Rects.Rendered.Height / 2;
-            Draw.Colour = Onion.Theme.Accent;
-            Draw.ResetTexture();
-            Draw.TriangleIscoCentered(arrowPos, new Vector2(arrowSize), instance.IsActive ? 0 : 180);
-        }
-
-        if (instance.IsActive)
-        {
-            Draw.Colour = c;
+            Draw.Colour = fg.Color.Brightness(0.8f);
             Draw.Texture = fg.Texture;
+            anim.AnimateColour(ref Draw.Colour, t);
             Draw.Quad(currentState.DropdownRect, 0, Onion.Theme.Rounding);
         }
 
-        if (animation > 0.5f)
+        if (anim.ShouldRenderText(t))
         {
+            if (DrawArrow)
+            {
+                const float arrowSize = 8;
+                var arrowPos = new Vector2(instance.Rects.Rendered.MaxX, (instance.Rects.Rendered.MinY + instance.Rects.Rendered.MaxY) / 2);
+                arrowPos.X -= instance.Rects.Rendered.Height / 2;
+                Draw.Colour = Onion.Theme.Accent;
+                anim.AnimateColour(ref Draw.Colour, t);
+                Draw.ResetTexture();
+                Draw.TriangleIscoCentered(arrowPos, new Vector2(arrowSize), instance.IsTriggered ? 0 : 180);
+            }
+
+            var ratio = instance.Rects.Rendered.Area / instance.Rects.ComputedGlobal.Area;
             Draw.ResetTexture();
             Draw.Font = Onion.Theme.Font;
-            Draw.Colour = Onion.Theme.Text with { A = Draw.Colour.A };
+            Draw.Colour = Onion.Theme.Text;
+            anim.AnimateColour(ref Draw.Colour, t);
             var selected = GetValue(currentState.SelectedIndex);
-            Draw.Text(selected, instance.Rects.Rendered.GetCenter(), Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.Rendered.Width);
+            Draw.Text(selected, instance.Rects.Rendered.GetCenter(), new Vector2(ratio),
+                HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.Rendered.Width);
         }
     }
 

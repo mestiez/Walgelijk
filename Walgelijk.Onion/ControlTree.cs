@@ -1,4 +1,4 @@
-﻿using System.Data;
+﻿using System.Xml.Linq;
 using Walgelijk.Onion.Controls;
 using Walgelijk.SimpleDrawing;
 
@@ -90,6 +90,11 @@ public class ControlTree
         Onion.Layout.Apply(p);
         Onion.Layout.Reset();
 
+        Onion.Animation.Process(inst);
+
+        //if (node.Behaviour is ISetupChildren sc)
+        //    sc.OnSetupChildren(p);
+
         return (inst, node);
     }
 
@@ -98,10 +103,13 @@ public class ControlTree
         if (CurrentNode == null)
             return;
 
-        CurrentNode.Behaviour.OnEnd(
-            new ControlParams(CurrentNode, EnsureInstance(CurrentNode.Identity))
-            );
+        var inst = EnsureInstance(CurrentNode.Identity);
+        var p = new ControlParams(CurrentNode, inst);
 
+        //if (b is ISetupChildren sc)
+        //    sc.OnEndChildren(p);
+
+        CurrentNode.Behaviour.OnEnd(p);
         CurrentNode = CurrentNode.Parent;
     }
 
@@ -122,8 +130,9 @@ public class ControlTree
         Root.Process(p);
         incrementor = 0;
 
-        while (toDelete.TryDequeue(out var node))
-            Nodes.Remove(node.Identity);
+        //while (toDelete.TryDequeue(out var node))
+        //    if (!Nodes.Remove(node.Identity))
+        //        Logger.Warn($"Onion: failed to delete {node}");
 
         focusAnimationProgress = Utilities.Clamp(focusAnimationProgress + dt, 0, 1);
 
@@ -142,7 +151,8 @@ public class ControlTree
         Root.Render(new ControlParams(Root, EnsureInstance(Root.Identity)));
 
         var focus = Onion.Navigator.FocusedControl;
-        if (focus.HasValue && Instances.TryGetValue(focus.Value, out var inst) && inst.RenderFocusBox)
+        Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, int.MaxValue);
+        if (Game.Main.Window.HasFocus && focus.HasValue && Instances.TryGetValue(focus.Value, out var inst) && inst.RenderFocusBox)
         {
             float expand = Onion.Theme.FocusBoxSize;
 

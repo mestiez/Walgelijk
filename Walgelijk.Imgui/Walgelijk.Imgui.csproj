@@ -1,37 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
-	<PropertyGroup>
-		<OutputType>Library</OutputType>
-		<TargetFramework>net6.0</TargetFramework>
-		<ApplicationIcon />
-		<StartupObject />
-		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Authors>mestiez</Authors>
-		<Company>Studio Minus</Company>
-		<Version>0.11.0</Version>
-		<Nullable>enable</Nullable>
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<DebugType>embedded</DebugType>
-		<Description>Provides full immediate-mode GUI</Description>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-	</PropertyGroup>
-
-	<Target Name="PostClean" AfterTargets="Clean">
-		<RemoveDir Directories="$(BaseIntermediateOutputPath)" />
-		<!-- obj -->
-		<RemoveDir Directories="$(BaseOutputPath)" />
-		<!-- bin -->
-	</Target>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-		<DocumentationFile>Walgelijk.Imgui.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\Walgelijk.SimpleDrawing\Walgelijk.SimpleDrawing.csproj" />
-		<ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
-	</ItemGroup>
-
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ApplicationIcon />
+    <StartupObject />
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Authors>mestiez</Authors>
+    <Company>Studio Minus</Company>
+    <Version>0.11.3</Version>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DebugType>embedded</DebugType>
+    <PackageIcon>icon.png</PackageIcon>
+    <Description>Provides full immediate-mode GUI</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  <Target Name="PostBuild" Condition="'$(Configuration)'=='Release'" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet pack -c Release --no-restore --no-build --output &quot;$(SolutionDir)OutputPackages&quot;" />
+  </Target>
+  <Target Name="PostClean" AfterTargets="Clean">
+    <RemoveDir Directories="$(BaseIntermediateOutputPath)" />
+    <!-- obj -->
+    <RemoveDir Directories="$(BaseOutputPath)" />
+    <!-- bin -->
+  </Target>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <DocumentationFile>Walgelijk.Imgui.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Walgelijk.SimpleDrawing\Walgelijk.SimpleDrawing.csproj" />
+    <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
+    <None Include="icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 </Project>

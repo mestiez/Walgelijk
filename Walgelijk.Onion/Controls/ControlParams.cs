@@ -1,6 +1,4 @@
-﻿using Walgelijk.Onion.Layout;
-
-namespace Walgelijk.Onion.Controls;
+﻿namespace Walgelijk.Onion.Controls;
 
 public readonly struct ControlParams
 {
@@ -11,12 +9,14 @@ public readonly struct ControlParams
     public readonly Node Node;
     public readonly ControlInstance Instance;
 
+    public int Identity => Node.Identity;
+
     public ControlParams(
         ControlTree controlTree,
-        Layout.Layout layoutState, 
+        Layout.Layout layoutState,
         Input input,
-        GameState gameState, 
-        Node node, 
+        GameState gameState,
+        Node node,
         ControlInstance instance)
     {
         Tree = controlTree;
@@ -25,8 +25,8 @@ public readonly struct ControlParams
         GameState = gameState;
         Node = node;
         Instance = instance;
-    }  
-    
+    }
+
     public ControlParams(Node node, ControlInstance instance)
     {
         Tree = Onion.Tree;

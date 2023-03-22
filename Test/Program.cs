@@ -68,7 +68,7 @@ public class Program
         game.Profiling.DrawQuickProfiler = false;
 
         //game.Compositor.AddPass(new CompositorPass("Invert", RenderOrder.Zero, new RenderOrder(100,0), new InvertProcess()));
-       // game.Compositor.AddPass(new CompositorPass("Blink", new RenderOrder(20, 0), new RenderOrder(30,0), new BlinkProcess()));
+        // game.Compositor.AddPass(new CompositorPass("Blink", new RenderOrder(20, 0), new RenderOrder(30,0), new BlinkProcess()));
 
         game.Start();
     }

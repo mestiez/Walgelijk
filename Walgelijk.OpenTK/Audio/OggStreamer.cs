@@ -1,8 +1,6 @@
-﻿using Microsoft.Win32.SafeHandles;
-using NVorbis;
+﻿using NVorbis;
 using OpenTK.Audio.OpenAL;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 

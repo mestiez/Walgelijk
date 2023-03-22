@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Walgelijk.Onion.Animations;
 
 namespace Walgelijk.Onion;
 
@@ -53,6 +54,16 @@ public class ControlInstance
     public bool HasScroll => Onion.Navigator.ScrollControl == Identity;
 
     /// <summary>
+    /// Returns true if <see cref="Navigator.TriggeredControl"/> is <see cref="Identity"/>
+    /// </summary>
+    public bool IsTriggered => Onion.Navigator.TriggeredControl == Identity;
+
+    /// <summary>
+    /// Returns true if <see cref="Navigator.KeyControl"/> is <see cref="Identity"/>
+    /// </summary>
+    public bool HasKey => Onion.Navigator.KeyControl == Identity;
+
+    /// <summary>
     /// Determines what events this control is capable of capturing. 
     /// Normally set to just <see cref="CaptureFlags.Hover"/>, it will only capture hover events.
     /// </summary>
@@ -63,6 +74,22 @@ public class ControlInstance
     /// </summary>
     public bool RenderFocusBox = true;
 
+    /// <summary>
+    /// This control will not play any of the state change sounds if this set to true
+    /// </summary>
+    public bool Muted = false;
+
+    /// <summary>
+    /// This control has changed the value of a given ref parameter in its creation function.
+    /// This is used, for example, when a dropdown does its processing and changes the selection index. <see cref="IncomingChange"/> is set to true and read the next time the creation function is called
+    /// </summary>
+    //public bool IncomingChange;
+
+    /// <summary>
+    /// List of visual animations to apply to this control
+    /// </summary>
+    public readonly AnimationCollection Animations = new();
+
     public ControlState State
     {
         get
@@ -72,7 +99,7 @@ public class ControlInstance
             if (Onion.Navigator.HoverControl == Identity)
                 state |= ControlState.Hover;
 
-            if (Onion.Navigator.ScrollControl== Identity)
+            if (Onion.Navigator.ScrollControl == Identity)
                 state |= ControlState.Scroll;
 
             if (Onion.Navigator.FocusedControl == Identity)
@@ -80,6 +107,9 @@ public class ControlInstance
 
             if (Onion.Navigator.ActiveControl == Identity)
                 state |= ControlState.Active;
+            
+            if (Onion.Navigator.KeyControl == Identity)
+                state |= ControlState.Key;
 
             return state;
         }

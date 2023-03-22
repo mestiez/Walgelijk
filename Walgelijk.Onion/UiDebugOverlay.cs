@@ -11,6 +11,7 @@ public enum UiDebugOverlay
     RenderedRect,
     RaycastRect,
     ChildContentRect,
+    ComputedScrollBounds,
     DrawBounds,
-    ComputedDrawBounds
+    ComputedDrawBounds,
 }

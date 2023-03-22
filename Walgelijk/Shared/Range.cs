@@ -54,7 +54,7 @@ public abstract class Range<T>
 }
 
 /// <summary>
-/// Struct with a minimum and maximum float value
+/// Object with a minimum and maximum float value
 /// </summary>
 public class FloatRange : Range<float>
 {
@@ -95,7 +95,7 @@ public class FloatRange : Range<float>
 
 
 /// <summary>
-/// Struct with a minimum and maximum integer value
+/// Object with a minimum and maximum integer value
 /// </summary>
 public class IntRange : Range<int>
 {
@@ -135,7 +135,7 @@ public class IntRange : Range<int>
 }
 
 /// <summary>
-/// Struct with a minimum and maximum <see cref="Vector2"/> value
+/// Object with a minimum and maximum <see cref="Vector2"/> value
 /// </summary>
 public class Vec2Range : Range<Vector2>
 {
@@ -185,7 +185,7 @@ public class Vec2Range : Range<Vector2>
 }
 
 /// <summary>
-/// Struct with a minimum and maximum <see cref="Color"/> value
+/// Object with a minimum and maximum <see cref="Color"/> value
 /// </summary>
 public class ColorRange : Range<Color>
 {

@@ -1,16 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <Version>1.0.0</Version>
+    <Version>1.0.4</Version>
     <Company>Studio Minus</Company>
     <Authors>zooi</Authors>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageIcon>icon.png</PackageIcon>
+    <Description>Adds video playback functionality to the Walgelijk.OpenTK package using a modified version of MotionTK</Description>
   </PropertyGroup>
-
+  <Target Name="PostBuild" Condition="'$(Configuration)'=='Release'" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet pack -c Release --no-restore --no-build --output &quot;$(SolutionDir)OutputPackages&quot;" />
+  </Target>
   <ItemGroup>
     <PackageReference Include="FFmpeg.AutoGen" Version="5.1.1" />
     <PackageReference Include="FFmpeg.AutoGen.Bindings.DynamicallyLinked" Version="5.1.1.1" />
@@ -21,14 +24,15 @@
     <PackageReference Include="FFmpeg.Native.H264" Version="4.4.0.2627" />
     <PackageReference Include="OpenTK" Version="4.7.5" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="MotionTK\" />
+    <None Include="icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
-
 </Project>

@@ -2,7 +2,6 @@
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Diagnostics;
 using System.Numerics;

@@ -64,7 +64,7 @@ public class Language
         return new Language(
             s.DisplayName ?? Path.GetFileNameWithoutExtension(filePath),
             string.IsNullOrWhiteSpace(s.Culture) ? CultureInfo.InvariantCulture : new CultureInfo(s.Culture),
-            string.IsNullOrWhiteSpace(s.Flag) ? Flags.Unknown : Resources.Load<Texture>(Path.GetFullPath(s.Flag, Path.GetDirectoryName(filePath) ?? Environment.CurrentDirectory), true), 
+            string.IsNullOrWhiteSpace(s.Flag) ? Flags.Unknown : Resources.Load<Texture>(Path.GetFullPath(s.Flag, Path.GetDirectoryName(filePath) ?? Environment.CurrentDirectory), true),
             s.Table ?? new Dictionary<string, string>());
     }
 
