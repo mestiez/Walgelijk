@@ -5,11 +5,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <Version>1.0.1</Version>
+    <Version>1.0.3</Version>
     <Company>Studio Minus</Company>
     <Authors>zooi</Authors>
     <PackageIcon>icon.png</PackageIcon>
-    <Description>Adds video playback functionality to the Walgelijk.OpenTK pacakge using a modified version of MotionTK</Description>
+    <Description>Adds video playback functionality to the Walgelijk.OpenTK package using a modified version of MotionTK</Description>
   </PropertyGroup>
   <Target Name="PostBuild" Condition="'$(Configuration)'=='Release'" AfterTargets="PostBuildEvent">
     <Exec Command="dotnet pack -c Release --no-restore --no-build --output &quot;$(SolutionDir)OutputPackages&quot;" />
