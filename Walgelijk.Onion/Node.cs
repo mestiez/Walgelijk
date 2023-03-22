@@ -100,7 +100,7 @@ public class Node
 
     public void Render(in ControlParams p)
     {
-        if (p.Node.GetAnimationTime() <= float.Epsilon)
+        if (!AliveLastFrame && p.Node.GetAnimationTime() <= float.Epsilon)
             return;
 
         var drawBounds = GetFinalDrawBounds(p.Tree);
