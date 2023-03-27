@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<PackageType>Template</PackageType>
-		<PackageVersion>1.0</PackageVersion>
+		<PackageVersion>1.0.1</PackageVersion>
 		<PackageId>Walgelijk.Templates</PackageId>
 		<Title>AdatumCorporation Templates</Title>
 		<Authors>Me</Authors>

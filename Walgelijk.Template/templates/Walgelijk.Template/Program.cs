@@ -1,4 +1,6 @@
+using System.Numerics;
 using Walgelijk;
+using Walgelijk.OpenTK;
 
 namespace Walgelijk.Template;
 
@@ -24,7 +26,7 @@ public class Program
         Resources.SetBasePathForType<Texture>("textures");
         Resources.SetBasePathForType<Font>("fonts");
 
-        Game.Scene = new Scene(Game);
+        var scene = Game.Scene = new Scene(Game);
         scene.AddSystem(new CameraSystem());
         scene.AddSystem(new TransformSystem());
 
