@@ -81,8 +81,8 @@ public class Navigator
         }
     }
 
-    public bool IsBeingUsed => 
-        hoverControl.HasValue || scrollControl.HasValue || focusedControl.HasValue || 
+    public bool IsBeingUsed =>
+        hoverControl.HasValue || scrollControl.HasValue || focusedControl.HasValue ||
         activeControl.HasValue || triggeredControl.HasValue || keyControl.HasValue;
 
     public ReadOnlySpan<SortedNode> SortedByDepth => sortedByDepthRaw.AsSpan(0, sortedByDepthCount);
@@ -94,9 +94,10 @@ public class Navigator
     private int? triggeredControl;
     private int? keyControl;
 
-    private readonly Stack<int> orderStack = new();
+    // private readonly Stack<int> orderStack = new();
     private SortedNode[]? sortedByDepthRaw = null;
     private int sortedByDepthCount = 0;
+    private int alwaysOnTopCounter = 0;
 
     private readonly Dictionary<int, float> highlightControls = new();
 
@@ -280,22 +281,23 @@ public class Navigator
         if (!node.AliveLastFrame)
             return;
 
-        int globalOrder;
-        globalOrder = node.ComputedGlobalOrder = Math.Max(node.AlwaysOnTop ? 1000 : node.RequestedLocalOrder, orderStack.Peek());
-
         if (sortedByDepthRaw!.Length <= index + 1)
-            Array.Resize(ref sortedByDepthRaw, index + 1);
+            Array.Resize(ref sortedByDepthRaw, index + 10);
 
-        sortedByDepthRaw![index] = new SortedNode(node.Identity, globalOrder, treeDepth);
-        index++;
+        if (node.AlwaysOnTop)
+            alwaysOnTopCounter++;
 
-        orderStack.Push(globalOrder);
         treeDepth++;
-        foreach (var child in node.GetChildren())
+        foreach (var child in node.GetChildren().OrderByDescending(static s => s.RequestedLocalOrder))
             RecurseNodeOrder(child, ref index, ref treeDepth);
         treeDepth--;
 
-        orderStack.Pop();
+        sortedByDepthRaw![index] = new SortedNode(node.Identity, index, alwaysOnTopCounter > 0);
+        index++;
+
+        if (node.AlwaysOnTop)
+            alwaysOnTopCounter--;
+
     }
 
     private void RefreshOrder()
@@ -305,17 +307,26 @@ public class Navigator
         else if (sortedByDepthRaw.Length <= Onion.Tree.Nodes.Count)
             Array.Resize(ref sortedByDepthRaw, Onion.Tree.Nodes.Count);
 
-        orderStack.Clear();
-
-        orderStack.Push(0);
         sortedByDepthCount = 0;
         int treeDepth = 0;
+        alwaysOnTopCounter = 0;
         RecurseNodeOrder(Onion.Tree.Root, ref sortedByDepthCount, ref treeDepth);
-        orderStack.Pop();
 
-        //sortedByDepthRaw.AsSpan(0, sortedByDepthCount).Reverse();
-        sortedByDepthRaw.AsSpan(0, sortedByDepthCount).Sort(static (a, b) => b.TreeDepth - a.TreeDepth);
-        sortedByDepthRaw.AsSpan(0, sortedByDepthCount).Sort(static (a, b) => b.Order - a.Order);
+        sortedByDepthRaw.AsSpan(0, sortedByDepthCount).Sort(static (a,b) =>
+        {
+            if (a.OnTop != b.OnTop)
+            {
+                if (a.OnTop)
+                    return -1;
+                else
+                    return 1;
+            }
+            return a.Order - b.Order;
+        });
+
+        int p = sortedByDepthCount;
+        foreach (var item in SortedByDepth)
+            Onion.Tree.Nodes[item.Identity].ComputedGlobalOrder = p--;
     }
 
     public int? Raycast(Vector2 pos, CaptureFlags captureFlags) => Raycast(pos.X, pos.Y, captureFlags);
@@ -425,7 +436,7 @@ public class Navigator
 
     public void Clear()
     {
-        orderStack.Clear();
+        // orderStack.Clear();
         highlightControls.Clear();
         sortedByDepthRaw = null;
     }
@@ -450,15 +461,15 @@ public class Navigator
     {
         public readonly int Identity;
         public readonly int Order;
-        public readonly int TreeDepth;
+        public readonly bool OnTop;
 
-        public SortedNode(int identity, int order, int chronologicalOrder)
+        public SortedNode(int identity, int order, bool onTop)
         {
             Identity = identity;
+            OnTop = onTop;
             Order = order;
-            TreeDepth = chronologicalOrder;
         }
 
-        public override string? ToString() => $"Id: {Identity}, Order: {Order}";
+        public override string? ToString() => $"Id: {Identity},Order: {Order}, OnTop: {OnTop}";
     }
 }

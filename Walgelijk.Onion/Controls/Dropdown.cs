@@ -64,7 +64,7 @@ public readonly struct Dropdown<T> : IControl
             Onion.Layout.Height(dropdownRect.Height);
             Onion.Layout.FitContainer(1, null);
             Onion.Layout.Offset(Onion.Theme.Padding, height + Onion.Theme.Padding);
-            Onion.Tree.Start(instance.Identity + 38, new ScrollView());
+            Onion.Tree.Start(instance.Identity + 38, new ScrollView(true));
 
             for (int i = 0; i < values.Count; i++)
             {

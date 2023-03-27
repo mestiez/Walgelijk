@@ -24,7 +24,7 @@ public readonly struct Slider : IControl
 
     private static readonly OptionalControlState<float> states = new();
 
-    public static ControlState Float(ref float value, Direction dir, MinMax<float> range, float step, int identity = 0, [CallerLineNumber] int site = 0)
+    public static ControlState Float(ref float value, Direction dir, MinMax<float> range, float step = 0, int identity = 0, [CallerLineNumber] int site = 0)
     {
         var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Slider).GetHashCode(), (int)dir, identity, site), new Slider(dir, range, step));
         instance.RenderFocusBox = false;
@@ -35,11 +35,11 @@ public readonly struct Slider : IControl
         return instance.State;
     }
 
-    public static ControlState Int(ref int value, Direction dir, MinMax<int> range, int step, int identity = 0, [CallerLineNumber] int site = 0)
+    public static ControlState Int(ref int value, Direction dir, MinMax<int> range, int step = 1, int identity = 0, [CallerLineNumber] int site = 0)
     {
         float vv = value;
         var rr = new MinMax<float>(range.Min, range.Max);
-        var s = Float(ref vv, dir, rr, step, identity, site);
+        var s = Float(ref vv, dir, rr, Math.Max(1, step), identity, site);
         if (s.HasFlag(ControlState.Active))
             value = (int)vv;
         return s;
@@ -73,10 +73,7 @@ public readonly struct Slider : IControl
                 break;
         }
 
-        states[p.Identity] = Utilities.Snap(v, step);
-
-
-        Logger.Debug(v.ToString());
+        states[p.Identity] = step > float.Epsilon ? Utilities.Snap(v, step) : v;
     }
 
     public void OnRender(in ControlParams p)
