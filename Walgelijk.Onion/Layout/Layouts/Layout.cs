@@ -92,19 +92,19 @@ public class Layout
     /// <summary>
     /// Stick to the left of parent
     /// </summary>
-    public void StickLeft() => Enqueue(new StickLeft());
+    public Layout StickLeft() => Enqueue(new StickLeft());
     /// <summary>
     /// Stick to the right of parent
     /// </summary>
-    public void StickRight() => Enqueue(new StickRight());
+    public Layout StickRight() => Enqueue(new StickRight());
     /// <summary>
     /// Stick to the top of parent
     /// </summary>
-    public void StickTop() => Enqueue(new StickTop());
+    public Layout StickTop() => Enqueue(new StickTop());
     /// <summary>
     /// Stick to the bottom of parent
     /// </summary>
-    public void StickBottom() => Enqueue(new StickBottom());
+    public Layout StickBottom() => Enqueue(new StickBottom());
 
     /// <summary>
     /// Fit the container.

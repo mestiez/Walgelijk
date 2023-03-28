@@ -84,7 +84,6 @@ public struct IMGUIScene : ISceneCreator
                 //Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
                 layout.Size(128, Window.Height / 2);
                 layout.VerticalLayout();
-
                 gui.Start(75, new ScrollView());
 
                 layout.Size(0, 32);
