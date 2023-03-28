@@ -2,15 +2,14 @@
 
 namespace Walgelijk.Onion.Layout;
 
-public readonly struct HorizontalLayout : ILayout
+public struct HorizontalLayout : ILayout
 {
-    public void Apply(in ControlParams p, int index, int childId)
+    private float cursor;
+
+    public void Apply(in ControlParams parent, int index, int childId)
     {
-        var child = p.Tree.EnsureInstance(childId);
-        if (index > 0)
-        {
-            var widthSoFar = p.Node.GetChildren().Take(index).Sum(static i => Onion.Tree.EnsureInstance(i.Identity).Rects.Intermediate.Width + Onion.Theme.Padding);
-            child.Rects.Intermediate = child.Rects.Intermediate.Translate(widthSoFar, 0);
-        }
+        var child = parent.Tree.EnsureInstance(childId);
+        child.Rects.Intermediate = child.Rects.Intermediate.Translate(cursor, 0);
+        cursor += child.Rects.Intermediate.Width + Onion.Theme.Padding;
     }
 }

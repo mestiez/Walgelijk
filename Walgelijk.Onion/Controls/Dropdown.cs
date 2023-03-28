@@ -63,12 +63,12 @@ public readonly struct Dropdown<T> : IControl
 
             Onion.Layout.Height(dropdownRect.Height);
             Onion.Layout.FitContainer(1, null);
-            Onion.Layout.Offset(Onion.Theme.Padding, height + Onion.Theme.Padding);
+            Onion.Layout.Move(Onion.Theme.Padding, height + Onion.Theme.Padding);
             Onion.Tree.Start(instance.Identity + 38, new ScrollView(true));
 
             for (int i = 0; i < values.Count; i++)
             {
-                Onion.Layout.Offset(0, i * height);
+                Onion.Layout.Move(0, i * height);
                 Onion.Layout.Height(height);
                 Onion.Layout.Width(instance.Rects.ComputedGlobal.Width - Onion.Theme.Padding * 2);
                 Onion.Layout.CenterHorizontal();
@@ -146,7 +146,7 @@ public readonly struct Dropdown<T> : IControl
             var dropdownRect = new Rect(computedGlobal.MinX, computedGlobal.MaxY, computedGlobal.MaxX, computedGlobal.MaxY);
             var dropdownRectTargetHeight = instance.Rects.Rendered.Height * Values.Count + Onion.Theme.Padding * 2;
 
-            dropdownRectTargetHeight *= Easings.Quad.Out(Utilities.Clamp(currentState.TimeSinceTriggered / 0.1f));
+            dropdownRectTargetHeight *= Easings.Quad.Out(Utilities.Clamp(currentState.TimeSinceTriggered / Onion.Animation.DefaultDurationSeconds));
             dropdownRectTargetHeight = MathF.Min(dropdownRectTargetHeight, ((Game.Main.Window.Height - Onion.Theme.Padding * 2) - computedGlobal.MaxY));
             dropdownRect.MaxY += dropdownRectTargetHeight;
 

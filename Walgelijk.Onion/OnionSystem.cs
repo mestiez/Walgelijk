@@ -26,7 +26,7 @@ public class OnionSystem : Walgelijk.System
         Onion.Navigator.Process(Onion.Input, Time.DeltaTime);
 
         // next frame
-        Onion.Layout.Offset(0, 0);
+        Onion.Layout.Move(0, 0);
         Onion.Layout.Size(Window.Width, Window.Height);
         Onion.Tree.Start(0, new Dummy()); //Root node
 

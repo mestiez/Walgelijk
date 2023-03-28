@@ -25,7 +25,6 @@ public readonly struct DragWindow : IControl
 
     public static ControlState Start(string title, ref bool isOpen, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        //Onion.Animation.SetDuration(1.1f);
         Onion.Animation.Add(new FadeAnimation());
         Onion.Animation.Add(new ShrinkAnimation(0.9f));
         var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(DragWindow).GetHashCode(), identity, site), new DragWindow(true));
@@ -41,8 +40,6 @@ public readonly struct DragWindow : IControl
         if (Button.Click("X", instance.Identity))
             isOpen = !isOpen;
 
-        //if (!Openness.TryGetValue(instance.Identity, out isOpen))
-        //    Openness.AddOrSet(identity, isOpen);
         return instance.State;
     }
 

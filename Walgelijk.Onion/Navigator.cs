@@ -297,7 +297,6 @@ public class Navigator
 
         if (node.AlwaysOnTop)
             alwaysOnTopCounter--;
-
     }
 
     private void RefreshOrder()
@@ -308,18 +307,17 @@ public class Navigator
             Array.Resize(ref sortedByDepthRaw, Onion.Tree.Nodes.Count);
 
         sortedByDepthCount = 0;
-        int treeDepth = 0;
         alwaysOnTopCounter = 0;
+        int treeDepth = 0;
         RecurseNodeOrder(Onion.Tree.Root, ref sortedByDepthCount, ref treeDepth);
 
-        sortedByDepthRaw.AsSpan(0, sortedByDepthCount).Sort(static (a,b) =>
+        sortedByDepthRaw.AsSpan(0, sortedByDepthCount).Sort(static (a, b) =>
         {
-            if (a.OnTop != b.OnTop)
+            if (a.OnTop != b.OnTop) //TODO er gaat hier soms random iets fout
             {
                 if (a.OnTop)
                     return -1;
-                else
-                    return 1;
+                return 1;
             }
             return a.Order - b.Order;
         });

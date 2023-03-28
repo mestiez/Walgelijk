@@ -89,12 +89,12 @@ public struct IMGUIScene : ISceneCreator
 
                 layout.Size(0, 32);
                 layout.FitContainer(1, null);
-                layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
+                layout.Move(Onion.Theme.Padding, Onion.Theme.Padding);
                 Checkbox.Create(ref PasswordCheckbox, "Password text box");
 
                 for (int i = 0; i < 7; i++)
                 {
-                    layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
+                    layout.Move(Onion.Theme.Padding, Onion.Theme.Padding);
                     layout.Size(0, 32);
                     layout.FitContainer(1, null);
 
@@ -110,14 +110,14 @@ public struct IMGUIScene : ISceneCreator
                 layout.FitContainer(1, 0);
                 layout.Height(hotbarHeight);
                 layout.CenterHorizontal();
-                layout.Offset(0, Window.Height - hotbarHeight - Onion.Theme.Padding);
+                layout.Move(0, Window.Height - hotbarHeight - Onion.Theme.Padding);
 
                 gui.Start(106, new ScrollView());
                 for (int i = 0; i < 4; i++)
                 {
                     layout.Size(hotbarHeight - Onion.Theme.Padding * 2, hotbarHeight - Onion.Theme.Padding * 2);
                     layout.CenterVertical();
-                    layout.Offset(Onion.Theme.Padding + i * (hotbarHeight - Onion.Theme.Padding), 0);
+                    layout.Move(Onion.Theme.Padding + i * (hotbarHeight - Onion.Theme.Padding), 0);
                     if (ImageButton.Click(Texture.ErrorTexture, ImageContainmentMode.Cover, i))
                     {
                         var a = Resources.Load<Font>("inter-tight.fnt");
@@ -133,19 +133,19 @@ public struct IMGUIScene : ISceneCreator
 
             {
                 layout.Size(128, 24);
-                layout.Offset(128, Onion.Theme.Padding);
+                layout.Move(128, Onion.Theme.Padding);
                 Dropdown<string>.Create(DropdownOptions, ref DropdownSelectedIndex);
             }
 
             {
                 layout.Size(150, 24);
-                layout.Offset(128 + 128 + Onion.Theme.Padding, Onion.Theme.Padding);
+                layout.Move(128 + 128 + Onion.Theme.Padding, Onion.Theme.Padding);
                 var s = Scene.GetSystem<OnionSystem>();
                 Dropdown<UiDebugOverlay>.CreateForEnum(ref s.DebugOverlay);
             }
 
             layout.Size(128 + 150, 256);
-            layout.Offset(128, 24 + Onion.Theme.Padding);
+            layout.Move(128, 24 + Onion.Theme.Padding);
             TextRect.Create(textRectContents, HorizontalTextAlign.Left, VerticalTextAlign.Top);
 
             for (int i = 0; i < 2; i++)
@@ -153,22 +153,22 @@ public struct IMGUIScene : ISceneCreator
                 if (!WindowsOpen[i])
                     continue;
 
-                layout.Offset(i * 64, i * 64);
+                layout.Move(i * 64, i * 64);
                 layout.Size(300, 128);
                 DragWindow.Start(textBoxContent, ref WindowsOpen[i], i);
                 {
                     layout.FitContainer(1, 1);
-                    layout.OffsetSize(0, -24);
-                    layout.Offset(0, 24);
-                    layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
+                    layout.Scale(0, -24);
+                    layout.Move(0, 24);
+                    layout.Move(Onion.Theme.Padding, Onion.Theme.Padding);
                     gui.Start(1435 + i, new ScrollView());
                     {
                         layout.Size(128, 32);
-                        layout.Offset(Onion.Theme.Padding * 2, Onion.Theme.Padding * 2 + 24);
+                        layout.Move(Onion.Theme.Padding * 2, Onion.Theme.Padding * 2 + 24);
                         Dropdown<string>.Create(DropdownOptions, ref DropdownSelectedIndex, identity: i);
 
                         layout.Size(128, 32);
-                        layout.Offset(Onion.Theme.Padding * 3 + 128, Onion.Theme.Padding * 2 + 24);
+                        layout.Move(Onion.Theme.Padding * 3 + 128, Onion.Theme.Padding * 2 + 24);
                         TextBox.Create(ref textBoxContent,
                             new TextBoxOptions(placeholder: "Placeholder!", password: i == 0 && PasswordCheckbox), identity: i);
                     }
@@ -179,32 +179,36 @@ public struct IMGUIScene : ISceneCreator
             }
 
             layout.Size(256, 32);
-            layout.Offset(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding);
+            layout.Move(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding);
             Slider.Float(ref Onion.Theme.Padding, Slider.Direction.Horizontal, new MinMax<float>(0, 8), 0.1f);
 
             layout.Size(256, 32);
-            layout.Offset(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding * 2 + 32);
+            layout.Move(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding * 2 + 32);
             Slider.Float(ref Onion.Theme.Rounding, Slider.Direction.Horizontal, new MinMax<float>(0, 24), 0.1f);
 
             layout.Size(256, 32);
-            layout.Offset(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2);
+            layout.Move(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2);
             Slider.Int(ref Onion.Theme.FontSize, Slider.Direction.Horizontal, new MinMax<int>(8, 24), 1);
 
             {
                 layout.Size(32, (Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Padding));
-                layout.Offset(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
+                layout.Move(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
                 Slider.Float(ref Onion.Theme.Accent.R, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f);
 
                 layout.Size(32, (Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Padding));
-                layout.Offset(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
-                layout.Offset(32 + Onion.Theme.Padding, 0 );
+                layout.Move(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
+                layout.Move(32 + Onion.Theme.Padding, 0);
                 Slider.Float(ref Onion.Theme.Accent.B, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f);
 
                 layout.Size(32, (Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Padding));
-                layout.Offset(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
-                layout.Offset(32 + Onion.Theme.Padding, 0 );
-                layout.Offset(32 + Onion.Theme.Padding, 0 );
+                layout.Move(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
+                layout.Move(32 + Onion.Theme.Padding, 0);
+                layout.Move(32 + Onion.Theme.Padding, 0);
                 Slider.Float(ref Onion.Theme.Accent.G, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f);
+
+                layout.Size(256 + ((32 + Onion.Theme.Padding) * 3), 32);
+                layout.Move(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding * 4 + 32 * 3);
+                Slider.Float(ref Onion.Animation.DefaultDurationSeconds, Slider.Direction.Horizontal, new MinMax<float>(float.Epsilon, 1), 0.01f);
             }
 
             layout.Size(256, 300);

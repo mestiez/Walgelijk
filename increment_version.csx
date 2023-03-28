@@ -69,6 +69,12 @@ foreach (var project in projectDirs)
 		Console.WriteLine(csProj);
 		var doc = XDocument.Load(csProj);
 		var versionElement = doc.Root.Element("PropertyGroup").Element("Version");
+		if (versionElement == null)
+		{
+			versionElement = new XElement("Version", "1.0.0");
+			doc.Root.Element("PropertyGroup").Add(versionElement);
+		}
+
 		var version = Version.Parse((string)versionElement);
 		var newVersion = new Version(version.Major, version.Minor, version.Build + 1);
 		Console.WriteLine("{0} >> {1}", version, newVersion);

@@ -27,49 +27,83 @@ public class Layout
         //}
     }
 
+    /// <summary>
+    /// Reset the layout and constraint queues
+    /// </summary>
     public void Reset()
     {
         Layouts.Clear();
         Constraints.Clear();
     }
 
-    public void Enqueue(in ILayout l) => Layouts.Enqueue(l);
-    public void Enqueue(in IConstraint c) => Constraints.Enqueue(c);
-
-    public void Offset(float x, float y)
+    /// <summary>
+    /// Add the given layout to the upcoming control
+    /// </summary>
+    public Layout Enqueue(in ILayout l)
     {
-        Enqueue(new PositionLayout(x, y));
+        Layouts.Enqueue(l);
+        return this;
     }
 
-    public void Clamp()
+    /// <summary>
+    /// Add the given constraint to the upcoming control
+    /// </summary>
+    public Layout Enqueue(in IConstraint c)
     {
-        Enqueue(new ClampToContainer());
+        Constraints.Enqueue(c);
+        return this;
     }
 
-    public void Size(float w, float h)
+    /// <summary>
+    /// Move the control
+    /// </summary>
+    public Layout Move(float x, float y) => Enqueue(new PositionLayout(x, y));
+
+    /// <summary>
+    /// Clamp the control position to fit its parent
+    /// </summary>
+    public Layout Clamp() => Enqueue(new ClampToContainer());
+
+    /// <summary>
+    /// Set width and height respectively
+    /// </summary>
+    public Layout Size(float w, float h)
     {
         Enqueue(new WidthConstraint(w));
         Enqueue(new HeightConstraint(h));
+        return this;
     }
 
-    public void Width(float w)
-    {
-        Enqueue(new WidthConstraint(w));
-    }
+    /// <summary>
+    /// Set width
+    /// </summary>
+    public Layout Width(float w) => Enqueue(new WidthConstraint(w));
 
-    public void Height(float h)
-    {
-        Enqueue(new HeightConstraint(h));
-    }
+    /// <summary>
+    /// Set height
+    /// </summary>
+    public Layout Height(float h) => Enqueue(new HeightConstraint(h));
 
-    public void OffsetSize(float w, float h)
-    {
-        Enqueue(new OffsetSize(w, h));
-    }
+    /// <summary>
+    /// Offset the size by adding the given values to the width and height respectively
+    /// </summary>
+    public Layout Scale(float w, float h) => Enqueue(new OffsetSize(w, h));
 
+    /// <summary>
+    /// Stick to the left of parent
+    /// </summary>
     public void StickLeft() => Enqueue(new StickLeft());
+    /// <summary>
+    /// Stick to the right of parent
+    /// </summary>
     public void StickRight() => Enqueue(new StickRight());
+    /// <summary>
+    /// Stick to the top of parent
+    /// </summary>
     public void StickTop() => Enqueue(new StickTop());
+    /// <summary>
+    /// Stick to the bottom of parent
+    /// </summary>
     public void StickBottom() => Enqueue(new StickBottom());
 
     /// <summary>
@@ -77,27 +111,30 @@ public class Layout
     /// </summary>
     /// <param name="w">Optional value ranging from 0 to 1 where 1 is 100% of the parent width</param>
     /// <param name="h">Optional value ranging from 0 to 1 where 1 is 100% of the parent height</param>
-    public void FitContainer(float? w, float? h)
-    {
-        Enqueue(new FitContainer(w, h));
-    }
+    public Layout FitContainer(float? w, float? h) => Enqueue(new FitContainer(w, h));
 
-    public void CenterHorizontal() => Center(true, false);
+    /// <summary>
+    /// Center the control horizontally within its parent
+    /// </summary>
+    public Layout CenterHorizontal() => Center(true, false);
 
-    public void CenterVertical() => Center(false, true);
+    /// <summary>
+    /// Center the control vertically within its parent
+    /// </summary>
+    public Layout CenterVertical() => Center(false, true);
 
-    public void Center(bool horizontally = true, bool vertically = true)
-    {
-        Enqueue(new CenterInParent(horizontally, vertically));
-    }
+    /// <summary>
+    /// Center the control within its parent
+    /// </summary>
+    public Layout Center(bool horizontally = true, bool vertically = true) => Enqueue(new CenterInParent(horizontally, vertically));
 
-    public void HorizontalLayout()
-    {
-        Enqueue(new HorizontalLayout());
-    }
+    /// <summary>
+    /// Arrange all children horizontally within the control
+    /// </summary>
+    public Layout HorizontalLayout() => Enqueue(new HorizontalLayout());
 
-    public void VerticalLayout()
-    {
-        Enqueue(new VerticalLayout());
-    }
+    /// <summary>
+    /// Arrange all children vertically within the control
+    /// </summary>
+    public Layout VerticalLayout() => Enqueue(new VerticalLayout());
 }
