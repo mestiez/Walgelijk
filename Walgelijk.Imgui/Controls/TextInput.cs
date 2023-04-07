@@ -77,7 +77,7 @@ namespace Walgelijk.Imgui.Controls
                         id.InnerScrollOffset.X -= Draw.FontSize;
                 }
 
-                if (Gui.Input.IsButtonPressed(Walgelijk.Button.Left))
+                if (Gui.Input.IsButtonPressed(Walgelijk.MouseButton.Left))
                     Gui.Context.Active = id;
             }
 
@@ -165,7 +165,7 @@ namespace Walgelijk.Imgui.Controls
                     result = true;
                 }
 
-                if (Gui.Input.IsButtonHeld(Walgelijk.Button.Left))
+                if (Gui.Input.IsButtonHeld(Walgelijk.MouseButton.Left))
                 {
                     if (Gui.ContainsMouse(id, false))
                     {

@@ -85,7 +85,7 @@ namespace Walgelijk.Imgui.Controls
 
             if (svHeld)
             {
-                if (Gui.Input.IsButtonHeld(Walgelijk.Button.Left))
+                if (Gui.Input.IsButtonHeld(Walgelijk.MouseButton.Left))
                     hsv.s01 = Utilities.Clamp((Gui.Input.WindowMousePos.X - saturationValueRect.MinX) / saturationValueRect.Width);
                 hsv.v01 = Utilities.Clamp(1 - (Gui.Input.WindowMousePos.Y - saturationValueRect.MinY) / saturationValueRect.Height);
                 color = ColourUtils.HSVtoRGB(hsv.h01, hsv.s01, hsv.v01);

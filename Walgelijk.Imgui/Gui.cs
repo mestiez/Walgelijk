@@ -192,7 +192,7 @@ public static class Gui
         if (Context.IsActive(id))
             held = true;
 
-        if ((allowImmediateFocus ? !Context.IsActive(id) : Context.Active == null) && Context.IsHot(id) && Input.IsButtonPressed(Walgelijk.Button.Left))
+        if ((allowImmediateFocus ? !Context.IsActive(id) : Context.Active == null) && Context.IsHot(id) && Input.IsButtonPressed(Walgelijk.MouseButton.Left))
         {
             Context.Active = id;
             held = true;
@@ -200,7 +200,7 @@ public static class Gui
             Gui.PlayMouseDownSound();
         }
 
-        if (Context.IsActive(id) && Input.IsButtonReleased(Walgelijk.Button.Left))
+        if (Context.IsActive(id) && Input.IsButtonReleased(Walgelijk.MouseButton.Left))
         {
             Context.Active = null;
             released = true;

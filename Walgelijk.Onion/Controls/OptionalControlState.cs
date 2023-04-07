@@ -29,6 +29,8 @@ public class OptionalControlState<T>
             states.Add(identity, new(v, false));
     }
 
+    public bool HasIncomingChange(int identity) => states.TryGetValue(identity, out var state) ? state.IncomingChange : false;
+
     public T this[int identity]
     {
         get => GetValue(identity);

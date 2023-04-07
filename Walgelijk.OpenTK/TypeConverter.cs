@@ -21,9 +21,9 @@ namespace Walgelijk.OpenTK
             return (Key)(int)key;
         }
 
-        public static Button Convert(global::OpenTK.Windowing.GraphicsLibraryFramework.MouseButton button)
+        public static MouseButton Convert(global::OpenTK.Windowing.GraphicsLibraryFramework.MouseButton button)
         {
-            return (Button)(int)button;
+            return (MouseButton)(int)button;
         }
 
         public static int Convert(TextureUnit textureUnit)

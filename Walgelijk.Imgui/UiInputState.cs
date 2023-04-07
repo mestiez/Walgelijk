@@ -19,9 +19,9 @@ namespace Walgelijk.Imgui
         public string TextEntered = string.Empty;
         public float ScrollDelta;
 
-        public bool IsButtonPressed(Button b) => ButtonsDown[(int)b];
-        public bool IsButtonHeld(Button b) => ButtonsHeld[(int)b].current;
-        public bool IsButtonReleased(Button b) => ButtonsUp[(int)b];
+        public bool IsButtonPressed(MouseButton b) => ButtonsDown[(int)b];
+        public bool IsButtonHeld(MouseButton b) => ButtonsHeld[(int)b].current;
+        public bool IsButtonReleased(MouseButton b) => ButtonsUp[(int)b];
 
         public bool IsKeyPressed(Key b) => KeysDown[(int)b];
         public bool IsKeyHeld(Key b) => KeysHeld[(int)b].current;

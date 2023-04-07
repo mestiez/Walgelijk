@@ -8,12 +8,14 @@ public readonly struct Slider : IControl
     private readonly Direction direction;
     private readonly MinMax<float> range;
     private readonly float step;
+    private readonly string? LabelFormat;
 
-    public Slider(Direction direction, MinMax<float> range, float step)
+    public Slider(Direction direction, MinMax<float> range, float step, string? labelFormat = null)
     {
         this.direction = direction;
         this.range = range;
         this.step = step;
+        LabelFormat = labelFormat;
     }
 
     public enum Direction
@@ -24,25 +26,25 @@ public readonly struct Slider : IControl
 
     private static readonly OptionalControlState<float> states = new();
 
-    public static ControlState Float(ref float value, Direction dir, MinMax<float> range, float step = 0, int identity = 0, [CallerLineNumber] int site = 0)
+    public static bool Float(ref float value, Direction dir, MinMax<float> range, float step = 0, int identity = 0, [CallerLineNumber] int site = 0)
     {
         var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Slider).GetHashCode(), (int)dir, identity, site), new Slider(dir, range, step));
         instance.RenderFocusBox = false;
         Onion.Tree.End();
-
+        var r = states.HasIncomingChange(instance.Identity);
         states.UpdateFor(instance.Identity, ref value);
 
-        return instance.State;
+        return r;
     }
 
-    public static ControlState Int(ref int value, Direction dir, MinMax<int> range, int step = 1, int identity = 0, [CallerLineNumber] int site = 0)
+    public static bool Int(ref int value, Direction dir, MinMax<int> range, int step = 1, int identity = 0, [CallerLineNumber] int site = 0)
     {
         float vv = value;
         var rr = new MinMax<float>(range.Min, range.Max);
-        var s = Float(ref vv, dir, rr, Math.Max(1, step), identity, site);
-        if (s.HasFlag(ControlState.Active))
+        bool r;
+        if (r = Float(ref vv, dir, rr, Math.Max(1, step), identity, site))
             value = (int)vv;
-        return s;
+        return r;
     }
 
     public void OnAdd(in ControlParams p)
@@ -61,10 +63,27 @@ public readonly struct Slider : IControl
         var v = 0f;
 
         float d;
-        if (p.Input.CtrlHeld && p.Instance.HasScroll && (d = p.Input.ScrollDelta.LengthSquared()) > 0)
+        if (p.Input.CtrlHeld && p.Instance.HasScroll && Math.Abs(d = p.Input.ScrollDelta.Y) > 0)
         {
-            var s = Onion.Configuration.ScrollSensitivity * 0.01f;
-            v = Utilities.Clamp(states[p.Identity] + d > 0 ? s : -s, range.Min, range.Max);
+            var s = Onion.Configuration.ScrollSensitivity;
+
+            if (step < float.Epsilon)
+            {
+                switch (direction)
+                {
+                    case Direction.Horizontal:
+                        s /= p.Instance.Rects.ComputedGlobal.Width;
+                        break;
+                    case Direction.Vertical:
+                        s /= p.Instance.Rects.ComputedGlobal.Height;
+                        break;
+                }
+                s *= Math.Abs(range.Max - range.Min);
+            }
+            else
+                s = step - float.Epsilon;
+
+            v = Utilities.Clamp(states[p.Identity] + (d > 0 ? s : -s), range.Min, range.Max);
         }
         else if (p.Instance.IsActive)
         {
@@ -118,8 +137,8 @@ public readonly struct Slider : IControl
                 break;
         }
 
-        sliderRect.MaxX = MathF.Max(sliderRect.MaxX, sliderRect.MinX + Onion.Theme.Padding * 4);
-        sliderRect.MinY = MathF.Min(sliderRect.MinY, sliderRect.MaxY - Onion.Theme.Padding * 4);
+        sliderRect.MaxX = MathF.Max(sliderRect.MaxX, sliderRect.MinX + Onion.Theme.Padding * 3);
+        sliderRect.MinY = MathF.Min(sliderRect.MinY, sliderRect.MaxY - Onion.Theme.Padding * 3);
 
         Draw.Colour = Onion.Theme.Accent;
         anim.AnimateColour(ref Draw.Colour, t);

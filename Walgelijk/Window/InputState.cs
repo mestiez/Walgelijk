@@ -11,15 +11,15 @@ public struct InputState
     /// <summary>
     /// All mouse buttons that have been pressed last frame
     /// </summary>
-    public readonly HashSet<Button>? MouseButtonsDown = new();
+    public readonly HashSet<MouseButton>? MouseButtonsDown = new();
     /// <summary>
     /// All mouse buttons that are currently held
     /// </summary>
-    public readonly HashSet<Button>? MouseButtonsHeld = new();
+    public readonly HashSet<MouseButton>? MouseButtonsHeld = new();
     /// <summary>
     /// All moues buttons that have been released last frame
     /// </summary>
-    public readonly HashSet<Button>? MouseButtonsUp = new();
+    public readonly HashSet<MouseButton>? MouseButtonsUp = new();
     /// <summary>
     /// All keys that have been pressed last frame
     /// </summary>
@@ -88,15 +88,15 @@ public struct InputState
     /// <summary>
     /// Returns if the key is held
     /// </summary>
-    public bool IsButtonHeld(Button button) => MouseButtonsHeld?.Contains(button) ?? false;
+    public bool IsButtonHeld(MouseButton button) => MouseButtonsHeld?.Contains(button) ?? false;
     /// <summary>
     /// Retusn if the key was pressed
     /// </summary>
-    public bool IsButtonPressed(Button button) => MouseButtonsDown?.Contains(button) ?? false;
+    public bool IsButtonPressed(MouseButton button) => MouseButtonsDown?.Contains(button) ?? false;
     /// <summary>
     /// Returns if the key was released
     /// </summary>
-    public bool IsButtonReleased(Button button) => MouseButtonsUp?.Contains(button) ?? false;
+    public bool IsButtonReleased(MouseButton button) => MouseButtonsUp?.Contains(button) ?? false;
     #endregion
 
     /// <summary>

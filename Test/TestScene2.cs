@@ -163,7 +163,7 @@ public struct TestScene2
             if (videos != null)
                 Draw.Image(videos.Texture, new Rect(64, 64, 500, 500), ImageContainmentMode.Contain);
 
-            if (Input.IsButtonReleased(Button.Middle))
+            if (Input.IsButtonReleased(MouseButton.Middle))
             {
                 if (videos == null)
                 {

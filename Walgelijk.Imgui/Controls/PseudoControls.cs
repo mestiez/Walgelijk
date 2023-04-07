@@ -66,7 +66,7 @@ namespace Walgelijk.Imgui.Controls
 
                     if (Gui.Context.IsActive(id))
                     {
-                        if (Gui.Input.IsButtonReleased(Walgelijk.Button.Left))
+                        if (Gui.Input.IsButtonReleased(Walgelijk.MouseButton.Left))
                             Gui.Context.Active = null;
                         else
                         {
@@ -90,7 +90,7 @@ namespace Walgelijk.Imgui.Controls
                         else if (Gui.Context.IsHot(id))
                             Gui.Context.Hot = null;
 
-                        if (Gui.Context.IsHot(id) && Gui.Input.IsButtonPressed(Walgelijk.Button.Left))
+                        if (Gui.Context.IsHot(id) && Gui.Input.IsButtonPressed(Walgelijk.MouseButton.Left))
                             Gui.Context.Active = id;
                     }
 
