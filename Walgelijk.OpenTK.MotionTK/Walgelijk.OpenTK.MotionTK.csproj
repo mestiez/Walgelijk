@@ -22,7 +22,7 @@
     <PackageReference Include="FFmpeg.Loader" Version="3.0.0" />
     <PackageReference Include="FFmpeg.Native" Version="4.4.0.2386" />
     <PackageReference Include="FFmpeg.Native.H264" Version="4.4.0.2627" />
-    <PackageReference Include="OpenTK" Version="4.7.5" />
+    <PackageReference Include="OpenTK" Version="4.7.7" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />

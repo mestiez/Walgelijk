@@ -56,22 +56,31 @@ public readonly struct Slider : IControl
     public void OnProcess(in ControlParams p)
     {
         ControlUtils.ProcessButtonLike(p);
-
-        if (!p.Instance.IsActive)
-            return;
+        p.Instance.CaptureFlags |= CaptureFlags.Scroll;
 
         var v = 0f;
-        var m = p.Input.MousePosition;
-        var r = p.Instance.Rects.ComputedGlobal;
-        switch (direction)
+
+        float d;
+        if (p.Input.CtrlHeld && p.Instance.HasScroll && (d = p.Input.ScrollDelta.LengthSquared()) > 0)
         {
-            case Direction.Horizontal:
-                v = Utilities.Clamp(Utilities.MapRange(r.MinX, r.MaxX, range.Min, range.Max, m.X), range.Min, range.Max);
-                break;
-            case Direction.Vertical:
-                v = Utilities.Clamp(Utilities.MapRange(r.MaxY, r.MinY, range.Min, range.Max, m.Y), range.Min, range.Max);
-                break;
+            var s = Onion.Configuration.ScrollSensitivity * 0.01f;
+            v = Utilities.Clamp(states[p.Identity] + d > 0 ? s : -s, range.Min, range.Max);
         }
+        else if (p.Instance.IsActive)
+        {
+            var m = p.Input.MousePosition;
+            var r = p.Instance.Rects.ComputedGlobal;
+            switch (direction)
+            {
+                case Direction.Horizontal:
+                    v = Utilities.Clamp(Utilities.MapRange(r.MinX, r.MaxX, range.Min, range.Max, m.X), range.Min, range.Max);
+                    break;
+                case Direction.Vertical:
+                    v = Utilities.Clamp(Utilities.MapRange(r.MaxY, r.MinY, range.Min, range.Max, m.Y), range.Min, range.Max);
+                    break;
+            }
+        }
+        else return;
 
         states[p.Identity] = step > float.Epsilon ? Utilities.Snap(v, step) : v;
     }
