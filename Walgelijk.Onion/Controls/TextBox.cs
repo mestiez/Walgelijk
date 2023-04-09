@@ -407,6 +407,7 @@ public readonly struct TextBox : IControl
 
         Draw.Colour = Onion.Theme.Background.Color;
         Draw.Texture = Onion.Theme.Background.Texture;
+        anim.AnimateColour(ref Draw.Colour, t);
         Draw.Quad(instance.Rects.Rendered.Expand(-2), 0, Onion.Theme.Rounding);
 
         Draw.ResetTexture();

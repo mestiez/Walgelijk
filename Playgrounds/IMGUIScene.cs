@@ -210,9 +210,7 @@ public struct IMGUIScene : ISceneCreator
                 Slider.Float(ref Onion.Animation.DefaultDurationSeconds, Slider.Direction.Horizontal, new MinMax<float>(float.Epsilon, 1), 0.01f);
             }
 
-            layout.Size(256, 300);
-            layout.StickRight();
-            layout.StickBottom();
+            layout.Size(256, 300).StickRight().StickBottom();
             ColourPicker.Create(ref Onion.Theme.Background.Color);
         }
 

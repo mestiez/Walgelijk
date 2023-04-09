@@ -51,8 +51,6 @@ else
 {
 	foreach (var path in GetChangedFiles())
 	{
-		// if (!path.EndsWith("csproj"))
-		// 	continue;
 		var p = new FileInfo(path);
 		var relativeDir = Path.GetRelativePath(Environment.CurrentDirectory, p.DirectoryName);
 		relativeDir = relativeDir.Split(new[]{Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar})[0];
@@ -63,7 +61,7 @@ else
 
 foreach (var project in projectDirs)
 {
-	var csProj = $"{project}/{project}.csproj";
+	var csProj = Directory.EnumerateFiles(project, "*.csproj").FirstOrDefault() ?? $"{project}/{project}.csproj";
 	if (File.Exists(csProj))
 	{
 		Console.WriteLine(csProj);

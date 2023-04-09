@@ -298,4 +298,11 @@ public struct Rect : IEquatable<Rect>
     {
         return !(left == right);
     }
+
+    public override string ToString()
+    {
+        var center = GetCenter();
+        var size = GetSize();
+        return $"(Center {center.X}, {center.Y}, Size {size.X}, {size.Y})";
+    }
 }

@@ -5972,17 +5972,17 @@
             Returns if the key was released
             </summary>
         </member>
-        <member name="M:Walgelijk.InputState.IsButtonHeld(Walgelijk.Button)">
+        <member name="M:Walgelijk.InputState.IsButtonHeld(Walgelijk.MouseButton)">
             <summary>
             Returns if the key is held
             </summary>
         </member>
-        <member name="M:Walgelijk.InputState.IsButtonPressed(Walgelijk.Button)">
+        <member name="M:Walgelijk.InputState.IsButtonPressed(Walgelijk.MouseButton)">
             <summary>
             Retusn if the key was pressed
             </summary>
         </member>
-        <member name="M:Walgelijk.InputState.IsButtonReleased(Walgelijk.Button)">
+        <member name="M:Walgelijk.InputState.IsButtonReleased(Walgelijk.MouseButton)">
             <summary>
             Returns if the key was released
             </summary>
