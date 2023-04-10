@@ -1,8 +1,8 @@
 {
-    "symbolInfo": {
-        "skipRestore": {
-            "longName": "no-restore",
-            "shortName": ""
-        }
+  "symbolInfo": {
+    "skipRestore": {
+      "longName": "no-restore",
+      "shortName": ""
     }
+  }
 }
