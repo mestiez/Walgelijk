@@ -1,35 +1,50 @@
-﻿namespace Walgelijk.Onion.Controls;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Walgelijk.Onion.Controls;
 
 public class OptionalControlState<T>
 {
     public record State(T Value, bool IncomingChange);
-    private static readonly Dictionary<int, State> states = new();
+    public static readonly Dictionary<int, State> ByIdentity = new();
 
     public void SetValue(int identity, T value)
     {
-        states.AddOrSet(identity, new State(value, true));
+        ByIdentity.AddOrSet(identity, new State(value, true));
     }
 
     public T GetValue(int identity)
     {
-        if (states.TryGetValue(identity, out var state))
+        if (ByIdentity.TryGetValue(identity, out var state))
             return state.Value;
         throw new Exception($"Identity {identity} asked for a state it does not have");
     }
 
+    public bool HasValue(int identity) => ByIdentity.ContainsKey(identity);
+
+    public bool TryGetState(int identity, [NotNullWhen(true)] out T? val)
+    {
+        if (ByIdentity.TryGetValue(identity, out var state))
+        {
+            val = state.Value;
+            return true;
+        }
+        val = default;
+        return false;
+    }
+
     public void UpdateFor(int identity, ref T v)
     {
-        if (states.TryGetValue(identity, out var state))
+        if (ByIdentity.TryGetValue(identity, out var state))
         {
             if (state.IncomingChange)
                 v = state.Value;
-            states[identity] = new(v, false);
+            ByIdentity[identity] = new(v, false);
         }
         else
-            states.Add(identity, new(v, false));
+            ByIdentity.Add(identity, new(v, false));
     }
 
-    public bool HasIncomingChange(int identity) => states.TryGetValue(identity, out var state) ? state.IncomingChange : false;
+    public bool HasIncomingChange(int identity) => ByIdentity.TryGetValue(identity, out var state) && state.IncomingChange;
 
     public T this[int identity]
     {

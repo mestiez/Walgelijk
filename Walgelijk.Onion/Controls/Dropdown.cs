@@ -146,7 +146,7 @@ public readonly struct Dropdown<T> : IControl
             var dropdownRect = new Rect(computedGlobal.MinX, computedGlobal.MaxY, computedGlobal.MaxX, computedGlobal.MaxY);
             var dropdownRectTargetHeight = instance.Rects.Rendered.Height * Values.Count + Onion.Theme.Padding * 2;
 
-            dropdownRectTargetHeight *= Easings.Quad.Out(Utilities.Clamp(currentState.TimeSinceTriggered / Onion.Animation.DefaultDurationSeconds));
+            dropdownRectTargetHeight *= Easings.Quad.Out(Utilities.Clamp(currentState.TimeSinceTriggered / MathF.Max(float.Epsilon, Onion.Animation.DefaultDurationSeconds)));
             dropdownRectTargetHeight = MathF.Min(dropdownRectTargetHeight, ((Game.Main.Window.Height - Onion.Theme.Padding * 2) - computedGlobal.MaxY));
             dropdownRect.MaxY += dropdownRectTargetHeight;
 
