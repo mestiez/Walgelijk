@@ -77,7 +77,7 @@ public struct IMGUIScene : ISceneCreator
             Draw.Reset();
             Draw.ScreenSpace = true;
             Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer - 1);
-            Draw.Colour = Onion.Theme.Background.Color;
+            Draw.Colour = Onion.Theme.Background[ControlState.None].Color;
             Draw.Quad(new Rect(0, 0, Window.Width, Window.Height));
 
             {
@@ -187,23 +187,23 @@ public struct IMGUIScene : ISceneCreator
 
             layout.Size(256, 32);
             layout.Move(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2);
-            Slider.Int(ref Onion.Theme.FontSize, Slider.Direction.Horizontal, new MinMax<int>(8, 24), 1);
+            Slider.Float(ref Onion.Theme.FocusBoxSize, Slider.Direction.Horizontal, new MinMax<float>(0, 24), 1);
 
             {
                 layout.Size(32, (Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Padding));
                 layout.Move(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
-                Slider.Float(ref Onion.Theme.Accent.R, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f);
+                Slider.Float(ref Onion.Theme.Accent.Default.R, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f);
 
                 layout.Size(32, (Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Padding));
                 layout.Move(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
                 layout.Move(32 + Onion.Theme.Padding, 0);
-                Slider.Float(ref Onion.Theme.Accent.B, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f);
+                Slider.Float(ref Onion.Theme.Accent.Default.B, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f);
 
                 layout.Size(32, (Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Padding));
                 layout.Move(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
                 layout.Move(32 + Onion.Theme.Padding, 0);
                 layout.Move(32 + Onion.Theme.Padding, 0);
-                Slider.Float(ref Onion.Theme.Accent.G, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f);
+                Slider.Float(ref Onion.Theme.Accent.Default.G, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f);
 
                 layout.Size(256 + ((32 + Onion.Theme.Padding) * 3), 32);
                 layout.Move(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding * 4 + 32 * 3);
@@ -211,7 +211,7 @@ public struct IMGUIScene : ISceneCreator
             }
 
             layout.Size(256, 300).StickRight().StickBottom();
-            ColourPicker.Create(ref Onion.Theme.Background.Color);
+            ColourPicker.Create(ref Onion.Theme.Background.Default.Color);
         }
 
         public override void Render()

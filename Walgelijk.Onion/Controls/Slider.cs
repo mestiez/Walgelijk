@@ -111,17 +111,11 @@ public readonly struct Slider : IControl
         var t = node.GetAnimationTime();
         var anim = instance.Animations;
 
-        var fg = Onion.Theme.Foreground;
+        var fg = Onion.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
-
-        if (instance.IsHover)
-            Draw.Colour = fg.Color.Brightness(1.2f);
-        if (instance.IsActive)
-            Draw.Colour = fg.Color.Brightness(0.9f);
-
         anim.AnimateColour(ref Draw.Colour, t);
         Draw.Quad(instance.Rects.Rendered, 0, Onion.Theme.Rounding);
 
@@ -140,7 +134,7 @@ public readonly struct Slider : IControl
         sliderRect.MaxX = MathF.Max(sliderRect.MaxX, sliderRect.MinX + Onion.Theme.Padding * 3);
         sliderRect.MinY = MathF.Min(sliderRect.MinY, sliderRect.MaxY - Onion.Theme.Padding * 3);
 
-        Draw.Colour = Onion.Theme.Accent;
+        Draw.Colour = Onion.Theme.Accent[instance.State];
         anim.AnimateColour(ref Draw.Colour, t);
         Draw.Quad(sliderRect.Expand(-Onion.Theme.Padding), 0, Onion.Theme.Rounding);
     }

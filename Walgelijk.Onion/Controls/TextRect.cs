@@ -44,7 +44,7 @@ public readonly struct TextRect : IControl
         instance.Rects.Rendered = instance.Rects.ComputedGlobal;
 
         Draw.Font = Onion.Theme.Font;
-        Draw.Colour = Onion.Theme.Text;
+        Draw.Colour = Onion.Theme.Text[p.Instance.State];
 
         Vector2 pivot = instance.Rects.Rendered.GetCenter();
 

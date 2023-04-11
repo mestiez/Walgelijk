@@ -36,7 +36,7 @@ public readonly struct Group : IControl
 
         var anim = instance.Animations;
 
-        var fg = Onion.Theme.Foreground;
+        var fg = Onion.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
 

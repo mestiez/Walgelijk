@@ -32,7 +32,7 @@ public readonly struct DragWindow : IControl
         instance.Muted = true;
         instance.RenderFocusBox = false;
 
-        float buttonSize = Onion.Theme.WindowTitleBarHeight - Onion.Theme.Padding;
+        float buttonSize = Onion.Theme.WindowTitleBarHeight[instance.State] - Onion.Theme.Padding;
         Onion.Layout.Size(buttonSize, buttonSize);
         Onion.Layout.Enqueue(new StickTop());
         Onion.Layout.Enqueue(new StickRight());
@@ -55,7 +55,7 @@ public readonly struct DragWindow : IControl
     public void OnProcess(in ControlParams p)
     {
         var d = p.Instance.Rects.ComputedGlobal;
-        d.MaxY = d.MinY + Onion.Theme.WindowTitleBarHeight + Onion.Theme.Padding * 2;
+        d.MaxY = d.MinY + Onion.Theme.WindowTitleBarHeight[p.Instance.State] + Onion.Theme.Padding * 2;
 
         ControlUtils.ProcessDraggable(p, d);
 
@@ -78,33 +78,28 @@ public readonly struct DragWindow : IControl
 
         var anim = instance.Animations;
 
-        var fg = Onion.Theme.Foreground;
+        var fg = Onion.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
-
-        if (instance.State.HasFlag(ControlState.Active))
-            Draw.Colour = fg.Color.Brightness(0.9f);
-        else if (instance.State.HasFlag(ControlState.Hover))
-            Draw.Colour = fg.Color.Brightness(1.2f);
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
         anim.AnimateColour(ref Draw.Colour, t);
         Draw.Quad(instance.Rects.Rendered, 0, Onion.Theme.Rounding);
 
-        Draw.Colour = Onion.Theme.Text;
+        Draw.Colour = Onion.Theme.Text[instance.State];
         anim.AnimateColour(ref Draw.Colour, t);
 
         Draw.Text(
-            instance.Name, instance.Rects.Rendered.BottomLeft + new Vector2(Onion.Theme.Padding, 0.5f * Onion.Theme.WindowTitleBarHeight),
+            instance.Name, instance.Rects.Rendered.BottomLeft + new Vector2(Onion.Theme.Padding, 0.5f * Onion.Theme.WindowTitleBarHeight[instance.State]),
             Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Middle);
 
-        var bg = Onion.Theme.Background;
+        var bg = Onion.Theme.Background[instance.State];
         Draw.Colour = bg.Color;
         Draw.Texture = bg.Texture;
         anim.AnimateColour(ref Draw.Colour, t);
 
         var container = instance.Rects.Rendered.Expand(-Onion.Theme.Padding);
-        container.MinY += Onion.Theme.WindowTitleBarHeight;
+        container.MinY += Onion.Theme.WindowTitleBarHeight[instance.State];
         anim.AnimateRect(ref container, t);
         Draw.Quad(container, 0, Onion.Theme.Rounding);
     }

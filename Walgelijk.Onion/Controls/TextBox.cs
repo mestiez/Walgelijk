@@ -129,9 +129,9 @@ public readonly struct TextBox : IControl
             {
                 slowTimer = 0;
                 if (cursorPosition < -textOffset)
-                    textOffset += Onion.Theme.FontSize;
+                    textOffset += Onion.Theme.FontSize[p.Instance.State];
                 else if (cursorPosition > -textOffset + p.Instance.Rects.Rendered.Width)
-                    textOffset -= Onion.Theme.FontSize;
+                    textOffset -= Onion.Theme.FontSize[p.Instance.State];
             }
         }
 
@@ -390,7 +390,7 @@ public readonly struct TextBox : IControl
 
         float d = instance.HasFocus ? textOffset : 0;
 
-        var fg = Onion.Theme.Foreground;
+        var fg = Onion.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
 
@@ -405,15 +405,15 @@ public readonly struct TextBox : IControl
         anim.AnimateColour(ref Draw.Colour, t);
         Draw.Quad(instance.Rects.Rendered, 0, Onion.Theme.Rounding);
 
-        Draw.Colour = Onion.Theme.Background.Color;
-        Draw.Texture = Onion.Theme.Background.Texture;
+        Draw.Colour = Onion.Theme.Background[instance.State].Color;
+        Draw.Texture = Onion.Theme.Background[instance.State].Texture;
         anim.AnimateColour(ref Draw.Colour, t);
         Draw.Quad(instance.Rects.Rendered.Expand(-2), 0, Onion.Theme.Rounding);
 
         Draw.ResetTexture();
 
         Draw.Font = Onion.Theme.Font;
-        Draw.Colour = Onion.Theme.Text with { A = Draw.Colour.A };
+        Draw.Colour = Onion.Theme.Text[instance.State] with { A = Draw.Colour.A };
         if (anim.ShouldRenderText(t))
         {
             if (!instance.HasFocus)
@@ -460,7 +460,7 @@ public readonly struct TextBox : IControl
 
                 if (states[node.Identity].Options.Password)
                 {
-                    float w = GetPasswordCharWidth();
+                    float w = GetPasswordCharWidth(instance.State);
                     float r = w * 0.25f;
                     for (int i = 0; i < instance.Name.Length; i++)
                         Draw.Circle(offset + new Vector2(i * w + r, 0), new Vector2(r));
@@ -512,11 +512,11 @@ public readonly struct TextBox : IControl
         //Draw.FontSize = Onion.Theme.FontSize;
         var state = states[p.Identity];
         if (state.Options.Password)
-            return str.Length * GetPasswordCharWidth();
+            return str.Length * GetPasswordCharWidth(p.Instance.State);
         return Draw.CalculateTextWidth(str);
     }
 
-    public static float GetPasswordCharWidth() => Onion.Theme.FontSize * 0.7f;
+    public static float GetPasswordCharWidth(ControlState state) => Onion.Theme.FontSize[state] * 0.7f;
 
     public void OnEnd(in ControlParams p)
     {
