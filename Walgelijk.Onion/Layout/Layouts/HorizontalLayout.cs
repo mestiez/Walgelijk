@@ -9,7 +9,8 @@ public struct HorizontalLayout : ILayout
     public void Apply(in ControlParams parent, int index, int childId)
     {
         var child = parent.Tree.EnsureInstance(childId);
+        cursor += Onion.Theme.Padding;
         child.Rects.Intermediate = child.Rects.Intermediate.Translate(cursor, 0);
-        cursor += child.Rects.Intermediate.Width + Onion.Theme.Padding;
+        cursor += child.Rects.Intermediate.Width;
     }
 }
