@@ -101,6 +101,8 @@ public class OggStreamer : IDisposable
         CastBuffer(rawOggBuffer, readBuffer, readAmount);
         AL.BufferData<short>(buffer.Handle, Format, readBuffer.AsSpan(0, readAmount), Raw.SampleRate);
         AL.SourceQueueBuffer(SourceHandle, buffer.Handle);
+
+        Array.Copy(buffer.Data, LastSamples, BufferSize);
     }
 
     public void PreFill()
@@ -175,18 +177,18 @@ public class OggStreamer : IDisposable
             processedSamples = lastProcessedSampleCount + samplesPlayedInThisBuffer;
         }
 
-        // set last sample buffer
-        AL.GetSource(SourceHandle, ALGetSourcei.Buffer, out int currentBufferID);
-        if (currentBufferID != CurrentPlayingBuffer)
-        {
-            CurrentPlayingBuffer = currentBufferID;
-            for (int i = 0; i < Buffers.Length; i++)
-                if (Buffers[i].Handle == currentBufferID)
-                {
-                    Array.Copy(Buffers[i].Data, LastSamples, BufferSize);
-                    break;
-                }
-        }
+        //// set last sample buffer
+        //AL.GetSource(SourceHandle, ALGetSourcei.Buffer, out int currentBufferID);
+        //if (currentBufferID != CurrentPlayingBuffer)
+        //{
+        //    CurrentPlayingBuffer = currentBufferID;
+        //    for (int i = 0; i < Buffers.Length; i++)
+        //        if (Buffers[i].Handle == currentBufferID)
+        //        {
+        //            Array.Copy(Buffers[i].Data, LastSamples, BufferSize);
+        //            break;
+        //        }
+        //}
 
         // unqueue processed buffers
         if (processed > 0)
