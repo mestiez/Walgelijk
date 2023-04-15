@@ -36,10 +36,10 @@ public struct TestScene2
             ClearColour = new Color("#a8a3c1")
         });
 
-        streamTest = new Sound(Resources.Load<StreamAudioData>("Party_Level_Theme_4.ogg"), false, false);
+        streamTest = new Sound(Resources.Load<StreamAudioData>("sweep.ogg"), false, false);
         game.AudioRenderer.Play(streamTest);
 
-        visualiser = new AudioVisualiser(streamTest, 1024 * 4, 1024, 1024);
+        visualiser = new AudioVisualiser(streamTest, 8192, 1024, 128);
 
         return scene;
     }
@@ -80,7 +80,7 @@ public struct TestScene2
             int index = 0;
             foreach (var val in visualiser.GetVisualiserData())
             {
-                float width = Window.Width / (float)visualiser.BinCount;
+                float width = Window.Width / (float)visualiser.BarCount;
                 if (val > .001f)
                 {
                     var a = new Vector2(15 + index * width, Window.Height);
