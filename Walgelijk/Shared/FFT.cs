@@ -94,7 +94,11 @@ public class AudioVisualiser
             {
                 //stereo! channels are interleaved! take left
                 for (int i = 0; i < readSampleCount; i += 2)
+                {
+                    if (accumulationCursor >= sampleAccumulator.Length)
+                        break;
                     sampleAccumulator[accumulationCursor++] = (samples[i] + samples[i + 1]) / 2f;
+                }
             }
             else
             {
