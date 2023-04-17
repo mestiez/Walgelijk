@@ -116,7 +116,7 @@ public class OggStreamer : IDisposable
         AL.SourceQueueBuffer(SourceHandle, buffer.Handle);
 
         for (int i = 0; i < readAmount; i++)
-            playedSamplesBacklog.Push(readBuffer[i] / (float)short.MaxValue);
+            playedSamplesBacklog.Push(rawOggBuffer[i]);
     }
 
     public void PreFill()

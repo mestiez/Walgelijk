@@ -16,12 +16,17 @@ public class AudioVisualiser
     public float MaxFreq = 16000;
     public int InputBlur = 0;
     public int OutputBlur = 0;
-    public float Smoothing = 0.1562f;
+    public float Smoothing = 0.5f;
     public bool OverlapWindow = false;
+
+    public float MinDb = -100;
+    public float MaxDb = -30f;
 
     private readonly float[] samples;
     private readonly float[] fft;
     private readonly float[] sampleAccumulator;
+
+    public float SampleAccumulatorOverwriteFactor = 0.7f;
 
     private readonly Bin[] bins;
     private readonly float[] bars;
@@ -41,20 +46,18 @@ public class AudioVisualiser
             Section = section;
         }
 
-        public float CalculateValue(in float[] fftOutput)
+        public float CalculateValue()
         {
-            //int i = Start;
-            ////return MathF.Sqrt(fftOutput[i * 2] * fftOutput[i * 2] + fftOutput[i * 2 + 1] * fftOutput[i * 2 + 1]);
-
             float v = 0;
             var span = Section.Span;
             for (int i = 0; i < Section.Length; i++)
-                v = MathF.Max(span[i], v);
+                v += span[i] * span[i];
+            v = MathF.Sqrt(v / Section.Span.Length);
             return v;
         }
     }
 
-    public AudioVisualiser(Sound sound, int fftSize = 4096, int bufferSize = 1024, int barCount = 128)
+    public AudioVisualiser(Sound sound, int fftSize = 4096, int bufferSize = 4096, int barCount = 128)
     {
         BufferSize = bufferSize;
         BinCount = fftSize / 2;
@@ -62,8 +65,8 @@ public class AudioVisualiser
         Sound = sound;
         FftSize = fftSize;
 
-        sampleAccumulator = new float[FftSize];
         samples = new float[BufferSize];
+        sampleAccumulator = new float[FftSize];
         fft = new float[FftSize];
 
         bars = new float[BarCount];
@@ -97,7 +100,8 @@ public class AudioVisualiser
                 {
                     if (accumulationCursor >= sampleAccumulator.Length)
                         break;
-                    sampleAccumulator[accumulationCursor++] = (samples[i] + samples[i + 1]) / 2f;
+                    sampleAccumulator[accumulationCursor] = Utilities.Lerp(sampleAccumulator[accumulationCursor], (samples[i] + samples[i + 1]) / 2f, SampleAccumulatorOverwriteFactor);
+                    accumulationCursor++;
                 }
             }
             else
@@ -107,9 +111,9 @@ public class AudioVisualiser
                 {
                     if (accumulationCursor >= sampleAccumulator.Length)
                         break;
-                    sampleAccumulator[accumulationCursor++] = samples[i];
+                    sampleAccumulator[accumulationCursor] = Utilities.Lerp(sampleAccumulator[accumulationCursor], samples[i], SampleAccumulatorOverwriteFactor);
+                    accumulationCursor++;
                 }
-                //accumulationCursor += readSampleCount;
             }
         }
         else
@@ -126,13 +130,11 @@ public class AudioVisualiser
                 accumulationCursor = BufferSize / 2;
             }
             else
-            {
                 accumulationCursor = 0;
-            }
         }
     }
 
-    private void PopulateBins(float dt)
+    private void PopulateBins()
     {
         foreach (var item in bins)
         {
@@ -155,32 +157,32 @@ public class AudioVisualiser
         }
 
         foreach (var item in bins)
-        {
-            item.Value = Utilities.SmoothApproach(item.Value, item.Section.Length > 0 ? (item.CalculateValue(fft)) : 0, 64, dt);
-        }
-
-        //for (int i = 0; i < BinCount; i++)
-        //{
-        //    float min = Utilities.MapRange(0, BinCount - 1, MinFreq, MaxFreq, i);
-        //    float max = Utilities.MapRange(0, BinCount - 1, MinFreq, MaxFreq, i + 1);
-
-        //    FftIndexToBinIndex
-        //}
+            item.Value = item.CalculateValue();
     }
+
+    private float DecibelScale(float value)
+    {
+        float db = 20f * MathF.Log10(value);
+        db = Utilities.Clamp(db, MinDb, MaxDb);
+        float normalizedDb = Utilities.MapRange(MinDb, MaxDb, 0, 1, db);
+
+        return normalizedDb;
+    }
+
 
     public void Update(AudioRenderer audio, float dt)
     {
         UpdateFft(audio);
-        PopulateBins(dt);
+        PopulateBins();
 
         float s = 10 / Smoothing;
 
         for (int i = 0; i < bars.Length; i++)
         {
-            float f = Utilities.MapRange(0, bars.Length, 0, 1, i);
-            f = Easings.Quad.In(f);
-            float freq = Utilities.MapRange(0, 1, MinFreq, MaxFreq, f);
-            bars[i] = Utilities.SmoothApproach(bars[i], bins[FrequencyToBinIndex(freq, Sound.Data.SampleRate, FftSize)].Value, s, dt);
+            float f = (float)i / (bars.Length - 1);
+            float freq = MinFreq * MathF.Pow(MaxFreq / MinFreq, f);
+            float v = Utilities.SmoothApproach(bars[i], bins[FrequencyToBinIndex(freq, Sound.Data.SampleRate, FftSize)].Value, s, dt);
+            bars[i] = DecibelScale(v);
         }
 
         for (int i = 0; i < OutputBlur; i++)
@@ -215,6 +217,11 @@ public struct AudioAnalysis
     public static float Hamming(float v, int n, int N)
     {
         return v * (0.54f - 0.46f * MathF.Cos(2 * MathF.PI * n / (N - 1)));
+    }
+
+    public static float Hann(float v, int n, int N)
+    {
+        return v * (0.5f - 0.5f * MathF.Cos(2 * MathF.PI * n / (N - 1)));
     }
 
     public static Span<float> Fft(ReadOnlySpan<float> input, Span<float> result)
