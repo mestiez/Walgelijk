@@ -1684,6 +1684,11 @@
             Inverts pixel values
             </summary>
         </member>
+        <member name="F:Walgelijk.BlendMode.Overwrite">
+            <summary>
+            Overwrite blend mode (disables blending)
+            </summary>
+        </member>
         <member name="T:Walgelijk.Color">
             <summary>
             Colour with 4 floating point components ranging from 0-1

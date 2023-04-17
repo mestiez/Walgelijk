@@ -29,4 +29,8 @@ public enum BlendMode
     /// Inverts pixel values
     /// </summary>
     Negate,
+    /// <summary>
+    /// Overwrite blend mode (disables blending)
+    /// </summary>
+    Overwrite
 }
