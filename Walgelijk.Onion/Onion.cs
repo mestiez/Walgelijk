@@ -1,7 +1,5 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using Walgelijk.Onion.Assets;
-using Walgelijk.Onion.Controls;
 
 namespace Walgelijk.Onion;
 
