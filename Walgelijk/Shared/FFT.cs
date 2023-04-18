@@ -14,13 +14,15 @@ public class AudioVisualiser
     public readonly int FftSize;
     public float MinFreq = 50;
     public float MaxFreq = 16000;
-    public int InputBlur = 0;
-    public int OutputBlur = 0;
+    public int InputBlurIterations = 0;
+    public int OutputBlurIterations = 0;
+    public float InputBlurIntensity = 0.5f;
+    public float OutputBlurIntensity = 0.5f;
     public float Smoothing = 0.5f;
     public bool OverlapWindow = false;
 
-    public float MinDb = -100;
-    public float MaxDb = -30f;
+    public float MinDb = -30;
+    public float MaxDb = 100;
 
     private readonly float[] samples;
     private readonly float[] fft;
@@ -91,35 +93,31 @@ public class AudioVisualiser
     {
         int readSampleCount = audio.GetCurrentSamples(Sound, samples);
 
-        if (accumulationCursor < FftSize) // if the amount of accumulated samples have not yet reached the end 
+        if (Sound.Data.ChannelCount == 2)
         {
-            if (Sound.Data.ChannelCount == 2)
+            //stereo! channels are interleaved! take left
+            for (int i = 0; i < readSampleCount; i += 2)
             {
-                //stereo! channels are interleaved! take left
-                for (int i = 0; i < readSampleCount; i += 2)
-                {
-                    if (accumulationCursor >= sampleAccumulator.Length)
-                        break;
-                    sampleAccumulator[accumulationCursor] = Utilities.Lerp(sampleAccumulator[accumulationCursor], (samples[i] + samples[i + 1]) / 2f, SampleAccumulatorOverwriteFactor);
-                    accumulationCursor++;
-                }
-            }
-            else
-            {
-                //mono! take everything as-is
-                for (int i = 0; i < readSampleCount; i++)
-                {
-                    if (accumulationCursor >= sampleAccumulator.Length)
-                        break;
-                    sampleAccumulator[accumulationCursor] = Utilities.Lerp(sampleAccumulator[accumulationCursor], samples[i], SampleAccumulatorOverwriteFactor);
-                    accumulationCursor++;
-                }
+                var index = accumulationCursor % sampleAccumulator.Length;
+                sampleAccumulator[index] = Utilities.Lerp(sampleAccumulator[index], (samples[i] + samples[i + 1]) / 2f, SampleAccumulatorOverwriteFactor);
+                accumulationCursor++;
             }
         }
         else
         {
-            for (int i = 0; i < InputBlur; i++)
-                AudioAnalysis.BlurSignal(sampleAccumulator);
+            //mono! take everything as-is
+            for (int i = 0; i < readSampleCount; i++)
+            {
+                var index = accumulationCursor % sampleAccumulator.Length;
+                sampleAccumulator[index] = Utilities.Lerp(sampleAccumulator[index], samples[i], SampleAccumulatorOverwriteFactor);
+                accumulationCursor++;
+            }
+        }
+
+        if (accumulationCursor >= FftSize) // if the amount of accumulated samples have not yet reached the end 
+        {
+            for (int i = 0; i < InputBlurIterations; i++)
+                AudioAnalysis.BlurSignal(sampleAccumulator, InputBlurIntensity);
 
             AudioAnalysis.Fft(sampleAccumulator, fft);
 
@@ -185,8 +183,8 @@ public class AudioVisualiser
             bars[i] = DecibelScale(v);
         }
 
-        for (int i = 0; i < OutputBlur; i++)
-            AudioAnalysis.BlurSignal(bars);
+        for (int i = 0; i < OutputBlurIterations; i++)
+            AudioAnalysis.BlurSignal(bars, OutputBlurIntensity);
     }
 
     public ReadOnlySpan<float> GetVisualiserData() => bars;
@@ -194,13 +192,20 @@ public class AudioVisualiser
 
 public struct AudioAnalysis
 {
-    public static void BlurSignal(Span<float> values)
+    public static void BlurSignal(Span<float> values, float intensity)
+    {
+        var even = new Vector3(1 / 3f);
+        var center = new Vector3(0, 1, 0);
+        Convolve(values, Utilities.Lerp(center, even, intensity));
+    }
+
+    public static void Convolve(Span<float> values, Vector3 kernel)
     {
         var s = ArrayPool<float>.Shared.Rent(values.Length);
         var scrap = s.AsSpan(0, values.Length);
         values.CopyTo(scrap);
         for (int i = 1; i < values.Length - 1; i++)
-            values[i] = (scrap[i - 1] + scrap[i + 1] + scrap[i]) / 3f;
+            values[i] = (scrap[i - 1] * kernel.X + scrap[i + 1] * kernel.Y + scrap[i] * kernel.Z);
         ArrayPool<float>.Shared.Return(s);
     }
 
