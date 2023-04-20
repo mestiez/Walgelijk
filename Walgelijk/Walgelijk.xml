@@ -1679,6 +1679,16 @@
             Only keeps the greatest pixel value
             </summary>
         </member>
+        <member name="F:Walgelijk.BlendMode.Darken">
+            <summary>
+            Only keeps the smallest pixel value
+            </summary>
+        </member>
+        <member name="F:Walgelijk.BlendMode.Overlay">
+            <summary>
+            Only keeps the smallest pixel value
+            </summary>
+        </member>
         <member name="F:Walgelijk.BlendMode.Negate">
             <summary>
             Inverts pixel values

@@ -142,6 +142,7 @@ namespace Walgelijk.SimpleDrawing
                    EqualityComparer<Material>.Default.Equals(Material, drawing.Material) &&
                    ReferenceEquals(Texture, drawing.Texture) &&
                    TextDrawing.Equals(drawing.TextDrawing) &&
+                   BlendMode.Equals(drawing.BlendMode) &&
                    ScreenSpace.Equals(drawing.ScreenSpace) &&
                    VectorEquals(Position, drawing.Position) &&
                    Approximately(RotationRadians, drawing.RotationRadians) &&
