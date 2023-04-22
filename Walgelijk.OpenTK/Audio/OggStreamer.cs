@@ -1,6 +1,7 @@
 ﻿using NVorbis;
 using OpenTK.Audio.OpenAL;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
@@ -39,7 +40,18 @@ public class OggStreamer : IDisposable
     private volatile bool monitorFlag = true;
 
     public BufferHandle? CurrentPlayingBuffer;
-    public float[] LastSamples = new float[BufferSize];
+
+    //public float[] LastSamples = new float[BufferSize];
+    private Stack<float> playedSamplesBacklog = new();
+
+    public IEnumerable<float> TakeLastPlayed(int count = 1024)
+    {
+        for (int i = 0; i < count; i++)
+            if (playedSamplesBacklog.TryPop(out var f))
+                yield return f;
+            else
+                yield break;
+    }
 
     public class BufferEntry
     {
@@ -84,7 +96,8 @@ public class OggStreamer : IDisposable
 
         stream = new FileStream(Raw.File.FullName, FileMode.Open, FileAccess.Read);
         reader = new VorbisReader(stream, true);
-        Array.Clear(LastSamples);
+        playedSamplesBacklog.Clear();
+        //Array.Clear(LastSamples);
 
         lastProcessedSampleCount = 0;
         processedSamples = 0;
@@ -101,6 +114,9 @@ public class OggStreamer : IDisposable
         CastBuffer(rawOggBuffer, readBuffer, readAmount);
         AL.BufferData<short>(buffer.Handle, Format, readBuffer.AsSpan(0, readAmount), Raw.SampleRate);
         AL.SourceQueueBuffer(SourceHandle, buffer.Handle);
+
+        for (int i = 0; i < readAmount; i++)
+            playedSamplesBacklog.Push(rawOggBuffer[i]);
     }
 
     public void PreFill()
@@ -175,18 +191,18 @@ public class OggStreamer : IDisposable
             processedSamples = lastProcessedSampleCount + samplesPlayedInThisBuffer;
         }
 
-        // set last sample buffer
-        AL.GetSource(SourceHandle, ALGetSourcei.Buffer, out int currentBufferID);
-        if (currentBufferID != CurrentPlayingBuffer)
-        {
-            CurrentPlayingBuffer = currentBufferID;
-            for (int i = 0; i < Buffers.Length; i++)
-                if (Buffers[i].Handle == currentBufferID)
-                {
-                    Array.Copy(Buffers[i].Data, LastSamples, BufferSize);
-                    break;
-                }
-        }
+        //// set last sample buffer
+        //AL.GetSource(SourceHandle, ALGetSourcei.Buffer, out int currentBufferID);
+        //if (currentBufferID != CurrentPlayingBuffer)
+        //{
+        //    CurrentPlayingBuffer = currentBufferID;
+        //    for (int i = 0; i < Buffers.Length; i++)
+        //        if (Buffers[i].Handle == currentBufferID)
+        //        {
+        //            Array.Copy(Buffers[i].Data, LastSamples, BufferSize);
+        //            break;
+        //        }
+        //}
 
         // unqueue processed buffers
         if (processed > 0)
@@ -196,7 +212,10 @@ public class OggStreamer : IDisposable
                 var bufferHandle = AL.SourceUnqueueBuffer(SourceHandle);
                 for (int i = 0; i < Buffers.Length; i++)
                     if (Buffers[i].Handle == bufferHandle)
+                    {
                         Buffers[i].Free = true;
+
+                    }
             }
 
             // check if end of file was reached right after all buffers are completely processed

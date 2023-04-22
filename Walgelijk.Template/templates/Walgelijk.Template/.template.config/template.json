@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "mestiez, Studio Minus",
+  "classifications": [
+    "Console",
+    "Game"
+  ],
+  
+  "name": "Walgelijk game",
+  "identity": "Walgelijk.Template",
+  "shortName": "walgelijk",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "Walgelijk.Template",
+  "preferNameDirectory": true
+}

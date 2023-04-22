@@ -24,9 +24,21 @@ public enum BlendMode
     /// <summary>
     /// Only keeps the greatest pixel value
     /// </summary>
-    Lighten,
+    Lighten,    
+    /// <summary>
+    /// Only keeps the smallest pixel value
+    /// </summary>
+    Darken,   
+    /// <summary>
+    /// Only keeps the smallest pixel value
+    /// </summary>
+    Overlay,
     /// <summary>
     /// Inverts pixel values
     /// </summary>
     Negate,
+    /// <summary>
+    /// Overwrite blend mode (disables blending)
+    /// </summary>
+    Overwrite
 }

@@ -26,7 +26,7 @@ public class ImageSharpDecoder : IImageDecoder
 
     public DecodedImage Decode(in ReadOnlySpan<byte> bytes, bool flipY)
     {
-        using var image = Image.Load<Rgba32>(bytes, out _);
+        using var image = Image.Load<Rgba32>(bytes);
         var colors = new Color[image.Width * image.Height];
         CopyPixels(image.Frames.RootFrame, ref colors, flipY);
         return new DecodedImage(image.Width, image.Height, colors);

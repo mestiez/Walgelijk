@@ -1,7 +1,5 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using Walgelijk.Onion.Assets;
-using Walgelijk.Onion.Controls;
 
 namespace Walgelijk.Onion;
 
@@ -87,18 +85,18 @@ public static class Onion
 
 public class Theme
 {
-    public Appearance Background = new Color("#022525");
-    public Appearance Foreground = new Color("#055555");
-    public Color Text = new Color("#fcffff");
-    public Color Accent = new Color("#de3a67");
+    public ThemeProperty<Appearance> Background = (Appearance)new Color("#022525");
+    public ThemeProperty<Appearance> Foreground = new(new Color("#055555"), new Color("#055555") * 1.1f, new Color("#055555") * 0.9f, new Color("#055555") * 0.8f);
+    public ThemeProperty<Color> Text = new Color("#fcffff");
+    public ThemeProperty<Color> Accent = new Color("#de3a67");
     public Color Highlight = new Color("#ffffff");
 
     public Font Font = Walgelijk.Font.Default;
-    public int FontSize = 12;
+    public ThemeProperty<int> FontSize = 12;
 
     public float Padding = 5;
     public float Rounding = 1;
-    public float WindowTitleBarHeight = 24;
+    public ThemeProperty<float> WindowTitleBarHeight = 24;
 
     public Color FocusBoxColour = new Color("#3adeda");
     public float FocusBoxSize = 5;
@@ -111,27 +109,78 @@ public class Theme
     public Sound? FocusSound;
 }
 
-public class ThemeProperty<T> where T : notnull
+public struct ThemeProperty<T> where T : struct
 {
-    public readonly T Default;
+    public T Default;
+    public T? Hover;
+    public T? Active;
+    public T? Triggered;
 
-    public ThemeProperty(in T @default)
+    public ThemeProperty(T @default, T? hover = null, T? active = null, T? triggered = null) : this()
     {
         Default = @default;
+        Hover = hover;
+        Active = active;
+        Triggered = triggered;
     }
 
-    private readonly Stack<T> stack = new();
-
-    public void Push(T val) => stack.Push(val);
-
-    public T Pop() => stack.Pop();
-
-    public T Get()
+    public readonly T Get(ControlState state)
     {
-        if (stack.TryPeek(out var val))
-            return val;
+        if (Triggered != null && state.HasFlag(ControlState.Triggered))
+            return Triggered.Value;
+
+        if (Active != null && state.HasFlag(ControlState.Active))
+            return Active.Value;
+
+        if (Hover != null && state.HasFlag(ControlState.Hover))
+            return Hover.Value;
+
         return Default;
     }
 
-    public static implicit operator T(ThemeProperty<T> theme) => theme.Get();
+    public void Set(ControlState state, T value)
+    {
+        if (state.HasFlag(ControlState.Triggered))
+            Triggered = value;
+        else if (state.HasFlag(ControlState.Active))
+            Active = value;
+        else if (state.HasFlag(ControlState.Hover))
+            Hover = value;
+
+        Default = value;
+    }
+
+    //public static implicit operator T(ThemeProperty<T> theme) => theme.Get(ControlState.None);
+    public static implicit operator ThemeProperty<T>(T val) => new(val);
+
+    public T this[ControlState state]
+    {
+        get => Get(state);
+        set => Set(state, value);
+    }
 }
+
+//public class ThemeProperty<T> where T : notnull
+//{
+//    public readonly T Default;
+
+//    public ThemeProperty(in T @default)
+//    {
+//        Default = @default;
+//    }
+
+//    private readonly Stack<T> stack = new();
+
+//    public void Push(T val) => stack.Push(val);
+
+//    public T Pop() => stack.Pop();
+
+//    public T Get()
+//    {
+//        if (stack.TryPeek(out var val))
+//            return val;
+//        return Default;
+//    }
+
+//    public static implicit operator T(ThemeProperty<T> theme) => theme.Get();
+//}

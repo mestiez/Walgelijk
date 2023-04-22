@@ -60,7 +60,7 @@ public class AudioWaveSystem : Walgelijk.System
 
         var field = world.Field;
 
-        if (Input.IsButtonReleased(Button.Middle))
+        if (Input.IsButtonReleased(MouseButton.Middle))
             for (int i = 0; i < field.Flat.Length; i++)
                 field.Flat[i].ForceSet(0);
 
@@ -86,7 +86,7 @@ public class AudioWaveSystem : Walgelijk.System
                     }
                 }
 
-        if (Input.IsButtonHeld(Button.Left))
+        if (Input.IsButtonHeld(MouseButton.Left))
         {
             for (int x = 0; x < field.Width; x++)
                 for (int y = 0; y < field.Height; y++)
@@ -98,7 +98,7 @@ public class AudioWaveSystem : Walgelijk.System
                     }
         }
 
-        if (Input.IsButtonHeld(Button.Right))
+        if (Input.IsButtonHeld(MouseButton.Right))
         {
             for (int x = 0; x < field.Width; x++)
                 for (int y = 0; y < field.Height; y++)

@@ -2,13 +2,22 @@
 
 namespace Walgelijk.Onion.Controls;
 
-public struct ScrollView : IControl
+public readonly struct ScrollView : IControl
 {
+    public readonly bool BlockHover = true;
+
+    public ScrollView(bool blockHover)
+    {
+        BlockHover = blockHover;
+    }
+
     public void OnAdd(in ControlParams p) { }
 
     public void OnStart(in ControlParams p)
     {
         p.Instance.CaptureFlags = CaptureFlags.Scroll;
+        if (BlockHover)
+            p.Instance.CaptureFlags |= CaptureFlags.Hover;
     }
 
     public void OnProcess(in ControlParams p)

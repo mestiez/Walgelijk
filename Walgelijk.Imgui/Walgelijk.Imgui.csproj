@@ -8,7 +8,7 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Authors>mestiez</Authors>
     <Company>Studio Minus</Company>
-    <Version>0.11.3</Version>
+    <Version>0.11.5</Version>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <DebugType>embedded</DebugType>

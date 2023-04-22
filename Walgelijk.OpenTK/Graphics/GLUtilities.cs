@@ -16,6 +16,7 @@ namespace Walgelijk.OpenTK
 
         public static void SetBlendMode(BlendMode mode)
         {
+            GL.Enable(EnableCap.Blend);
             switch (mode)
             {
                 case BlendMode.Negate:
@@ -72,6 +73,31 @@ namespace Walgelijk.OpenTK
                     GL.BlendEquationSeparate(
                         BlendEquationMode.FuncAdd,
                         BlendEquationMode.FuncAdd);
+                    break;
+                case BlendMode.Overlay:
+                    GL.BlendFuncSeparate(
+                        BlendingFactorSrc.One,
+                        BlendingFactorDest.OneMinusSrcColor,
+                        BlendingFactorSrc.One,
+                        BlendingFactorDest.OneMinusSrcAlpha);
+
+                    GL.BlendEquationSeparate(
+                        BlendEquationMode.FuncAdd,
+                        BlendEquationMode.FuncAdd);
+                    break;
+                case BlendMode.Darken:
+                    GL.BlendFuncSeparate(
+                        BlendingFactorSrc.DstColor,
+                        BlendingFactorDest.One,
+                        BlendingFactorSrc.DstAlpha,
+                        BlendingFactorDest.One);
+
+                    GL.BlendEquationSeparate(
+                        BlendEquationMode.Min,
+                        BlendEquationMode.FuncAdd);
+                    break;
+                case BlendMode.Overwrite:
+                    GL.Disable(EnableCap.Blend);
                     break;
                 default:
                 case BlendMode.AlphaBlend:

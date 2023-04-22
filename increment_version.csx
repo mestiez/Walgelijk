@@ -51,8 +51,6 @@ else
 {
 	foreach (var path in GetChangedFiles())
 	{
-		// if (!path.EndsWith("csproj"))
-		// 	continue;
 		var p = new FileInfo(path);
 		var relativeDir = Path.GetRelativePath(Environment.CurrentDirectory, p.DirectoryName);
 		relativeDir = relativeDir.Split(new[]{Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar})[0];
@@ -63,12 +61,18 @@ else
 
 foreach (var project in projectDirs)
 {
-	var csProj = $"{project}/{project}.csproj";
+	var csProj = Directory.EnumerateFiles(project, "*.csproj").FirstOrDefault() ?? $"{project}/{project}.csproj";
 	if (File.Exists(csProj))
 	{
 		Console.WriteLine(csProj);
 		var doc = XDocument.Load(csProj);
 		var versionElement = doc.Root.Element("PropertyGroup").Element("Version");
+		if (versionElement == null)
+		{
+			versionElement = new XElement("Version", "1.0.0");
+			doc.Root.Element("PropertyGroup").Add(versionElement);
+		}
+
 		var version = Version.Parse((string)versionElement);
 		var newVersion = new Version(version.Major, version.Minor, version.Build + 1);
 		Console.WriteLine("{0} >> {1}", version, newVersion);

@@ -108,7 +108,7 @@ public class Node
 
         Draw.BlendMode = BlendMode.AlphaBlend;
         Draw.Font = Onion.Theme.Font;
-        Draw.FontSize = Onion.Theme.FontSize;
+        Draw.FontSize = Onion.Theme.FontSize[p.Instance.State];
         Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, p.Node.ComputedGlobalOrder);
         Draw.DrawBounds = new DrawBounds(drawBounds.GetSize(), drawBounds.BottomLeft, true);
         p.Instance.Rects.ComputedDrawBounds = drawBounds;

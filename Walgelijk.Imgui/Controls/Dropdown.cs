@@ -106,7 +106,7 @@ namespace Walgelijk.Imgui.Controls
                     ActiveDropdown = id.Raw;
             }
 
-            if (!wasPressed && !interacted && Gui.Input.IsButtonPressed(Walgelijk.Button.Left) && ActiveDropdown == id.Raw && !isMouseInsideDropdown)
+            if (!wasPressed && !interacted && Gui.Input.IsButtonPressed(Walgelijk.MouseButton.Left) && ActiveDropdown == id.Raw && !isMouseInsideDropdown)
                 ActiveDropdown = null;
 
             Gui.Context.EndControl();

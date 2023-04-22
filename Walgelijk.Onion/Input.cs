@@ -37,9 +37,9 @@ public class Input
         MousePosition = state.WindowMousePosition;
         MouseDelta = state.WindowMouseDelta;
 
-        MousePrimaryPressed = state.IsButtonPressed(Button.Left);
-        MousePrimaryHeld = state.IsButtonHeld(Button.Left);
-        MousePrimaryRelease = state.IsButtonReleased(Button.Left);
+        MousePrimaryPressed = state.IsButtonPressed(MouseButton.Left);
+        MousePrimaryHeld = state.IsButtonHeld(MouseButton.Left);
+        MousePrimaryRelease = state.IsButtonReleased(MouseButton.Left);
 
         DoubleClicked = false;
         if (MousePrimaryRelease)

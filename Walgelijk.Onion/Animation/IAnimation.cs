@@ -10,7 +10,7 @@ public interface IAnimation
     public Matrix3x2 GetTransform(float t);
     public bool ShouldRenderText(float t);
 
-    public static float GetProgress(float t) => Easings.Cubic.InOut(Utilities.Clamp(t));
+    public static float GetProgress(float t) => Easings.Cubic.InOut(Utilities.Clamp(Utilities.NanFallback(t, 1)));
 }
 
 public class AnimationCollection : IAnimation

@@ -109,6 +109,12 @@ namespace Walgelijk.OpenTK
 
         private void SetMaterial(Material material)
         {
+            if (currentBlendMode != material.BlendMode)
+            {
+                currentBlendMode = material.BlendMode;
+                GLUtilities.SetBlendMode(material.BlendMode);
+            }
+
             if (currentMaterial == material)
                 return;
 
@@ -117,11 +123,6 @@ namespace Walgelijk.OpenTK
             int prog = loadedShader.ProgramHandle;
 
             GPUObjects.MaterialTextureCache.ActivateTexturesFor(loadedShader);
-            if (currentBlendMode != material.BlendMode)
-            {
-                currentBlendMode = material.BlendMode;
-                GLUtilities.SetBlendMode(material.BlendMode);
-            }
             GL.UseProgram(prog);
         }
 

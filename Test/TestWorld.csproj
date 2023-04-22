@@ -1,11 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <ApplicationIcon>icon.ico</ApplicationIcon>
+    <Version>1.0.1</Version>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Playgrounds\Playgrounds.csproj" />
     <ProjectReference Include="..\Walgelijk.Imgui\Walgelijk.Imgui.csproj" />
@@ -16,13 +16,10 @@
     <ProjectReference Include="..\Walgelijk.SimpleDrawing\Walgelijk.SimpleDrawing.csproj" />
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
   </ItemGroup>
-
-	<ItemGroup>
-		<None Include="$(ProjectDir)resources\**" CopyToOutputDirectory="Always" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="resources\locale\" />
-	</ItemGroup>
-
+  <ItemGroup>
+    <None Include="$(ProjectDir)resources\**" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="resources\locale\" />
+  </ItemGroup>
 </Project>

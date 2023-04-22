@@ -43,6 +43,9 @@ public readonly struct ImageButton : IControl
     public void OnProcess(in ControlParams p)
     {
         ControlUtils.ProcessButtonLike(p);
+
+        //if (instance.State.HasFlag(ControlState.Hover))
+        //    IControl.SetCursor(DefaultCursor.Pointer);
     }
 
     public void OnRender(in ControlParams p)
@@ -52,19 +55,11 @@ public readonly struct ImageButton : IControl
         var t = node.GetAnimationTime();
         var anim = instance.Animations;
 
-        var fg = Onion.Theme.Foreground;
+        var fg = Onion.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
-
-        if (instance.State.HasFlag(ControlState.Hover))
-        {
-            IControl.SetCursor(DefaultCursor.Pointer);
-            Draw.Colour = fg.Color.Brightness(1.2f);
-        }
-        if (instance.State.HasFlag(ControlState.Active))
-            Draw.Colour = fg.Color.Brightness(0.9f);
 
         anim.AnimateColour(ref Draw.Colour, t);
         Draw.Quad(instance.Rects.Rendered, 0, Onion.Theme.Rounding);

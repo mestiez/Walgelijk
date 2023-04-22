@@ -2,7 +2,7 @@
 
 namespace Walgelijk.Onion.Controls;
 
-public struct Dummy : IControl
+public readonly struct Dummy : IControl
 {
     public void OnAdd(in ControlParams p)
     {
@@ -24,7 +24,6 @@ public struct Dummy : IControl
 
     public void OnRender(in ControlParams p)
     {
-
     }
 
     public void OnEnd(in ControlParams p) { }

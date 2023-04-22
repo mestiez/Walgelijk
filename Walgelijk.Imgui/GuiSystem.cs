@@ -8,7 +8,7 @@ public class GuiSystem : Walgelijk.System
 {
     public override void Initialise()
     {
-        int length = Enum.GetValues<Button>().Length;
+        int length = Enum.GetValues<MouseButton>().Length;
         Gui.Input.ButtonsDown = new bool[length];
         Gui.Input.ButtonsHeld = new (bool, bool)[length];
         Gui.Input.ButtonsUp = new bool[length];
@@ -194,7 +194,7 @@ public class GuiSystem : Walgelijk.System
         target.ScrollDelta = source.MouseScrollDelta;
 
         for (int i = 0; i < target.ButtonsHeld.Length; i++)
-            target.ButtonsHeld[i].current = source.IsButtonHeld((Button)i);
+            target.ButtonsHeld[i].current = source.IsButtonHeld((MouseButton)i);
 
         for (int i = 0; i < target.KeysHeld.Length; i++)
             target.KeysHeld[i].current = source.IsKeyHeld((Key)i);

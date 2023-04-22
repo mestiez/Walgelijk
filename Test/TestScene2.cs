@@ -36,10 +36,10 @@ public struct TestScene2
             ClearColour = new Color("#a8a3c1")
         });
 
-        streamTest = new Sound(Resources.Load<StreamAudioData>("Party_Level_Theme_4.ogg"), false, false);
+        streamTest = new Sound(Resources.Load<StreamAudioData>("mus_toriel.ogg"), false, false);
         game.AudioRenderer.Play(streamTest);
 
-        visualiser = new AudioVisualiser(streamTest, 1024 * 4, 1024, 1024);
+        visualiser = new AudioVisualiser(streamTest, 2048, 2048, 128);
 
         return scene;
     }
@@ -57,15 +57,6 @@ public struct TestScene2
             sw.Start();
         }
 
-        public static void FrequencyWarp(ReadOnlySpan<float> input, Span<float> warped, float minFrequency, float maxFrequency)
-        {
-            for (int i = 0; i < input.Length; i++)
-            {
-                float frequency = minFrequency + (maxFrequency - minFrequency) * (float)i / (float)input.Length;
-                warped[i] = input[i] * MathF.Log(frequency);
-            }
-        }
-
         public override void Update()
         {
             Draw.Reset();
@@ -80,11 +71,11 @@ public struct TestScene2
             int index = 0;
             foreach (var val in visualiser.GetVisualiserData())
             {
-                float width = Window.Width / (float)visualiser.BinCount;
+                float width = Window.Width / (float)visualiser.BarCount;
                 if (val > .001f)
                 {
                     var a = new Vector2(15 + index * width, Window.Height);
-                    var b = new Vector2(15 + index * width, Window.Height - MathF.Log10(val) * 50);
+                    var b = new Vector2(15 + index * width, Window.Height - val * 256);
                     Draw.Colour = index % 2 == 0 ? Colors.Red : Colors.Orange;//.WithAlpha(f * f * 5 + 0.2f);
                     Draw.Line(a, b, width, 0);
                 }
@@ -163,7 +154,7 @@ public struct TestScene2
             if (videos != null)
                 Draw.Image(videos.Texture, new Rect(64, 64, 500, 500), ImageContainmentMode.Contain);
 
-            if (Input.IsButtonReleased(Button.Middle))
+            if (Input.IsButtonReleased(MouseButton.Middle))
             {
                 if (videos == null)
                 {

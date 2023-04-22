@@ -1679,9 +1679,24 @@
             Only keeps the greatest pixel value
             </summary>
         </member>
+        <member name="F:Walgelijk.BlendMode.Darken">
+            <summary>
+            Only keeps the smallest pixel value
+            </summary>
+        </member>
+        <member name="F:Walgelijk.BlendMode.Overlay">
+            <summary>
+            Only keeps the smallest pixel value
+            </summary>
+        </member>
         <member name="F:Walgelijk.BlendMode.Negate">
             <summary>
             Inverts pixel values
+            </summary>
+        </member>
+        <member name="F:Walgelijk.BlendMode.Overwrite">
+            <summary>
+            Overwrite blend mode (disables blending)
             </summary>
         </member>
         <member name="T:Walgelijk.Color">
@@ -5972,17 +5987,17 @@
             Returns if the key was released
             </summary>
         </member>
-        <member name="M:Walgelijk.InputState.IsButtonHeld(Walgelijk.Button)">
+        <member name="M:Walgelijk.InputState.IsButtonHeld(Walgelijk.MouseButton)">
             <summary>
             Returns if the key is held
             </summary>
         </member>
-        <member name="M:Walgelijk.InputState.IsButtonPressed(Walgelijk.Button)">
+        <member name="M:Walgelijk.InputState.IsButtonPressed(Walgelijk.MouseButton)">
             <summary>
             Retusn if the key was pressed
             </summary>
         </member>
-        <member name="M:Walgelijk.InputState.IsButtonReleased(Walgelijk.Button)">
+        <member name="M:Walgelijk.InputState.IsButtonReleased(Walgelijk.MouseButton)">
             <summary>
             Returns if the key was released
             </summary>

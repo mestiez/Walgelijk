@@ -92,7 +92,7 @@ public class Texture : IReadableTexture, IDisposable
         Width = width;
         Height = height;
         this.HDR = HDR;
-        this.RawData = null;
+        this.RawData = new Color[width * height];
         this.GenerateMipmaps = generateMipmaps;
     }
 

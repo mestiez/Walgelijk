@@ -109,8 +109,7 @@ namespace Walgelijk.SimpleDrawing
                 graphics.DrawBounds = Drawing.DrawBounds;
                 graphics.CurrentTarget.ModelMatrix = new Matrix4x4(CreateMatrix(Drawing.Position, Drawing.Scale, Drawing.RotationRadians) * Drawing.Transformation);
                 var oldBm = material.BlendMode;
-                if (Drawing.BlendMode.HasValue)
-                    material.BlendMode = Drawing.BlendMode.Value;
+                material.BlendMode = Drawing.BlendMode ?? BlendMode.AlphaBlend;
                 graphics.Draw(Drawing.VertexBuffer, material);
                 material.BlendMode = oldBm;
                 graphics.DrawBounds = DrawBounds.DisabledBounds;
