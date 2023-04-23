@@ -10,11 +10,6 @@ namespace Walgelijk
     public class TransformSystem : System
     {
         /// <summary>
-        /// Should the system use multithreading to calculate transform matrices?
-        /// </summary>
-        //public bool Multithreading = false;
-
-        /// <summary>
         /// Enable transform parenting?
         /// </summary>
         public bool Parenting = true;
@@ -37,26 +32,39 @@ namespace Walgelijk
                 if (Parenting && !transform.Parent.HasValue)
                     CascadeMatrixCalculation(transform, all);
                 else
-                    CalculateMatrix(transform);
+                    CalculateMatrix(transform, Matrix3x2.Identity);
             }
 
             ArrayPool<TransformComponent>.Shared.Return(arr);
         }
 
-        private void CalculateMatrix(TransformComponent transform)
+        private bool CalculateMatrix(TransformComponent transform, in Matrix3x2 model)
         {
-            bool shouldRecalculate = !transform.IsMatrixCached;
+            bool shouldRecalculate = !transform.IsMatrixCached || transform.InterpolateBetweenFixedUpdates;
 
             if (shouldRecalculate)
-                transform.RecalculateModelMatrix(Matrix3x2.Identity);
+            {
+                if (transform.InterpolateBetweenFixedUpdates)
+                {
+                    var t = Time.Interpolation;
+                    var pos = Utilities.Lerp(transform.PreviousPosition, transform.Position, t);
+                    var rotation = Utilities.Lerp(transform.PreviousRotation, transform.Rotation, t);
+                    var scale = Utilities.Lerp(transform.PreviousScale, transform.Scale, t);
+                    var localPivot = Utilities.Lerp(transform.PreviousLocalPivot, transform.LocalPivot, t);
+                    var localRotationPivot = Utilities.Lerp(transform.PreviousLocalRotationPivot, transform.LocalRotationPivot, t);
+                    transform.RecalculateModelMatrix(model, pos, rotation, scale, localPivot, localRotationPivot);
+                }
+                else
+                    transform.RecalculateModelMatrix(model);
+                return true;
+            }
+
+            return false;
         }
 
         private void CascadeMatrixCalculation(TransformComponent transform, ReadOnlySpan<TransformComponent> all, TransformComponent? up = null)
         {
-            bool shouldRecalculate = !transform.IsMatrixCached;
-
-            if (shouldRecalculate)
-                transform.RecalculateModelMatrix(up?.LocalToWorldMatrix ?? Matrix3x2.Identity);
+            bool recalculated = CalculateMatrix(transform, up?.LocalToWorldMatrix ?? Matrix3x2.Identity);
 
             // waarom heeft een transform geen lijst met kinderen? dat is sneller toch? 
             // helaas is het niet zo simpel. de lijst is dat een List<Entity> (waarschijnlijk) en die moet bijgehouden worden als een entity niet meer bestaat of als die entity geen Transform meer heeft.
@@ -68,7 +76,7 @@ namespace Walgelijk
 
                 if (myParent.HasValue && myParent.Value != e.Entity && myParent.Value == transform.Entity)
                 {
-                    e.IsMatrixCached &= !shouldRecalculate;
+                    e.IsMatrixCached &= !recalculated;
                     CascadeMatrixCalculation(e, all, transform);
                 }
             }
