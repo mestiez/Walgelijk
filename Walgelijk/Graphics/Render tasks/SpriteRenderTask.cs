@@ -3,29 +3,23 @@
 namespace Walgelijk;
 
 /// <summary>
-/// Render task that renders a vertex buffer with a material
+/// Render task that renders a quad with a given model matrix, material, and texture. The texture is set each time it is executed.
 /// </summary>
-public class ShapeRenderTask : IRenderTask
+public class SpriteRenderTask : IRenderTask
 {
     /// <summary>
-    /// Create a shape render task
+    /// The sprite texture to render
     /// </summary>
-    public ShapeRenderTask(VertexBuffer vertexBuffer, Matrix3x2 modelMatrix = default, Material? material = null)
-    {
-        VertexBuffer = vertexBuffer;
-        Material = material ?? Material.DefaultTextured;
-        ModelMatrix = modelMatrix;
-        ScreenSpace = false;
-    }
+    public IReadableTexture Texture = Walgelijk.Texture.ErrorTexture;
 
+    /// <summary>
+    /// The uniform to set to the sprite texture
+    /// </summary>
+    public string MainTextureUniform = "mainTex";
     /// <summary>
     /// The matrix to transform the vertices with
     /// </summary>
     public Matrix3x2 ModelMatrix;
-    /// <summary>
-    /// Vertex buffer to draw
-    /// </summary>
-    public VertexBuffer VertexBuffer;
     /// <summary>
     /// Material to draw with
     /// </summary>
@@ -34,6 +28,17 @@ public class ShapeRenderTask : IRenderTask
     /// Should the task set the view matrix to <see cref="Matrix4x4.Identity"/> 
     /// </summary>
     public bool ScreenSpace;
+
+    /// <summary>
+    /// Create a sprite render task
+    /// </summary>
+    public SpriteRenderTask(IReadableTexture texture, Matrix3x2 modelMatrix = default, Material? material = null)
+    {
+        Texture = texture;
+        Material = material ?? Material.DefaultTextured;
+        ModelMatrix = modelMatrix;
+        ScreenSpace = false;
+    }
 
     /// <inheritdoc/>
     public void Execute(IGraphics graphics)
@@ -63,6 +68,7 @@ public class ShapeRenderTask : IRenderTask
     protected virtual void Draw(IGraphics graphics)
     {
         graphics.CurrentTarget.ModelMatrix = new Matrix4x4(ModelMatrix);
-        graphics.Draw(VertexBuffer, Material);
+        Material.SetUniform(MainTextureUniform, Texture);
+        graphics.Draw(PrimitiveMeshes.CenteredQuad, Material);
     }
 }

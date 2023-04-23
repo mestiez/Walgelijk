@@ -803,6 +803,56 @@
             System that handles <see cref="T:Walgelijk.SplashScreen.SplashScreenComponent"/>
             </summary>
         </member>
+        <member name="T:Walgelijk.SpriteComponent">
+            <summary>
+            A special shape component that can only render quads with a texture
+            </summary>
+        </member>
+        <member name="P:Walgelijk.SpriteComponent.Texture">
+            <summary>
+            Material that is drawn with
+            </summary>
+        </member>
+        <member name="P:Walgelijk.SpriteComponent.Material">
+            <summary>
+            Material that is drawn with
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SpriteComponent.RenderTask">
+            <summary>
+            The task that will be sent to the render queue
+            </summary>
+        </member>
+        <member name="P:Walgelijk.SpriteComponent.ScreenSpace">
+            <summary>
+            Determines if the sprite should be rendered in screenspace
+            </summary>
+        </member>
+        <member name="P:Walgelijk.SpriteComponent.RenderOrder">
+            <summary>
+            Order of the rendering task
+            </summary>
+        </member>
+        <member name="P:Walgelijk.SpriteComponent.Visible">
+            <summary>
+            Whether or not the sprite is rendered by the system
+            </summary>
+        </member>
+        <member name="P:Walgelijk.SpriteComponent.HorizontalFlip">
+            <summary>
+            Apply horizontal flip
+            </summary>
+        </member>
+        <member name="P:Walgelijk.SpriteComponent.VerticalFlip">
+            <summary>
+            Apply vertical flip
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SpriteComponent.#ctor(Walgelijk.IReadableTexture)">
+            <summary>
+            Create a SpriteComponent
+            </summary>
+        </member>
         <member name="T:Walgelijk.TransformComponent">
             <summary>
             Basic component that holds transformation data
@@ -856,6 +906,11 @@
         <member name="F:Walgelijk.TransformComponent.IsMatrixCached">
             <summary>
             Returns if the model matrix is aligned to the transformation
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TransformComponent.RecalculateModelMatrix(System.Numerics.Matrix3x2,System.Numerics.Vector2,System.Single,System.Numerics.Vector2,System.Numerics.Vector2,System.Numerics.Vector2)">
+            <summary>
+            Recalculate the model matrix considering a containing matrix. This is usually <see cref="P:System.Numerics.Matrix3x2.Identity"/>
             </summary>
         </member>
         <member name="M:Walgelijk.TransformComponent.RecalculateModelMatrix(System.Numerics.Matrix3x2)">
@@ -2575,6 +2630,47 @@
             <inheritdoc/>
         </member>
         <member name="M:Walgelijk.ShapeRenderTask.Draw(Walgelijk.IGraphics)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Walgelijk.SpriteRenderTask">
+            <summary>
+            Render task that renders a quad with a given model matrix, material, and texture. The texture is set each time it is executed.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SpriteRenderTask.Texture">
+            <summary>
+            The sprite texture to render
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SpriteRenderTask.MainTextureUniform">
+            <summary>
+            The uniform to set to the sprite texture
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SpriteRenderTask.ModelMatrix">
+            <summary>
+            The matrix to transform the vertices with
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SpriteRenderTask.Material">
+            <summary>
+            Material to draw with
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SpriteRenderTask.ScreenSpace">
+            <summary>
+            Should the task set the view matrix to <see cref="P:System.Numerics.Matrix4x4.Identity"/> 
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SpriteRenderTask.#ctor(Walgelijk.IReadableTexture,System.Numerics.Matrix3x2,Walgelijk.Material)">
+            <summary>
+            Create a sprite render task
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SpriteRenderTask.Execute(Walgelijk.IGraphics)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.SpriteRenderTask.Draw(Walgelijk.IGraphics)">
             <inheritdoc/>
         </member>
         <member name="T:Walgelijk.TargetRenderTask">
