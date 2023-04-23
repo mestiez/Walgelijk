@@ -40,18 +40,40 @@ namespace Walgelijk
 
         private bool CalculateMatrix(TransformComponent transform, in Matrix3x2 model)
         {
-            bool shouldRecalculate = !transform.IsMatrixCached || transform.InterpolateBetweenFixedUpdates;
+            bool shouldRecalculate = !transform.IsMatrixCached || transform.InterpolationFlags != InterpolationFlags.None;
 
             if (shouldRecalculate)
             {
-                if (transform.InterpolateBetweenFixedUpdates)
+                if (transform.InterpolationFlags != InterpolationFlags.None)
                 {
+                    var f = transform.InterpolationFlags;
                     var t = Time.Interpolation;
-                    var pos = Utilities.Lerp(transform.PreviousPosition, transform.Position, t);
-                    var rotation = Utilities.Lerp(transform.PreviousRotation, transform.Rotation, t);
-                    var scale = Utilities.Lerp(transform.PreviousScale, transform.Scale, t);
-                    var localPivot = Utilities.Lerp(transform.PreviousLocalPivot, transform.LocalPivot, t);
-                    var localRotationPivot = Utilities.Lerp(transform.PreviousLocalRotationPivot, transform.LocalRotationPivot, t);
+
+                    var pos =
+                        f.HasFlag(InterpolationFlags.Position) ?
+                        Utilities.Lerp(transform.PreviousPosition, transform.Position, t) :
+                        transform.Position;
+
+                    var rotation = 
+                        f.HasFlag(InterpolationFlags.Rotation) ? 
+                        Utilities.LerpAngle(transform.PreviousRotation, transform.Rotation, t) : 
+                        transform.Rotation;
+
+                    var scale = 
+                        f.HasFlag(InterpolationFlags.Scale) ? 
+                        Utilities.Lerp(transform.PreviousScale, transform.Scale, t) : 
+                        transform.Scale;
+
+                    var localPivot = 
+                        f.HasFlag(InterpolationFlags.LocalPivot) ? 
+                        Utilities.Lerp(transform.PreviousLocalPivot, transform.LocalPivot, t) : 
+                        transform.LocalPivot;
+
+                    var localRotationPivot = 
+                        f.HasFlag(InterpolationFlags.LocalRotationPivot) ? 
+                        Utilities.Lerp(transform.PreviousLocalRotationPivot, transform.LocalRotationPivot, t) : 
+                        transform.LocalRotationPivot;
+
                     transform.RecalculateModelMatrix(model, pos, rotation, scale, localPivot, localRotationPivot);
                 }
                 else

@@ -500,6 +500,46 @@
             Zoom speed
             </summary>
         </member>
+        <member name="T:Walgelijk.InterpolationFlags">
+            <summary>
+            Interpolation bit mask for <see cref="T:Walgelijk.TransformComponent"/>
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InterpolationFlags.None">
+            <summary>
+            Interpolate nothing
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InterpolationFlags.Position">
+            <summary>
+            Interpolate position
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InterpolationFlags.Rotation">
+            <summary>
+            Interpolate rotation
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InterpolationFlags.Scale">
+            <summary>
+            Interpolate scale
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InterpolationFlags.LocalPivot">
+            <summary>
+            Interpolate pivot
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InterpolationFlags.LocalRotationPivot">
+            <summary>
+            Interpolate rotation pivot
+            </summary>
+        </member>
+        <member name="F:Walgelijk.InterpolationFlags.All">
+            <summary>
+            Interpolate everything
+            </summary>
+        </member>
         <member name="T:Walgelijk.IPostProcessingEffect">
             <summary>
             A post processing effect

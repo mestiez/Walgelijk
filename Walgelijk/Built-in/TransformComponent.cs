@@ -21,7 +21,7 @@ public class TransformComponent : Component
     public Vector2 PreviousLocalPivot { get; private set; }
     public Vector2 PreviousLocalRotationPivot { get; private set; }
 
-    public bool InterpolateBetweenFixedUpdates = false;
+    public InterpolationFlags InterpolationFlags = InterpolationFlags.None;
 
     /// <summary>
     /// Parent entity with a transform
