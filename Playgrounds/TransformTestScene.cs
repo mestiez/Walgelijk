@@ -26,11 +26,11 @@ public struct TransformTestScene : ISceneCreator
         game.FixedUpdateRate = 8;
 
         var interpolated = scene.CreateEntity();
-        scene.AttachComponent(interpolated, new TransformComponent() { InterpolateBetweenFixedUpdates = true });
+        scene.AttachComponent(interpolated, new TransformComponent() { InterpolationFlags = InterpolationFlags.Position });
         scene.AttachComponent(interpolated, new SpriteComponent(Texture.ErrorTexture)); 
         
         var normal = scene.CreateEntity();
-        scene.AttachComponent(normal, new TransformComponent() { InterpolateBetweenFixedUpdates = false });
+        scene.AttachComponent(normal, new TransformComponent() { InterpolationFlags = InterpolationFlags.None });
         scene.AttachComponent(normal, new SpriteComponent(Texture.ErrorTexture));
 
         return scene;
