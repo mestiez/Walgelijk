@@ -48,6 +48,42 @@ public static class Resources
     }
 
     /// <summary>
+    /// Load a resource directly by ID. Use <see cref="GetID(string)"/> to get the ID for a given file
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    public static T Load<T>(int id)
+    {
+        if (resources.TryGetValue(id, out var obj))
+        {
+            var file = GetFileFromID(id);
+            OnStartLoad?.Invoke(typeof(T), file.FullName);
+            if (obj is T typed)
+                return typed;
+            else
+                throw new Exception($"The object at \"{id}\" is not of type {typeof(T).Name}. It is {obj.GetType().Name}");
+        }
+        throw new Exception($"Resource with ID {id} coul not be found");
+    }
+
+    /// <summary>
+    /// Load a <see cref="ResourceRef{T}"/> at the given path.
+    /// The advantage this offers over <see cref="Load{T}(string, bool)"/> is that a <see cref="ResourceRef{T}"/> doesn't actually store the resource, but only the ID and a helper function to retrieve the resource.
+    /// This improves support for unloading and hotloading.
+    /// </summary>
+    /// <typeparam name="T">The type of the object to load</typeparam>
+    /// <param name="path">The path of the file</param>
+    /// <param name="ignoreBasePaths">Whether or not to ignore any set base paths. Default is false</param>
+    public static ResourceRef<T> LoadRef<T>(string path, bool ignoreBasePaths = false)
+    {
+        if (!ignoreBasePaths)
+            path = ParseFullPathForType<T>(path);
+        return new ResourceRef<T>(GetID(Path.GetFullPath(path)));
+    }
+
+    /// <summary>
     /// Load the resource at the given path. Will throw an exception if there is no resource loader found for the type, or if the file at the path is not of the given type.
     /// </summary>
     /// <typeparam name="T">The type of the object to load</typeparam>
@@ -79,34 +115,6 @@ public static class Resources
         }
 
         throw new Exception($"The object at \"{path}\" is not of type {typeof(T).Name}. It is {newObject.GetType().Name}");
-    }
-
-    /// <summary>
-    /// Load a resource at the given path, using the given function if it does not exist yet
-    /// </summary>
-    public static T Load<T>(string path, Func<string, T> loadFunction, bool ignoreBasePaths = false)
-    {
-        if (!ignoreBasePaths)
-            path = ParseFullPathForType<T>(path);
-
-        var id = GetID(path);
-        OnStartLoad?.Invoke(typeof(T), path);
-
-        if (resources.TryGetValue(id, out var obj))
-        {
-            if (obj is T typed)
-                return typed;
-            else
-                throw new Exception($"The object at \"{path}\" is not of type {typeof(T).Name}. It is {obj.GetType().Name}");
-        }
-
-        var newObject = loadFunction(path);
-        if (newObject == null)
-            throw new Exception($"The object at \"{path}\" is null");
-
-        if (!resources.TryAdd(id, newObject))
-            throw new Exception("Failed to add the resource to the resource map");
-        return newObject;
     }
 
     /// <summary>
@@ -182,14 +190,6 @@ public static class Resources
     public static bool TryGetBasePathForType(Type type, [NotNullWhen(true)] out string? path)
     {
         return basePathByType.TryGetValue(type, out path);
-        //if (basePathByType.TryGetValue(type, out path))
-        //{
-        //    if (!Path.EndsInDirectorySeparator(BasePath) && (path.StartsWith(Path.DirectorySeparatorChar) || path.StartsWith(Path.AltDirectorySeparatorChar)))
-        //        path = '/' + path;
-        //    path = Path.Combine(BasePath, path);
-        //    return true;
-        //}
-        //return false;
     }
 
     /// <summary>
@@ -234,9 +234,8 @@ public static class Resources
     /// <summary>
     /// Unloads an asset. Removes it from the cache and also disposes of it if it implements <see cref="IDisposable"/>
     /// </summary>
-    public static void Unload(string key)
+    public static void Unload(int id)
     {
-        var id = GetID(key);
         if (resources.TryGetValue(id, out var obj))
         {
             if (obj is IDisposable disp)
@@ -244,6 +243,14 @@ public static class Resources
 
             resources.Remove(id, out _);
         }
+    }
+
+    /// <summary>
+    /// Unloads an asset. Removes it from the cache and also disposes of it if it implements <see cref="IDisposable"/>
+    /// </summary>
+    public static void Unload(string key)
+    {
+        Unload(GetID(key));
     }
 
     /// <summary>
