@@ -26,7 +26,7 @@ public struct TransformTestScene : ISceneCreator
         game.FixedUpdateRate = 8;
 
         var interpolated = scene.CreateEntity();
-        scene.AttachComponent(interpolated, new TransformComponent() { InterpolationFlags = InterpolationFlags.Position });
+        scene.AttachComponent(interpolated, new TransformComponent() { InterpolationFlags = InterpolationFlags.All });
         scene.AttachComponent(interpolated, new SpriteComponent(Texture.ErrorTexture)); 
         
         var normal = scene.CreateEntity();

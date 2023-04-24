@@ -928,6 +928,11 @@
             The local pivot point that is the center of rotation.
             </summary>
         </member>
+        <member name="P:Walgelijk.TransformComponent.IsMatrixCached">
+            <summary>
+            Returns if the model matrix is aligned to the transformation
+            </summary>
+        </member>
         <member name="F:Walgelijk.TransformComponent.LocalToWorldMatrix">
             <summary>
             The generated model matrix
@@ -941,11 +946,6 @@
         <member name="F:Walgelijk.TransformComponent.SeparateMatrices">
             <summary>
             All transform matrices separated by step. Useful for transforming specific vectors to/from local space
-            </summary>
-        </member>
-        <member name="F:Walgelijk.TransformComponent.IsMatrixCached">
-            <summary>
-            Returns if the model matrix is aligned to the transformation
             </summary>
         </member>
         <member name="M:Walgelijk.TransformComponent.RecalculateModelMatrix(System.Numerics.Matrix3x2,System.Numerics.Vector2,System.Single,System.Numerics.Vector2,System.Numerics.Vector2,System.Numerics.Vector2)">
@@ -5209,6 +5209,31 @@
             Very basic random name generator
             </summary>
         </member>
+        <member name="T:Walgelijk.ResourceRef`1">
+            <summary>
+            A resource by key reference. Ensures reimporting is properly handled. Can be returned by the Resources system.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ResourceRef`1.Id">
+            <summary>
+            Resource ID
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ResourceRef`1.File">
+            <summary>
+            File this resource represents
+            </summary>
+        </member>
+        <member name="P:Walgelijk.ResourceRef`1.Value">
+            <summary>
+            Get the resource
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ResourceRef`1.Reimport">
+            <summary>
+            Unload the resource to force it to be reloaded
+            </summary>
+        </member>
         <member name="T:Walgelijk.Resources">
             <summary>
             Global file based resource storage
@@ -5229,6 +5254,25 @@
             Initialise 
             </summary>
         </member>
+        <member name="M:Walgelijk.Resources.Load``1(System.Int32)">
+            <summary>
+            Load a resource directly by ID. Use <see cref="M:Walgelijk.Resources.GetID(System.String)"/> to get the ID for a given file
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="id"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:Walgelijk.Resources.LoadRef``1(System.String,System.Boolean)">
+            <summary>
+            Load a <see cref="T:Walgelijk.ResourceRef`1"/> at the given path.
+            The advantage this offers over <see cref="M:Walgelijk.Resources.Load``1(System.String,System.Boolean)"/> is that a <see cref="T:Walgelijk.ResourceRef`1"/> doesn't actually store the resource, but only the ID and a helper function to retrieve the resource.
+            This improves support for unloading and hotloading.
+            </summary>
+            <typeparam name="T">The type of the object to load</typeparam>
+            <param name="path">The path of the file</param>
+            <param name="ignoreBasePaths">Whether or not to ignore any set base paths. Default is false</param>
+        </member>
         <member name="M:Walgelijk.Resources.Load``1(System.String,System.Boolean)">
             <summary>
             Load the resource at the given path. Will throw an exception if there is no resource loader found for the type, or if the file at the path is not of the given type.
@@ -5236,11 +5280,6 @@
             <typeparam name="T">The type of the object to load</typeparam>
             <param name="path">The path of the file</param>
             <param name="ignoreBasePaths">Whether or not to ignore any set base paths. Default is false</param>
-        </member>
-        <member name="M:Walgelijk.Resources.Load``1(System.String,System.Func{System.String,``0},System.Boolean)">
-            <summary>
-            Load a resource at the given path, using the given function if it does not exist yet
-            </summary>
         </member>
         <member name="M:Walgelijk.Resources.GetPathAssociatedWith(System.Object)">
             <summary>
@@ -5296,6 +5335,11 @@
             <param name="type">Type of the resource</param>
             <param name="loadFunction">The function that returns the object given a path</param>
             <returns>Whether the registration succeeded</returns>
+        </member>
+        <member name="M:Walgelijk.Resources.Unload(System.Int32)">
+            <summary>
+            Unloads an asset. Removes it from the cache and also disposes of it if it implements <see cref="T:System.IDisposable"/>
+            </summary>
         </member>
         <member name="M:Walgelijk.Resources.Unload(System.String)">
             <summary>

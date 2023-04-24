@@ -31,7 +31,8 @@ public class TransformComponent : Component
         get => parent;
         set
         {
-            if (parent == value) return;
+            if (parent == value)
+                return;
             parent = value;
             IsMatrixCached = false;
         }
@@ -46,8 +47,8 @@ public class TransformComponent : Component
 
         set
         {
+            IsMatrixCached = false;
             PreviousPosition = position;
-            IsMatrixCached = false;//IsMatrixCached &= position == value;
             position = value;
         }
     }
@@ -61,8 +62,8 @@ public class TransformComponent : Component
 
         set
         {
+            IsMatrixCached = false;
             PreviousRotation = rotation;
-            IsMatrixCached = false;//IsMatrixCached &= rotation == value;
             rotation = value;
         }
     }
@@ -76,8 +77,8 @@ public class TransformComponent : Component
 
         set
         {
+            IsMatrixCached = false;
             PreviousScale = scale;
-            IsMatrixCached = false;//IsMatrixCached &= scale == value;
             scale = value;
         }
     }
@@ -91,8 +92,8 @@ public class TransformComponent : Component
 
         set
         {
+            IsMatrixCached = false;
             PreviousLocalPivot = pivot;
-            IsMatrixCached = false;//IsMatrixCached &= value == pivot;
             pivot = new(value.X, value.Y);
         }
     }
@@ -113,6 +114,15 @@ public class TransformComponent : Component
     }
 
     /// <summary>
+    /// Returns if the model matrix is aligned to the transformation
+    /// </summary>
+    public bool IsMatrixCached
+    {
+        get => isMatrixCached && (InterpolationFlags == InterpolationFlags.None);
+        internal set => isMatrixCached = value;
+    }
+
+    /// <summary>
     /// The generated model matrix
     /// </summary>
     public Matrix3x2 LocalToWorldMatrix;
@@ -127,10 +137,7 @@ public class TransformComponent : Component
     /// </summary>
     public SeparateTransformMatrices SeparateMatrices;
 
-    /// <summary>
-    /// Returns if the model matrix is aligned to the transformation
-    /// </summary>
-    public bool IsMatrixCached;
+    private bool isMatrixCached;
 
     /// <summary>
     /// Recalculate the model matrix considering a containing matrix. This is usually <see cref="Matrix3x2.Identity"/>
@@ -168,8 +175,8 @@ public class TransformComponent : Component
             WorldToLocalMatrix = Matrix3x2.Identity;
 
         IsMatrixCached = true;
-    }   
-    
+    }
+
     /// <summary>
     /// Recalculate the model matrix considering a containing matrix. This is usually <see cref="Matrix3x2.Identity"/>
     /// </summary>

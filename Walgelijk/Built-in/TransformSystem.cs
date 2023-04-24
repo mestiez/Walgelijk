@@ -40,7 +40,7 @@ namespace Walgelijk
 
         private bool CalculateMatrix(TransformComponent transform, in Matrix3x2 model)
         {
-            bool shouldRecalculate = !transform.IsMatrixCached || transform.InterpolationFlags != InterpolationFlags.None;
+            bool shouldRecalculate = !transform.IsMatrixCached;
 
             if (shouldRecalculate)
             {
@@ -78,11 +78,43 @@ namespace Walgelijk
                 }
                 else
                     transform.RecalculateModelMatrix(model);
-                return true;
             }
 
-            return false;
+            return shouldRecalculate;
         }
+
+#if false
+        private void CalculateMatrix(TransformComponent transform)
+        {
+            bool shouldRecalculate = !transform.IsMatrixCached;
+
+            if (shouldRecalculate)
+                transform.RecalculateModelMatrix(Matrix3x2.Identity);
+        }
+
+        private void CascadeMatrixCalculation(TransformComponent transform, ReadOnlySpan<TransformComponent> all, TransformComponent? up = null)
+        {
+            bool shouldRecalculate = !transform.IsMatrixCached;
+
+            if (shouldRecalculate)
+                transform.RecalculateModelMatrix(up?.LocalToWorldMatrix ?? Matrix3x2.Identity);
+
+            // waarom heeft een transform geen lijst met kinderen? dat is sneller toch? 
+            // helaas is het niet zo simpel. de lijst is dat een List<Entity> (waarschijnlijk) en die moet bijgehouden worden als een entity niet meer bestaat of als die entity geen Transform meer heeft.
+            // dat is extra overhead. of dit het waard is is een ander verhaal. als je dat wilt meten, ga je gang, ik heb daar nu geen zin in.
+            for (int i = 0; i < all.Length; i++)
+            {
+                var e = all[i];
+                var myParent = e.Parent;
+
+                if (myParent.HasValue && myParent.Value != e.Entity && myParent.Value == transform.Entity)
+                {
+                    e.IsMatrixCached &= !shouldRecalculate;
+                    CascadeMatrixCalculation(e, all, transform);
+                }
+            }
+        }
+#endif
 
         private void CascadeMatrixCalculation(TransformComponent transform, ReadOnlySpan<TransformComponent> all, TransformComponent? up = null)
         {
