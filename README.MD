@@ -1,5 +1,7 @@
 ![logo](https://i.imgur.com/EiCDNR7.png)
 
+![Nuget](https://img.shields.io/nuget/v/Walgelijk?color=1650EC&logo=nuget&style=flat-square)
+
 Een kleine, simpele 2D game engine
 
 ```cs

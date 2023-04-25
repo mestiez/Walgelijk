@@ -8,4 +8,8 @@ public class Configuration
     public float SmoothScroll = 0;
     public TimeSpan DoubleClickTimeWindow = TimeSpan.FromSeconds(0.2);
     public bool ProcessCursorStack = true;
+
+    public static float SoundVolume = 0.5f;
+    public static AudioTrack? AudioTrack;
+    public static readonly Material ControlMaterial = OnionMaterial.CreateNew();
 }

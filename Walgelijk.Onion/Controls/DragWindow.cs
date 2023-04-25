@@ -9,6 +9,7 @@ namespace Walgelijk.Onion.Controls;
 public readonly struct DragWindow : IControl
 {
     public readonly bool IsOpen;
+    public readonly OptionalControlState<Vector2>? Size = null;
 
     public DragWindow(bool isOpen)
     {

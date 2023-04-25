@@ -1,9 +1,15 @@
-﻿using Walgelijk.SimpleDrawing;
+﻿using System.Runtime.CompilerServices;
+using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion.Controls;
 
 public readonly struct Group : IControl
 {
+    public static void Start(int identity = 0, [CallerLineNumber] int site = 0)
+    {
+        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Group).GetHashCode(), identity, site), new Group());
+    }
+
     public void OnAdd(in ControlParams p)
     {
     }
