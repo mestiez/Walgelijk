@@ -64,8 +64,7 @@ public struct RectangleCollider : ICollider
 
     public Vector2 SampleNormal(Vector2 point)
     {
-        var transformed = this.PointToLocal(point);
-        var p = GetNearestLocal(transformed);
+        var p = this.PointToLocal(point);
 
         p.X -= Offset.X;
         p.Y -= Offset.Y;
@@ -73,7 +72,8 @@ public struct RectangleCollider : ICollider
         p.X /= Size.X;
         p.Y /= Size.Y;
 
-        return getLocalNormal();// Vector2.Normalize(this.DirToWorld(getLocalNormal()));
+        var d = Vector2.Normalize(Vector2.Transform(getLocalNormal(), Transform.SeparateMatrices.AfterRotation));
+        return d;
 
         Vector2 getLocalNormal()
         {
@@ -106,14 +106,19 @@ public struct RectangleCollider : ICollider
         //TODO transformations.. op de een of andere manier
         int returned = 0;
 
-        var leftside = new Geometry.LineSegment(Bounds.MinX, Bounds.MaxY, Bounds.MinX, Bounds.MinY);
+        var bottomLeft = this.PointToWorld(Offset + new Vector2(-Size.X, -Size.Y) * 0.5f);
+        var topRight = this.PointToWorld(Offset + new Vector2(Size.X, Size.Y) * 0.5f);
+        var topLeft = this.PointToWorld(Offset + new Vector2(-Size.X, Size.Y) * 0.5f);
+        var bottomRight = this.PointToWorld(Offset + new Vector2(Size.X, -Size.Y) * 0.5f);
+
+        var leftside = new Geometry.LineSegment(bottomLeft, topLeft);
         if (Geometry.TryGetIntersection(ray, leftside, out var i1))
         {
             returned++;
             yield return i1;
         }
 
-        var rightside = new Geometry.LineSegment(Bounds.MaxX, Bounds.MaxY, Bounds.MaxX, Bounds.MinY);
+        var rightside = new Geometry.LineSegment(topRight, bottomRight);
         if (Geometry.TryGetIntersection(ray, rightside, out var i2))
         {
             returned++;
@@ -122,7 +127,7 @@ public struct RectangleCollider : ICollider
                 yield break;
         }
 
-        var topside = new Geometry.LineSegment(Bounds.MinX, Bounds.MaxY, Bounds.MaxX, Bounds.MaxY);
+        var topside = new Geometry.LineSegment(topLeft, topRight);
         if (Geometry.TryGetIntersection(ray, topside, out var i3))
         {
             returned++;
@@ -131,7 +136,7 @@ public struct RectangleCollider : ICollider
                 yield break;
         }
 
-        var bottomside = new Geometry.LineSegment(Bounds.MinX, Bounds.MinY, Bounds.MaxX, Bounds.MinY);
+        var bottomside = new Geometry.LineSegment(bottomRight, bottomLeft);
         if (Geometry.TryGetIntersection(ray, bottomside, out var i4))
             yield return i4;
     }

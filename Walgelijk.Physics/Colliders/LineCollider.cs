@@ -28,9 +28,13 @@ public struct LineCollider : ICollider
     {
         var a = this.PointToWorld(Start);
         var b = this.PointToWorld(End);
+
         var s = new Geometry.LineSegment(a, b);
-        if (Geometry.TryGetIntersection(ray, s, out var intersect))
-            yield return intersect;
+        if (Geometry.TryGetIntersection(ray, s, Width / 2, out var i1, out var i2))
+        {
+            yield return i1;
+            yield return i2;
+        }
         yield break;
     }
 

@@ -190,6 +190,10 @@ public class PhysicsSystem : Walgelijk.System
 
                     foreach (var intersection in intersections)
                     {
+                        var isBehindOrigin = Vector2.Dot(intersection - origin, direction) < 0;
+                        if (isBehindOrigin)
+                            continue;
+
                         if (GetChunkPositionFrom(intersection.X, intersection.Y, world.ChunkSize) != currentChunk)
                             continue;
                         float d = Vector2.DistanceSquared(intersection, origin);
@@ -213,6 +217,8 @@ public class PhysicsSystem : Walgelijk.System
                         return false;
                     result.Distance = d;
                     result.Normal = result.Body.Collider.SampleNormal(result.Position);
+                    if (result.Body.Collider.IsPointInside(origin))
+                        result.Normal *= -1;
                     return true;
                 }
             }

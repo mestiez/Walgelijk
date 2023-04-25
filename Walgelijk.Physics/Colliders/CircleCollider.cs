@@ -22,7 +22,7 @@ namespace Walgelijk.Physics
 
         public void RecalculateBounds()
         {
-            Bounds = new Rect(Transform.Position, new Vector2(Radius*2));
+            Bounds = new Rect(Transform.Position, new Vector2(Radius * 2));
         }
 
         public bool IsPointInside(Vector2 point)
@@ -54,7 +54,12 @@ namespace Walgelijk.Physics
             if (!Geometry.TryGetIntersection(ray, Bounds, out _, out _))
                 yield break;
 
-            if (Geometry.TryGetIntersection(ray, new Geometry.Circle(Transform.Position, Radius), out var i1, out var i2))
+            var origin = this.PointToWorld(ray.Origin);
+            var direction = this.DirToWorld(ray.Direction);
+
+            ray = new Geometry.Ray(origin, direction);
+
+            if (Geometry.TryGetIntersection(ray, new Geometry.Circle(default, Radius), out var i1, out var i2))
             {
                 yield return i1;
                 yield return i2;

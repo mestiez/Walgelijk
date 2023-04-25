@@ -40,8 +40,8 @@ public struct PhysicsTestScene : ISceneCreator
         }
 
         addBody(new RectangleCollider(new TransformComponent(), new Vector2(256, 128)));
-        addBody(new CircleCollider(new TransformComponent() { Position = new Vector2(400, 300) }, 64));
-        addBody(new LineCollider(new TransformComponent() { Position = new Vector2(-400, 0) }, new Vector2(-128, 15), new Vector2(15, -200), 16));
+        addBody(new CircleCollider(new TransformComponent() { Position = new Vector2(400, 300), Scale = new Vector2(2, 2) }, 96));
+        addBody(new LineCollider(new TransformComponent() { Position = new Vector2(-400, 0) }, new Vector2(-128, 15), new Vector2(15, -200), 32));
 
         game.UpdateRate = 144;
         game.FixedUpdateRate = 60;
@@ -57,7 +57,7 @@ public struct PhysicsTestScene : ISceneCreator
         public override void FixedUpdate()
         {
             foreach (var item in Scene.GetAllComponentsOfType<PhysicsBodyComponent>())
-                item.Collider.Transform.Rotation += Time.FixedInterval * 16;
+                item.Collider.Transform.Rotation += Time.FixedInterval * 3;
         }
 
         public override void Update()
@@ -69,23 +69,24 @@ public struct PhysicsTestScene : ISceneCreator
 
             foreach (var item in Scene.GetAllComponentsOfType<PhysicsBodyComponent>())
             {
+                Draw.TransformMatrix = item.Collider.Transform.LocalToWorldMatrix;
                 switch (item.Collider)
                 {
                     case CircleCollider circle:
-                        Draw.Circle(circle.Transform.Position, new Vector2(circle.Radius));
+                        Draw.Circle(default, new Vector2(circle.Radius));
                         break;
                     case RectangleCollider rect:
-                        Draw.Quad(new Rect(rect.Transform.Position, rect.Size), rect.Transform.Rotation);
+                        Draw.Quad(new Rect(default, rect.Size));
                         break;
                     case LineCollider rect:
                         Draw.Line(
-                            Vector2.Transform(rect.Start, rect.Transform.LocalToWorldMatrix),
-                            Vector2.Transform(rect.End, rect.Transform.LocalToWorldMatrix), rect.Width);
+                            rect.Start,
+                            rect.End, rect.Width);
                         break;
                     default:
-                        Draw.Quad(item.Collider.Bounds);
                         break;
                 }
+                Draw.ResetTransformation();
             }
 
             Draw.Colour = Colors.Red;
