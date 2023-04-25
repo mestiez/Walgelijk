@@ -1,9 +1,9 @@
-﻿namespace Walgelijk.Physics
+﻿namespace Walgelijk.Physics;
+
+public enum Shape
 {
-    public enum Shape
-    {
-        Circle,
-        Rectangle,
-        Polygon
-    }
+    Circle,
+    Rectangle,
+    Polygon,
+    Line
 }

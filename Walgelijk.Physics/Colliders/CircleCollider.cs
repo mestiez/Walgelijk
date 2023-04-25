@@ -22,13 +22,7 @@ namespace Walgelijk.Physics
 
         public void RecalculateBounds()
         {
-            var min = this.PointToWorld(new Vector2(-Radius));
-            var max = this.PointToWorld(new Vector2(Radius));
-
-            Bounds = new Rect(
-                min.X, min.Y,
-                max.X, max.Y
-                );
+            Bounds = new Rect(Transform.Position, new Vector2(Radius * 2));
         }
 
         public bool IsPointInside(Vector2 point)
@@ -50,8 +44,7 @@ namespace Walgelijk.Physics
 
         public Vector2 SampleNormal(Vector2 point)
         {
-            var transformed = this.PointToLocal(point);
-            return Vector2.Normalize(this.DirToWorld(transformed));
+            return Vector2.Normalize((point * Transform.Scale) - Transform.Position);
         }
 
         public IEnumerable<Vector2> GetLineIntersections(Geometry.Ray ray)
@@ -61,7 +54,12 @@ namespace Walgelijk.Physics
             if (!Geometry.TryGetIntersection(ray, Bounds, out _, out _))
                 yield break;
 
-            if (Geometry.TryGetIntersection(ray, new Geometry.Circle(Transform.Position, Radius), out var i1, out var i2))
+            var origin = this.PointToWorld(ray.Origin);
+            var direction = this.DirToWorld(ray.Direction);
+
+            ray = new Geometry.Ray(origin, direction);
+
+            if (Geometry.TryGetIntersection(ray, new Geometry.Circle(default, Radius), out var i1, out var i2))
             {
                 yield return i1;
                 yield return i2;
