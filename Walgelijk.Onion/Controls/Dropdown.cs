@@ -32,15 +32,6 @@ public readonly struct Dropdown<T> : IControl
         DrawArrow = drawArrow;
     }
 
-    /// <summary>
-    /// awdawwd
-    /// </summary>
-    /// <typeparam name="EnumType"></typeparam>
-    /// <param name="selected"></param>
-    /// <param name="arrow"></param>
-    /// <param name="identity"></param>
-    /// <param name="site"></param>
-    /// <returns></returns>
     public static ControlState Enum<EnumType>(ref EnumType selected, bool arrow = true, int identity = 0, [CallerLineNumber] int site = 0) where EnumType : struct, Enum
     {
         EnumType[] arr;
