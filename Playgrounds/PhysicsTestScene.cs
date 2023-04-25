@@ -1,0 +1,116 @@
+﻿using System.Numerics;
+using Walgelijk;
+using Walgelijk.Imgui;
+using Walgelijk.Physics;
+using Walgelijk.SimpleDrawing;
+
+namespace TestWorld;
+
+public struct PhysicsTestScene : ISceneCreator
+{
+    public Scene Load(Game game)
+    {
+        var scene = new Scene(game);
+        Gui.SetCursorStack = false;
+        scene.AddSystem(new PhysicsSystem());
+        scene.AddSystem(new PhysicsDebugSystem());
+        scene.AddSystem(new TransformSystem());
+        scene.AddSystem(new CameraSystem() { ExecutionOrder = -1 });
+        scene.AttachComponent(scene.CreateEntity(), new PhysicsWorldComponent() { ChunkSize = 256 });
+        var camera = scene.CreateEntity();
+        scene.AttachComponent(camera, new TransformComponent());
+        scene.AttachComponent(camera, new CameraComponent
+        {
+            PixelsPerUnit = 1,
+            OrthographicSize = 1,
+            ClearColour = new Color("#2e515b")
+        });
+
+        scene.AddSystem(new PhysicsDemoSystem());
+
+        void addBody(ICollider collider)
+        {
+            var c = scene.CreateEntity();
+            var t = scene.AttachComponent(c, collider.Transform);
+            var b = scene.AttachComponent(c, new PhysicsBodyComponent()
+            {
+                BodyType = BodyType.Dynamic,
+                Collider = collider,
+            });
+        }
+
+        addBody(new RectangleCollider(new TransformComponent(), new Vector2(256, 128)));
+        addBody(new CircleCollider(new TransformComponent() { Position = new Vector2(400, 300) }, 64));
+        addBody(new LineCollider(new TransformComponent() { Position = new Vector2(-400, 0) }, new Vector2(-128, 15), new Vector2(15, -200), 16));
+
+        game.UpdateRate = 144;
+        game.FixedUpdateRate = 60;
+        Draw.CacheTextMeshes = -1;
+        return scene;
+    }
+
+    public class PhysicsDemoSystem : Walgelijk.System
+    {
+        private Vector2 rayOrigin;
+        private QueryResult[] buffer = new QueryResult[4];
+
+        public override void FixedUpdate()
+        {
+            foreach (var item in Scene.GetAllComponentsOfType<PhysicsBodyComponent>())
+                item.Collider.Transform.Rotation += Time.FixedInterval * 16;
+        }
+
+        public override void Update()
+        {
+            var phys = Scene.GetSystem<PhysicsSystem>();
+
+            Draw.Reset();
+            Draw.Colour = new Color(245, 70, 199);
+
+            foreach (var item in Scene.GetAllComponentsOfType<PhysicsBodyComponent>())
+            {
+                switch (item.Collider)
+                {
+                    case CircleCollider circle:
+                        Draw.Circle(circle.Transform.Position, new Vector2(circle.Radius));
+                        break;
+                    case RectangleCollider rect:
+                        Draw.Quad(new Rect(rect.Transform.Position, rect.Size), rect.Transform.Rotation);
+                        break;
+                    case LineCollider rect:
+                        Draw.Line(
+                            Vector2.Transform(rect.Start, rect.Transform.LocalToWorldMatrix),
+                            Vector2.Transform(rect.End, rect.Transform.LocalToWorldMatrix), rect.Width);
+                        break;
+                    default:
+                        Draw.Quad(item.Collider.Bounds);
+                        break;
+                }
+            }
+
+            Draw.Colour = Colors.Red;
+            if (phys.QueryPoint(Input.WorldMousePosition, ref buffer) > 0)
+                Draw.Circle(Input.WorldMousePosition, new Vector2(8));
+
+            if (Input.IsButtonPressed(MouseButton.Left))
+                rayOrigin = Input.WorldMousePosition;
+
+            if (Input.IsButtonHeld(MouseButton.Left) && (Input.WorldMousePosition - rayOrigin).LengthSquared() > 1)
+            {
+                var rayDir = Vector2.Normalize(Input.WorldMousePosition - rayOrigin);
+                Draw.Colour = Colors.Orange;
+
+                if (phys.Raycast(rayOrigin, rayDir, out var hit))
+                {
+                    Draw.Line(rayOrigin, hit.Position, 1);
+                    Draw.Colour = Colors.Green;
+                    Draw.Line(hit.Position, hit.Position + hit.Normal * 64, 1);
+                    Draw.Colour.A = 0.2f;
+                    Draw.Circle(hit.Position, new Vector2(8));
+                }
+                else
+                    Draw.Line(rayOrigin, rayOrigin + rayDir * 50000, 1);
+            }
+        }
+    }
+}

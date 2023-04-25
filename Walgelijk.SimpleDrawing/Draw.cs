@@ -204,9 +204,6 @@ namespace Walgelijk.SimpleDrawing
 
         public static void Quad(Vector2 topLeft, Vector2 size, float degrees = 0, float roundness = 0)
         {
-            //float ox = MathF.Min(0, size.X);
-            //float oy = MathF.Min(0, size.Y);
-            //var drawing = DrawingFor(DrawingPrimitives.Quad, new Vector2(topLeft.X + ox, topLeft.Y + oy), new Vector2(MathF.Abs(size.X), MathF.Abs(size.Y)), degrees);
             var drawing = DrawingFor(DrawingPrimitives.Quad, topLeft, size, degrees);
             drawing.Roundness = roundness;
             Enqueue(drawing);
