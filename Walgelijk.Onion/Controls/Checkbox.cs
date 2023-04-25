@@ -9,7 +9,7 @@ public readonly struct Checkbox : IControl
     private record CheckboxState(bool Value, bool IncomingChange);
     private static readonly Dictionary<int, CheckboxState> states = new();
 
-    public static ControlState Create(ref bool value, string? label = null, int identity = 0, [CallerLineNumber] int site = 0)
+    public static ControlState Start(ref bool value, string? label = null, int identity = 0, [CallerLineNumber] int site = 0)
     {
         var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Checkbox).GetHashCode(), identity, site), new Checkbox());
         instance.RenderFocusBox = false;

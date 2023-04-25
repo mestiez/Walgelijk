@@ -32,24 +32,33 @@ public readonly struct Dropdown<T> : IControl
         DrawArrow = drawArrow;
     }
 
-    public static ControlState CreateForEnum<EnumType>(ref EnumType selected, bool arrow = true, int identity = 0, [CallerLineNumber] int site = 0) where EnumType : struct, Enum
+    /// <summary>
+    /// awdawwd
+    /// </summary>
+    /// <typeparam name="EnumType"></typeparam>
+    /// <param name="selected"></param>
+    /// <param name="arrow"></param>
+    /// <param name="identity"></param>
+    /// <param name="site"></param>
+    /// <returns></returns>
+    public static ControlState Enum<EnumType>(ref EnumType selected, bool arrow = true, int identity = 0, [CallerLineNumber] int site = 0) where EnumType : struct, Enum
     {
         EnumType[] arr;
         if (!enumValues.TryGetValue(typeof(EnumType), out var a))
         {
-            arr = Enum.GetValues<EnumType>();
+            arr = global::System.Enum.GetValues<EnumType>();
             enumValues.Add(typeof(EnumType), arr);
         }
         else
             arr = (a as EnumType[])!;
 
         int selectedIndex = Array.IndexOf(arr, selected);
-        var result = Create(arr, ref selectedIndex, arrow, identity, site);
+        var result = Start(arr, ref selectedIndex, arrow, identity, site);
         selected = arr[selectedIndex];
         return result;
     }
 
-    public static ControlState Create<ValueType>(IList<ValueType> values, ref int selectedIndex, bool arrow = true, int identity = 0, [CallerLineNumber] int site = 0)
+    public static ControlState Start<ValueType>(IList<ValueType> values, ref int selectedIndex, bool arrow = true, int identity = 0, [CallerLineNumber] int site = 0)
     {
         var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Dropdown<ValueType>).GetHashCode(), identity, site), new Dropdown<ValueType>(values, arrow));
 
