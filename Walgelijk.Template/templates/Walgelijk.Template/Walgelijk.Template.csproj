@@ -6,11 +6,11 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Walgelijk" Version="0.9.5" />
-        <PackageReference Include="Walgelijk.Onion" Version="0.1.7" />
-        <PackageReference Include="Walgelijk.OpenTK" Version="0.10.6" />
-        <PackageReference Include="Walgelijk.ParticleSystem" Version="0.2.4" />
-        <PackageReference Include="Walgelijk.SimpleDrawing" Version="1.23.5" />
+        <PackageReference Include="Walgelijk" Version="0.9.17" />
+        <PackageReference Include="Walgelijk.Onion" Version="0.1.17" />
+        <PackageReference Include="Walgelijk.OpenTK" Version="0.10.9" />
+        <PackageReference Include="Walgelijk.ParticleSystem" Version="0.2.7" />
+        <PackageReference Include="Walgelijk.SimpleDrawing" Version="1.23.6" />
     </ItemGroup>
     <ItemGroup>
         <None Include="$(ProjectDir)resources\**" CopyToOutputDirectory="Always" />
