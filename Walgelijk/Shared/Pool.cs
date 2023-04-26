@@ -7,7 +7,7 @@ namespace Walgelijk;
 /// </summary>
 /// <typeparam name="T">The type to pool</typeparam>
 /// <typeparam name="InitialData">The type of object to pass around when initalising a new instance</typeparam>
-public abstract class Pool<T, InitialData> where T : class
+public abstract class Pool<T, InitialData>
 {
     /// <summary>
     /// The maximum amount of objects, active or inactive
@@ -90,7 +90,7 @@ public abstract class Pool<T, InitialData> where T : class
     protected virtual T? GetExistingFromPool(InitialData initialiser)
     {
         if (!freeToUse.TryPop(out var f))
-            return null;
+            return default;
 
         ResetObjectForNextUse(f, initialiser);
         currentlyInUse.Add(f);
@@ -118,7 +118,7 @@ public abstract class Pool<T, InitialData> where T : class
 /// Abstract class for object pooling
 /// </summary>
 /// <typeparam name="T">The type to pool</typeparam>
-public abstract class Pool<T> where T : class
+public abstract class Pool<T>
 {
     /// <summary>
     /// The maximum amount of objects, active or inactive
@@ -201,7 +201,7 @@ public abstract class Pool<T> where T : class
     protected virtual T? GetExistingFromPool()
     {
         if (!freeToUse.TryPop(out var f))
-            return null;
+            return default;
 
         ResetObjectForNextUse(f);
         currentlyInUse.Add(f);

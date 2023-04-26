@@ -11,11 +11,10 @@ namespace Walgelijk.Physics
             => Vector2.Transform(p, coll.Transform.LocalToWorldMatrix);
 
 
-
-        internal static Vector2 DirToWorld(this ICollider coll, Vector2 p)
+        internal static Vector2 DirToLocal(this ICollider coll, Vector2 p)
             => Vector2.TransformNormal(p, coll.Transform.WorldToLocalMatrix);
 
-        internal static Vector2 DirToLocal(this ICollider coll, Vector2 p)
+        internal static Vector2 DirToWorld(this ICollider coll, Vector2 p)
             => Vector2.TransformNormal(p, coll.Transform.LocalToWorldMatrix);
     }
 }
