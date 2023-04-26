@@ -7,7 +7,7 @@ internal struct Vector2Utils
 {
     public static bool IsNan(Vector2 a) => float.IsNaN(a.X) || float.IsNaN(a.Y);
 
-    public static Vector2 GetNearest(Vector2 point, Vector2[] others)
+    public static Vector2 GetNearest(Vector2 point, ReadOnlySpan<Vector2> others)
     {
         float minDist = float.MaxValue;
         Vector2 nearest = new(float.NaN, float.NaN);
@@ -28,7 +28,7 @@ internal struct Vector2Utils
         return nearest;
     }
 
-    public static Vector2 GetFurthest(Vector2 point, Vector2[] others)
+    public static Vector2 GetFurthest(Vector2 point, ReadOnlySpan<Vector2> others)
     {
         float maxDist = float.MinValue;
         Vector2 nearest = new(float.NaN, float.NaN);

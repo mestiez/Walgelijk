@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace Walgelijk.Physics
@@ -22,7 +23,7 @@ namespace Walgelijk.Physics
 
         public void RecalculateBounds()
         {
-            Bounds = new Rect(Transform.Position, new Vector2(Radius * 2));
+            Bounds = new Rect(Transform.Position, new Vector2(Radius * 2* MathF.Max(Transform.Scale.X, Transform.Scale.Y)) );
         }
 
         public bool IsPointInside(Vector2 point)
@@ -44,22 +45,16 @@ namespace Walgelijk.Physics
 
         public Vector2 SampleNormal(Vector2 point)
         {
-            return Vector2.Normalize((point * Transform.Scale) - Transform.Position);
+            return Vector2.Normalize(point - Transform.Position);
         }
 
         public IEnumerable<Vector2> GetLineIntersections(Geometry.Ray ray)
         {
-            //TODO transformations.. op de een of andere manier
-
             if (!Geometry.TryGetIntersection(ray, Bounds, out _, out _))
                 yield break;
 
-            var origin = this.PointToWorld(ray.Origin);
-            var direction = this.DirToWorld(ray.Direction);
 
-            ray = new Geometry.Ray(origin, direction);
-
-            if (Geometry.TryGetIntersection(ray, new Geometry.Circle(default, Radius), out var i1, out var i2))
+            if (Geometry.TryGetIntersection(ray, new Geometry.Circle(Transform.Position, Radius * MathF.Max(Transform.Scale.X, Transform.Scale.Y)), out var i1, out var i2))
             {
                 yield return i1;
                 yield return i2;
