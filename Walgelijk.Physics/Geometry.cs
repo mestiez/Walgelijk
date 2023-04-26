@@ -171,19 +171,9 @@ public struct Geometry
 
         if (!TryGetIntersection(ray, new Circle(L2.A, radius), out v[2], out v[3]))
             v[2] = v[3] = new Vector2(float.NaN);
-        else if (startsInside)
-        {
-            v[2] = Vector2Utils.GetFurthest(ray.Origin, v.AsSpan(2,2));
-            v[3] = new Vector2(float.NaN);
-        }
 
         if (!TryGetIntersection(ray, new Circle(L2.B, radius), out v[4], out v[5]))
             v[4] = v[5] = new Vector2(float.NaN);
-        else if (startsInside)
-        {
-            v[4] = Vector2Utils.GetFurthest(ray.Origin, v.AsSpan(4, 2));
-            v[5] = new Vector2(float.NaN);
-        }
 
         intersection1 = Vector2Utils.GetNearest(ray.Origin, v);
         intersection2 = Vector2Utils.GetFurthest(ray.Origin, v);

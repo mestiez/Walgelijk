@@ -32,8 +32,18 @@ public struct LineCollider : ICollider
         var s = new Geometry.LineSegment(a, b);
         if (Geometry.TryGetIntersection(ray, s, Width / 2, out var i1, out var i2))
         {
-            yield return i1;
-            yield return i2;
+            if (SDF.LineSegment(ray.Origin, a, b) < Width / 2) //is inside, only return the furthest point
+            {
+                if (Vector2.DistanceSquared(i1, ray.Origin) > Vector2.DistanceSquared(i2, ray.Origin))
+                    yield return i1;
+                else
+                    yield return i2;
+            }
+            else
+            {
+                yield return i1;
+                yield return i2;
+            }
         }
         yield break;
     }
