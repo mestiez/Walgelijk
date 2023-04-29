@@ -80,6 +80,24 @@ public sealed class Scene : IDisposable
     public System GetSystem(Type type) => systems.Get(type);
 
     /// <summary>
+    /// Try to receive a system
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool TryGetSystem<T>(out T? system) where T : System
+    {
+        return systems.TryGet<T>(out system);
+    }
+
+    /// <summary>
+    /// Try to receive a system
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool TryGetSystem(out System? system)
+    {
+        return systems.TryGet(out system);
+    }
+
+    /// <summary>
     /// Returns true if the system of the given type exists in the scene and returns false otherwise.
     /// </summary>
     public bool HasSystem<T>() where T : System => systems.Has<T>();
