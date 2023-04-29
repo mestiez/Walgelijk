@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace Walgelijk;
 
-internal class DebugConsoleUi : IDisposable
+public class DebugConsoleUi : IDisposable
 {
     public readonly ActionRenderTask RenderTask;
 

@@ -4827,6 +4827,11 @@
             Filters what kind of messages will be displayed
             </summary>
         </member>
+        <member name="P:Walgelijk.DebugConsole.UI">
+            <summary>
+            User interface controller
+            </summary>
+        </member>
         <member name="F:Walgelijk.DebugConsole.CursorPosition">
             <summary>
             Input cursor index

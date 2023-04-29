@@ -53,7 +53,11 @@ public class DebugConsole : IDisposable
 
     private readonly MemoryStream stream = new();
     private readonly StreamWriter writer;
-    private readonly DebugConsoleUi ui;
+
+    /// <summary>
+    /// User interface controller
+    /// </summary>
+    public DebugConsoleUi UI { get; }
 
     private readonly List<string> history = new();
     private int historyIndex = 0;
@@ -86,7 +90,7 @@ public class DebugConsole : IDisposable
         Game = game;
         writer = new(stream, Encoding.ASCII);
         writer.AutoFlush = true;
-        ui = new DebugConsoleUi(this);
+        UI = new DebugConsoleUi(this);
         Logger.OnLog.AddListener(OnLog);
     }
 
@@ -122,7 +126,7 @@ public class DebugConsole : IDisposable
 
         if (IsEatingInput)
         {
-            ui.CaretBlinkTime += Game.State.Time.DeltaTimeUnscaled;
+            UI.CaretBlinkTime += Game.State.Time.DeltaTimeUnscaled;
 
             int scrollSpeed = Input.IsKeyHeld(Key.LeftControl) ? 16 : 1;
 
@@ -134,7 +138,7 @@ public class DebugConsole : IDisposable
                 ScrollOffset -= scrollSpeed;
             else if (Input.MouseScrollDelta < -float.Epsilon)
                 ScrollOffset += scrollSpeed;
-            ScrollOffset = Utilities.Clamp(ScrollOffset, 0, GetLineCount() - ui.MaxLineCount);
+            ScrollOffset = Utilities.Clamp(ScrollOffset, 0, GetLineCount() - UI.MaxLineCount);
 
             if (Input.IsKeyPressed(Key.Escape))
                 IsActive = false;
@@ -142,7 +146,7 @@ public class DebugConsole : IDisposable
             int oldCursorPos = CursorPosition;
             ProcessShortcuts();
             if (oldCursorPos != CursorPosition)
-                ui.CaretBlinkTime = 0;
+                UI.CaretBlinkTime = 0;
 
             foreach (var c in Input.TextEntered)
             {
@@ -158,7 +162,7 @@ public class DebugConsole : IDisposable
                             historyInputBackup = null;
                             CommandProcessor.Execute(CurrentInput!, this);
                             CurrentInput = string.Empty;
-                            ui.Flash(Colors.White.WithAlpha(0.2f));
+                            UI.Flash(Colors.White.WithAlpha(0.2f));
                         }
                         return;
                     case '\u007F': // delete
@@ -187,7 +191,7 @@ public class DebugConsole : IDisposable
             CursorPosition = Utilities.Clamp(CursorPosition, 0, CurrentInput?.Length ?? 0);
         }
 
-        ui.Update(Game);
+        UI.Update(Game);
     }
 
     private void ProcessShortcuts()
@@ -209,7 +213,7 @@ public class DebugConsole : IDisposable
             if (Input.IsKeyPressed(Key.C) && CurrentInput != null)
             {
                 if (!string.IsNullOrWhiteSpace(CurrentInput))
-                    ui.Flash(Color.White);
+                    UI.Flash(Color.White);
                 CurrentInput = null;
             }
 
@@ -273,7 +277,7 @@ public class DebugConsole : IDisposable
 
     public void Render()
     {
-        Game.RenderQueue.Add(ui.RenderTask, RenderOrder.Top);
+        Game.RenderQueue.Add(UI.RenderTask, RenderOrder.Top);
     }
 
     private static int GetNextWordIndex(ReadOnlySpan<char> str, int startIndex, int direction)
@@ -318,7 +322,7 @@ public class DebugConsole : IDisposable
         }
 
         writer.WriteLine(v);
-        ScrollOffset = GetLineCount() - ui.MaxLineCount;
+        ScrollOffset = GetLineCount() - UI.MaxLineCount;
     }
 
 
@@ -375,6 +379,6 @@ public class DebugConsole : IDisposable
     {
         writer.Dispose();
         stream.Dispose();
-        ui.Dispose();
+        UI.Dispose();
     }
 }
