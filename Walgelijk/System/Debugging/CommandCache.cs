@@ -30,8 +30,13 @@ internal class CommandCache : Cache<string, CommandEntry>
             yield return (item.Name, item);
     }
 
-    private void Initialise()
+    public int Count => methods.Count;
+
+    internal void Initialise()
     {
+        if (initialised)
+            return;
+
         RegisterAssembly(Assembly.GetEntryAssembly());
         RegisterAssembly(Assembly.GetAssembly(typeof(CommandCache)));
 

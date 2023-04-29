@@ -24,6 +24,11 @@ public struct CommandProcessor
 {
     private readonly static CommandCache commandCache = new CommandCache();
 
+    static CommandProcessor()
+    {
+        commandCache.Initialise();
+    }
+
     public static void RegisterAssembly(Assembly assembly) => commandCache.RegisterAssembly(assembly);
 
     /// <summary>
@@ -265,5 +270,26 @@ public struct CommandProcessor
     public static IEnumerable<(string, CommandEntry)> GetAllCommands()
     {
         return commandCache.GetAll();
+    }
+
+    /// <summary>
+    /// Gets the first command that starts with the given string
+    /// </summary>
+    public static int GetSuggestions(ReadOnlySpan<char> input, Span<string> buffer)
+    {
+        var cc = commandCache.GetAll();
+        int i = 0;
+
+        var v = input.Trim();
+        foreach (var item in cc)
+            if (item.Item1.AsSpan().StartsWith(v, StringComparison.InvariantCultureIgnoreCase))
+            {
+                buffer[i] =  item.Item1;
+                i++;
+                if (i >= buffer.Length)
+                    break;
+            }
+
+        return i;
     }
 }

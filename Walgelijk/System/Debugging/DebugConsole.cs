@@ -54,9 +54,13 @@ public class DebugConsole : IDisposable
     private readonly MemoryStream stream = new();
     private readonly StreamWriter writer;
     private readonly DebugConsoleUi ui;
+
     private readonly List<string> history = new();
     private int historyIndex = 0;
     private string? historyInputBackup;
+
+    private readonly string[] suggestionBuffer = new string[8];
+    private int suggestionIndex;
 
     public string DebugPrefix = "[DBG]";
     public string InfoPrefix = "[INF]";
@@ -130,7 +134,7 @@ public class DebugConsole : IDisposable
                 ScrollOffset -= scrollSpeed;
             else if (Input.MouseScrollDelta < -float.Epsilon)
                 ScrollOffset += scrollSpeed;
-            ScrollOffset = Utilities.Clamp(ScrollOffset, 0, GetLineCount() - ui.MaxLineCount + 1);
+            ScrollOffset = Utilities.Clamp(ScrollOffset, 0, GetLineCount() - ui.MaxLineCount);
 
             if (Input.IsKeyPressed(Key.Escape))
                 IsActive = false;
@@ -174,6 +178,7 @@ public class DebugConsole : IDisposable
                             CurrentInput ??= string.Empty;
                             CurrentInput = CurrentInput.Insert(CursorPosition, c.ToString());
                             CursorPosition++;
+                            suggestionIndex = 0;
                         }
                         break;
                 }
@@ -230,6 +235,17 @@ public class DebugConsole : IDisposable
 
         if (Input.IsKeyPressed(Key.Home))
             CursorPosition = 0;
+
+        if (Input.IsKeyPressed(Key.Tab) && !string.IsNullOrWhiteSpace(CurrentInput))
+        {
+            var suggestionCount = CommandProcessor.GetSuggestions(CurrentInput.AsSpan(0, CursorPosition), suggestionBuffer);
+
+            if (suggestionCount > 0)
+            {
+                CurrentInput = suggestionBuffer[suggestionIndex % suggestionCount];
+                suggestionIndex++;
+            }
+        }
 
         if (history.Count != 0)
         {
@@ -302,7 +318,7 @@ public class DebugConsole : IDisposable
         }
 
         writer.WriteLine(v);
-        ScrollOffset = GetLineCount() - ui.MaxLineCount ;
+        ScrollOffset = GetLineCount() - ui.MaxLineCount;
     }
 
 
@@ -352,6 +368,7 @@ public class DebugConsole : IDisposable
     public void Clear()
     {
         stream.SetLength(0);
+        suggestionIndex = 0;
     }
 
     public void Dispose()

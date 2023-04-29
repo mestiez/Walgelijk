@@ -4711,6 +4711,11 @@
             Get all commands
             </summary>
         </member>
+        <member name="M:Walgelijk.CommandProcessor.GetSuggestions(System.ReadOnlySpan{System.Char},System.Span{System.String})">
+            <summary>
+            Gets the first command that starts with the given string
+            </summary>
+        </member>
         <member name="T:Walgelijk.CommandResult">
             <summary>
             A struct you can return that the command processor will interpret
