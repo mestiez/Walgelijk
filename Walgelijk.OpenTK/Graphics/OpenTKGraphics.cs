@@ -64,6 +64,8 @@ namespace Walgelijk.OpenTK
             if (currentTarget == null)
                 return;
 
+            material ??= Material.DefaultTextured;
+
             PrepareVertexBuffer(vertexBuffer, material);
             GL.DrawElements(TypeConverter.Convert(vertexBuffer.PrimitiveType), vertexBuffer.AmountOfIndicesToRender ?? vertexBuffer.IndexCount, DrawElementsType.UnsignedInt, 0);
         }
@@ -86,8 +88,7 @@ namespace Walgelijk.OpenTK
         private void PrepareVertexBuffer(VertexBuffer vertexBuffer, Material material)
         {
             SetMaterial(material);
-            if (material != null)
-                SetTransformationMatrixUniforms(material);
+            SetTransformationMatrixUniforms(material);
 
             VertexBufferCacheHandles handles = GPUObjects.VertexBufferCache.Load(vertexBuffer);
 
@@ -115,8 +116,8 @@ namespace Walgelijk.OpenTK
                 GLUtilities.SetBlendMode(material.BlendMode);
             }
 
-            if (currentMaterial == material)
-                return;
+            //if (currentMaterial == material)
+            //    return;
 
             currentMaterial = material;
             var loadedShader = GPUObjects.MaterialCache.Load(material);

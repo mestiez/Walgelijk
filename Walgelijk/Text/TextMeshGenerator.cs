@@ -54,6 +54,11 @@ public class TextMeshGenerator
     /// </summary>
     public bool ParseRichText = false;
 
+    /// <summary>
+    /// The generator will consider newlines if this is true. If false, it'll just ignore them and stay on one line.
+    /// </summary>
+    public bool Multiline = true;
+
     private static ReadOnlySpan<char> GetTextUntilWhitespace(ReadOnlySpan<char> text)
     {
         if (text.Length > 1)
@@ -134,7 +139,8 @@ public class TextMeshGenerator
                 case '\r':
                     continue;
                 case '\n':
-                    startNewLine(i, displayString);
+                    if (Multiline)
+                        startNewLine(i, displayString);
                     continue;
             }
 

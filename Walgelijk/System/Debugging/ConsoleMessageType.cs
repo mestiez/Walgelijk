@@ -6,27 +6,33 @@ namespace Walgelijk
     /// Type of console message. Used for filtering
     /// </summary>
     [Flags]
-    public enum ConsoleMessageType
+    public enum ConsoleMessageType : byte
     {
+        // if you decide to expand this, don't forget to update DebugConsoleRenderer.filterButtons
+
         /// <summary>
         /// Shows up regardless of filter
         /// </summary>
-        All = 0x1111,
+        All = byte.MaxValue,
+        /// <summary>
+        /// Just raw text, man
+        /// </summary>
+        None = byte.MinValue,
         /// <summary>
         /// Debug message
         /// </summary>
-        Debug = 0x0001,
+        Debug = 1,
         /// <summary>
         /// Info message
         /// </summary>
-        Info = 0x0010,
+        Info = 2,
         /// <summary>
         /// Warning message
         /// </summary>
-        Warning = 0x0100,
+        Warning = 4,
         /// <summary>
         /// Error message
         /// </summary>
-        Error = 0x1000,
+        Error = 8,
     }
 }

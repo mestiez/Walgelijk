@@ -36,7 +36,7 @@ namespace Walgelijk
         public DrawBounds(Rect rect, bool enabled = true)
         {
             Size = rect.GetSize();
-            Position = rect.TopLeft;
+            Position = rect.BottomLeft;
             Enabled = enabled;
         }
 

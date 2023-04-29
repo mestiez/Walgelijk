@@ -31,7 +31,7 @@ public struct CommandProcessor
     /// </summary>
     public static void Execute(string command, DebugConsole console)
     {
-        console.Print(command, Color.White.WithAlpha(0.5f));
+        console.WriteLine(command, ConsoleMessageType.None);
 
         if (string.IsNullOrWhiteSpace(command))
             return;
@@ -46,7 +46,7 @@ public struct CommandProcessor
 
         var action = commandCache.Load(cmd);
         if (action == null)
-            console.Print($"There is no command that matches \"{cmd}\"", Colors.Red);
+            console.WriteLine($"There is no command that matches \"{cmd}\"", ConsoleMessageType.Error);
         else
         {
             bool success;
@@ -61,10 +61,10 @@ public struct CommandProcessor
 
                 success = false;
                 var message = e.InnerException != null ? e.InnerException.Message : e.Message;
-                console.Print("Command error: " + message, Colors.Red, ConsoleMessageType.Error);
+                console.WriteLine("Command error: " + message, ConsoleMessageType.Error);
             }
             if (!success && !string.IsNullOrWhiteSpace(action.CommandAttr.HelpString))
-                console.Print(action.CommandAttr.HelpString, Colors.Cyan);
+                console.WriteLine(action.CommandAttr.HelpString, ConsoleMessageType.Warning);
         }
     }
 
@@ -117,7 +117,7 @@ public struct CommandProcessor
             }
             else
             {
-                console.Print($"{v.Name} expects {toPass.Length} {argumentNoun}, but {args.Length} {isAreWord} given\nSyntax: {CreateSyntaxExampleString(v.Method)}", Colors.Red);
+                console.WriteLine($"{v.Name} expects {toPass.Length} {argumentNoun}, but {args.Length} {isAreWord} given\nSyntax: {CreateSyntaxExampleString(v.Method)}", ConsoleMessageType.Error);
                 return false;
             }
         }
@@ -133,7 +133,7 @@ public struct CommandProcessor
                 }
                 else
                 {
-                    console.Print($"{v.Name} expects {toPass.Length} {argumentNoun}, but {args.Length} {isAreWord} given\nSyntax: {CreateSyntaxExampleString(v.Method)}", Colors.Red);
+                    console.WriteLine($"{v.Name} expects {toPass.Length} {argumentNoun}, but {args.Length} {isAreWord} given\nSyntax: {CreateSyntaxExampleString(v.Method)}", ConsoleMessageType.Error);
                     return false;
                 }
 
@@ -169,7 +169,7 @@ public struct CommandProcessor
                 continue;
             }
 
-            console.Print($"{v.Name} expects {toPass.Length} {argumentNoun}, but {args.Length} {isAreWord} given\nSyntax: {CreateSyntaxExampleString(v.Method)}", Colors.Red);
+            console.WriteLine($"{v.Name} expects {toPass.Length} {argumentNoun}, but {args.Length} {isAreWord} given\nSyntax: {CreateSyntaxExampleString(v.Method)}", ConsoleMessageType.Error);
             return false;
         }
 
@@ -183,18 +183,18 @@ public struct CommandProcessor
                     switch (commandResult.Type)
                     {
                         case LogLevel.Info:
-                            console.Print(commandResult.Message, Color.White, level: ConsoleMessageType.All);
+                            console.WriteLine(commandResult.Message, ConsoleMessageType.Info);
                             break;
                         case LogLevel.Warn:
-                            console.Print(commandResult.Message, Colors.Orange, level: ConsoleMessageType.Warning);
+                            console.WriteLine(commandResult.Message, ConsoleMessageType.Warning);
                             break;
                         case LogLevel.Error:
-                            console.Print(commandResult.Message, Colors.Red, ConsoleMessageType.Error);
+                            console.WriteLine(commandResult.Message, ConsoleMessageType.Error);
                             return false;
                     }
                     break;
                 default:
-                    console.Print(returned?.ToString() ?? "null");
+                    console.WriteLine(returned?.ToString() ?? "null");
                     break;
             }
         }
@@ -205,7 +205,7 @@ public struct CommandProcessor
                 return true;
             else
             {
-                console.Print($"Argument {index} is not a {typeof(T).Name}", Colors.Red);
+                console.WriteLine($"Argument {index} is not a {typeof(T).Name}", ConsoleMessageType.Error);
                 return false;
             }
         }

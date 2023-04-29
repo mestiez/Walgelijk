@@ -4756,6 +4756,11 @@
             Shows up regardless of filter
             </summary>
         </member>
+        <member name="F:Walgelijk.ConsoleMessageType.None">
+            <summary>
+            Just raw text, man
+            </summary>
+        </member>
         <member name="F:Walgelijk.ConsoleMessageType.Debug">
             <summary>
             Debug message
@@ -4785,8 +4790,9 @@
             <summary>
             The key that will toggle the console
             </summary>
+            
         </member>
-        <member name="P:Walgelijk.DebugConsole.IsActive">
+        <member name="F:Walgelijk.DebugConsole.IsActive">
             <summary>
             Whether the console is shown and active or not
             </summary>
@@ -4806,25 +4812,41 @@
             Briefly draw the most recent console message to the screen even if the console is not open.
             </summary>
         </member>
-        <member name="P:Walgelijk.DebugConsole.Filter">
-            <summary>
-            Filters what kind of messages will be displayed
-            </summary>
-        </member>
         <member name="F:Walgelijk.DebugConsole.ScrollOffset">
             <summary>
             Scroll offset of the console
             </summary>
         </member>
-        <member name="M:Walgelijk.DebugConsole.Print(System.ReadOnlySpan{System.Char},Walgelijk.Color,Walgelijk.ConsoleMessageType)">
+        <member name="F:Walgelijk.DebugConsole.Filter">
+            <summary>
+            Filters what kind of messages will be displayed
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DebugConsole.CursorPosition">
+            <summary>
+            Input cursor index
+            </summary>
+        </member>
+        <member name="F:Walgelijk.DebugConsole.CurrentInput">
+            <summary>
+            Current user input
+            </summary>
+        </member>
+        <member name="M:Walgelijk.DebugConsole.WriteLine(System.ReadOnlySpan{System.Char},Walgelijk.ConsoleMessageType)">
             <summary>
             Print text to the console
             </summary>
         </member>
-        <member name="M:Walgelijk.DebugConsole.Print(System.ReadOnlySpan{System.Char})">
+        <member name="M:Walgelijk.DebugConsole.DetectMessageType(System.ReadOnlySpan{System.Char})">
             <summary>
-            Print text to the console
+            Return the <see cref="T:Walgelijk.ConsoleMessageType"/> flags for the given text based on the prefix
             </summary>
+        </member>
+        <member name="M:Walgelijk.DebugConsole.GetLineCount">
+            <summary>
+            Get the amount of lines in the current buffer
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:Walgelijk.DebugConsole.Clear">
             <summary>
@@ -5906,6 +5928,11 @@
         <member name="F:Walgelijk.TextMeshGenerator.ParseRichText">
             <summary>
             Parse rich text tags
+            </summary>
+        </member>
+        <member name="F:Walgelijk.TextMeshGenerator.Multiline">
+            <summary>
+            The generator will consider newlines if this is true. If false, it'll just ignore them and stay on one line.
             </summary>
         </member>
         <member name="M:Walgelijk.TextMeshGenerator.CalculateTextWidth(System.ReadOnlySpan{System.Char})">

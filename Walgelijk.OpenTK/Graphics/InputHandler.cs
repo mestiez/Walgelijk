@@ -72,7 +72,7 @@ namespace Walgelijk.OpenTK
                     break;
                 case global::OpenTK.Windowing.GraphicsLibraryFramework.Keys.Delete:
                     InputState.TextEntered += '\u007F';
-                    break;
+                    break;         
             }
 
             if (e.IsRepeat) return;

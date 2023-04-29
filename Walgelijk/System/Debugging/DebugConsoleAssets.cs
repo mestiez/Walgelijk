@@ -1,0 +1,64 @@
+﻿using System;
+
+namespace Walgelijk;
+
+internal class DebugConsoleAssets
+{
+    public static readonly Texture AlertIcon
+        = TextureLoader.FromBytes(Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAJ5JREFUSEvtVcENgzAQszcpm5RROgliknYTMgqbGEUCpFZNdCEcfHJv52wnuTPhXHTuj2sJJD0BvAE8DjqbAYwkP9v5LweSJgCRpKZmkl2KQDWd96bkLvzXwb0EXJVJygrZcNFRkQN3Auv7HHbgTuB+RY0A1v9txbU5SI5FbtDOWNeBZJ9a1zELhopMiIHzIhn+ElhXQQnu2kwuUWbFLo5+bhkBCrp4AAAAAElFTkSuQmCC"));
+
+    public static readonly Texture DebugIcon
+        = TextureLoader.FromBytes(Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAQRJREFUSEu9VdsRwyAMkzZpN2lG6SS9TtJRmk2aTdwzB5yhBCh58BmMZMuyQxx8eDA+ziUQkRuAF4DLYGULgDvJObxPKhCRNwAl2XIWktc1AtmCHEHJmHheQU6gpWrJWjpExN3TA4iISqmSJlWHexdrMw4A5ttk9cwJPKmSfCxON4HJtCjd2n0vwUxystLk/TEEiTl6CKLdvHUVoHSchD7mEXrRJGg10TCpCZ6hT6UeFZv8J8Gqy2oushL9uCR3Wb4BmhJ5gDiRBfu6kC1NzgEOsamS9AyaTnHisl6JlKDqkj1WxdDuq1Wwx7qOG6BkU9UzTuRA+vUfzgBg88m5/+RmOgMBXzl0wBkcom//AAAAAElFTkSuQmCC"), false);
+
+    public static readonly Texture InfoIcon
+        = TextureLoader.FromBytes(Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAANdJREFUSEvFldENwjAMRO82gU3oJMAktJMwCt2k2eSQI6USSImR05ZIVT/a+Pnsi0PsvLhzfBwLkHQB8ARwCipLAO4k57L/Q4GkFwCD9KxE8lwDqCfyGpRcE/9W0AKYbHtGLwkGASPJSdINwLVVyihgJjn80qcoIDdP0sMrUxRgpTd3mIXNbdUVBWSPA7D3sjXAgpqDJpLJ60NUgSVdVFgfqgeyB+Adgfy9FzB4fegFlEZXndQLcMv0V8AW4zqPlNq4Nus1LejUp33huMUN/HDsnRxI0N3yBsrKcBnqpZMeAAAAAElFTkSuQmCC"));
+
+    public static readonly Texture DefaultBg
+        = TextureLoader.FromBytes(Convert.FromBase64String("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"));
+
+    static DebugConsoleAssets()
+    {
+        DefaultBg.FilterMode = FilterMode.Linear;
+        DefaultBg.WrapMode = WrapMode.Repeat;
+    }
+
+    public const string FragmentShader =
+@"#version 460
+
+in vec2 uv;
+in vec4 vertexColor;
+
+out vec4 color;
+
+uniform sampler2D bgTex;
+uniform sampler2D mainTex;
+uniform float time;
+uniform vec4 tint;
+uniform float bgIntensity;
+
+float overlayChannel(float base, float blend) {
+    if (base < 0.5)
+        return 2.0 * base * blend;
+    return 1.0 - 2.0 * (1.0 - base) * (1.0 - blend);
+}
+
+vec4 overlay(vec4 base, vec4 blend) {
+    vec4 result;
+    result.r = overlayChannel(base.r, blend.r);
+    result.g = overlayChannel(base.g, blend.g);
+    result.b = overlayChannel(base.b, blend.b);
+    result.a = blend.a;
+    return result;
+}
+
+void main()
+{
+    vec4 bg = texture(bgTex, (gl_FragCoord.xy / 400.0 + time)) * 0.5;
+    bg += texture(bgTex, (gl_FragCoord.xy / 800.0 - time)) * 0.5;
+    bg.a = 1;
+
+    color = tint * vertexColor * texture(mainTex, uv);
+    color.rgb = mix(color.rgb, overlay(color, bg).rgb, bgIntensity);
+}
+";
+}

@@ -1,212 +1,363 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+using System.Text;
+using TextCopy;
 
-namespace Walgelijk
+namespace Walgelijk;
+
+/// <summary>
+/// Class that renders and controls the debug console
+/// </summary>
+public class DebugConsole : IDisposable
 {
+    /// <summary>
+    /// The key that will toggle the console
+    /// </summary>
+    /// 
+    public Key ToggleKey = Key.F12;
+    /// <summary>
+    /// Whether the console is shown and active or not
+    /// </summary>
+    public bool IsActive;
 
     /// <summary>
-    /// Class that renders and controls the debug console
+    /// The <see cref="Game"/> this console is associated with
     /// </summary>
-    public class DebugConsole
+    public Game Game { get; init; } = null!;
+
+    /// <summary>
+    /// Whether the console is currently eating user input
+    /// </summary>
+    public bool IsEatingInput => IsActive && Game.Window.HasFocus;
+
+    /// <summary>
+    /// Briefly draw the most recent console message to the screen even if the console is not open.
+    /// </summary>
+    public bool DrawConsoleNotification { get; set; }
+
+    /// <summary>
+    /// Scroll offset of the console
+    /// </summary>
+    public int ScrollOffset;
+
+    /// <summary>
+    /// Filters what kind of messages will be displayed
+    /// </summary>
+    public ConsoleMessageType Filter = ConsoleMessageType.All;
+
+    private InputState Input => Game.State.Input;
+
+    private readonly MemoryStream stream = new();
+    private readonly StreamWriter writer;
+    private readonly DebugConsoleUi ui;
+    private readonly List<string> history = new();
+    private int historyIndex = 0;
+    private string? historyInputBackup;
+
+    public string DebugPrefix = "[DBG]";
+    public string InfoPrefix = "[INF]";
+    public string WarningPrefix = "[WRN]";
+    public string ErrorPrefix = "[ERR]";
+
+    internal const int MaxShownBuffer = 4096;
+    internal ReadOnlySpan<byte> GetBuffer()
+        => stream.GetBuffer().AsSpan(Math.Max(0, (int)stream.Length - MaxShownBuffer), Math.Min(MaxShownBuffer, (int)stream.Length));
+
+    /// <summary>
+    /// Input cursor index
+    /// </summary>
+    public int CursorPosition;
+
+    /// <summary>
+    /// Current user input
+    /// </summary>
+    public string? CurrentInput;
+
+    public DebugConsole(Game game)
     {
-        /// <summary>
-        /// The key that will toggle the console
-        /// </summary>
-        public Key ToggleKey = Key.F12;
+        Game = game;
+        writer = new(stream, Encoding.ASCII);
+        writer.AutoFlush = true;
+        ui = new DebugConsoleUi(this);
+        Logger.OnLog.AddListener(OnLog);
+    }
 
-        /// <summary>
-        /// Whether the console is shown and active or not
-        /// </summary>
-        public bool IsActive
+    private void OnLog(LogMessage obj)
+    {
+        switch (obj.Level)
         {
-            get => isActive;
-
-            set
-            {
-                isActive = value;
-                renderer.SetDirty();
-            }
+            case LogLevel.Debug:
+                WriteLine(obj.Message, ConsoleMessageType.Debug);
+                break;
+            case LogLevel.Info:
+                WriteLine(obj.Message, ConsoleMessageType.Info);
+                break;
+            case LogLevel.Warn:
+                WriteLine(obj.Message, ConsoleMessageType.Warning);
+                break;
+            case LogLevel.Error:
+                WriteLine(obj.Message, ConsoleMessageType.Error);
+                break;
+            default:
+                WriteLine(obj.Message);
+                break;
         }
+    }
 
-        /// <summary>
-        /// The <see cref="Game"/> this console is associated with
-        /// </summary>
-        public Game Game { get; }
+    public void Update()
+    {
+        if (Input.IsKeyReleased(ToggleKey))
+            IsActive = !IsActive;
 
-        /// <summary>
-        /// Whether the console is currently eating user input
-        /// </summary>
-        public bool IsEatingInput => IsActive && Game.Window.HasFocus;
+        if (IsActive)
+            Game.Window.IsCursorLocked = false;
 
-        /// <summary>
-        /// Briefly draw the most recent console message to the screen even if the console is not open.
-        /// </summary>
-        public bool DrawConsoleNotification { get; set; }
-
-        /// <summary>
-        /// Filters what kind of messages will be displayed
-        /// </summary>
-        public ConsoleMessageType Filter
+        if (IsEatingInput)
         {
-            get => filter;
+            ui.CaretBlinkTime += Game.State.Time.DeltaTimeUnscaled;
 
-            set
-            {
-                filter = value;
-                renderer.SetDirty();
-            }
-        }
-        /// <summary>
-        /// Scroll offset of the console
-        /// </summary>
-        public float ScrollOffset;
+            int scrollSpeed = Input.IsKeyHeld(Key.LeftControl) ? 16 : 1;
 
-        private readonly DebugConsoleRenderer renderer;
-        internal List<(string message, Color color, ConsoleMessageType type)> Log = new(128);
-        internal List<string> InputHistory = new();
-        private int historyIndex = 0;
-        private string currentInput = "";
-        private bool isActive;
-        private ConsoleMessageType filter = ConsoleMessageType.All;
+            // TODO fix scrolling with filters enabled
+            // the issue with this is that we'd have to recalculate the amount of lines that match the filter, which is
+            // a potentially expensive operation
 
-        private InputState Input => Game.State.Input;
+            if (Input.MouseScrollDelta > float.Epsilon)
+                ScrollOffset -= scrollSpeed;
+            else if (Input.MouseScrollDelta < -float.Epsilon)
+                ScrollOffset += scrollSpeed;
+            ScrollOffset = Utilities.Clamp(ScrollOffset, 0, GetLineCount() - ui.MaxLineCount + 1);
 
-        public DebugConsole(Game game)
-        {
-            this.Game = game;
-            renderer = new DebugConsoleRenderer(this);
+            if (Input.IsKeyPressed(Key.Escape))
+                IsActive = false;
 
-            Logger.OnLog.AddListener((e) =>
-            {
-                Color c;
-                string name;
-                ConsoleMessageType messageType;
-                switch (e.Level)
-                {
-                    default:
-                    case LogLevel.Debug:
-                        c = Colors.Purple;
-                        messageType = ConsoleMessageType.Debug;
-                        name = "DBG";
-                        break;
-                    case LogLevel.Info:
-                        c = DebugConsoleRenderer.DefaultTextColour;
-                        messageType = ConsoleMessageType.Info;
-                        name = "LOG";
-                        break;
-                    case LogLevel.Warn:
-                        c = Colors.Orange;
-                        messageType = ConsoleMessageType.Warning;
-                        name = "WRN";
-                        break;
-                    case LogLevel.Error:
-                        c = Colors.Red;
-                        messageType = ConsoleMessageType.Error;
-                        name = "ERR";
-                        break;
-                }
-                Print($"[{name}] {e.Message}", c, messageType);
-            });
-        }
-
-        public void Update()
-        {
-            if (Input.IsKeyReleased(ToggleKey))
-            {
-                IsActive = !IsActive;
-                if (isActive)
-                    Game.Window.IsCursorLocked = false;
-                renderer.SetDirty();
-            }
-
-            UpdateConsole();
-        }
-
-        /// <summary>
-        /// Print text to the console
-        /// </summary>
-        public void Print(ReadOnlySpan<char> text, Color color, ConsoleMessageType level = ConsoleMessageType.Info)
-        {
-            if (Log.Count == Log.Capacity - 1)
-                Log.RemoveAt(0);
-            Log.Add((new string(text), color, level));
-            renderer.SetDirty();
-            ScrollOffset = 0;
-        }
-
-        /// <summary>
-        /// Print text to the console
-        /// </summary>
-        public void Print(ReadOnlySpan<char> text)
-        {
-            Print(text, DebugConsoleRenderer.DefaultTextColour);
-        }
-
-        /// <summary>
-        /// Clear the console
-        /// </summary>
-        public void Clear()
-        {
-            Log.Clear();
-            renderer.SetDirty();
-        }
-
-        private void UpdateConsole()
-        {
-            if (!IsEatingInput) return;
-
-            ScrollOffset += Input.MouseScrollDelta * 25;
-            ScrollOffset = Utilities.Clamp(ScrollOffset, 0, Math.Max(0, renderer.TextBounds.Height - DebugConsoleRenderer.LogHeight + 10));
+            int oldCursorPos = CursorPosition;
+            ProcessShortcuts();
+            if (oldCursorPos != CursorPosition)
+                ui.CaretBlinkTime = 0;
 
             foreach (var c in Input.TextEntered)
             {
+                bool isEmpty = string.IsNullOrWhiteSpace(CurrentInput);
                 switch (c)
                 {
                     case '\n':
                     case '\r':
-                        CommandProcessor.Execute(currentInput, this);
-                        InputHistory.Add(currentInput);
-                        historyIndex = InputHistory.Count;
-                        currentInput = string.Empty;
-                        renderer.InputString = currentInput;
+                        if (!isEmpty)
+                        {
+                            history.Add(CurrentInput!);
+                            historyIndex = history.Count;
+                            historyInputBackup = null;
+                            CommandProcessor.Execute(CurrentInput!, this);
+                            CurrentInput = string.Empty;
+                            ui.Flash(Colors.White.WithAlpha(0.2f));
+                        }
                         return;
+                    case '\u007F': // delete
+                        if (!isEmpty && CursorPosition < CurrentInput!.Length)
+                            CurrentInput = CurrentInput![0..(CursorPosition)] + CurrentInput![(CursorPosition + 1)..];
+                        break;
                     case '\b':
-                        if (currentInput.Length > 0)
-                            currentInput = currentInput[0..^1];
+                        if (!isEmpty && CursorPosition > 0)
+                        {
+                            CurrentInput = CurrentInput![0..(CursorPosition - 1)] + CurrentInput![CursorPosition..];
+                            CursorPosition--;
+                        }
                         break;
                     default:
-                        currentInput += c.ToString();
+                        if (!char.IsControl(c))
+                        {
+                            CurrentInput ??= string.Empty;
+                            CurrentInput = CurrentInput.Insert(CursorPosition, c.ToString());
+                            CursorPosition++;
+                        }
                         break;
                 }
             }
 
-            if (InputHistory.Count != 0)
-            {
-                if (Input.IsKeyReleased(Key.Up))
-                {
-                    historyIndex = Utilities.Clamp(historyIndex - 1, 0, InputHistory.Count - 1);
-                    currentInput = InputHistory[historyIndex];
-                }
+            CursorPosition = Utilities.Clamp(CursorPosition, 0, CurrentInput?.Length ?? 0);
+        }
 
-                if (Input.IsKeyReleased(Key.Down))
+        ui.Update(Game);
+    }
+
+    private void ProcessShortcuts()
+    {
+        if (Input.IsKeyHeld(Key.LeftControl))
+        {
+            if (Input.IsKeyPressed(Key.V))
+            {
+                var pasted = ClipboardService.GetText();
+                if (pasted != null)
                 {
-                    historyIndex = Utilities.Clamp(historyIndex + 1, 0, InputHistory.Count);
-                    if (historyIndex == InputHistory.Count)
-                        currentInput = "";
-                    else
-                        currentInput = InputHistory[historyIndex];
+                    pasted = pasted.ReplaceLineEndings(string.Empty);
+                    CurrentInput ??= string.Empty;
+                    CurrentInput = CurrentInput.Insert(CursorPosition, pasted);
+                    CursorPosition += pasted.Length;
                 }
             }
 
-            if (Input.IsKeyReleased(Key.Escape))
-                IsActive = false;
+            if (Input.IsKeyPressed(Key.C) && CurrentInput != null)
+            {
+                if (!string.IsNullOrWhiteSpace(CurrentInput))
+                    ui.Flash(Color.White);
+                CurrentInput = null;
+            }
 
-            renderer.InputString = currentInput;
+            if (Input.IsKeyPressed(Key.L))
+                Clear();
+
+            if (Input.IsKeyPressed(Key.Left) && CursorPosition > 0 && !string.IsNullOrWhiteSpace(CurrentInput))
+                CursorPosition = GetNextWordIndex(CurrentInput, CursorPosition, -1);
+
+            if (Input.IsKeyPressed(Key.Right) && CursorPosition < CurrentInput!.Length && !string.IsNullOrWhiteSpace(CurrentInput))
+                CursorPosition = GetNextWordIndex(CurrentInput, CursorPosition, 1);
+            return;
         }
 
-        public void Render()
+        if (Input.IsKeyPressed(Key.Left))
+            CursorPosition--;
+
+        if (Input.IsKeyPressed(Key.Right))
+            CursorPosition++;
+
+        if (Input.IsKeyPressed(Key.End))
+            CursorPosition = CurrentInput?.Length ?? 0;
+
+        if (Input.IsKeyPressed(Key.Home))
+            CursorPosition = 0;
+
+        if (history.Count != 0)
         {
-            renderer.Render();
+            if (Input.IsKeyPressed(Key.Up))
+            {
+                if (!string.IsNullOrWhiteSpace(CurrentInput) && historyIndex == history.Count)
+                    historyInputBackup = CurrentInput;
+                historyIndex = Utilities.Clamp(historyIndex - 1, 0, history.Count - 1);
+                CurrentInput = history[historyIndex];
+                CursorPosition = CurrentInput.Length;
+            }
+
+            if (Input.IsKeyPressed(Key.Down))
+            {
+                historyIndex = Utilities.Clamp(historyIndex + 1, 0, history.Count);
+                if (historyIndex == history.Count)
+                    CurrentInput = historyInputBackup;
+                else
+                    CurrentInput = history[historyIndex];
+
+                CursorPosition = CurrentInput?.Length ?? 0;
+            }
         }
+    }
+
+    public void Render()
+    {
+        Game.RenderQueue.Add(ui.RenderTask, RenderOrder.Top);
+    }
+
+    private static int GetNextWordIndex(ReadOnlySpan<char> str, int startIndex, int direction)
+    {
+        direction = Math.Sign(direction);
+        if (direction == 0)
+            return -1;
+
+        for (int i = startIndex + direction; (i < str.Length && i > 0); i += direction)
+        {
+            var cc = str[i];
+            if (char.IsPunctuation(cc) || char.IsWhiteSpace(cc))
+                return i;
+        }
+
+        return direction > 0 ? str.Length : 0;
+    }
+
+    /// <summary>
+    /// Print text to the console
+    /// </summary>
+    public void WriteLine(ReadOnlySpan<char> v, ConsoleMessageType level = ConsoleMessageType.Info)
+    {
+        switch (level)
+        {
+            case ConsoleMessageType.Debug:
+                writer.Write(DebugPrefix);
+                writer.Write(' ');
+                break;
+            case ConsoleMessageType.Info:
+                writer.Write(InfoPrefix);
+                writer.Write(' ');
+                break;
+            case ConsoleMessageType.Warning:
+                writer.Write(WarningPrefix);
+                writer.Write(' ');
+                break;
+            case ConsoleMessageType.Error:
+                writer.Write(ErrorPrefix);
+                writer.Write(' ');
+                break;
+        }
+
+        writer.WriteLine(v);
+        ScrollOffset = GetLineCount() - ui.MaxLineCount ;
+    }
+
+
+    /// <summary>
+    /// Return the <see cref="ConsoleMessageType"/> flags for the given text based on the prefix
+    /// </summary>
+    public ConsoleMessageType DetectMessageType(ReadOnlySpan<char> message)
+    {
+        var t = ConsoleMessageType.None;
+        if (message.StartsWith(DebugPrefix))
+            t |= ConsoleMessageType.Debug;
+        if (message.StartsWith(InfoPrefix))
+            t |= ConsoleMessageType.Info;
+        if (message.StartsWith(WarningPrefix))
+            t |= ConsoleMessageType.Warning;
+        if (message.StartsWith(ErrorPrefix))
+            t |= ConsoleMessageType.Error;
+        return t;
+    }
+
+    /// <summary>
+    /// Get the amount of lines in the current buffer
+    /// </summary>
+    /// <returns></returns>
+    public int GetLineCount()
+    {
+        // TODO count lines that match current filter
+        var b = GetBuffer();
+        var c = 0;
+        for (int i = 0; i < b.Length; i++)
+            if (b[i] == '\n')
+                c++;
+        return c;
+    }
+
+    [Obsolete("use Write and WriteLine instead")]
+    public void Print(ReadOnlySpan<char> text, Color color, ConsoleMessageType level = ConsoleMessageType.None)
+        => WriteLine(text, level);
+
+    [Obsolete("use Write and WriteLine instead")]
+    public void Print(ReadOnlySpan<char> text)
+        => Print(text, Color.White);
+
+    /// <summary>
+    /// Clear the console
+    /// </summary>
+    public void Clear()
+    {
+        stream.SetLength(0);
+    }
+
+    public void Dispose()
+    {
+        writer.Dispose();
+        stream.Dispose();
+        ui.Dispose();
     }
 }
