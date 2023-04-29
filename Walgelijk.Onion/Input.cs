@@ -20,6 +20,9 @@ public class Input
     public bool DeletePressed;
     public bool BackspacePressed;
 
+    public bool PastePressed;
+    public bool CopyPressed;
+
     public bool EndPressed;
     public bool HomePressed;
 
@@ -88,6 +91,9 @@ public class Input
         ShiftHeld = state.IsKeyHeld(Key.LeftShift);
         TabReleased = state.IsKeyReleased(Key.Tab);
         CtrlHeld = state.IsKeyHeld(Key.LeftControl);
+
+        PastePressed = CtrlHeld && state.IsKeyPressed(Key.V);
+        CopyPressed = CtrlHeld && state.IsKeyPressed(Key.C);
 
         AlphanumericalHeld.Clear();
         if (state.KeysHeld != null)

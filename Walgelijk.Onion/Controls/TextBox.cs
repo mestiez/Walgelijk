@@ -236,6 +236,23 @@ public readonly struct TextBox : IControl
                 StretchSelectionTo(p.Instance.Name.Length);
         }
 
+        if (p.Input.PastePressed)
+        {
+            var pasted = TextCopy.ClipboardService.GetText();
+            if (pasted != null)
+            {
+                pasted = pasted.ReplaceLineEndings().Replace(Environment.NewLine, string.Empty);
+                AppendText(p, pasted);
+                MoveCursor(p, cursorIndex + pasted.Length);
+            }
+        }
+
+        if (p.Input.CopyPressed && selection.HasValue && !states[p.Identity].Options.Password && IsSelectionValid())
+        {
+            var s = selection.Value;
+            TextCopy.ClipboardService.SetText(p.Instance.Name[s.From..s.To]);
+        }
+
         // process input text
         if (p.Input.TextEntered.Length > 0)
         {
@@ -262,9 +279,7 @@ public readonly struct TextBox : IControl
             }
 
             if (textToAdd.Length > 0)
-            {
                 AppendText(p, textToAdd);
-            }
 
             for (int i = 0; i < backspaceCount; i++)
                 Backspace(p);
