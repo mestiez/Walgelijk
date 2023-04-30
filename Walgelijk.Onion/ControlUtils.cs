@@ -1,4 +1,5 @@
-﻿using Walgelijk.Onion.Controls;
+﻿using System.Numerics;
+using Walgelijk.Onion.Controls;
 
 namespace Walgelijk.Onion;
 
@@ -38,11 +39,8 @@ public readonly struct ControlUtils
 
             if (p.Input.MousePrimaryPressed)
             {
-                if (globalDraggableArea.ContainsPoint(p.Input.MousePosition))
-                {
-                    Onion.Navigator.FocusedControl = p.Instance.Identity;
-                    Onion.Navigator.ActiveControl ??= p.Instance.Identity;
-                }
+                Onion.Navigator.FocusedControl = p.Instance.Identity;
+                Onion.Navigator.ActiveControl ??= p.Instance.Identity;
             }
         }
 

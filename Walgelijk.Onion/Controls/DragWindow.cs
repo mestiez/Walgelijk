@@ -9,7 +9,7 @@ namespace Walgelijk.Onion.Controls;
 public readonly struct DragWindow : IControl
 {
     public readonly bool IsOpen;
-    public readonly OptionalControlState<Vector2>? Size = null;
+    public readonly OptionalControlState<Vector2> Size = new(Vector2.One);
 
     public DragWindow(bool isOpen)
     {
@@ -60,7 +60,7 @@ public readonly struct DragWindow : IControl
 
         ControlUtils.ProcessDraggable(p, d);
 
-        if (p.Instance.IsActive && p.Input.MousePrimaryPressed && (p.Instance.Rects.Raycast?.ContainsPoint(p.Input.MousePosition) ?? false))
+        if (p.Instance.IsNew || (p.Instance.IsActive && p.Input.MousePrimaryPressed && (p.Instance.Rects.Raycast?.ContainsPoint(p.Input.MousePosition) ?? false)))
         {
             var topMost = Onion.Tree.Nodes.Values.Max(static n => n.RequestedLocalOrder);
             p.Node.RequestedLocalOrder = topMost + 1;

@@ -69,7 +69,7 @@ public class Navigator
         }
     }
     /// <summary>
-    /// Control that is ready for extended interactivity (dropdowns open)
+    /// Control that is currently capturing keyboard input
     /// </summary>
     public int? KeyControl
     {

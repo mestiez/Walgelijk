@@ -54,7 +54,11 @@ public class ControlTree
 
     public (ControlInstance Instance, Node node) Start<T>(int id, T behaviour) where T : IControl
     {
+        bool alreadyExisted = Instances.ContainsKey(id);
         var inst = EnsureInstance(id);
+
+        inst.IsNew = !alreadyExisted;
+
         if (!Nodes.TryGetValue(id, out var node))
         {
             node = new Node(id, CurrentNode, behaviour);
@@ -108,7 +112,6 @@ public class ControlTree
 
         //if (b is ISetupChildren sc)
         //    sc.OnEndChildren(p);
-
         CurrentNode.Behaviour.OnEnd(p);
         CurrentNode = CurrentNode.Parent;
     }

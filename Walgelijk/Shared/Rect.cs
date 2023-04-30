@@ -250,9 +250,8 @@ public struct Rect : IEquatable<Rect>
     public readonly Rect Scale(float scale)
     {
         return new Rect(GetCenter(), GetSize() * scale);
-    }
-
-
+    }   
+    
     /// <summary>
     /// Return the rectangle that represents the intersection between this rectangle and the given rectangle
     /// </summary>

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Walgelijk.Onion.Layout;
 
 namespace Walgelijk.Onion;
 
@@ -13,6 +14,8 @@ public static class Onion
     public static Theme Theme = new();
 
     public static bool Initialised { get; private set; }
+    public static readonly Hook OnClear = new();
+
     static Onion()
     {
         CommandProcessor.RegisterAssembly(Assembly.GetAssembly(typeof(Onion)) ?? throw new Exception("I do not exist."));
@@ -34,6 +37,8 @@ public static class Onion
         Animation.Clear();
         Layout.Reset();
         Navigator.Clear();
+
+        OnClear.Dispatch();
     }
 
     public static void PlaySound(ControlState state)

@@ -13,7 +13,7 @@ public class Theme
     public Font Font = Walgelijk.Font.Default;
     public ThemeProperty<int> FontSize = 12;
 
-    public float Padding = 5;
+    public int Padding = 5;
     public float Rounding = 1;
     public ThemeProperty<float> WindowTitleBarHeight = 24;
 

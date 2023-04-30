@@ -80,6 +80,11 @@ public class ControlInstance
     public bool Muted = false;
 
     /// <summary>
+    /// Is this control newly created?
+    /// </summary>
+    public bool IsNew = true;
+
+    /// <summary>
     /// This control has changed the value of a given ref parameter in its creation function.
     /// This is used, for example, when a dropdown does its processing and changes the selection index. <see cref="IncomingChange"/> is set to true and read the next time the creation function is called
     /// </summary>

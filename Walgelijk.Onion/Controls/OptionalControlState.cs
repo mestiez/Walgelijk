@@ -6,6 +6,12 @@ public class OptionalControlState<T>
 {
     public record State(T Value, bool IncomingChange);
     public static readonly Dictionary<int, State> ByIdentity = new();
+    private readonly T? fallback;
+
+    public OptionalControlState(T? fallback = default)
+    {
+        this.fallback = fallback;
+    }
 
     public void SetValue(int identity, T value)
     {
@@ -16,14 +22,14 @@ public class OptionalControlState<T>
     {
         if (ByIdentity.TryGetValue(identity, out var state))
             return state.Value;
-        throw new Exception($"Identity {identity} asked for a state it does not have");
+        return fallback ?? throw new Exception($"Identity {identity} asked for a state it does not have");
     }
 
     public bool HasValue(int identity) => ByIdentity.ContainsKey(identity);
 
     public bool TryGetState(int identity, [NotNullWhen(true)] out T? val)
     {
-        if (ByIdentity.TryGetValue(identity, out var state))
+        if (ByIdentity.TryGetValue(identity, out var state) && state.Value != null)
         {
             val = state.Value;
             return true;
@@ -45,6 +51,11 @@ public class OptionalControlState<T>
     }
 
     public bool HasIncomingChange(int identity) => ByIdentity.TryGetValue(identity, out var state) && state.IncomingChange;
+
+    public void Clear()
+    {
+        ByIdentity.Clear();
+    }
 
     public T this[int identity]
     {

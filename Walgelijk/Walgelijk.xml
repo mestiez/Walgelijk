@@ -1307,12 +1307,12 @@
         </member>
         <member name="M:Walgelijk.Scene.TryGetSystem``1(``0@)">
             <summary>
-            Try to receive a system
+            Try to retrieve a system
             </summary>
         </member>
-        <member name="M:Walgelijk.Scene.TryGetSystem(Walgelijk.System@)">
+        <member name="M:Walgelijk.Scene.TryGetSystem(System.Type,Walgelijk.System@)">
             <summary>
-            Try to receive a system
+            Try to retrieve a system
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.HasSystem``1">

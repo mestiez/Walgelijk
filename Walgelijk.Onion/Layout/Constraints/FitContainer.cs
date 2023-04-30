@@ -1,4 +1,5 @@
 ﻿using Walgelijk.Onion.Controls;
+using static Walgelijk.Onion.Layout.Resizable;
 
 namespace Walgelijk.Onion.Layout;
 

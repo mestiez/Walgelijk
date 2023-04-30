@@ -1,4 +1,5 @@
-﻿using Walgelijk;
+﻿using System.Numerics;
+using Walgelijk;
 using Walgelijk.Imgui;
 using Walgelijk.Onion;
 using Walgelijk.Onion.Controls;
@@ -78,7 +79,7 @@ public struct IMGUIScene : ISceneCreator
             Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer - 1);
             Draw.Colour = Onion.Theme.Background[ControlState.None].Color;
             Draw.Quad(new Rect(0, 0, Window.Width, Window.Height));
-            
+
             {
                 //Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
                 layout.Size(128, Window.Height / 2);
@@ -151,22 +152,20 @@ public struct IMGUIScene : ISceneCreator
                 if (!WindowsOpen[i])
                     continue;
 
-                layout.Move(i * 64, i * 64);
-                layout.Size(300, 128);
+                layout.Move(i * 64, i * 64).Size(300, 128).Resizable(new Vector2(146, 115), new Vector2(512));
                 Ui.DragWindow(textBoxContent, ref WindowsOpen[i], i);
                 {
-                    layout.FitContainer(1, 1);
-                    layout.Scale(0, -24);
-                    layout.Move(0, 24);
-                    layout.Move(Onion.Theme.Padding, Onion.Theme.Padding);
+                    layout.FitContainer(1, 1).Scale(0, -24).Move(0, 24).Move(Onion.Theme.Padding, Onion.Theme.Padding);
                     Ui.ScrollView(i);
                     {
                         layout.Size(128, 32);
-                        layout.Move(Onion.Theme.Padding * 2, Onion.Theme.Padding * 2 + 24);
+                        layout.Move(Onion.Theme.Padding, Onion.Theme.Padding);
                         Ui.Dropdown(DropdownOptions, ref DropdownSelectedIndex, identity: i);
 
-                        layout.Size(128, 32);
-                        layout.Move(Onion.Theme.Padding * 3 + 128, Onion.Theme.Padding * 2 + 24);
+                        layout.Size(256, 32);
+                        layout.FitContainer(1, null);
+                        layout.Move(Onion.Theme.Padding, Onion.Theme.Padding);
+                        layout.StickBottom();
                         Ui.TextBox(ref textBoxContent,
                             new TextBoxOptions(placeholder: "Placeholder!", password: i == 0 && PasswordCheckbox), identity: i);
                     }
@@ -178,7 +177,7 @@ public struct IMGUIScene : ISceneCreator
 
             layout.Size(256, 32);
             layout.Move(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding);
-            Ui.FloatSlider(ref Onion.Theme.Padding, Slider.Direction.Horizontal, new MinMax<float>(0, 8), 0.1f);
+            Ui.IntSlider(ref Onion.Theme.Padding, Slider.Direction.Horizontal, new MinMax<int>(0, 8), 1);
 
             layout.Size(256, 32);
             layout.Move(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding * 2 + 32);

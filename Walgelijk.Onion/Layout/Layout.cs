@@ -1,4 +1,5 @@
-﻿using Walgelijk.Onion.Controls;
+﻿using System.Numerics;
+using Walgelijk.Onion.Controls;
 
 namespace Walgelijk.Onion.Layout;
 
@@ -105,6 +106,16 @@ public class Layout
     /// Stick to the bottom of parent
     /// </summary>
     public Layout StickBottom() => Enqueue(new StickBottom());
+
+    /// <summary>
+    /// Make the control resizable by dragging it at the edges
+    /// </summary>
+    public Layout Resizable(Vector2 min, Vector2 max) => Enqueue(new Resizable(min, max));
+
+    /// <summary>
+    /// Make the control resizable by dragging it at the edges
+    /// </summary>
+    public Layout Resizable() => Enqueue(new Resizable(new Vector2(64), new Vector2(1024)));
 
     /// <summary>
     /// Fit the container.
