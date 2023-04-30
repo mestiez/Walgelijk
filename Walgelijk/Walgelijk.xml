@@ -1305,6 +1305,16 @@
             Retrieve a system
             </summary>
         </member>
+        <member name="M:Walgelijk.Scene.TryGetSystem``1(``0@)">
+            <summary>
+            Try to receive a system
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.TryGetSystem(Walgelijk.System@)">
+            <summary>
+            Try to receive a system
+            </summary>
+        </member>
         <member name="M:Walgelijk.Scene.HasSystem``1">
             <summary>
             Returns true if the system of the given type exists in the scene and returns false otherwise.
