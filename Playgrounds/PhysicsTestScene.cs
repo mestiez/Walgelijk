@@ -91,7 +91,11 @@ public struct PhysicsTestScene : ISceneCreator
 
             Draw.Colour = Colors.Red;
             if (phys.QueryPoint(Input.WorldMousePosition, ref buffer) > 0)
+            {
                 Draw.Circle(Input.WorldMousePosition, new Vector2(8));
+
+                Draw.Line(Input.WorldMousePosition, Input.WorldMousePosition + buffer[0].Collider.SampleNormal(Input.WorldMousePosition) * 32, 2);
+            }
 
             if (Input.IsButtonPressed(MouseButton.Left))
                 rayOrigin = Input.WorldMousePosition;
