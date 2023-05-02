@@ -98,7 +98,7 @@ public class TransformSystem : System
             transform.RecalculateModelMatrix(model);
 
         if (recurse)
-            foreach (var child in transform.Children)
+            foreach (var child in transform.InternalChildren)
                 CalculateMatrix(Scene.GetComponentFrom<TransformComponent>(child), transform.LocalToWorldMatrix);
     }
 }
