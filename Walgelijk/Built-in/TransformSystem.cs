@@ -38,7 +38,7 @@ public class TransformSystem : System
         ArrayPool<TransformComponent>.Shared.Return(arr);
     }
 
-#if true
+#if false
     private void CalculateMatrix(TransformComponent transform, in Matrix3x2 model)
     {
         bool shouldRecalculate = !transform.IsMatrixCached;
