@@ -186,9 +186,7 @@ public class PhysicsSystem : Walgelijk.System
                     if (!bodyComponent.PassesFilter(filter))
                         continue;
 
-                    var intersections = bodyComponent.Collider.GetLineIntersections(ray);//TODO meerdere colliders per object??
-
-                    foreach (var intersection in intersections)
+                    foreach (var intersection in bodyComponent.Collider.GetLineIntersections(ray))//TODO meerdere colliders per object??
                     {
                         var isBehindOrigin = Vector2.Dot(intersection - origin, direction) < 0;
                         if (isBehindOrigin)
