@@ -27,31 +27,40 @@ public class TransformSystem : System
     {
         var all = Scene.GetAllComponentsOfType(buffer);
 
-        // reset
-        foreach (var item in all)
-            item.InternalChildren.Clear();
-
-        // set children
-        foreach (var item in all)
+        if (Parenting)
         {
-            if (!item.Parent.HasValue)
-                continue;
+            // reset
+            foreach (var item in all)
+                item.InternalChildren.Clear();
 
-            var parent = Scene.GetComponentFrom<TransformComponent>(item.Parent.Value);
-            parent.InternalChildren.Add(item.Entity);
+            // set children
+            foreach (var item in all)
+            {
+                if (!item.Parent.HasValue)
+                    continue;
+
+                var parent = Scene.GetComponentFrom<TransformComponent>(item.Parent.Value);
+                parent.InternalChildren.Add(item.Entity);
+            }
+
+            // calculate transforms
+            foreach (var item in all)
+            {
+                if (item.Parent.HasValue) // recursve from roots
+                    continue;
+
+                CalculateMatrix(item, Matrix3x2.Identity);
+            }
         }
-
-        // calculate transforms
-        foreach (var item in all)
-        {
-            if (item.Parent.HasValue) // recursve from roots
-                continue;
-
-            CalculateMatrix(item, Matrix3x2.Identity);
-        }
+        else 
+            foreach (var item in all)
+            {
+                item.InternalChildren.Clear();
+                CalculateMatrix(item, Matrix3x2.Identity, false);
+            }
     }
 
-    private void CalculateMatrix(TransformComponent transform, in Matrix3x2 model)
+    private void CalculateMatrix(TransformComponent transform, in Matrix3x2 model, bool recurse = true)
     {
         if (transform.InterpolationFlags != InterpolationFlags.None)
         {
@@ -88,7 +97,8 @@ public class TransformSystem : System
         else
             transform.RecalculateModelMatrix(model);
 
-        foreach (var child in transform.Children)
-            CalculateMatrix(Scene.GetComponentFrom<TransformComponent>(child), transform.LocalToWorldMatrix);
+        if (recurse)
+            foreach (var child in transform.Children)
+                CalculateMatrix(Scene.GetComponentFrom<TransformComponent>(child), transform.LocalToWorldMatrix);
     }
 }
