@@ -1,4 +1,7 @@
-﻿using System.Numerics;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
 
 namespace Walgelijk;
 
@@ -22,6 +25,14 @@ public class TransformComponent : Component
     public Vector2 PreviousLocalRotationPivot { get; private set; }
 
     public InterpolationFlags InterpolationFlags = InterpolationFlags.None;
+
+    [NonSerialized, JsonIgnore]
+    internal readonly List<Entity> InternalChildren = new();
+
+    /// <summary>
+    /// Get the list of children
+    /// </summary>
+    public IReadOnlyList<Entity> Children => InternalChildren;
 
     /// <summary>
     /// Parent entity with a transform

@@ -898,6 +898,11 @@
             Basic component that holds transformation data
             </summary>
         </member>
+        <member name="P:Walgelijk.TransformComponent.Children">
+            <summary>
+            Get the list of children
+            </summary>
+        </member>
         <member name="P:Walgelijk.TransformComponent.Parent">
             <summary>
             Parent entity with a transform
