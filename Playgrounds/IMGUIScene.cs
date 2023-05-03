@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Data;
+using System.Numerics;
 using Walgelijk;
 using Walgelijk.Imgui;
 using Walgelijk.Onion;
@@ -48,6 +49,7 @@ public struct IMGUIScene : ISceneCreator
             "Apeldoorn"
         };
 
+        public static string NumberInput = string.Empty;
         public static int DropdownSelectedIndex;
         private static bool PasswordCheckbox = true;
 
@@ -127,8 +129,12 @@ public struct IMGUIScene : ISceneCreator
                             Onion.Theme.Font = b;
                     }
                 }
+
                 Ui.End();
             }
+
+            layout.Size(128, 32).StickTop().StickRight();
+            Ui.TextBox(ref NumberInput, TextBoxOptions.DecimalInput);
 
             {
                 layout.Size(128, 24);
@@ -208,7 +214,7 @@ public struct IMGUIScene : ISceneCreator
                 Ui.FloatSlider(ref Onion.Animation.DefaultDurationSeconds, Slider.Direction.Horizontal, new MinMax<float>(float.Epsilon, 1), 0.01f);
             }
 
-            layout.Size(256, 300).StickRight().StickBottom();
+            layout.Size(256, 256).StickRight().StickBottom();
             Ui.ColourPicker(ref Onion.Theme.Background.Default.Color);
         }
 

@@ -13,6 +13,9 @@ public readonly struct TextBoxOptions
     public readonly Regex? Filter;
     public readonly bool Password;
 
+    public static readonly TextBoxOptions PasswordInput = new(password: true);
+    public static readonly TextBoxOptions DecimalInput = new(filter: new Regex(@"^\d+(\.\d+)?$"));
+
     public TextBoxOptions(string? placeholder = null, int? maxLength = null, Regex? filter = null, bool password = false)
     {
         Placeholder = placeholder;
@@ -143,7 +146,7 @@ public readonly struct TextBox : IControl
             //if (selection != null)
             //    Logger.Log($"{selection}: {p.Instance.Name[selection.Value.From..(Math.Min(selection.Value.To, p.Instance.Name.Length))]}");
 
-            if (p.Instance.HasKey)
+            if (p.Instance.HasKeyboard)
                 ProcessKeyInput(p);
 
             if (p.Instance.HasScroll)
@@ -242,8 +245,20 @@ public readonly struct TextBox : IControl
             if (pasted != null)
             {
                 pasted = pasted.ReplaceLineEndings().Replace(Environment.NewLine, string.Empty);
-                AppendText(p, pasted);
-                MoveCursor(p, cursorIndex + pasted.Length);
+
+                //var filter = states[p.Identity].Options.Filter;
+                //if (filter != null)
+                //{
+                //    var result = p.Instance.Name.Insert(cursorIndex, pasted);
+                //    if (!filter.IsMatch(result))
+                //        pasted = null;
+                //}
+
+                if (!string.IsNullOrEmpty(pasted))
+                {
+                    AppendText(p, pasted);
+                    //MoveCursor(p, cursorIndex + pasted.Length);
+                }
             }
         }
 
@@ -272,7 +287,7 @@ public readonly struct TextBox : IControl
                         backspaceCount++;
                         break;
                     default:
-                        if (!char.IsControl(c) && (regex == null || regex.IsMatch(c.ToString())))
+                        if (!char.IsControl(c))
                             textToAdd += c;
                         break;
                 }
@@ -280,7 +295,6 @@ public readonly struct TextBox : IControl
 
             if (textToAdd.Length > 0)
                 AppendText(p, textToAdd);
-
             for (int i = 0; i < backspaceCount; i++)
                 Backspace(p);
             for (int i = 0; i < deleteCount; i++)
@@ -331,13 +345,17 @@ public readonly struct TextBox : IControl
     {
         DeleteSelection(p);
         var s = states[p.Identity];
+        var old = p.Instance.Name;
+
         p.Instance.Name = p.Instance.Name.Insert(cursorIndex, text);
+        if (!s.Options.Filter?.IsMatch(p.Instance.Name) ?? false)
+            p.Instance.Name = old;
 
         if (s.Options.MaxLength.HasValue && p.Instance.Name.Length >= s.Options.MaxLength)
             p.Instance.Name = p.Instance.Name[0..s.Options.MaxLength.Value];
 
         MarkIncomingChange(p);
-        MoveCursor(p, cursorIndex + p.Input.TextEntered.Length);
+        MoveCursor(p, cursorIndex + (p.Instance.Name.Length - old.Length));
     }
 
     private static void Backspace(in ControlParams p)

@@ -61,7 +61,7 @@ public class ControlInstance
     /// <summary>
     /// Returns true if <see cref="Navigator.KeyControl"/> is <see cref="Identity"/>
     /// </summary>
-    public bool HasKey => Onion.Navigator.KeyControl == Identity;
+    public bool HasKeyboard => Onion.Navigator.KeyControl == Identity;
 
     /// <summary>
     /// Determines what events this control is capable of capturing. 
