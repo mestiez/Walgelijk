@@ -96,11 +96,16 @@ namespace Walgelijk.SimpleDrawing
             return obj is TextDrawing drawing && Equals(drawing);
         }
 
+        public bool Equals(TextDrawing? drawing)
+        {
+            return drawing.HasValue && Equals(drawing.Value);
+        }
+        
         public bool Equals(TextDrawing drawing)
         {
             return Text == drawing.Text &&
                    EqualityComparer<Font?>.Default.Equals(Font, drawing.Font) &&
-                   TextBoxWidth == drawing.TextBoxWidth &&
+                   Math.Abs(TextBoxWidth - drawing.TextBoxWidth) < 0.001f &&
                    VerticalAlign == drawing.VerticalAlign &&
                    HorizontalAlign == drawing.HorizontalAlign;
         }

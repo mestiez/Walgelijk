@@ -2169,6 +2169,16 @@
             Blit the <paramref name="src"/> content to <paramref name="dst"/> using a fullscreen quad and the given material
             </summary>
         </member>
+        <member name="M:Walgelijk.GraphicsExtensions.DrawQuadScreenspace(Walgelijk.IGraphics,Walgelijk.Rect,Walgelijk.Material)">
+            <summary>
+            Just draw a screen space quad
+            </summary>
+        </member>
+        <member name="M:Walgelijk.GraphicsExtensions.DrawTextScreenspace(Walgelijk.IGraphics,System.ReadOnlySpan{System.Char},System.Numerics.Vector2,Walgelijk.TextMeshGenerator,Walgelijk.VertexBuffer,Walgelijk.Material)">
+            <summary>
+            Just draw screen space text
+            </summary>
+        </member>
         <member name="T:Walgelijk.IGraphics">
             <summary>
             Graphics utility interface meant to be implemented by the rendering implementation

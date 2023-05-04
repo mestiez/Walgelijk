@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Walgelijk
 {
@@ -26,6 +27,42 @@ namespace Walgelijk
 
             dst.ViewMatrix = view;
             dst.ProjectionMatrix = proj;
+        }
+
+        /// <summary>
+        /// Just draw a screen space quad
+        /// </summary>
+        public static void DrawQuadScreenspace(this IGraphics graphics, Rect rect, Material mat)
+        {
+            graphics.CurrentTarget.ModelMatrix =
+                new Matrix4x4(
+                    Matrix3x2.CreateScale(rect.GetSize()) *
+                    Matrix3x2.CreateTranslation(rect.BottomLeft)
+                );
+            graphics.Draw(PrimitiveMeshes.Quad, mat);
+        }
+
+        /// <summary>
+        /// Just draw screen space text
+        /// </summary>
+        public static TextMeshResult DrawTextScreenspace(this IGraphics graphics, ReadOnlySpan<char> text, Vector2 point, TextMeshGenerator gen, VertexBuffer mesh, Material mat)
+        {
+            if (text.IsEmpty || text.IsWhiteSpace())
+                return default;
+
+            graphics.CurrentTarget.ModelMatrix =
+                new Matrix4x4(
+                    Matrix3x2.CreateScale(1, -1) *
+                    Matrix3x2.CreateTranslation(point)
+                );
+
+            var result = gen.Generate(text, mesh.Vertices, mesh.Indices);
+            mesh.AmountOfIndicesToRender = result.IndexCount;
+            mesh.ForceUpdate();
+
+            graphics.Draw(mesh, mat);
+
+            return result;
         }
     }
 }

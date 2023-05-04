@@ -120,14 +120,14 @@ public readonly struct Slider : IControl
         Draw.Quad(instance.Rects.Rendered, 0, Onion.Theme.Rounding);
 
         var sliderRect = instance.Rects.Rendered;
-
+        float animatedMin = Utilities.Lerp(range.Max, range.Min, Utilities.Clamp(t));
         switch (direction)
         {
             case Direction.Horizontal:
-                sliderRect.MaxX = Utilities.MapRange(range.Min, range.Max, sliderRect.MinX, sliderRect.MaxX, states[p.Identity]);
+                sliderRect.MaxX = Utilities.MapRange(animatedMin, range.Max, sliderRect.MinX, sliderRect.MaxX, states[p.Identity]);
                 break;
             case Direction.Vertical:
-                sliderRect.MinY = Utilities.MapRange(range.Min, range.Max, sliderRect.MaxY, sliderRect.MinY, states[p.Identity]);
+                sliderRect.MinY = Utilities.MapRange(animatedMin, range.Max, sliderRect.MaxY, sliderRect.MinY, states[p.Identity]);
                 break;
         }
 

@@ -35,8 +35,8 @@ public readonly struct DragWindow : IControl
 
         float buttonSize = Onion.Theme.WindowTitleBarHeight[instance.State] - Onion.Theme.Padding;
         Onion.Layout.Size(buttonSize, buttonSize);
-        Onion.Layout.Enqueue(new StickTop());
-        Onion.Layout.Enqueue(new StickRight());
+        Onion.Layout.EnqueueConstraint(new StickTop());
+        Onion.Layout.EnqueueConstraint(new StickRight());
 
         if (Button.Click("X", instance.Identity))
             isOpen = !isOpen;
@@ -90,9 +90,15 @@ public readonly struct DragWindow : IControl
         Draw.Colour = Onion.Theme.Text[instance.State];
         anim.AnimateColour(ref Draw.Colour, t);
 
+        var titleBarHeight = Onion.Theme.WindowTitleBarHeight[instance.State];
+        //var oldBounds = Draw.DrawBounds;
+        ////instance.Rects.Rendered.Width - Onion.Theme.Padding * 2 - titleBarHeight
+        //Draw.DrawBounds = new DrawBounds(instance.Rects.Rendered.BottomLeft, instance.Rects.Rendered.GetSize());
+
         Draw.Text(
-            instance.Name, instance.Rects.Rendered.BottomLeft + new Vector2(Onion.Theme.Padding, 0.5f * Onion.Theme.WindowTitleBarHeight[instance.State]),
+            instance.Name, instance.Rects.Rendered.BottomLeft + new Vector2(Onion.Theme.Padding, 0.5f * titleBarHeight),
             Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Middle);
+        //Draw.DrawBounds = oldBounds;
 
         var bg = Onion.Theme.Background[instance.State];
         Draw.Colour = bg.Color;

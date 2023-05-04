@@ -41,10 +41,14 @@ public readonly struct TextRect : IControl
     {
         (ControlTree tree, Layout.Layout layout, Input input, GameState state, Node node, ControlInstance instance) = p;
 
+        var t = node.GetAnimationTime();
+        var anim = instance.Animations;
+
         instance.Rects.Rendered = instance.Rects.ComputedGlobal;
 
         Draw.Font = Onion.Theme.Font;
         Draw.Colour = Onion.Theme.Text[p.Instance.State];
+        anim.AnimateColour(ref Draw.Colour, t);
 
         Vector2 pivot = instance.Rects.Rendered.GetCenter();
 

@@ -3,16 +3,16 @@ using Walgelijk.Onion.Controls;
 
 namespace Walgelijk.Onion.Layout;
 
-public readonly struct PositionLayout : IConstraint
+public readonly struct MoveConstraint : IConstraint
 {
     public readonly Vector2 Position;
 
-    public PositionLayout(float x, float y)
+    public MoveConstraint(float x, float y)
     {
         Position = new Vector2(x, y);
     }
 
-    public PositionLayout(Vector2 position)
+    public MoveConstraint(Vector2 position)
     {
         Position = position;
     }

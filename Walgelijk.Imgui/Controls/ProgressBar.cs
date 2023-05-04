@@ -49,7 +49,7 @@ namespace Walgelijk.Imgui.Controls
             {
                 var rect = new Rect(topLeft.X, topLeft.Y, topLeft.X + size.X, topLeft.Y + size.Y);
                 Draw.Font = Gui.GetFont(style);
-                Gui.DrawTextInRect(rect, string.Format("{0}%", MathF.Round(progress0to1 * 100)), Gui.GetTextColour(style, State.Inactive), Gui.GetFontSize(style, State.Inactive), HorizontalTextAlign.Center, VerticalTextAlign.Middle);
+                Gui.DrawTextInRect(rect, $"{MathF.Round(progress0to1 * 100)}%", Gui.GetTextColour(style, State.Inactive), Gui.GetFontSize(style, State.Inactive), HorizontalTextAlign.Center, VerticalTextAlign.Middle);
             }
 
             Gui.Context.EndControl();

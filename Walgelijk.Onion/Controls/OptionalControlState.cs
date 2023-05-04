@@ -5,12 +5,13 @@ namespace Walgelijk.Onion.Controls;
 public class OptionalControlState<T>
 {
     public record State(T Value, bool IncomingChange);
-    public static readonly Dictionary<int, State> ByIdentity = new();
+    public readonly Dictionary<int, State> ByIdentity = new();
     private readonly T? fallback;
 
     public OptionalControlState(T? fallback = default)
     {
         this.fallback = fallback;
+        Onion.OnClear.AddListener(Clear);
     }
 
     public void SetValue(int identity, T value)
@@ -38,16 +39,22 @@ public class OptionalControlState<T>
         return false;
     }
 
-    public void UpdateFor(int identity, ref T v)
+    public bool UpdateFor(int identity, ref T v)
     {
+        bool r = false;
         if (ByIdentity.TryGetValue(identity, out var state))
         {
             if (state.IncomingChange)
+            {
+                r = true;
                 v = state.Value;
+            }
             ByIdentity[identity] = new(v, false);
         }
         else
             ByIdentity.Add(identity, new(v, false));
+
+        return r;
     }
 
     public bool HasIncomingChange(int identity) => ByIdentity.TryGetValue(identity, out var state) && state.IncomingChange;

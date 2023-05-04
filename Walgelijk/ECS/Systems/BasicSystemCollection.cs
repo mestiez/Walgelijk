@@ -225,7 +225,7 @@ public class BasicSystemCollection : ISystemCollection
                 system.Initialise();
     }
 
-    private struct SystemComparer : IComparer<System>
+    private class SystemComparer : IComparer<System>
     {
         public int Compare(System? x, System? y)
         {

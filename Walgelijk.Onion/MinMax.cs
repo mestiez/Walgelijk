@@ -40,4 +40,6 @@ public readonly struct MinMax<T> : IEquatable<MinMax<T>> where T : struct, IEqua
     {
         return !(left == right);
     }
+
+    public static implicit operator MinMax<T>((T, T) tuple) => new MinMax<T>(tuple.Item1, tuple.Item2);
 }

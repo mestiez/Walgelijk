@@ -1,31 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion.Controls;
 
-public readonly struct TextBoxOptions
-{
-    public readonly string? Placeholder;
-    public readonly int? MaxLength;
-    public readonly Regex? Filter;
-    public readonly bool Password;
-
-    public static readonly TextBoxOptions PasswordInput = new(password: true);
-    public static readonly TextBoxOptions DecimalInput = new(filter: new Regex(@"^\d+(\.\d+)?$"));
-
-    public TextBoxOptions(string? placeholder = null, int? maxLength = null, Regex? filter = null, bool password = false)
-    {
-        Placeholder = placeholder;
-        MaxLength = maxLength;
-        Filter = filter;
-        Password = password;
-    }
-}
-
-public readonly struct TextBox : IControl
+public readonly struct InputBox : IControl
 {
     public static readonly char[] WordDelimiters = //TODO implement
     {
@@ -43,6 +24,7 @@ public readonly struct TextBox : IControl
 
     private record TextBoxState(bool IncomingChange, in TextBoxOptions Options);
     private static readonly Dictionary<int, TextBoxState> states = new();
+    private static readonly OptionalControlState<float> floatInputState = new();
 
     private static float textOffset;
     private static int cursorIndex;
@@ -51,34 +33,99 @@ public readonly struct TextBox : IControl
     private static SelectionRange? selection;
     private static float cursorBlinkTimer;
     private static int selectionInitialIndex;
-    private static readonly TextMeshGenerator.ColourInstruction[] textColourInstructions = new TextMeshGenerator.ColourInstruction[3];
+    // private static readonly TextMeshGenerator.ColourInstruction[] textColourInstructions = new TextMeshGenerator.ColourInstruction[3];
 
-    public static ControlState Create(ref string text, in TextBoxOptions options, int identity = 0, [CallerLineNumber] int site = 0)
+    static InputBox()
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(TextBox).GetHashCode(), identity, site), new TextBox());
+        Onion.OnClear.AddListener(states.Clear);
+    }
+
+    public static bool Int(ref int value, in MinMax<int>? range = null, string? placeholder = null, int identity = 0, [CallerLineNumber] int site = 0)
+    {
+        float cast = value;
+        if (Float(ref cast, range.HasValue ? new MinMax<float>(range.Value.Min, range.Value.Max) : null, placeholder, identity, site))
+        {
+            value = (int)cast;
+            return true;
+        }
+        return false;
+    }
+
+    public static bool Float(ref float value, in MinMax<float>? range = null, string? placeholder = null, int identity = 0, [CallerLineNumber] int site = 0)
+    {
+        var options = new TextBoxOptions(placeholder, null, null, false);
+
+        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(InputBox).GetHashCode(), identity, site), new InputBox());
         instance.RenderFocusBox = true;
         instance.Muted = true;
         Onion.Tree.End();
+
+        var buffer = instance.Name;
+
+        var current = floatInputState.GetValue(instance.Identity);
+        if (floatInputState.HasIncomingChange(instance.Identity))
+            value = current;
+        else
+        {
+            if (MathF.Abs(value - current) > float.Epsilon)
+                floatInputState.SetValue(instance.Identity, value);
+
+            if (instance.State is ControlState.None)
+                buffer = current.ToString(CultureInfo.InvariantCulture);
+        }
+
+        floatInputState.UpdateFor(instance.Identity, ref value);
+
+        if (states.TryGetValue(instance.Identity, out var state))
+        {
+            if (state.IncomingChange)
+            {
+                buffer = instance.Name;
+                states[instance.Identity] = new(false, options);
+                if (float.TryParse(buffer, NumberStyles.Number, CultureInfo.InvariantCulture, out var parsed))
+                {
+                    if (range.HasValue)
+                        parsed = Utilities.Clamp(parsed, range.Value.Min, range.Value.Max);
+                    floatInputState.SetValue(instance.Identity, parsed);
+                    value = parsed;
+                }
+                return true;
+            }
+
+            states[instance.Identity] = state with { Options = options };
+            instance.Name = buffer;
+            return false;
+        }
+
+        instance.Name = buffer;
+        states.Add(instance.Identity, new TextBoxState(false, options));
+        return false;
+    }
+
+    public static bool String(ref string text, in TextBoxOptions options, int identity = 0, [CallerLineNumber] int site = 0)
+    {
+        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(InputBox).GetHashCode(), identity, site), new InputBox());
+        instance.RenderFocusBox = true;
+        instance.Muted = true;
+        Onion.Tree.End();
+
         if (states.TryGetValue(instance.Identity, out var state))
         {
             if (state.IncomingChange)
             {
                 text = instance.Name;
                 states[instance.Identity] = new(false, options);
+                return true;
             }
-            else
-            {
-                states[instance.Identity] = new(state.IncomingChange, options);
-                instance.Name = text;
-            }
-        }
-        else
-        {
+
+            states[instance.Identity] = new(state.IncomingChange, options);
             instance.Name = text;
-            states.Add(instance.Identity, new TextBoxState(false, options));
+            return false;
         }
 
-        return instance.State;
+        instance.Name = text;
+        states.Add(instance.Identity, new TextBoxState(false, options));
+        return false;
     }
 
     public void OnAdd(in ControlParams p) { }
@@ -142,9 +189,6 @@ public readonly struct TextBox : IControl
         {
             cursorBlinkTimer += p.GameState.Time.DeltaTime;
             p.Instance.CaptureFlags |= CaptureFlags.Key;
-
-            //if (selection != null)
-            //    Logger.Log($"{selection}: {p.Instance.Name[selection.Value.From..(Math.Min(selection.Value.To, p.Instance.Name.Length))]}");
 
             if (p.Instance.HasKeyboard)
                 ProcessKeyInput(p);
@@ -246,19 +290,8 @@ public readonly struct TextBox : IControl
             {
                 pasted = pasted.ReplaceLineEndings().Replace(Environment.NewLine, string.Empty);
 
-                //var filter = states[p.Identity].Options.Filter;
-                //if (filter != null)
-                //{
-                //    var result = p.Instance.Name.Insert(cursorIndex, pasted);
-                //    if (!filter.IsMatch(result))
-                //        pasted = null;
-                //}
-
                 if (!string.IsNullOrEmpty(pasted))
-                {
                     AppendText(p, pasted);
-                    //MoveCursor(p, cursorIndex + pasted.Length);
-                }
             }
         }
 
@@ -347,7 +380,7 @@ public readonly struct TextBox : IControl
         var s = states[p.Identity];
         var old = p.Instance.Name;
 
-        p.Instance.Name = p.Instance.Name.Insert(cursorIndex, text);
+        p.Instance.Name = p.Instance.Name.Insert(Utilities.Clamp(cursorIndex, 0, p.Instance.Name.Length), text);
         if (!s.Options.Filter?.IsMatch(p.Instance.Name) ?? false)
             p.Instance.Name = old;
 
@@ -457,8 +490,6 @@ public readonly struct TextBox : IControl
             var ratio = instance.Rects.Rendered.Area / instance.Rects.ComputedGlobal.Area;
             var offset = new Vector2(instance.Rects.Rendered.MinX + Onion.Theme.Padding, 0.5f * (instance.Rects.Rendered.MinY + instance.Rects.Rendered.MaxY));
             offset.X += (int)d;
-
-            bool drawSelectionTextColour = false;
             if (p.Instance.HasFocus && IsSelectionValid())
             {
                 Draw.Colour = (Vector4.One - fg.Color) with { W = col.A * 0.5f };
@@ -472,10 +503,9 @@ public readonly struct TextBox : IControl
                 selRect.MinY += Onion.Theme.Padding;
 
                 Draw.Quad(selRect, 0, Onion.Theme.Rounding);
-                textColourInstructions[0] = new TextMeshGenerator.ColourInstruction(0, Colors.White);
-                textColourInstructions[1] = new TextMeshGenerator.ColourInstruction(selection.Value.From, fg.Color);
-                textColourInstructions[2] = new TextMeshGenerator.ColourInstruction(selection.Value.To, Colors.White);
-                drawSelectionTextColour = true;
+                //textColourInstructions[0] = new TextMeshGenerator.ColourInstruction(0, Colors.White);
+                //textColourInstructions[1] = new TextMeshGenerator.ColourInstruction(selection.Value.From, fg.Color);
+                //textColourInstructions[2] = new TextMeshGenerator.ColourInstruction(selection.Value.To, Colors.White);
             }
 
             if (p.Instance.Name.Length == 0)
@@ -541,8 +571,6 @@ public readonly struct TextBox : IControl
 
     private static float GetTextWidth(in ControlParams p, in ReadOnlySpan<char> str)
     {
-        //Draw.Font = Onion.Theme.Font;
-        //Draw.FontSize = Onion.Theme.FontSize;
         var state = states[p.Identity];
         if (state.Options.Password)
             return str.Length * GetPasswordCharWidth(p.Instance.State);

@@ -13,7 +13,7 @@ public class TransformSystem : System
     /// </summary>
     public bool Parenting = true;
 
-    public readonly int Capacity = 4096;
+    public readonly int Capacity;
 
     private readonly TransformComponent[] buffer;
 

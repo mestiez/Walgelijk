@@ -1,11 +1,12 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Walgelijk
 {
     /// <summary>
     /// Drawing bounds structure
     /// </summary>
-    public struct DrawBounds
+    public struct DrawBounds : IEquatable<DrawBounds>
     {
         /// <summary>
         /// Size of the rectangle in pixels
@@ -44,5 +45,20 @@ namespace Walgelijk
         /// Returns an instance that disables the drawbounds
         /// </summary>
         public static DrawBounds DisabledBounds => new DrawBounds(default, default, false);
+
+        public bool Equals(DrawBounds other)
+        {
+            return Size.Equals(other.Size) && Position.Equals(other.Position) && Enabled == other.Enabled;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is DrawBounds other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Size, Position, Enabled);
+        }
     }
 }

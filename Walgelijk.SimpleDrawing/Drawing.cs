@@ -7,7 +7,7 @@ namespace Walgelijk.SimpleDrawing
     /// <summary>
     /// A drawing instruction
     /// </summary>
-    public struct Drawing
+    public struct Drawing : IEquatable<Drawing>
     {
         /// <summary>
         /// Relevant VertexBuffer
@@ -137,23 +137,29 @@ namespace Walgelijk.SimpleDrawing
 
         public override bool Equals(object? obj)
         {
-            return obj != null && obj is Drawing drawing &&
-                   EqualityComparer<VertexBuffer>.Default.Equals(VertexBuffer, drawing.VertexBuffer) &&
-                   EqualityComparer<Material>.Default.Equals(Material, drawing.Material) &&
-                   ReferenceEquals(Texture, drawing.Texture) &&
-                   TextDrawing.Equals(drawing.TextDrawing) &&
-                   BlendMode.Equals(drawing.BlendMode) &&
-                   ScreenSpace.Equals(drawing.ScreenSpace) &&
-                   VectorEquals(Position, drawing.Position) &&
-                   Approximately(RotationRadians, drawing.RotationRadians) &&
-                   Approximately(Roundness, drawing.Roundness) &&
-                   VectorEquals(Scale, drawing.Scale) &&
-                   ColorEquals(Color, drawing.Color);
+            return obj is Drawing other && Equals(other);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(VertexBuffer, Material, Position, RotationRadians, Scale, Color);
+            var hashCode = new HashCode();
+            hashCode.Add(VertexBuffer);
+            hashCode.Add(Material);
+            hashCode.Add(Texture);
+            hashCode.Add(DrawBounds);
+            hashCode.Add(ReturnVertexBufferToPool);
+            hashCode.Add(Position);
+            hashCode.Add(RotationRadians);
+            hashCode.Add(Scale);
+            hashCode.Add(Transformation);
+            hashCode.Add(BlendMode);
+            hashCode.Add(Roundness);
+            hashCode.Add(OutlineWidth);
+            hashCode.Add(ScreenSpace);
+            hashCode.Add(Color);
+            hashCode.Add(OutlineColour);
+            hashCode.Add(TextDrawing);
+            return hashCode.ToHashCode();
         }
 
         public static bool operator ==(Drawing left, Drawing right)
@@ -164,6 +170,29 @@ namespace Walgelijk.SimpleDrawing
         public static bool operator !=(Drawing left, Drawing right)
         {
             return !(left == right);
+        }
+
+        public bool Equals(Drawing other)
+        {
+            return Equals(VertexBuffer,
+                       other.VertexBuffer) &&
+                   Material.Equals(other.Material) &&
+                   Equals(Texture,
+                       other.Texture) &&
+                   DrawBounds.Equals(other.DrawBounds) &&
+                   ReturnVertexBufferToPool == other.ReturnVertexBufferToPool &&
+                   Position.Equals(other.Position) &&
+                   RotationRadians.Equals(other.RotationRadians) &&
+                   Scale.Equals(other.Scale) &&
+                   Transformation.Equals(other.Transformation) &&
+                   BlendMode == other.BlendMode &&
+                   Roundness.Equals(other.Roundness) &&
+                   OutlineWidth.Equals(other.OutlineWidth) &&
+                   ScreenSpace == other.ScreenSpace &&
+                   Color.Equals(other.Color) &&
+                   OutlineColour.Equals(other.OutlineColour) &&
+                   Nullable.Equals(TextDrawing,
+                       other.TextDrawing);
         }
     }
 }

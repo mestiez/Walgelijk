@@ -9,7 +9,7 @@ public class Configuration
     public TimeSpan DoubleClickTimeWindow = TimeSpan.FromSeconds(0.2);
     public bool ProcessCursorStack = true;
 
-    public static float SoundVolume = 0.5f;
-    public static AudioTrack? AudioTrack;
-    public static readonly Material ControlMaterial = OnionMaterial.CreateNew();
+    public float SoundVolume = 0.5f;
+    public AudioTrack? AudioTrack;
+    public readonly Material ControlMaterial = OnionMaterial.CreateNew();
 }
