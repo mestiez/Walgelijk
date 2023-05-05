@@ -4468,6 +4468,11 @@
             (1, 0) gives 0°. (0, 1) gives 90° 
             </summary>
         </member>
+        <member name="M:Walgelijk.Utilities.RotatePoint(System.Numerics.Vector2,System.Single,System.Numerics.Vector2)">
+            <summary>
+            Rotate a point around the origin
+            </summary>
+        </member>
         <member name="M:Walgelijk.Utilities.MapRange(System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Linearly map a value in a range onto another range
@@ -4705,6 +4710,45 @@
             <summary>
             Standard path-based <see cref="T:Walgelijk.AudioData"/> loader
             </summary>
+        </member>
+        <member name="T:Walgelijk.ComponentRef`1">
+            <summary>
+            Represents a reference to a component of type T that is attached to an entity.
+            The point of this structure is that it doesn't actually store the component, only an entity and a type parameter.
+            This ensures that the ownership of the component remains with the scene and prevents memory leaks and "rogue" components.
+            </summary>
+            <typeparam name="T">The type of component.</typeparam>
+        </member>
+        <member name="F:Walgelijk.ComponentRef`1.Entity">
+            <summary>
+            The entity to which the component is attached.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ComponentRef`1.#ctor(Walgelijk.Entity)">
+            <summary>
+            Construct a component reference
+            </summary>
+            <param name="entity"></param>
+        </member>
+        <member name="M:Walgelijk.ComponentRef`1.Get(Walgelijk.Scene)">
+            <summary>
+            Gets the component of type T attached to the entity from the specified scene.
+            </summary>
+            <param name="scene">The scene to search for the component.</param>
+        </member>
+        <member name="M:Walgelijk.ComponentRef`1.TryGet(Walgelijk.Scene,`0@)">
+            <summary>
+            Gets the component of type T attached to the entity from the specified scene.
+            </summary>
+            <param name="scene">The scene to search for the component.</param>
+            <param name="component">The component. Null if not found.</param>
+        </member>
+        <member name="M:Walgelijk.ComponentRef`1.IsValid(Walgelijk.Scene)">
+            <summary>
+            Checks whether the reference is valid in the specified scene.
+            </summary>
+            <param name="scene">The scene to check for the entity and component.</param>
+            <returns>True if the entity exists in the scene and has the component of type T; otherwise, false.</returns>
         </member>
         <member name="T:Walgelijk.CommandAttribute">
             <summary>

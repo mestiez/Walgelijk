@@ -296,6 +296,22 @@ public struct Utilities
     }
 
     /// <summary>
+    /// Rotate a point around the origin
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 RotatePoint(Vector2 point, float degrees, Vector2 origin = default)
+    {
+        float radians = degrees * DegToRad;
+        float cos = MathF.Cos(radians);
+        float sin = MathF.Sin(radians);
+        float x = point.X - origin.X;
+        float y = point.Y - origin.Y;
+        float rotatedX = x * cos - y * sin;
+        float rotatedY = x * sin + y * cos;
+        return new Vector2(rotatedX + origin.X, rotatedY + origin.Y);
+    }
+
+    /// <summary>
     /// Linearly map a value in a range onto another range
     /// </summary>
     /// <param name="a1">Source lower bound</param>
