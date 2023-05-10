@@ -53,6 +53,7 @@ public class DebugConsole : IDisposable
 
     private readonly MemoryStream stream = new();
     private readonly StreamWriter writer;
+    private readonly ConsoleSessionHistory sessionHistory;
 
     /// <summary>
     /// User interface controller
@@ -92,6 +93,21 @@ public class DebugConsole : IDisposable
         writer.AutoFlush = true;
         UI = new DebugConsoleUi(this);
         Logger.OnLog.AddListener(OnLog);
+        sessionHistory = new();
+
+        // Push the session history into our current history.
+        if (sessionHistory.LastSessionCommands != null)
+        {
+            foreach (var input in sessionHistory.LastSessionCommands)
+            {
+                if (string.IsNullOrEmpty(input))
+                    continue;
+
+                history.Add(input);
+            }
+
+            historyIndex = sessionHistory.LastSessionCommands.Length;
+        }
     }
 
     private void OnLog(LogMessage obj)
@@ -157,6 +173,7 @@ public class DebugConsole : IDisposable
                     case '\r':
                         if (!isEmpty)
                         {
+                            sessionHistory.Add(CurrentInput!);
                             history.Add(CurrentInput!);
                             historyIndex = history.Count;
                             historyInputBackup = null;
