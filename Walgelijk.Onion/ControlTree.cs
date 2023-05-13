@@ -95,6 +95,7 @@ public class ControlTree
         Onion.Layout.Reset();
 
         Onion.Animation.Process(inst);
+        Onion.Decorators.Process(inst);
 
         //if (node.Behaviour is ISetupChildren sc)
         //    sc.OnSetupChildren(p);

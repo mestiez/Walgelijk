@@ -106,6 +106,6 @@ public readonly struct Resizable : IConstraint
         else if (axis == Axis.Horizontal)
             IControl.SetCursor(DefaultCursor.HorizontalResize);
         else if (axis == Axis.Both)
-            IControl.SetCursor(DefaultCursor.Crosshair);
+            IControl.SetCursor(DefaultCursor.HorizontalResize);
     }
 }

@@ -2,6 +2,15 @@
 
 public static class BuiltInAssets
 {
+    public static class Icons
+    {
+        // Icons from https://tabler-icons.io/
+
+        public static readonly Texture Exit = TextureLoader.FromBytes(Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADTSURBVFhH7ZYBCsIwDEWLV5pH0vtfwFFfIIWROZtsLUXsg+Bsm/+TOLBpMpl8I+d8l9CvYS7lk7gQL42nLrsh57HJjxdBUilAWAl3EZwVc8kRRGPRrRgkWqFqEZwpnQuhwj+CgFuQvXDBLhCqCrPWtnMLgocGPPfp3ILwzojo27kFA2vYv3MLRttJCKc7v+nn70Cn434CDMa9hAgfGvG8K0y32oBg1YC1PpNAyC3MXttJIBAW5EybSZDY8u/40n3A1bmFnDIJidP3gXFXssnkT0jpDU5tZ5R+bideAAAAAElFTkSuQmCC"));
+        public static readonly Texture ChevronDown = TextureLoader.FromBytes(Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC0SURBVFhH7ZZRCsMgEERtr9Qcqb1tjtRiHNiBYCbqmo98dAcewqC7s36Ij5xzulNPW29TBIgAESAC9AIsxqz65/EUn/AqfI2PeR7eBZ5fzDsgTYMBoF/BEwLNcQZCDdRS+5oBQF1oJAQnh7rBpVnhKegOLE3BSGHX5ESaJ7QauCcn0mygGk1NTqTZoW44NTmR5gD7m4DckxNpDsKbmJqcXP2U8pldbXUrfsURIAJEgH8PkNIGBdYHccXO6zoAAAAASUVORK5CYII="));
+        public static readonly Texture ChevronUp = TextureLoader.FromBytes(Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC+SURBVFhH7ZbRDcMgDERJV0pGatXs1I6UkRpRu7IlRC4BOx/5qE96gpwCPvyBGHLO6UrdZLxMESACRIAIcDbAJPjFV7GTO/ERHuKZgWYHXHwlVDx3hYBmAz05iwtrEFcnoHlAeXItWAcyhYDmDkeFULBy7S7QBPQUcHUCmhWWjc2dgGaBp7WmTkBTGAlzS4U6OO+F/uu6CVdiJl6/rz69iSfBa1mDjBu1HqV6zS4yWtVcH6/iCBABIsC/B0jpC+hypz2+dlYuAAAAAElFTkSuQmCC"));
+    }
+
     public static readonly FixedAudioData Click = new(
         Convert.FromBase64String("UklGRjwOAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YRgOAAD//wIA/f8CAP7///8CAP//AwD8//7//f8BAPn/CAABAPv/FQAnABM" +
             "AMwAOAOb/EQB4/yz/SwDb/9P/QAEYAIr/rwDU/8j/mgCZ/x7/3/+6/24A7AExAbP/9f2E/i4A2/4cAQ0CvP2s/+4B6f9ZAVEB/v1T/t3/fP/VADoBVv6D/qwA1/99AQUDsf8R" +

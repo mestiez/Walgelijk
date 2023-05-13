@@ -3,7 +3,7 @@
 public readonly struct ControlParams
 {
     public readonly ControlTree Tree;
-    public readonly Layout.Layout Layout;
+    public readonly Layout.LayoutQueue Layout;
     public readonly Input Input;
     public readonly GameState GameState;
     public readonly Node Node;
@@ -13,7 +13,7 @@ public readonly struct ControlParams
 
     public ControlParams(
         ControlTree controlTree,
-        Layout.Layout layoutState,
+        Layout.LayoutQueue layoutState,
         Input input,
         GameState gameState,
         Node node,
@@ -37,7 +37,7 @@ public readonly struct ControlParams
         Instance = instance;
     }
 
-    public void Deconstruct(out ControlTree tree, out Layout.Layout layout, out Input input, out GameState state, out Node node, out ControlInstance instance)
+    public void Deconstruct(out ControlTree tree, out Layout.LayoutQueue layout, out Input input, out GameState state, out Node node, out ControlInstance instance)
     {
         tree = Tree;
         layout = Layout;

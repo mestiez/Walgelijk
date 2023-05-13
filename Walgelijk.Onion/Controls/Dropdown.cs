@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using Walgelijk.Onion.Animations;
+using Walgelijk.Onion.Assets;
 using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion.Controls;
@@ -169,7 +170,7 @@ public readonly struct Dropdown<T> : IControl
 
     public void OnRender(in ControlParams p)
     {
-        (ControlTree tree, Layout.Layout layout, Input input, GameState state, Node node, ControlInstance instance) = p;
+        (ControlTree tree, Layout.LayoutQueue layout, Input input, GameState state, Node node, ControlInstance instance) = p;
 
         var currentState = currentStates[p.Node.Identity];
         var t = node.GetAnimationTime();
@@ -196,13 +197,13 @@ public readonly struct Dropdown<T> : IControl
         {
             if (DrawArrow)
             {
-                const float arrowSize = 8;
+                const float arrowSize = 16;
                 var arrowPos = new Vector2(instance.Rects.Rendered.MaxX, (instance.Rects.Rendered.MinY + instance.Rects.Rendered.MaxY) / 2);
                 arrowPos.X -= instance.Rects.Rendered.Height / 2;
                 Draw.Colour = Onion.Theme.Accent[instance.State];
                 anim.AnimateColour(ref Draw.Colour, t);
-                Draw.ResetTexture();
-                Draw.TriangleIscoCentered(arrowPos, new Vector2(arrowSize), instance.IsTriggered ? 0 : 180);
+                Draw.Image(instance.IsTriggered ? BuiltInAssets.Icons.ChevronUp : BuiltInAssets.Icons.ChevronDown, new Rect(arrowPos, new Vector2(arrowSize)), ImageContainmentMode.Contain);
+                //Draw.TriangleIscoCentered(arrowPos, new Vector2(arrowSize), instance.IsTriggered ? 0 : 180);
             }
 
             var ratio = instance.Rects.Rendered.Area / instance.Rects.ComputedGlobal.Area;

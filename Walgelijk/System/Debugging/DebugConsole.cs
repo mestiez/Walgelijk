@@ -71,7 +71,7 @@ public class DebugConsole : IDisposable
     public string WarningPrefix = "[WRN]";
     public string ErrorPrefix = "[ERR]";
 
-    internal const int MaxShownBuffer = 4096;
+    internal const int MaxShownBuffer = 8192;
     internal ReadOnlySpan<byte> GetBuffer()
         => stream.GetBuffer().AsSpan(Math.Max(0, (int)stream.Length - MaxShownBuffer), Math.Min(MaxShownBuffer, (int)stream.Length));
 

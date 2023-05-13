@@ -1,6 +1,4 @@
-﻿using Walgelijk.Onion.Animations;
-
-namespace Walgelijk.Onion;
+﻿namespace Walgelijk.Onion.Animations;
 
 public class AnimationQueue
 {

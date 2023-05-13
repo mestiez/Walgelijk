@@ -32,6 +32,9 @@ namespace Walgelijk.Onion.SourceGenerator
             sourceBuilder.AppendLine("using Walgelijk.SimpleDrawing;");
             sourceBuilder.AppendLine("using Walgelijk.Onion;");
             sourceBuilder.AppendLine("using Walgelijk.Onion.Controls;");
+            sourceBuilder.AppendLine("using Walgelijk.Onion.Animations;");
+            sourceBuilder.AppendLine("using Walgelijk.Onion.Decorators;");
+            sourceBuilder.AppendLine("using Walgelijk.Onion.Layout;");
             sourceBuilder.AppendLine();
             sourceBuilder.AppendLine("namespace Walgelijk.Onion;");
             sourceBuilder.AppendLine();
@@ -40,7 +43,15 @@ namespace Walgelijk.Onion.SourceGenerator
 
             PrintControlFunctions(classesImplementingControlInterface, sourceBuilder);
 
+            // individual helper functions
             sourceBuilder.AppendLine("\tpublic static void End() { Onion.Tree.End(); }");
+            sourceBuilder.AppendLine("\tpublic static AnimationQueue Animate(in IAnimation anim) { Animation.Add(anim); return Animation; }");
+            sourceBuilder.AppendLine("\tpublic static DecoratorQueue Decorate(in IDecorator dec) { Decorators.Add(dec); return Decorators; }");
+
+            // references to queue instances
+            sourceBuilder.AppendLine("\tpublic static LayoutQueue Layout => Onion.Layout;");
+            sourceBuilder.AppendLine("\tpublic static AnimationQueue Animation => Onion.Animation;");
+            sourceBuilder.AppendLine("\tpublic static DecoratorQueue Decorators => Onion.Decorators;");
 
             sourceBuilder.AppendLine("}");
             sourceBuilder.AppendLine();

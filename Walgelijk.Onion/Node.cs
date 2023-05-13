@@ -114,6 +114,9 @@ public class Node
         p.Instance.Rects.ComputedDrawBounds = drawBounds;
         p.Instance.Rects.Rendered = p.Instance.Rects.ComputedGlobal;
 
+        foreach (var decorator in p.Instance.Decorators)
+            decorator.RenderBefore(p);
+
         if (drawBounds.Width > 0 && drawBounds.Height > 0)
         {
             Behaviour.OnRender(p);
@@ -123,6 +126,9 @@ public class Node
         }
 
         p.Tree.DrawboundStack.Pop();
+
+        foreach (var decorator in p.Instance.Decorators)
+            decorator.RenderAfter(p);
     }
 
     public void ApplyParentLayout(in ControlParams p)

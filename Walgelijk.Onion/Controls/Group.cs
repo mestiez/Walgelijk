@@ -33,7 +33,7 @@ public readonly struct Group : IControl
 
     public void OnRender(in ControlParams p)
     {
-        (ControlTree tree, Layout.Layout layout, Input input, GameState state, Node node, ControlInstance instance) = p;
+        (ControlTree tree, Layout.LayoutQueue layout, Input input, GameState state, Node node, ControlInstance instance) = p;
 
         instance.Rects.Rendered = instance.Rects.ComputedGlobal;
         var t = node.GetAnimationTime();

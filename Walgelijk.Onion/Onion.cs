@@ -1,16 +1,19 @@
 ﻿using System.Reflection;
+using Walgelijk.Onion.Animations;
+using Walgelijk.Onion.Decorators;
 using Walgelijk.Onion.Layout;
 
 namespace Walgelijk.Onion;
 
 public static class Onion
 {
-    public static readonly Layout.Layout Layout = new();
+    public static readonly LayoutQueue Layout = new();
     public static readonly ControlTree Tree = new();
     public static readonly Navigator Navigator = new();
     public static readonly Input Input = new();
     public static readonly Configuration Configuration = new();
     public static readonly AnimationQueue Animation = new();
+    public static readonly DecoratorQueue Decorators = new();
     public static Theme Theme = new();
 
     public static bool Initialised { get; private set; }
@@ -37,6 +40,7 @@ public static class Onion
         Animation.Clear();
         Layout.Reset();
         Navigator.Clear();
+        Decorators.Clear();
 
         OnClear.Dispatch();
     }

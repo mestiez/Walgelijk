@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using Walgelijk.Onion.Animations;
+using Walgelijk.Onion.Assets;
 using Walgelijk.Onion.Layout;
 using Walgelijk.SimpleDrawing;
 
@@ -8,6 +9,8 @@ namespace Walgelijk.Onion.Controls;
 
 public readonly struct DragWindow : IControl
 {
+    public static string CloseTooltipText = "Close";
+
     public readonly bool IsOpen;
     public readonly OptionalControlState<Vector2> Size = new(Vector2.One);
 
@@ -39,8 +42,8 @@ public readonly struct DragWindow : IControl
         Onion.Layout.Size(buttonSize, buttonSize);
         Onion.Layout.EnqueueConstraint(new StickTop());
         Onion.Layout.EnqueueConstraint(new StickRight());
-
-        if (Button.Click("X", instance.Identity))
+        Ui.Decorators.Tooltip(CloseTooltipText);
+        if (ImageButton.Click(BuiltInAssets.Icons.Exit, ImageContainmentMode.Cover, instance.Identity))
             isOpen = !isOpen;
 
         return instance.State;
@@ -71,7 +74,7 @@ public readonly struct DragWindow : IControl
 
     public void OnRender(in ControlParams p)
     {
-        (ControlTree tree, Layout.Layout layout, Input input, GameState state, Node node, ControlInstance instance) = p;
+        (ControlTree tree, Layout.LayoutQueue layout, Input input, GameState state, Node node, ControlInstance instance) = p;
 
         instance.Rects.Rendered = instance.Rects.ComputedGlobal;
         var t = node.GetAnimationTime();

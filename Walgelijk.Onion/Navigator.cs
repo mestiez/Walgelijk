@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Buffers;
 using System.Drawing;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion;
@@ -15,8 +17,7 @@ public class Navigator
     {
         get => hoverControl; set
         {
-            if (hoverControl != value && value != null && !Onion.Tree.EnsureInstance(value.Value).Muted)
-                Onion.PlaySound(ControlState.Hover);
+            ProcessStateChange(hoverControl, value, ControlState.Hover);
             hoverControl = value;
         }
     }
@@ -27,8 +28,7 @@ public class Navigator
     {
         get => scrollControl; set
         {
-            if (scrollControl != value && value != null && !Onion.Tree.EnsureInstance(value.Value).Muted)
-                Onion.PlaySound(ControlState.Scroll);
+            ProcessStateChange(scrollControl, value, ControlState.Scroll);
             scrollControl = value;
         }
     }
@@ -39,8 +39,7 @@ public class Navigator
     {
         get => focusedControl; set
         {
-            if (focusedControl != value && value != null && !Onion.Tree.EnsureInstance(value.Value).Muted)
-                Onion.PlaySound(ControlState.Focus);
+            ProcessStateChange(focusedControl, value, ControlState.Focus);
             focusedControl = value;
         }
     }
@@ -51,8 +50,7 @@ public class Navigator
     {
         get => activeControl; set
         {
-            if (activeControl != value && value != null && !Onion.Tree.EnsureInstance(value.Value).Muted)
-                Onion.PlaySound(ControlState.Active);
+            ProcessStateChange(activeControl, value, ControlState.Active);
             activeControl = value;
         }
     }
@@ -63,8 +61,7 @@ public class Navigator
     {
         get => triggeredControl; set
         {
-            if (triggeredControl != value && value != null && !Onion.Tree.EnsureInstance(value.Value).Muted)
-                Onion.PlaySound(ControlState.Triggered);
+            ProcessStateChange(triggeredControl, value, ControlState.Triggered);
             triggeredControl = value;
         }
     }
@@ -75,10 +72,27 @@ public class Navigator
     {
         get => keyControl; set
         {
-            if (keyControl != value && value != null && !Onion.Tree.EnsureInstance(value.Value).Muted)
-                Onion.PlaySound(ControlState.Key);
+            ProcessStateChange(keyControl, value, ControlState.Key);
             keyControl = value;
         }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void ProcessStateChange(int? currentId, int? newId, ControlState s)
+    {
+        if (currentId == newId)
+            return;
+
+        if (currentId != null && Onion.Tree.Instances.TryGetValue(currentId.Value, out var old) && old is not null)
+            old.LastStateChangeTime = Game.Main.State.Time.SecondsSinceSceneChangeUnscaled;
+
+        if (!newId.HasValue || !Onion.Tree.Instances.TryGetValue(newId.Value, out var inst) || inst is null)
+            return;
+
+        if (!inst.Muted)
+            Onion.PlaySound(s);
+
+        inst.LastStateChangeTime = Game.Main.State.Time.SecondsSinceSceneChangeUnscaled;
     }
 
     public bool IsBeingUsed =>

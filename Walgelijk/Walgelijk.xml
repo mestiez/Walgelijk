@@ -3542,6 +3542,30 @@
             Returns every unloaded item ever loaded
             </summary>
         </member>
+        <member name="T:Walgelijk.ClampedArray`1">
+            <summary>
+            An array with a fixed capacity that keeps track of how many objects were entered;
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Walgelijk.ClampedArray`1.Insert(System.Int32,`0)">
+            <summary>
+            Not supported.
+            </summary>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:Walgelijk.ClampedArray`1.Remove(`0)">
+            <summary>
+            Not supported.
+            </summary>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:Walgelijk.ClampedArray`1.RemoveAt(System.Int32)">
+            <summary>
+            Not supported.
+            </summary>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
         <member name="T:Walgelijk.Curve`1">
             <summary>
             Linear curve

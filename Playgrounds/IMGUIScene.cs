@@ -4,6 +4,7 @@ using Walgelijk;
 using Walgelijk.Imgui;
 using Walgelijk.Onion;
 using Walgelijk.Onion.Controls;
+using Walgelijk.Onion.Decorators;
 using Walgelijk.SimpleDrawing;
 using Button = Walgelijk.Onion.Controls.Button;
 
@@ -75,6 +76,7 @@ public struct IMGUIScene : ISceneCreator
         public override void Update()
         {
             var layout = Onion.Layout;
+            var decoration = Ui.Decorators;
 
             Draw.Reset();
             Draw.ScreenSpace = true;
@@ -134,10 +136,15 @@ public struct IMGUIScene : ISceneCreator
             }
 
             layout.Size(128, 32).StickTop().StickRight();
+            Ui.Decorators.Tooltip("Animation duration");
             Ui.FloatInputBox(ref Game.Console.UI.AnimationDuration, (0, 1));
+
             layout.Size(128, 32).StickTop().StickRight().Move(0, 32 + Onion.Theme.Padding);
-            Ui.IntInputBox(ref Game.Console.UI.FilterWidth, (0, 256));     
+            Ui.Decorators.Tooltip("Game.Console.UI.FilterWidth");
+            Ui.IntInputBox(ref Game.Console.UI.FilterWidth, (0, 256));
+
             layout.Size(128, 32).StickTop().StickRight().Move(0, 32 * 2 + Onion.Theme.Padding * 2);
+            Ui.Decorators.Tooltip("Padding");
             Ui.IntInputBox(ref Onion.Theme.Padding, (-4, 16));
 
             {
@@ -170,12 +177,15 @@ public struct IMGUIScene : ISceneCreator
                     {
                         layout.Size(128, 32);
                         layout.Move(Onion.Theme.Padding, Onion.Theme.Padding);
+                        Ui.Decorators.Add(new HoverCrosshairDecorator());
+                        Ui.Decorators.Tooltip("This control has a HoverCrosshairDecorator that adds a cool Nurose-like outline on hover");
                         Ui.Dropdown(DropdownOptions, ref DropdownSelectedIndex, identity: i);
 
                         layout.FitContainer().Move(0, Onion.Theme.Padding + 32).Scale(0, -80);
                         Ui.StartScrollView(i);
                         {
                             layout.Height(32).FitWidth().Move(Onion.Theme.Padding, Onion.Theme.Padding);
+                            Ui.Decorators.Tooltip("Onion.Configuration.SoundVolume");
                             Ui.FloatSlider(ref Onion.Configuration.SoundVolume, Slider.Direction.Horizontal, (0, 1), identity: i);
 
                             layout.Size(256, 590).FitWidth().Move(Onion.Theme.Padding, Onion.Theme.Padding).Move(0, 32);
@@ -236,5 +246,33 @@ public struct IMGUIScene : ISceneCreator
         {
 
         }
+    }
+}
+
+public readonly struct HoverCrosshairDecorator : IDecorator
+{
+    public void RenderBefore(in ControlParams p)
+    {
+    }
+
+    public void RenderAfter(in ControlParams p)
+    {
+        float pr = p.Instance.GetTransitionProgress();
+        if (!p.Instance.IsHover)
+            pr = 1 - pr;
+        if (pr <= float.Epsilon)
+            return;
+        pr = Easings.Quad.Out(pr);
+
+        float t = p.GameState.Time.SecondsSinceSceneChangeUnscaled - p.Instance.LastStateChangeTime;
+
+        Draw.ResetDrawBounds();
+        Draw.ResetTexture();
+        Draw.Order = Draw.Order.OffsetLayer(1);
+        Draw.Colour = Colors.Transparent;
+        Draw.OutlineColour = Onion.Theme.Accent[ControlState.None];
+        Draw.OutlineWidth = 3;
+        Draw.Quad(p.Instance.Rects.ComputedGlobal.Expand(3 + pr * pr * Utilities.MapRange(-1, 1, 1, 3, MathF.Sin(t * 5))));
+        Draw.OutlineWidth = 0;
     }
 }

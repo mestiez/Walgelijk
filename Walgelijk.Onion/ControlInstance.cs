@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using Walgelijk.Onion.Animations;
+using Walgelijk.Onion.Decorators;
 
 namespace Walgelijk.Onion;
 
@@ -64,6 +65,11 @@ public class ControlInstance
     public bool HasKeyboard => Onion.Navigator.KeyControl == Identity;
 
     /// <summary>
+    /// The last unscaled timestamp when the control state (hover, active, etc.) was changed
+    /// </summary>
+    public float LastStateChangeTime = float.MinValue;
+
+    /// <summary>
     /// Determines what events this control is capable of capturing. 
     /// Normally set to just <see cref="CaptureFlags.Hover"/>, it will only capture hover events.
     /// </summary>
@@ -95,6 +101,11 @@ public class ControlInstance
     /// </summary>
     public readonly AnimationCollection Animations = new();
 
+    /// <summary>
+    /// List of decorators to apply to this control, maximum of 8
+    /// </summary>
+    public readonly ClampedArray<IDecorator> Decorators = new(DecoratorQueue.MaxDecoratorsPerControl);
+
     public ControlState State
     {
         get
@@ -124,4 +135,7 @@ public class ControlInstance
     {
         Identity = id;
     }
+
+    public float GetTransitionProgress(float secondsSinceSceneChangeUnscaled) =>  Utilities.Clamp((secondsSinceSceneChangeUnscaled - LastStateChangeTime) / Onion.Animation.DefaultDurationSeconds);
+    public float GetTransitionProgress() =>  Utilities.Clamp((Game.Main.State.Time.SecondsSinceSceneChangeUnscaled - LastStateChangeTime) / Onion.Animation.DefaultDurationSeconds);
 }
