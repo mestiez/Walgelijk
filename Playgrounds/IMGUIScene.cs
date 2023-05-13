@@ -86,7 +86,7 @@ public struct IMGUIScene : ISceneCreator
                 //Onion.Layout.Offset(Onion.Theme.Padding, Onion.Theme.Padding);
                 layout.Size(128, Window.Height / 2);
                 layout.VerticalLayout();
-                Ui.ScrollView();
+                Ui.StartScrollView();
 
                 layout.Size(0, 32);
                 layout.FitContainer(1, null);
@@ -113,7 +113,7 @@ public struct IMGUIScene : ISceneCreator
                 layout.CenterHorizontal();
                 layout.Move(0, Window.Height - hotbarHeight - Onion.Theme.Padding);
 
-                Ui.ScrollView();
+                Ui.StartScrollView();
                 for (int i = 0; i < 4; i++)
                 {
                     layout.Size(hotbarHeight - Onion.Theme.Padding * 2, hotbarHeight - Onion.Theme.Padding * 2);
@@ -163,17 +163,17 @@ public struct IMGUIScene : ISceneCreator
                     continue;
 
                 layout.Move(i * 64, i * 64).Size(300, 128).Resizable(new Vector2(148), new Vector2(512));
-                Ui.DragWindow(textBoxContent, ref WindowsOpen[i], i);
+                Ui.StartDragWindow(textBoxContent, ref WindowsOpen[i], i);
                 {
                     layout.FitContainer(1, 1).Scale(0, -24).Move(0, 24).Move(Onion.Theme.Padding, Onion.Theme.Padding);
-                    Ui.ScrollView(i);
+                    Ui.StartScrollView(i);
                     {
                         layout.Size(128, 32);
                         layout.Move(Onion.Theme.Padding, Onion.Theme.Padding);
                         Ui.Dropdown(DropdownOptions, ref DropdownSelectedIndex, identity: i);
 
                         layout.FitContainer().Move(0, Onion.Theme.Padding + 32).Scale(0, -80);
-                        Ui.ScrollView(i);
+                        Ui.StartScrollView(i);
                         {
                             layout.Height(32).FitWidth().Move(Onion.Theme.Padding, Onion.Theme.Padding);
                             Ui.FloatSlider(ref Onion.Configuration.SoundVolume, Slider.Direction.Horizontal, (0, 1), identity: i);

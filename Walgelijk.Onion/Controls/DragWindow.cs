@@ -16,6 +16,7 @@ public readonly struct DragWindow : IControl
         IsOpen = isOpen;
     }
 
+    [RequiresManualEnd]
     public static ControlState Start(string title, int identity = 0, [CallerLineNumber] int site = 0)
     {
         var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(DragWindow).GetHashCode(), identity, site), new DragWindow(true));
@@ -24,6 +25,7 @@ public readonly struct DragWindow : IControl
         return instance.State;
     }
 
+    [RequiresManualEnd]
     public static ControlState Start(string title, ref bool isOpen, int identity = 0, [CallerLineNumber] int site = 0)
     {
         Onion.Animation.Add(new FadeAnimation());

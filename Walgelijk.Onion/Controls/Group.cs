@@ -5,6 +5,7 @@ namespace Walgelijk.Onion.Controls;
 
 public readonly struct Group : IControl
 {
+    [RequiresManualEnd]
     public static void Start(int identity = 0, [CallerLineNumber] int site = 0)
     {
         var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Group).GetHashCode(), identity, site), new Group());
@@ -42,7 +43,7 @@ public readonly struct Group : IControl
 
         var anim = instance.Animations;
 
-        var fg = Onion.Theme.Foreground[instance.State];
+        var fg = Onion.Theme.Foreground[ControlState.None];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
 

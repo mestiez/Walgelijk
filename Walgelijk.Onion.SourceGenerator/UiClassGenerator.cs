@@ -15,7 +15,7 @@ namespace Walgelijk.Onion.SourceGenerator
         {
             var syntaxTrees = context.Compilation.SyntaxTrees;
 
-            IEnumerable<INamedTypeSymbol> classesImplementingInterface =
+            IEnumerable<INamedTypeSymbol> classesImplementingControlInterface =
                 context.Compilation.SyntaxTrees
                 .SelectMany(tree => tree.GetRoot().DescendantNodes().OfType<StructDeclarationSyntax>())
                 .Select(classSyntax => context.Compilation.GetSemanticModel(classSyntax.SyntaxTree).GetDeclaredSymbol(classSyntax))
@@ -37,15 +37,32 @@ namespace Walgelijk.Onion.SourceGenerator
             sourceBuilder.AppendLine();
             sourceBuilder.AppendLine("public static class Ui");
             sourceBuilder.AppendLine("{");
+
+            PrintControlFunctions(classesImplementingControlInterface, sourceBuilder);
+
+            sourceBuilder.AppendLine("\tpublic static void End() { Onion.Tree.End(); }");
+
+            sourceBuilder.AppendLine("}");
+            sourceBuilder.AppendLine();
+
+            context.AddSource("Ui.g.cs", sourceBuilder.ToString());
+        }
+
+        private static void PrintControlFunctions(IEnumerable<INamedTypeSymbol> classesImplementingInterface, StringBuilder sourceBuilder)
+        {
             foreach (var controlStruct in classesImplementingInterface)
             {
                 var controlFunctions = GetControlFunctions(controlStruct).ToArray();
                 foreach (var func in controlFunctions)
                 {
+                    var attr = func.GetAttributes();
                     var funcName = controlStruct.Name;
 
                     if (controlFunctions.Length > 1 && func.Name != "Start")
                         funcName = func.Name + funcName;
+
+                    if (attr.Any(a => a.AttributeClass.Name.ToString() == "RequiresManualEndAttribute"))
+                        funcName = "Start" + funcName;
 
                     string typeParamStr = string.Empty;
 
@@ -140,13 +157,6 @@ namespace Walgelijk.Onion.SourceGenerator
                     sourceBuilder.AppendLine();
                 }
             }
-
-            sourceBuilder.AppendLine("\tpublic static void End() { Onion.Tree.End(); }");
-
-            sourceBuilder.AppendLine("}");
-            sourceBuilder.AppendLine();
-
-            context.AddSource("Ui.g.cs", sourceBuilder.ToString());
         }
 
         public void Initialize(GeneratorInitializationContext context)
