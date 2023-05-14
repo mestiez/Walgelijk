@@ -58,7 +58,11 @@ public readonly struct Slider : IControl
     public void OnProcess(in ControlParams p)
     {
         ControlUtils.ProcessButtonLike(p);
-        p.Instance.CaptureFlags |= CaptureFlags.Scroll;
+
+        if (p.Input.CtrlHeld)
+            p.Instance.CaptureFlags |= CaptureFlags.Scroll;
+        else
+            p.Instance.CaptureFlags &= ~CaptureFlags.Scroll;
 
         var v = 0f;
 
