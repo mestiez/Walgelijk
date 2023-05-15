@@ -113,9 +113,14 @@ public class LayoutQueue
     public LayoutQueue Resizable(Vector2 min, Vector2 max) => EnqueueConstraint(new Resizable(min, max));
 
     /// <summary>
-    /// Make the control resizable by dragging it at the edges
+    /// Make the control resizable by dragging it at the right-most and bottom-most edges
     /// </summary>
     public LayoutQueue Resizable() => EnqueueConstraint(new Resizable(new Vector2(64), new Vector2(1024)));
+
+    /// <summary>
+    /// Some controls calculate a preferred size. This constraint will apply this size if it is available, otherwise it will do nothing.
+    /// </summary>
+    public LayoutQueue PreferredSize() => EnqueueConstraint(new PreferredSize());
 
     /// <summary>
     /// Stretch to fit the container.

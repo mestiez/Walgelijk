@@ -4,20 +4,19 @@ using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion.Controls;
 
-public readonly struct TextRect : IControl
+public readonly struct Label : IControl
 {
     private readonly HorizontalTextAlign horizontal;
-    private readonly VerticalTextAlign vertical;
 
-    public TextRect(HorizontalTextAlign horizontal, VerticalTextAlign vertical)
+    public Label(HorizontalTextAlign horizontal)
     {
         this.horizontal = horizontal;
-        this.vertical = vertical;
     }
 
-    public static ControlState Create(string text, HorizontalTextAlign horizontal, VerticalTextAlign vertical, int identity = 0, [CallerLineNumber] int site = 0)
+    public static ControlState Create(string text, HorizontalTextAlign horizontal = HorizontalTextAlign.Left, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(TextRect).GetHashCode(), identity, site), new TextRect(horizontal, vertical));
+        Onion.Layout.PreferredSize();
+        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Label).GetHashCode(), identity, site), new Label(horizontal));
         instance.Name = text;
         Onion.Tree.End();
         return instance.State;
@@ -62,19 +61,9 @@ public readonly struct TextRect : IControl
                 break;
         }
 
-        switch (vertical)
-        {
-            case VerticalTextAlign.Top:
-                pivot.Y = instance.Rects.Rendered.MinY + Onion.Theme.Padding;
-                break;
-            case VerticalTextAlign.Bottom:
-                pivot.Y = instance.Rects.Rendered.MaxY - Onion.Theme.Padding;
-                break;
-        }
-
-        int wrapWidth = (int)instance.Rects.ComputedGlobal.Width - Onion.Theme.Padding * 2;
-        Draw.Text(instance.Name, pivot, Vector2.One, horizontal, vertical, wrapWidth);
-        instance.PreferredHeight = Draw.CalculateTextHeight(instance.Name, wrapWidth) + Onion.Theme.Padding * 2;
+        Draw.Text(instance.Name, pivot, Vector2.One, horizontal, VerticalTextAlign.Middle);
+        instance.PreferredHeight = Onion.Theme.Font.Size;
+        instance.PreferredWidth = Draw.CalculateTextWidth(instance.Name) + Onion.Theme.Padding * 2;
     }
 
     public void OnEnd(in ControlParams p)

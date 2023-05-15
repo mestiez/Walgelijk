@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Globalization;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion.Controls;
@@ -8,14 +10,14 @@ public readonly struct Slider : IControl
     private readonly Direction direction;
     private readonly MinMax<float> range;
     private readonly float step;
-    private readonly string? LabelFormat;
+    private readonly string? labelFormat;
 
     public Slider(Direction direction, MinMax<float> range, float step, string? labelFormat = null)
     {
         this.direction = direction;
         this.range = range;
         this.step = step;
-        LabelFormat = labelFormat;
+        this.labelFormat = labelFormat;
     }
 
     public enum Direction
@@ -26,9 +28,9 @@ public readonly struct Slider : IControl
 
     private static readonly OptionalControlState<float> states = new();
 
-    public static bool Float(ref float value, Direction dir, MinMax<float> range, float step = 0, int identity = 0, [CallerLineNumber] int site = 0)
+    public static bool Float(ref float value, Direction dir, MinMax<float> range, float step = 0, string? label = null, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Slider).GetHashCode(), (int)dir, identity, site), new Slider(dir, range, step));
+        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Slider).GetHashCode(), (int)dir, identity, site), new Slider(dir, range, step, label));
         instance.RenderFocusBox = false;
         Onion.Tree.End();
         var r = states.HasIncomingChange(instance.Identity);
@@ -37,12 +39,12 @@ public readonly struct Slider : IControl
         return r;
     }
 
-    public static bool Int(ref int value, Direction dir, MinMax<int> range, int step = 1, int identity = 0, [CallerLineNumber] int site = 0)
+    public static bool Int(ref int value, Direction dir, MinMax<int> range, int step = 1, string? label = null, int identity = 0, [CallerLineNumber] int site = 0)
     {
         float vv = value;
         var rr = new MinMax<float>(range.Min, range.Max);
         bool r;
-        if (r = Float(ref vv, dir, rr, Math.Max(1, step), identity, site))
+        if (r = Float(ref vv, dir, rr, Math.Max(1, step), label, identity, site))
             value = (int)vv;
         return r;
     }
@@ -141,10 +143,23 @@ public readonly struct Slider : IControl
         Draw.Colour = Onion.Theme.Accent[instance.State];
         anim.AnimateColour(ref Draw.Colour, t);
         Draw.Quad(sliderRect.Expand(-Onion.Theme.Padding), 0, Onion.Theme.Rounding);
+
+        if (labelFormat != null)
+        {
+            // TODO string allocation :S
+            var str = states[p.Identity].ToString();
+            if (!string.IsNullOrWhiteSpace(labelFormat))
+                str = string.Format(labelFormat, str);
+
+            Draw.Font = Onion.Theme.Font;
+            Draw.Colour = Onion.Theme.Text[instance.State];
+            Draw.Text(str, instance.Rects.Rendered.GetCenter(), Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.Rendered.Width);
+        }
     }
 
     public void OnEnd(in ControlParams p)
     {
+        
     }
 
     public void OnRemove(in ControlParams p)

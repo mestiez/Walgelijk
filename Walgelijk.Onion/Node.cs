@@ -133,6 +133,9 @@ public class Node
 
     public void ApplyParentLayout(in ControlParams p)
     {
+        if (!AliveLastFrame)
+            return;
+
         if (Parent != null && Parent.ChildrenLayout != null)
             foreach (var layout in Parent.ChildrenLayout)
                 layout.Apply(new ControlParams(Parent, p.Tree.EnsureInstance(Parent.Identity)), SiblingIndex, Identity);

@@ -1,4 +1,6 @@
-﻿namespace Walgelijk.Onion;
+﻿using System.Numerics;
+
+namespace Walgelijk.Onion;
 
 public struct ControlRects
 {

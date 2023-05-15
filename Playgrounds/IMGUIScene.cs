@@ -135,17 +135,25 @@ public struct IMGUIScene : ISceneCreator
                 Ui.End();
             }
 
-            layout.Size(128, 32).StickTop().StickRight();
-            Ui.Decorators.Tooltip("Animation duration");
-            Ui.FloatInputBox(ref Game.Console.UI.AnimationDuration, (0, 1));
+            layout.Size(128, 256).StickRight().StickTop().VerticalLayout();
+            Ui.StartDummy();
+            {
+                layout.Size(128, 32);
+                Ui.Decorators.Tooltip("Animation duration");
+                Ui.FloatInputBox(ref Game.Console.UI.AnimationDuration, (0, 1));
 
-            layout.Size(128, 32).StickTop().StickRight().Move(0, 32 + Onion.Theme.Padding);
-            Ui.Decorators.Tooltip("Game.Console.UI.FilterWidth");
-            Ui.IntInputBox(ref Game.Console.UI.FilterWidth, (0, 256));
+                layout.Size(128, 32);
+                Ui.Decorators.Tooltip("Game.Console.UI.FilterWidth");
+                Ui.IntInputBox(ref Game.Console.UI.FilterWidth, (0, 256));
 
-            layout.Size(128, 32).StickTop().StickRight().Move(0, 32 * 2 + Onion.Theme.Padding * 2);
-            Ui.Decorators.Tooltip("Padding");
-            Ui.IntInputBox(ref Onion.Theme.Padding, (-4, 16));
+                Ui.Spacer(16);
+                Ui.Label("Label test");
+
+                layout.Size(128, 32);
+                Ui.Decorators.Tooltip("Padding");
+                Ui.IntInputBox(ref Onion.Theme.Padding, (-4, 16));
+            }
+            Ui.End();
 
             {
                 layout.Size(128, 24);
@@ -160,8 +168,7 @@ public struct IMGUIScene : ISceneCreator
                 Ui.EnumDropdown(ref s.DebugOverlay);
             }
 
-            layout.Size(128 + 150, 256);
-            layout.Move(128, 24 + Onion.Theme.Padding);
+            layout.Size(128 + 150, 256).Move(128, 24 + Onion.Theme.Padding);
             Ui.TextRect(textRectContents, HorizontalTextAlign.Left, VerticalTextAlign.Top);
 
             for (int i = 0; i < 2; i++)
@@ -188,7 +195,7 @@ public struct IMGUIScene : ISceneCreator
                             Ui.Decorators.Tooltip("Onion.Configuration.SoundVolume");
                             Ui.FloatSlider(ref Onion.Configuration.SoundVolume, Slider.Direction.Horizontal, (0, 1), identity: i);
 
-                            layout.Size(256, 590).FitWidth().Move(Onion.Theme.Padding, Onion.Theme.Padding).Move(0, 32);
+                            layout.Size(256, 590).FitWidth().Move(Onion.Theme.Padding, Onion.Theme.Padding).Move(0, 32).PreferredSize();
                             Ui.TextRect(textRectContents, HorizontalTextAlign.Left, VerticalTextAlign.Top, identity: i);
                         }
                         Ui.End();
@@ -207,11 +214,11 @@ public struct IMGUIScene : ISceneCreator
 
             layout.Size(256, 32);
             layout.Move(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding);
-            Ui.IntSlider(ref Onion.Theme.Padding, Slider.Direction.Horizontal, new MinMax<int>(0, 8), 1);
+            Ui.IntSlider(ref Onion.Theme.Padding, Slider.Direction.Horizontal, new MinMax<int>(0, 8), 1, "Padding: {0}px");
 
             layout.Size(256, 32);
             layout.Move(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding * 2 + 32);
-            Ui.FloatSlider(ref Onion.Theme.Rounding, Slider.Direction.Horizontal, new MinMax<float>(0, 24), 0.1f);
+            Ui.FloatSlider(ref Onion.Theme.Rounding, Slider.Direction.Horizontal, new MinMax<float>(0, 24), 0.5f, "Rounding: {0}px");
 
             layout.Size(256, 32);
             layout.Move(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2);
@@ -220,18 +227,18 @@ public struct IMGUIScene : ISceneCreator
             {
                 layout.Size(32, (Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Padding));
                 layout.Move(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
-                Ui.FloatSlider(ref Onion.Theme.Accent.Default.R, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f);
+                Ui.FloatSlider(ref Onion.Theme.Accent.Default.R, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f, "R");
 
                 layout.Size(32, (Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Padding));
                 layout.Move(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
                 layout.Move(32 + Onion.Theme.Padding, 0);
-                Ui.FloatSlider(ref Onion.Theme.Accent.Default.B, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f);
+                Ui.FloatSlider(ref Onion.Theme.Accent.Default.B, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f, "G");
 
                 layout.Size(32, (Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Padding));
                 layout.Move(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
                 layout.Move(32 + Onion.Theme.Padding, 0);
                 layout.Move(32 + Onion.Theme.Padding, 0);
-                Ui.FloatSlider(ref Onion.Theme.Accent.Default.G, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f);
+                Ui.FloatSlider(ref Onion.Theme.Accent.Default.G, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f, "B");
 
                 layout.Size(256 + ((32 + Onion.Theme.Padding) * 3), 32);
                 layout.Move(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding * 4 + 32 * 3);

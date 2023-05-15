@@ -24,6 +24,16 @@ public class ControlInstance
     public ControlRects Rects;
 
     /// <summary>
+    /// Preferred width as determined by the control behaviour. Can be null.
+    /// </summary>
+    public float? PreferredWidth;
+
+    /// <summary>
+    /// Preferred height as determined by the control behaviour. Can be null.
+    /// </summary>
+    public float? PreferredHeight;
+
+    /// <summary>
     /// The offset of every child as adjusted by scrolling
     /// </summary>
     public Vector2 InnerScrollOffset;

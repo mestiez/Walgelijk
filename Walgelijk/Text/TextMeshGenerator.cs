@@ -310,7 +310,7 @@ public class TextMeshGenerator
             lastChar = c;
         }
 
-        if (displayString.Length > 1)
+        if (displayString.Length > 0)
             startNewLine(displayString.Length, displayString);
 
         //TODO dit is niet goed
@@ -396,7 +396,7 @@ public class TextMeshGenerator
             {
                 int start = lastLineLetterStartIndex;
                 int end = i;
-                var part = str[start..end];
+                var part = str[start..end].Trim();
                 var lengthOfLastLine = (int)CalculateTextWidth(part);
                 var verticesInLine = vertices.AsSpan()[((int)vertexIndex - vertexCountSinceNewLine)..(int)vertexIndex];
 
