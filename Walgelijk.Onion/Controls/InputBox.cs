@@ -574,6 +574,8 @@ public readonly struct InputBox : IControl
         var state = states[p.Identity];
         if (state.Options.Password)
             return str.Length * GetPasswordCharWidth(p.Instance.State);
+        Draw.Font = Onion.Theme.Font;
+        Draw.FontSize = Onion.Theme.FontSize[p.Instance.State];
         return Draw.CalculateTextWidth(str);
     }
 
