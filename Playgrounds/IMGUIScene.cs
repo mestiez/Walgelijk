@@ -146,12 +146,15 @@ public struct IMGUIScene : ISceneCreator
                 Ui.Decorators.Tooltip("Game.Console.UI.FilterWidth");
                 Ui.IntInputBox(ref Game.Console.UI.FilterWidth, (0, 256));
 
-                Ui.Spacer(16);
-                Ui.Label("Label test");
-
                 layout.Size(128, 32);
                 Ui.Decorators.Tooltip("Padding");
                 Ui.IntInputBox(ref Onion.Theme.Padding, (-4, 16));
+
+                Ui.Spacer(16);
+                Ui.Label("Font size");
+                layout.Size(128, 32);
+                Ui.Decorators.Tooltip("Font size");
+                Ui.IntSlider(ref Onion.Theme.FontSize.Default, Slider.Direction.Horizontal, (8, 24), 1, "{0}px");
             }
             Ui.End();
 
