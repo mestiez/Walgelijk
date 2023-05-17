@@ -112,6 +112,16 @@ public class ControlInstance
     public readonly AnimationCollection Animations = new();
 
     /// <summary>
+    /// Control-specific theme. Any null value will fall back onto the base theme.
+    /// </summary>
+    public Theme? Theme
+    {
+        get => theme ?? Onion.Theme; 
+        //Dit werkt niet want ik wil van elke property vragen of er iets is of dat ik terug moet vallen op de base theme
+        set => theme = value;
+    }
+
+    /// <summary>
     /// List of decorators to apply to this control, maximum of 8
     /// </summary>
     public readonly ClampedArray<IDecorator> Decorators = new(DecoratorQueue.MaxDecoratorsPerControl);
@@ -133,7 +143,7 @@ public class ControlInstance
 
             if (Onion.Navigator.ActiveControl == Identity)
                 state |= ControlState.Active;
-            
+
             if (Onion.Navigator.KeyControl == Identity)
                 state |= ControlState.Key;
 
@@ -141,11 +151,13 @@ public class ControlInstance
         }
     }
 
+    private Theme? theme;
+
     public ControlInstance(int id)
     {
         Identity = id;
     }
 
-    public float GetTransitionProgress(float secondsSinceSceneChangeUnscaled) =>  Utilities.Clamp((secondsSinceSceneChangeUnscaled - LastStateChangeTime) / Onion.Animation.DefaultDurationSeconds);
-    public float GetTransitionProgress() =>  Utilities.Clamp((Game.Main.State.Time.SecondsSinceSceneChangeUnscaled - LastStateChangeTime) / Onion.Animation.DefaultDurationSeconds);
+    public float GetTransitionProgress(float secondsSinceSceneChangeUnscaled) => Utilities.Clamp((secondsSinceSceneChangeUnscaled - LastStateChangeTime) / Onion.Animation.DefaultDurationSeconds);
+    public float GetTransitionProgress() => Utilities.Clamp((Game.Main.State.Time.SecondsSinceSceneChangeUnscaled - LastStateChangeTime) / Onion.Animation.DefaultDurationSeconds);
 }

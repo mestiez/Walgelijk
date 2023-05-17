@@ -16,6 +16,8 @@ public static class Onion
     public static readonly AnimationQueue Animation = new();
     public static readonly DecoratorQueue Decorators = new();
 
+    public static readonly Theme Theme = new();
+
     public static bool Initialised { get; private set; }
     public static readonly Hook OnClear = new();
 

@@ -6,15 +6,11 @@ namespace Walgelijk.Onion.Controls;
 
 public readonly struct Button : IControl
 {
-    public static bool Hold(string label, int identity = 0, [CallerLineNumber] int site = 0)
-    {
-        return CreateButton(label, identity, site).HasFlag(ControlState.Active);
-    }
+    public static bool Hold(string label, int identity = 0, [CallerLineNumber] int site = 0) 
+        => CreateButton(label, identity, site).HasFlag(ControlState.Active);
 
-    public static bool Click(string label, int identity = 0, [CallerLineNumber] int site = 0)
-    {
-        return CreateButton(label, identity, site).HasFlag(ControlState.Active) && Onion.Input.MousePrimaryRelease;
-    }
+    public static bool Click(string label, int identity = 0, [CallerLineNumber] int site = 0) 
+        => CreateButton(label, identity, site).HasFlag(ControlState.Active) && Onion.Input.MousePrimaryRelease;
 
     private static ControlState CreateButton(string label, int identity = 0, int site = 0)
     {

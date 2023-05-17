@@ -4,22 +4,27 @@ namespace Walgelijk.Onion;
 
 public class Theme
 {
-    public ThemeProperty<Appearance> Background = (Appearance)new Color("#022525");
-    public ThemeProperty<Appearance> Foreground = new(new Color("#055555"), new Color("#055555") * 1.1f, new Color("#055555") * 0.9f, new Color("#055555") * 0.8f);
-    public ThemeProperty<Color> Text = new Color("#fcffff");
-    public ThemeProperty<Color> Accent = new Color("#de3a67");
-    public Color Highlight = new Color("#ffffff");
+    public StateDependent<Appearance>? Background = (Appearance)new Color("#BCBCBC");
+    public StateDependent<Appearance>? Foreground = new(
+        new Color("#D7D4D4"), 
+        new Color("#D7D4D4") * 1.1f, 
+        new Color("#D7D4D4") * 0.9f, 
+        new Color("#D7D4D4") * 0.8f);
 
-    public Font Font = Font.Default;
-    public ThemeProperty<int> FontSize = 12;
+    public StateDependent<Color>? Text = new Color("#3B3B3B");
+    public StateDependent<Color>? Accent = new Color("#D8B038");
+    public Color? Highlight = new Color("#ffffff");
 
-    public int Padding = 5;
-    public float Rounding = 1;
-    public ThemeProperty<float> WindowTitleBarHeight = 24;
+    public Font? Font = Font.Default;
+    public StateDependent<int>? FontSize = 12;
 
-    public Color FocusBoxColour = new Color("#3adeda");
-    public float FocusBoxSize = 5;
-    public float FocusBoxWidth = 4;
+    public int? Padding = 5;
+    public float? Rounding = 1;
+    public StateDependent<float>? WindowTitleBarHeight = 24;
+
+    public Color? FocusBoxColour = new Color("#3adeda");
+    public float? FocusBoxSize = 5;
+    public float? FocusBoxWidth = 4;
 
     public Sound? HoverSound;
     public Sound? ActiveSound = new(BuiltInAssets.Click, false, false);
