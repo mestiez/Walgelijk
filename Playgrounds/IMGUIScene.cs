@@ -231,18 +231,18 @@ public struct IMGUIScene : ISceneCreator
             {
                 layout.Size(32, (Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Padding));
                 layout.Move(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
-                Ui.FloatSlider(ref Onion.Theme.Accent.Base.R, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f, "R");
+                Ui.FloatSlider(ref Onion.Theme.Accent.Default.R, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f, "R");
 
                 layout.Size(32, (Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Padding));
                 layout.Move(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
                 layout.Move(32 + Onion.Theme.Padding, 0);
-                Ui.FloatSlider(ref Onion.Theme.Accent.Base.B, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f, "G");
+                Ui.FloatSlider(ref Onion.Theme.Accent.Default.B, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f, "G");
 
                 layout.Size(32, (Window.Height / 2 + Onion.Theme.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Padding));
                 layout.Move(Onion.Theme.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Padding);
                 layout.Move(32 + Onion.Theme.Padding, 0);
                 layout.Move(32 + Onion.Theme.Padding, 0);
-                Ui.FloatSlider(ref Onion.Theme.Accent.Base.G, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f, "B");
+                Ui.FloatSlider(ref Onion.Theme.Accent.Default.G, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f, "B");
 
                 layout.Size(256 + ((32 + Onion.Theme.Padding) * 3), 32);
                 layout.Move(Onion.Theme.Padding, Window.Height / 2 + Onion.Theme.Padding * 4 + 32 * 3);
@@ -250,7 +250,7 @@ public struct IMGUIScene : ISceneCreator
             }
 
             layout.Size(256, 256).StickRight().StickBottom();
-            Ui.ColourPicker(ref Onion.Theme.Background.Base.Color);
+            Ui.ColourPicker(ref Onion.Theme.Background.Default.Color);
         }
 
         public override void Render()
