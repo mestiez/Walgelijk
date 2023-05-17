@@ -12,9 +12,9 @@ public static class Onion
     public static readonly Navigator Navigator = new();
     public static readonly Input Input = new();
     public static readonly Configuration Configuration = new();
+
     public static readonly AnimationQueue Animation = new();
     public static readonly DecoratorQueue Decorators = new();
-    public static Theme Theme = new();
 
     public static bool Initialised { get; private set; }
     public static readonly Hook OnClear = new();

@@ -1,6 +1,4 @@
-﻿using Walgelijk.Onion.Animations;
-
-namespace Walgelijk.Onion.Decorators;
+﻿namespace Walgelijk.Onion.Decorators;
 
 public class DecoratorQueue
 {
