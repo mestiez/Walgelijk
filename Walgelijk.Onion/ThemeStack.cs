@@ -35,7 +35,8 @@ public class ThemeStack
     public void Pop()
     {
         Next = null;
-        stack.Pop();
+        if (stack.Count > 0)
+            stack.Pop();
     }
 
     /// <summary>
@@ -71,7 +72,7 @@ public class ThemeStack
 
         if (onlyApplyToNextControl)
             Pop();
-        
+
         onlyApplyToNextControl = false;
     }
 }

@@ -154,7 +154,6 @@ public struct IMGUIScene : ISceneCreator
                 Ui.Decorators.Tooltip("Font size");
                 Ui.IntSlider(ref Onion.Theme.Base.FontSize.Default, Slider.Direction.Horizontal, (8, 24), 1, "{0}px");
             }
-            Ui.Theme.Pop();
             Ui.End();
 
             {
