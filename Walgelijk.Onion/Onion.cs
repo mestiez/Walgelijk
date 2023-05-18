@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Walgelijk.Onion.Animations;
+using Walgelijk.Onion.Assets;
 using Walgelijk.Onion.Decorators;
 using Walgelijk.Onion.Layout;
 
@@ -15,10 +16,16 @@ public static class Onion
 
     public static readonly AnimationQueue Animation = new();
     public static readonly DecoratorQueue Decorators = new();
+    public static readonly ThemeStack Theme = new();
 
-    public static readonly Theme Theme = new();
+    public static Sound? HoverSound;
+    public static Sound? ActiveSound = new(BuiltInAssets.Click, false, false);
+    public static Sound? ScrollSound;
+    public static Sound? TriggerSound;
+    public static Sound? FocusSound;
 
     public static bool Initialised { get; private set; }
+
     public static readonly Hook OnClear = new();
 
     static Onion()
@@ -43,6 +50,7 @@ public static class Onion
         Layout.Reset();
         Navigator.Clear();
         Decorators.Clear();
+        Theme.Reset();
 
         OnClear.Dispatch();
     }
@@ -52,19 +60,19 @@ public static class Onion
         switch (state)
         {
             case ControlState.Hover:
-                p(Theme.HoverSound);
+                p(HoverSound);
                 break;
             case ControlState.Scroll:
-                p(Theme.ScrollSound);
+                p(ScrollSound);
                 break;
             case ControlState.Focus:
-                p(Theme.FocusSound);
+                p(FocusSound);
                 break;
             case ControlState.Active:
-                p(Theme.ActiveSound);
+                p(ActiveSound);
                 break;
             case ControlState.Triggered:
-                p(Theme.TriggerSound);
+                p(TriggerSound);
                 break;
         }
 
@@ -74,16 +82,4 @@ public static class Onion
                 Game.Main.AudioRenderer.PlayOnce(sound, Configuration.SoundVolume, 1, Configuration.AudioTrack);
         }
     }
-
-    #region Controls
-
-    //public static ControlState Text(string text, HorizontalTextAlign horizontal, VerticalTextAlign vertical, int identity = 0, [CallerLineNumber] int site = 0)
-    //    => TextRect.Create(text, horizontal, vertical, identity, site);
-
-    #endregion
-
-    /*TODO 
-     * scrollbars etc. (pseudo controls)
-     * heel veel basic functies hier (label, button. etc.)
-    */
 }

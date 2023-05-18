@@ -11,19 +11,104 @@ namespace Walgelijk.Onion.SourceGenerator
     [Generator]
     public class UiClassGenerator : ISourceGenerator
     {
+        public void Initialize(GeneratorInitializationContext context)
+        {
+        }
+
         public void Execute(GeneratorExecutionContext context)
         {
-            var syntaxTrees = context.Compilation.SyntaxTrees;
+            GenerateUiClass(context);
+            GenerateThemeExtensionClass(context);
+            GenerateThemeStackExtensions(context);
+        }
 
-            IEnumerable<INamedTypeSymbol> classesImplementingControlInterface =
+        private static void GenerateUiClass(GeneratorExecutionContext context)
+        {
+            var classesImplementingControlInterface =
                 context.Compilation.SyntaxTrees
-                .SelectMany(tree => tree.GetRoot().DescendantNodes().OfType<StructDeclarationSyntax>())
-                .Select(classSyntax => context.Compilation.GetSemanticModel(classSyntax.SyntaxTree).GetDeclaredSymbol(classSyntax))
-                .OfType<INamedTypeSymbol>()
-                .Where(classSymbol => classSymbol.AllInterfaces.Any(interfaceSymbol => interfaceSymbol.Name == "IControl"));
+                    .SelectMany(tree => tree.GetRoot().DescendantNodes().OfType<StructDeclarationSyntax>())
+                    .Select(classSyntax => context.Compilation.GetSemanticModel(classSyntax.SyntaxTree).GetDeclaredSymbol(classSyntax))
+                    .Where(classSymbol => classSymbol.AllInterfaces.Any(interfaceSymbol => interfaceSymbol.Name == "IControl"));
 
             var sourceBuilder = new StringBuilder();
 
+            WriteUsingsAndNamespace(sourceBuilder);
+            sourceBuilder.AppendLine();
+            sourceBuilder.AppendLine("public static partial class Ui");
+            sourceBuilder.AppendLine("{");
+
+            GenerateControlFunctions(classesImplementingControlInterface, sourceBuilder);
+
+            sourceBuilder.AppendLine("}");
+            sourceBuilder.AppendLine();
+            context.AddSource("Ui.g.cs", sourceBuilder.ToString());
+        }
+
+        private IEnumerable<IFieldSymbol> GetThemeFields(GeneratorExecutionContext context)
+        {
+            var themeClass = context.Compilation.SyntaxTrees
+                .SelectMany(tree => tree.GetRoot().DescendantNodes().OfType<StructDeclarationSyntax>())
+                .Select(s => context.Compilation.GetSemanticModel(s.SyntaxTree).GetDeclaredSymbol(s))
+                .FirstOrDefault(s => s?.Name == "Theme");
+            
+            return themeClass?.GetMembers().OfType<IFieldSymbol>() ?? null;
+        }
+
+        private void GenerateThemeExtensionClass(GeneratorExecutionContext context)
+        {
+            var sourceBuilder = new StringBuilder();
+            var fields = GetThemeFields(context);
+
+            WriteUsingsAndNamespace(sourceBuilder);
+            sourceBuilder.AppendLine();
+            sourceBuilder.AppendLine("public static class ThemeExtensions");
+            sourceBuilder.AppendLine("{");
+
+            if (fields != null)
+                foreach (var field in fields)
+                {
+                    var argumentName = field.Name.ToLower();
+                    
+                    sourceBuilder.AppendLine($"\tpublic static Theme With{field.Name}(this Theme theme, {field.Type} {argumentName})");
+                    sourceBuilder.AppendLine($"\t\t=> theme with {{ {field.Name} = {argumentName} }};");
+                    sourceBuilder.AppendLine();
+                }
+
+            sourceBuilder.AppendLine("}");
+
+            context.AddSource("ThemeExtensions.g.cs", sourceBuilder.ToString());
+        }
+        
+        private void GenerateThemeStackExtensions(GeneratorExecutionContext context)
+        {
+            var sourceBuilder = new StringBuilder();
+            var fields = GetThemeFields(context);
+
+            WriteUsingsAndNamespace(sourceBuilder);
+            sourceBuilder.AppendLine();
+            sourceBuilder.AppendLine("public static class ThemeStackExtensions");
+            sourceBuilder.AppendLine("{");
+
+            if (fields != null)
+                foreach (var field in fields)
+                {
+                    var argumentName = field.Name.ToLower();
+                    
+                    sourceBuilder.AppendLine($"\tpublic static ThemeStack {field.Name}(this ThemeStack q, {field.Type} {argumentName})");
+                    sourceBuilder.AppendLine($"\t{{");
+                    sourceBuilder.AppendLine($"\t\tq.Next = (q.Next ?? q.Peek() ?? q.Base).With{field.Name}({argumentName});");
+                    sourceBuilder.AppendLine($"\t\treturn q;");
+                    sourceBuilder.AppendLine($"\t}}");
+                    sourceBuilder.AppendLine();
+                }
+
+            sourceBuilder.AppendLine("}");
+
+            context.AddSource("ThemeStackExtensions.g.cs", sourceBuilder.ToString());
+        }
+
+        private static void WriteUsingsAndNamespace(StringBuilder sourceBuilder)
+        {
             sourceBuilder.AppendLine("using System.Runtime.CompilerServices;");
             sourceBuilder.AppendLine("using System;");
             sourceBuilder.AppendLine("using System.Collections;");
@@ -37,29 +122,10 @@ namespace Walgelijk.Onion.SourceGenerator
             sourceBuilder.AppendLine("using Walgelijk.Onion.Layout;");
             sourceBuilder.AppendLine();
             sourceBuilder.AppendLine("namespace Walgelijk.Onion;");
-            sourceBuilder.AppendLine();
-            sourceBuilder.AppendLine("public static class Ui");
-            sourceBuilder.AppendLine("{");
-
-            PrintControlFunctions(classesImplementingControlInterface, sourceBuilder);
-
-            // individual helper functions
-            sourceBuilder.AppendLine("\tpublic static void End() { Onion.Tree.End(); }");
-            sourceBuilder.AppendLine("\tpublic static AnimationQueue Animate(in IAnimation anim) { Animation.Add(anim); return Animation; }");
-            sourceBuilder.AppendLine("\tpublic static DecoratorQueue Decorate(in IDecorator dec) { Decorators.Add(dec); return Decorators; }");
-
-            // references to queue instances
-            sourceBuilder.AppendLine("\tpublic static LayoutQueue Layout => Onion.Layout;");
-            sourceBuilder.AppendLine("\tpublic static AnimationQueue Animation => Onion.Animation;");
-            sourceBuilder.AppendLine("\tpublic static DecoratorQueue Decorators => Onion.Decorators;");
-
-            sourceBuilder.AppendLine("}");
-            sourceBuilder.AppendLine();
-
-            context.AddSource("Ui.g.cs", sourceBuilder.ToString());
         }
 
-        private static void PrintControlFunctions(IEnumerable<INamedTypeSymbol> classesImplementingInterface, StringBuilder sourceBuilder)
+        private static void GenerateControlFunctions(IEnumerable<INamedTypeSymbol> classesImplementingInterface,
+            StringBuilder sourceBuilder)
         {
             foreach (var controlStruct in classesImplementingInterface)
             {
@@ -94,7 +160,8 @@ namespace Walgelijk.Onion.SourceGenerator
                     }
 
                     sourceBuilder.AppendLine(PrintXmlDocs(func.GetDocumentationCommentXml()));
-                    sourceBuilder.Append($"\tpublic static {func.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat)} {funcName}{typeParamStr}({GetParameterString(func)})");
+                    sourceBuilder.Append(
+                        $"\tpublic static {func.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat)} {funcName}{typeParamStr}({GetParameterString(func)})");
                     if (!func.TypeParameters.IsEmpty)
                     {
                         foreach (var typeParameter in func.TypeParameters)
@@ -147,6 +214,7 @@ namespace Walgelijk.Onion.SourceGenerator
 
                                     constraintBuilder.Append(typeParamConstraintType.Name);
                                 }
+
                                 multiple = true;
                             }
 
@@ -154,26 +222,26 @@ namespace Walgelijk.Onion.SourceGenerator
                                 sourceBuilder.Append(constraintBuilder.ToString());
                         }
                     }
+
                     sourceBuilder.AppendLine();
 
                     sourceBuilder.AppendLine("\t{");
-                    var ff = string.Join("", controlStruct.ToDisplayParts().Where(a => a.Kind != SymbolDisplayPartKind.TypeParameterName));
+                    var ff = string.Join("",
+                        controlStruct.ToDisplayParts().Where(a => a.Kind != SymbolDisplayPartKind.TypeParameterName));
                     if (!controlStruct.TypeParameters.IsEmpty)
                     {
                         ff = ff.Substring(0, ff.LastIndexOf('.'));
                         ff += '.' + controlStruct.Name;
                     }
-                    sourceBuilder.AppendLine($"\t\t{(func.ReturnsVoid ? string.Empty : "return ")}{ff}{typeParamStr}.{func.Name}({GetParameterNamesString(func)});");
+
+                    sourceBuilder.AppendLine(
+                        $"\t\t{(func.ReturnsVoid ? string.Empty : "return ")}{ff}{typeParamStr}.{func.Name}({GetParameterNamesString(func)});");
                     sourceBuilder.AppendLine("\t}");
                     sourceBuilder.AppendLine();
                 }
             }
         }
 
-        public void Initialize(GeneratorInitializationContext context)
-        {
-
-        }
 
         public static string PrintXmlDocs(string input)
         {
@@ -182,6 +250,7 @@ namespace Walgelijk.Onion.SourceGenerator
             {
                 lines[i] = "/// " + lines[i];
             }
+
             return lines.Length >= 3 ? string.Join("\n", lines.Skip(1).Take(lines.Length - 3)) : string.Empty;
         }
 
@@ -202,6 +271,7 @@ namespace Walgelijk.Onion.SourceGenerator
                         if (i == attr.Length - 1 && attr.Length > 1)
                             attrStr += ", ";
                     }
+
                     attrStr += "] ";
                 }
 
@@ -211,7 +281,8 @@ namespace Walgelijk.Onion.SourceGenerator
                     defaultValueStr = $" = {p.ExplicitDefaultValue ?? ("default")}".ToLower();
                 }
 
-                return $"{attrStr}{(p.RefKind == RefKind.None ? string.Empty : $"{p.RefKind.ToString().ToLower()} ")}{p.Type.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat)} {p.Name}{defaultValueStr}";
+                return
+                    $"{attrStr}{(p.RefKind == RefKind.None ? string.Empty : $"{p.RefKind.ToString().ToLower()} ")}{p.Type.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat)} {p.Name}{defaultValueStr}";
             });
 
             return string.Join(", ", parameterStrings);
@@ -221,7 +292,8 @@ namespace Walgelijk.Onion.SourceGenerator
         {
             var parameterStrings = methodSymbol.Parameters.Select(p =>
             {
-                return $"{(p.RefKind == RefKind.None ? string.Empty : $"{p.RefKind.ToString().ToLower()} ")}{p.Name}";
+                return
+                    $"{(p.RefKind == RefKind.None ? string.Empty : $"{p.RefKind.ToString().ToLower()} ")}{p.Name}";
             });
             return string.Join(", ", parameterStrings);
         }

@@ -101,25 +101,14 @@ public class ControlInstance
     public bool IsNew = true;
 
     /// <summary>
-    /// This control has changed the value of a given ref parameter in its creation function.
-    /// This is used, for example, when a dropdown does its processing and changes the selection index. <see cref="IncomingChange"/> is set to true and read the next time the creation function is called
-    /// </summary>
-    //public bool IncomingChange;
-
-    /// <summary>
     /// List of visual animations to apply to this control
     /// </summary>
     public readonly AnimationCollection Animations = new();
 
     /// <summary>
-    /// Control-specific theme. Any null value will fall back onto the base theme.
+    /// Control-specific theme
     /// </summary>
-    public Theme? Theme
-    {
-        get => theme ?? Onion.Theme; 
-        //Dit werkt niet want ik wil van elke property vragen of er iets is of dat ik terug moet vallen op de base theme
-        set => theme = value;
-    }
+    public Theme Theme;
 
     /// <summary>
     /// List of decorators to apply to this control, maximum of 8
@@ -150,8 +139,6 @@ public class ControlInstance
             return state;
         }
     }
-
-    private Theme? theme;
 
     public ControlInstance(int id)
     {

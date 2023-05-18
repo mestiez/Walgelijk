@@ -27,7 +27,7 @@ public readonly struct ClampToContainer : IConstraint
 
         //TODO dit werkt niet bij local draggables
         var parent = p.Tree.EnsureInstance(p.Node.Parent.Identity);
-        var c = parent.Rects.Intermediate.Expand(-Onion.Theme.Padding);
+        var c = parent.Rects.Intermediate.Expand(-p.Theme.Padding);
         p.Instance.Rects.Intermediate = p.Instance.Rects.Intermediate.ClampInside(c);
     }
 }

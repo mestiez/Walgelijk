@@ -55,18 +55,18 @@ public readonly struct ImageButton : IControl
         var t = node.GetAnimationTime();
         var anim = instance.Animations;
 
-        var fg = Onion.Theme.Foreground[instance.State];
+        var fg = p.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
 
         anim.AnimateColour(ref Draw.Colour, t);
-        Draw.Quad(instance.Rects.Rendered, 0, Onion.Theme.Rounding);
+        Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
 
         Draw.ResetMaterial();
         Draw.Colour = Colors.White.WithAlpha(Draw.Colour.A);
-        Draw.Image(Texture, instance.Rects.Rendered.Scale(0.9f), ContainmentMode, 0, Onion.Theme.Rounding);
+        Draw.Image(Texture, instance.Rects.Rendered.Scale(0.9f), ContainmentMode, 0, p.Theme.Rounding);
         Draw.ResetTexture();
     }
 

@@ -117,13 +117,13 @@ public readonly struct Slider : IControl
         var t = node.GetAnimationTime();
         var anim = instance.Animations;
 
-        var fg = Onion.Theme.Foreground[instance.State];
+        var fg = p.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
         anim.AnimateColour(ref Draw.Colour, t);
-        Draw.Quad(instance.Rects.Rendered, 0, Onion.Theme.Rounding);
+        Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
 
         var sliderRect = instance.Rects.Rendered;
         float animatedMin = Utilities.Lerp(range.Max, range.Min, Utilities.Clamp(t));
@@ -137,12 +137,12 @@ public readonly struct Slider : IControl
                 break;
         }
 
-        sliderRect.MaxX = MathF.Max(sliderRect.MaxX, sliderRect.MinX + Onion.Theme.Padding * 3);
-        sliderRect.MinY = MathF.Min(sliderRect.MinY, sliderRect.MaxY - Onion.Theme.Padding * 3);
+        sliderRect.MaxX = MathF.Max(sliderRect.MaxX, sliderRect.MinX + p.Theme.Padding * 3);
+        sliderRect.MinY = MathF.Min(sliderRect.MinY, sliderRect.MaxY - p.Theme.Padding * 3);
 
-        Draw.Colour = Onion.Theme.Accent[instance.State];
+        Draw.Colour = p.Theme.Accent[instance.State];
         anim.AnimateColour(ref Draw.Colour, t);
-        Draw.Quad(sliderRect.Expand(-Onion.Theme.Padding), 0, Onion.Theme.Rounding);
+        Draw.Quad(sliderRect.Expand(-p.Theme.Padding), 0, p.Theme.Rounding);
 
         if (labelFormat != null)
         {
@@ -151,8 +151,8 @@ public readonly struct Slider : IControl
             if (!string.IsNullOrWhiteSpace(labelFormat))
                 str = string.Format(labelFormat, str);
 
-            Draw.Font = Onion.Theme.Font;
-            Draw.Colour = Onion.Theme.Text[instance.State];
+            Draw.Font = p.Theme.Font;
+            Draw.Colour = p.Theme.Text[instance.State];
             Draw.Text(str, instance.Rects.Rendered.GetCenter(), Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.Rendered.Width);
         }
     }

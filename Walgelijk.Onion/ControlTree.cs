@@ -96,10 +96,8 @@ public class ControlTree
 
         Onion.Animation.Process(inst);
         Onion.Decorators.Process(inst);
-
-        //if (node.Behaviour is ISetupChildren sc)
-        //    sc.OnSetupChildren(p);
-
+        Onion.Theme.ApplyTo(inst);
+        
         return (inst, node);
     }
 
@@ -119,6 +117,8 @@ public class ControlTree
 
     public void Process(float dt)
     {
+        Onion.Theme.Reset();
+
         foreach (var node in Nodes.Values)
         {
             node.ChronologicalPositionLastFrame = node.ChronologicalPosition;
@@ -158,7 +158,7 @@ public class ControlTree
         Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, int.MaxValue);
         if (Game.Main.Window.HasFocus && focus.HasValue && Instances.TryGetValue(focus.Value, out var inst) && inst.RenderFocusBox)
         {
-            float expand = Onion.Theme.FocusBoxSize;
+            float expand = Onion.Theme.Base.FocusBoxSize;
 
             if (inst.Rects.ComputedDrawBounds.Width > 0 && inst.Rects.ComputedDrawBounds.Height > 0)
             {
@@ -169,9 +169,9 @@ public class ControlTree
                     drawBounds.BottomLeft);
 
                 Draw.Colour = Colors.Transparent;
-                Draw.OutlineColour = Onion.Theme.FocusBoxColour.WithAlpha(Utilities.MapRange(1, 0, 0.6f, 1, Easings.Cubic.In(focusAnimationProgress)));
-                Draw.OutlineWidth = Onion.Theme.FocusBoxWidth;
-                Draw.Quad(inst.Rects.Rendered.Expand(expand), 0, Onion.Theme.Rounding + expand);
+                Draw.OutlineColour = Onion.Theme.Base.FocusBoxColour.WithAlpha(Utilities.MapRange(1, 0, 0.6f, 1, Easings.Cubic.In(focusAnimationProgress)));
+                Draw.OutlineWidth = Onion.Theme.Base.FocusBoxWidth;
+                Draw.Quad(inst.Rects.Rendered.Expand(expand), 0, Onion.Theme.Base.Rounding + expand);
                 Draw.OutlineWidth = 0;
             }
         }

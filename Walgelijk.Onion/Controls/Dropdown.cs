@@ -64,15 +64,17 @@ public readonly struct Dropdown<T> : IControl
 
             Onion.Layout.Height(dropdownRect.Height);
             Onion.Layout.FitContainer(1, null);
-            Onion.Layout.Move(Onion.Theme.Padding, height + Onion.Theme.Padding);
+            Onion.Layout.Move(instance.Theme.Padding, height + instance.Theme.Padding);
+            Onion.Theme.SetAll(instance.Theme).Once();
             Onion.Tree.Start(instance.Identity + 38, new ScrollView(true));
 
             for (int i = 0; i < values.Count; i++)
             {
                 Onion.Layout.Move(0, i * height);
                 Onion.Layout.Height(height);
-                Onion.Layout.Width(instance.Rects.ComputedGlobal.Width - Onion.Theme.Padding * 2);
+                Onion.Layout.Width(instance.Rects.ComputedGlobal.Width - instance.Theme.Padding * 2);
                 Onion.Layout.CenterHorizontal();
+                Onion.Theme.SetAll(instance.Theme).Once();
                 Onion.Animation.Add(new MoveInAnimation(instance.Rects.ComputedGlobal.GetCenter()));
                 if (Button.Click(values[i]?.ToString() ?? "???", i + instance.Identity))
                     selectedIndex = i;
@@ -142,10 +144,10 @@ public readonly struct Dropdown<T> : IControl
             p.Instance.Rects.Raycast = null;
 
             var dropdownRect = new Rect(computedGlobal.MinX, computedGlobal.MaxY, computedGlobal.MaxX, computedGlobal.MaxY);
-            var dropdownRectTargetHeight = instance.Rects.Rendered.Height * Values.Count + Onion.Theme.Padding * 2;
+            var dropdownRectTargetHeight = instance.Rects.Rendered.Height * Values.Count + p.Theme.Padding * 2;
 
             dropdownRectTargetHeight *= Easings.Quad.Out(Utilities.Clamp(currentState.TimeSinceTriggered / MathF.Max(float.Epsilon, Onion.Animation.DefaultDurationSeconds)));
-            dropdownRectTargetHeight = MathF.Min(dropdownRectTargetHeight, ((Game.Main.Window.Height - Onion.Theme.Padding * 2) - computedGlobal.MaxY));
+            dropdownRectTargetHeight = MathF.Min(dropdownRectTargetHeight, ((Game.Main.Window.Height - p.Theme.Padding * 2) - computedGlobal.MaxY));
             dropdownRect.MaxY += dropdownRectTargetHeight;
 
             if (instance.Rects.DrawBounds.HasValue)
@@ -176,21 +178,21 @@ public readonly struct Dropdown<T> : IControl
         var t = node.GetAnimationTime();
         var anim = instance.Animations;
 
-        var fg = Onion.Theme.Foreground[instance.State];
+        var fg = p.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
         anim.AnimateColour(ref Draw.Colour, t);
 
-        Draw.Quad(instance.Rects.Rendered, 0, Onion.Theme.Rounding);
+        Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
 
         if (instance.IsTriggered)
         {
             Draw.Colour = fg.Color.Brightness(0.8f);
             Draw.Texture = fg.Texture;
             anim.AnimateColour(ref Draw.Colour, t);
-            Draw.Quad(currentState.DropdownRect, 0, Onion.Theme.Rounding);
+            Draw.Quad(currentState.DropdownRect, 0, p.Theme.Rounding);
         }
 
         if (anim.ShouldRenderText(t))
@@ -200,7 +202,7 @@ public readonly struct Dropdown<T> : IControl
                 const float arrowSize = 16;
                 var arrowPos = new Vector2(instance.Rects.Rendered.MaxX, (instance.Rects.Rendered.MinY + instance.Rects.Rendered.MaxY) / 2);
                 arrowPos.X -= instance.Rects.Rendered.Height / 2;
-                Draw.Colour = Onion.Theme.Accent[instance.State];
+                Draw.Colour = p.Theme.Accent[instance.State];
                 anim.AnimateColour(ref Draw.Colour, t);
                 Draw.Image(instance.IsTriggered ? BuiltInAssets.Icons.ChevronUp : BuiltInAssets.Icons.ChevronDown, new Rect(arrowPos, new Vector2(arrowSize)), ImageContainmentMode.Contain);
                 //Draw.TriangleIscoCentered(arrowPos, new Vector2(arrowSize), instance.IsTriggered ? 0 : 180);
@@ -208,8 +210,8 @@ public readonly struct Dropdown<T> : IControl
 
             var ratio = instance.Rects.Rendered.Area / instance.Rects.ComputedGlobal.Area;
             Draw.ResetTexture();
-            Draw.Font = Onion.Theme.Font;
-            Draw.Colour = Onion.Theme.Text[instance.State];
+            Draw.Font = p.Theme.Font;
+            Draw.Colour = p.Theme.Text[instance.State];
             anim.AnimateColour(ref Draw.Colour, t);
             var selected = GetValue(currentState.SelectedIndex);
             Draw.Text(selected, instance.Rects.Rendered.GetCenter(), new Vector2(ratio),

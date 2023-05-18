@@ -92,18 +92,18 @@ public readonly struct ColourPicker : IControl
         var t = node.GetAnimationTime();
         var anim = instance.Animations;
 
-        var fg = Onion.Theme.Foreground[instance.State];
+        var fg = p.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
 
         anim.AnimateColour(ref Draw.Colour, t);
-        Draw.Quad(instance.Rects.Rendered, 0, Onion.Theme.Rounding);
+        Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
 
         Draw.Colour = Color.White;// states[p.Identity];
         Draw.Texture = rainbowTexture;
-        Draw.Quad(instance.Rects.Rendered.Expand(-Onion.Theme.Padding));
+        Draw.Quad(instance.Rects.Rendered.Expand(-p.Theme.Padding));
         Draw.ResetTexture();
 
         Draw.Colour = Colors.White;

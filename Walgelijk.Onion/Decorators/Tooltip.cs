@@ -26,7 +26,7 @@ public readonly struct Tooltip : IDecorator
 
         var space = Game.Main.Window.Size;
         var point = p.Input.MousePosition;
-        int padding = Onion.Theme.Padding;
+        int padding = p.Theme.Padding;
         int padDbl = padding * 2;
 
         var rightPivot = point.X > space.X / 2;
@@ -56,7 +56,7 @@ public readonly struct Tooltip : IDecorator
         var textHeight = Draw.CalculateTextHeight(Message, rectWidth - padding * 2);
         float rectHeight = MathF.Min(freeVerticalSpace, textHeight + padDbl);
 
-        var appearance = Onion.Theme.Background[ControlState.None];
+        var appearance = p.Theme.Background[ControlState.None];
         var rect = new Rect(0, rectHeight, rectWidth, 0).Translate(
             rightPivot ? point.X - rectWidth : point.X,
             bottomPivot ? point.Y - rectHeight: point.Y);
@@ -67,11 +67,11 @@ public readonly struct Tooltip : IDecorator
         //Draw.Colour = Colors.Red.WithAlpha(0.95f);
         Draw.Texture = appearance.Texture;
         Draw.OutlineWidth = 1;
-        Draw.OutlineColour= Onion.Theme.Foreground[ControlState.None].Color;
+        Draw.OutlineColour= p.Theme.Foreground[ControlState.None].Color;
         Draw.Quad(rect);
         Draw.OutlineWidth = 0;
 
-        Draw.Colour = Onion.Theme.Text[ControlState.None];
+        Draw.Colour = p.Theme.Text[ControlState.None];
         Draw.Text(Message, rect.TopLeft + new Vector2(padding), Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Top, rectWidth - padding * 2);
     }
 }

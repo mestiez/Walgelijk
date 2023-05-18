@@ -14,7 +14,7 @@ namespace Walgelijk.OpenTK
 
         private readonly float[] matrixBuffer = new float[16];
 
-        public void SetUniform<T>(Material material, string uniformName, T data)
+        public void SetUniform<T>(Material material, string uniformName, in T data)
         {
             var loaded = GPUObjects.MaterialCache.Load(material);
             int prog = loaded.ProgramHandle;

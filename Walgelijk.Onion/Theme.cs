@@ -1,8 +1,6 @@
-﻿using Walgelijk.Onion.Assets;
+﻿namespace Walgelijk.Onion;
 
-namespace Walgelijk.Onion;
-
-public class Theme
+public struct Theme
 {
     public StateDependent<Appearance> Background = (Appearance)new Color("#BCBCBC");
     public StateDependent<Appearance> Foreground = new(
@@ -26,9 +24,7 @@ public class Theme
     public float FocusBoxSize = 5;
     public float FocusBoxWidth = 4;
 
-    public Sound? HoverSound;
-    public Sound? ActiveSound = new(BuiltInAssets.Click, false, false);
-    public Sound? ScrollSound;
-    public Sound? TriggerSound;
-    public Sound? FocusSound;
+    public Theme()
+    {
+    }
 }

@@ -43,13 +43,13 @@ public readonly struct Group : IControl
 
         var anim = instance.Animations;
 
-        var fg = Onion.Theme.Foreground[ControlState.None];
+        var fg = p.Theme.Foreground[ControlState.None];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
         anim.AnimateColour(ref Draw.Colour, t);
-        Draw.Quad(instance.Rects.Rendered, 0, Onion.Theme.Rounding);
+        Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
     }
 
     public void OnEnd(in ControlParams p) { }

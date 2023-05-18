@@ -10,6 +10,7 @@ public readonly struct ControlParams
     public readonly ControlInstance Instance;
 
     public int Identity => Node.Identity;
+    public Theme Theme => Instance.Theme;
 
     public ControlParams(
         ControlTree controlTree,

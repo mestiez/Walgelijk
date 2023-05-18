@@ -15,62 +15,73 @@ public class Navigator
     /// </summary>
     public int? HoverControl
     {
-        get => hoverControl; set
+        get => hoverControl;
+        set
         {
             ProcessStateChange(hoverControl, value, ControlState.Hover);
             hoverControl = value;
         }
     }
+
     /// <summary>
     /// Control currently capturing the scroll wheel (scroll view, sliders, dropdowns, etc.)
     /// </summary>
     public int? ScrollControl
     {
-        get => scrollControl; set
+        get => scrollControl;
+        set
         {
             ProcessStateChange(scrollControl, value, ControlState.Scroll);
             scrollControl = value;
         }
     }
+
     /// <summary>
     /// Control that is currently selected (textboxes, dropdowns, sliders, etc.)
     /// </summary>
     public int? FocusedControl
     {
-        get => focusedControl; set
+        get => focusedControl;
+        set
         {
             ProcessStateChange(focusedControl, value, ControlState.Focus);
             focusedControl = value;
         }
     }
+
     /// <summary>
     /// Control that is actively being used (buttons held, dropdowns held, sliders sliding, etc.)
     /// </summary>
     public int? ActiveControl
     {
-        get => activeControl; set
+        get => activeControl;
+        set
         {
             ProcessStateChange(activeControl, value, ControlState.Active);
             activeControl = value;
         }
     }
+
     /// <summary>
     /// Control that is ready for extended interactivity (dropdowns open)
     /// </summary>
     public int? TriggeredControl
     {
-        get => triggeredControl; set
+        get => triggeredControl;
+        set
         {
             ProcessStateChange(triggeredControl, value, ControlState.Triggered);
             triggeredControl = value;
         }
     }
+
     /// <summary>
     /// Control that is currently capturing keyboard input
     /// </summary>
     public int? KeyControl
     {
-        get => keyControl; set
+        get => keyControl;
+        set
         {
             ProcessStateChange(keyControl, value, ControlState.Key);
             keyControl = value;
@@ -218,9 +229,7 @@ public class Navigator
         {
             int targetOrder = Onion.Tree.Nodes[FocusedControl.Value].ChronologicalPositionLastFrame;
             bool greaterThan = !input.ShiftHeld;
-            Func<Node, bool> predicate = greaterThan ?
-                (Node n) => n.ChronologicalPositionLastFrame > targetOrder :
-                (Node n) => n.ChronologicalPositionLastFrame < targetOrder;
+            Func<Node, bool> predicate = greaterThan ? (Node n) => n.ChronologicalPositionLastFrame > targetOrder : (Node n) => n.ChronologicalPositionLastFrame < targetOrder;
             //TODO dit kan ook mooier
             var found = Onion.Tree.Nodes
                 .Select(static c => c.Value)
@@ -261,6 +270,7 @@ public class Navigator
             else
                 removeBuffer[removeCount++] = item;
         }
+
         foreach (var key in removeBuffer.AsSpan(0, removeCount))
             highlightControls.Remove(key);
         ArrayPool<int>.Shared.Return(removeBuffer);
@@ -269,8 +279,6 @@ public class Navigator
         Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, int.MaxValue);
         Draw.ScreenSpace = true;
         Draw.Colour = Colors.Transparent;
-        Draw.OutlineWidth = Onion.Theme.FocusBoxWidth;
-        Draw.OutlineColour = Onion.Theme.Highlight;
 
         foreach (var item in highlightControls)
         {
@@ -278,8 +286,10 @@ public class Navigator
             var p = item.Value;
             var inst = Onion.Tree.EnsureInstance(id);
 
+            Draw.OutlineWidth = inst.Theme.FocusBoxWidth;
+            Draw.OutlineColour = inst.Theme.Highlight;
             Draw.OutlineColour.A = Utilities.Clamp(Easings.Expo.Out(p));
-            Draw.Quad(inst.Rects.Rendered.Expand(Onion.Theme.FocusBoxSize), 0, Onion.Theme.Rounding + Onion.Theme.FocusBoxSize);
+            Draw.Quad(inst.Rects.Rendered.Expand(inst.Theme.FocusBoxSize), 0, inst.Theme.Rounding + inst.Theme.FocusBoxSize);
         }
     }
 
@@ -332,6 +342,7 @@ public class Navigator
                     return -1;
                 return 1;
             }
+
             return a.Order - b.Order;
         });
 
@@ -416,7 +427,7 @@ public class Navigator
                 inst.Rects.ComputedDrawBounds.Area <= float.Epsilon ||
                 !inst.Rects.Raycast.HasValue ||
                 inst.Rects.Raycast.Value.Area <= float.Epsilon
-                )
+               )
                 continue;
 
             if (!inst.CaptureFlags.HasFlag(CaptureFlags.Hover))

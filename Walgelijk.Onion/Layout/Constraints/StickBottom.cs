@@ -10,7 +10,7 @@ public readonly struct StickBottom : IConstraint
             return;
 
         var parent = p.Tree.EnsureInstance(p.Node.Parent.Identity);
-        var offset = parent.Rects.Intermediate.Height - p.Instance.Rects.Intermediate.MaxY - Onion.Theme.Padding;
+        var offset = parent.Rects.Intermediate.Height - p.Instance.Rects.Intermediate.MaxY - p.Theme.Padding;
         p.Instance.Rects.Intermediate = p.Instance.Rects.Intermediate.Translate(0,offset);
     }
 }

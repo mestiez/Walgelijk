@@ -49,7 +49,7 @@ public readonly struct Checkbox : IControl
         var t = node.GetAnimationTime();
         var anim = instance.Animations;
 
-        var fg = Onion.Theme.Foreground[instance.State];
+        var fg = p.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
 
@@ -63,18 +63,18 @@ public readonly struct Checkbox : IControl
         anim.AnimateRect(ref textBoxRect, t);
 
         anim.AnimateColour(ref Draw.Colour, t);
-        Draw.Quad(checkBoxRect, 0, Onion.Theme.Rounding);
+        Draw.Quad(checkBoxRect, 0, p.Theme.Rounding);
 
         if (states[p.Identity].Value)
         {
-            Draw.Colour = Onion.Theme.Accent[p.Instance.State];
+            Draw.Colour = p.Theme.Accent[p.Instance.State];
             anim.AnimateColour(ref Draw.Colour, t);
-            Draw.Quad(checkBoxRect.Expand(-6), 0, Onion.Theme.Rounding);
+            Draw.Quad(checkBoxRect.Expand(-6), 0, p.Theme.Rounding);
         }
 
         Draw.ResetTexture();
-        Draw.Font = Onion.Theme.Font;
-        Draw.Colour = Onion.Theme.Text[instance.State] with { A = Draw.Colour.A };
+        Draw.Font = p.Theme.Font;
+        Draw.Colour = p.Theme.Text[instance.State] with { A = Draw.Colour.A };
         if (anim.ShouldRenderText(t))
         {
             var ratio = instance.Rects.Rendered.Area / instance.Rects.ComputedGlobal.Area;

@@ -20,7 +20,7 @@ public readonly struct FitContainer : IConstraint
             return;
 
         var parent = p.Tree.EnsureInstance(p.Node.Parent.Identity);
-        var padding = Onion.Theme.Padding * 2;
+        var padding = p.Theme.Padding * 2;
 
         if (WidthRatio.HasValue)
             p.Instance.Rects.Intermediate.Width = WidthRatio.Value * (parent.Rects.Intermediate.Width - padding);

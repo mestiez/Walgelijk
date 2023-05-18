@@ -45,8 +45,8 @@ public readonly struct Label : IControl
 
         instance.Rects.Rendered = instance.Rects.ComputedGlobal;
 
-        Draw.Font = Onion.Theme.Font;
-        Draw.Colour = Onion.Theme.Text[p.Instance.State];
+        Draw.Font = p.Theme.Font;
+        Draw.Colour = p.Theme.Text[p.Instance.State];
         anim.AnimateColour(ref Draw.Colour, t);
 
         Vector2 pivot = instance.Rects.Rendered.GetCenter();
@@ -54,16 +54,16 @@ public readonly struct Label : IControl
         switch (horizontal)
         {
             case HorizontalTextAlign.Left:
-                pivot.X = instance.Rects.Rendered.MinX + Onion.Theme.Padding;
+                pivot.X = instance.Rects.Rendered.MinX + p.Theme.Padding;
                 break;
             case HorizontalTextAlign.Right:
-                pivot.X = instance.Rects.Rendered.MaxX - Onion.Theme.Padding;
+                pivot.X = instance.Rects.Rendered.MaxX - p.Theme.Padding;
                 break;
         }
 
         Draw.Text(instance.Name, pivot, Vector2.One, horizontal, VerticalTextAlign.Middle);
-        instance.PreferredHeight = Onion.Theme.Font.Size;
-        instance.PreferredWidth = Draw.CalculateTextWidth(instance.Name) + Onion.Theme.Padding * 2;
+        instance.PreferredHeight = p.Theme.Font.Size;
+        instance.PreferredWidth = Draw.CalculateTextWidth(instance.Name) + p.Theme.Padding * 2;
     }
 
     public void OnEnd(in ControlParams p)

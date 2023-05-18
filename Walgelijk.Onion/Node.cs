@@ -107,8 +107,8 @@ public class Node
         p.Tree.DrawboundStack.Push(drawBounds);
 
         Draw.BlendMode = BlendMode.AlphaBlend;
-        Draw.Font = Onion.Theme.Font;
-        Draw.FontSize = Onion.Theme.FontSize[p.Instance.State];
+        Draw.Font = p.Theme.Font;
+        Draw.FontSize = p.Theme.FontSize[p.Instance.State];
         Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, p.Node.ComputedGlobalOrder);
         Draw.DrawBounds = new DrawBounds(drawBounds.GetSize(), drawBounds.BottomLeft, true);
         p.Instance.Rects.ComputedDrawBounds = drawBounds;
@@ -203,8 +203,8 @@ public class Node
 
             //all we need is the size lol
             var newLocal = rects.Intermediate;
-            newLocal.MaxX -= rects.Intermediate.MinX + Onion.Theme.Padding;
-            newLocal.MaxY -= rects.Intermediate.MinY + Onion.Theme.Padding;
+            newLocal.MaxX -= rects.Intermediate.MinX + p.Theme.Padding;
+            newLocal.MaxY -= rects.Intermediate.MinY + p.Theme.Padding;
             newLocal.MinX = newLocal.MinY = 0;
 
             var remainingSpaceLeft = MathF.Max(newLocal.MinX - childContent.MinX, 0);

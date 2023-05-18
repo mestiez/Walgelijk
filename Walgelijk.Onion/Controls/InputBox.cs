@@ -162,7 +162,7 @@ public readonly struct InputBox : IControl
 
             var local = p.Input.MousePosition - p.Instance.Rects.ComputedGlobal.BottomLeft;
             local.X -= textOffset;
-            local.X -= Onion.Theme.Padding;
+            local.X -= p.Theme.Padding;
 
             //we dont use MoveCursor here because this is a special case where the mouse input determines the cursor position
             cursorIndex = OffsetToIndex(p, p.Instance.Name, local.X, out cursorPosition);
@@ -179,9 +179,9 @@ public readonly struct InputBox : IControl
             {
                 slowTimer = 0;
                 if (cursorPosition < -textOffset)
-                    textOffset += Onion.Theme.FontSize[p.Instance.State];
+                    textOffset += p.Theme.FontSize[p.Instance.State];
                 else if (cursorPosition > -textOffset + p.Instance.Rects.Rendered.Width)
-                    textOffset -= Onion.Theme.FontSize[p.Instance.State];
+                    textOffset -= p.Theme.FontSize[p.Instance.State];
             }
         }
 
@@ -196,7 +196,7 @@ public readonly struct InputBox : IControl
             if (p.Instance.HasScroll)
             {
                 var textWidth = GetTextWidth(p, p.Instance.Name);
-                var maxWidth = p.Instance.Rects.ComputedGlobal.Width - Onion.Theme.Padding * 2;
+                var maxWidth = p.Instance.Rects.ComputedGlobal.Width - p.Theme.Padding * 2;
 
                 if (textWidth > maxWidth)
                 {
@@ -437,8 +437,8 @@ public readonly struct InputBox : IControl
 
         if (cursorPosition < -textOffset)
             textOffset = -cursorPosition;
-        else if (cursorPosition >= -textOffset + p.Instance.Rects.Rendered.Width - Onion.Theme.Padding)
-            textOffset = -cursorPosition + p.Instance.Rects.Rendered.Width - Onion.Theme.Padding;
+        else if (cursorPosition >= -textOffset + p.Instance.Rects.Rendered.Width - p.Theme.Padding)
+            textOffset = -cursorPosition + p.Instance.Rects.Rendered.Width - p.Theme.Padding;
         cursorBlinkTimer = 0;
     }
 
@@ -456,7 +456,7 @@ public readonly struct InputBox : IControl
 
         float d = instance.HasFocus ? textOffset : 0;
 
-        var fg = Onion.Theme.Foreground[instance.State];
+        var fg = p.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
 
@@ -469,17 +469,17 @@ public readonly struct InputBox : IControl
             Draw.Colour = fg.Color.Brightness(0.9f);
 
         anim.AnimateColour(ref Draw.Colour, t);
-        Draw.Quad(instance.Rects.Rendered, 0, Onion.Theme.Rounding);
+        Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
 
-        Draw.Colour = Onion.Theme.Background[instance.State].Color;
-        Draw.Texture = Onion.Theme.Background[instance.State].Texture;
+        Draw.Colour = p.Theme.Background[instance.State].Color;
+        Draw.Texture = p.Theme.Background[instance.State].Texture;
         anim.AnimateColour(ref Draw.Colour, t);
-        Draw.Quad(instance.Rects.Rendered.Expand(-2), 0, Onion.Theme.Rounding);
+        Draw.Quad(instance.Rects.Rendered.Expand(-2), 0, p.Theme.Rounding);
 
         Draw.ResetTexture();
 
-        Draw.Font = Onion.Theme.Font;
-        Draw.Colour = Onion.Theme.Text[instance.State] with { A = Draw.Colour.A };
+        Draw.Font = p.Theme.Font;
+        Draw.Colour = p.Theme.Text[instance.State] with { A = Draw.Colour.A };
         if (anim.ShouldRenderText(t))
         {
             if (!instance.HasFocus)
@@ -488,21 +488,21 @@ public readonly struct InputBox : IControl
             var col = Draw.Colour;
 
             var ratio = instance.Rects.Rendered.Area / instance.Rects.ComputedGlobal.Area;
-            var offset = new Vector2(instance.Rects.Rendered.MinX + Onion.Theme.Padding, 0.5f * (instance.Rects.Rendered.MinY + instance.Rects.Rendered.MaxY));
+            var offset = new Vector2(instance.Rects.Rendered.MinX + p.Theme.Padding, 0.5f * (instance.Rects.Rendered.MinY + instance.Rects.Rendered.MaxY));
             offset.X += (int)d;
             if (p.Instance.HasFocus && IsSelectionValid())
             {
                 Draw.Colour = (Vector4.One - fg.Color) with { W = col.A * 0.5f };
                 var selRect = instance.Rects.Rendered;
 
-                var m = selRect.MinX + textOffset + Onion.Theme.Padding;
+                var m = selRect.MinX + textOffset + p.Theme.Padding;
                 selRect.MinX = m + IndexToOffset(p, instance.Name, selection.Value.From);
                 selRect.MaxX = m + IndexToOffset(p, instance.Name, selection.Value.To);
 
-                selRect.MaxY -= Onion.Theme.Padding;
-                selRect.MinY += Onion.Theme.Padding;
+                selRect.MaxY -= p.Theme.Padding;
+                selRect.MinY += p.Theme.Padding;
 
-                Draw.Quad(selRect, 0, Onion.Theme.Rounding);
+                Draw.Quad(selRect, 0, p.Theme.Rounding);
                 //textColourInstructions[0] = new TextMeshGenerator.ColourInstruction(0, Colors.White);
                 //textColourInstructions[1] = new TextMeshGenerator.ColourInstruction(selection.Value.From, fg.Color);
                 //textColourInstructions[2] = new TextMeshGenerator.ColourInstruction(selection.Value.To, Colors.White);
@@ -523,7 +523,7 @@ public readonly struct InputBox : IControl
 
                 if (states[node.Identity].Options.Password)
                 {
-                    float w = GetPasswordCharWidth(instance.State);
+                    float w = GetPasswordCharWidth(instance);
                     float r = w * 0.25f;
                     for (int i = 0; i < instance.Name.Length; i++)
                         Draw.Circle(offset + new Vector2(i * w + r, 0), new Vector2(r));
@@ -534,13 +534,13 @@ public readonly struct InputBox : IControl
 
             if (instance.HasFocus && cursorBlinkTimer % 1 < 0.3f)
             {
-                var rect = new Rect(default, new Vector2(1, instance.Rects.Rendered.Height - Onion.Theme.Padding * 2)).Translate(
+                var rect = new Rect(default, new Vector2(1, instance.Rects.Rendered.Height - p.Theme.Padding * 2)).Translate(
                     instance.Rects.ComputedGlobal.MinX + textOffset,
                     (instance.Rects.ComputedGlobal.MinY + instance.Rects.ComputedGlobal.MaxY) / 2
                     );
 
                 Draw.Colour = Colors.White;
-                Draw.Quad(rect.Translate(cursorPosition + Onion.Theme.Padding, 0), 0, 0);
+                Draw.Quad(rect.Translate(cursorPosition + p.Theme.Padding, 0), 0, 0);
             }
         }
     }
@@ -573,13 +573,13 @@ public readonly struct InputBox : IControl
     {
         var state = states[p.Identity];
         if (state.Options.Password)
-            return str.Length * GetPasswordCharWidth(p.Instance.State);
-        Draw.Font = Onion.Theme.Font;
-        Draw.FontSize = Onion.Theme.FontSize[p.Instance.State];
+            return str.Length * GetPasswordCharWidth(p.Instance);
+        Draw.Font = p.Theme.Font;
+        Draw.FontSize = p.Theme.FontSize[p.Instance.State];
         return Draw.CalculateTextWidth(str);
     }
 
-    public static float GetPasswordCharWidth(ControlState state) => Onion.Theme.FontSize[state] * 0.7f;
+    public static float GetPasswordCharWidth(ControlInstance p) => p.Theme.FontSize[p.State] * 0.7f;
 
     public void OnEnd(in ControlParams p)
     {
