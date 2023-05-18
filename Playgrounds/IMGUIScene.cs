@@ -56,13 +56,25 @@ public struct IMGUIScene : ISceneCreator
         public readonly static bool[] WindowsOpen = { true, true };
 
         private string textRectContents =
-            "This paper presents a software capable of visualizing large amounts of Diffusion MRI tractography data. " +
-            "The application can render three-dimensional streamlines to represent white matter tracts inside the human brain, and provide tools for exploring and investigating the 3D visualization in real-time. " +
-            "It also provides several methods of visualization that are suited for various investigative purposes, including interactivity such as camera movement (moving, rotating, dragging and zooming) " +
-            "and visualizing the streamlines intersecting with an arbitrary sphere. To facilitate this, the software must be able to read TCK files, perform preprocessing tasks, " +
-            "apply domain specific filters and tooling for analysis, use signed distance fields for rendering, generate curved tubes meshes, utilize GPU raymarching and raycasting, " +
-            "use simple shading techniques appropriate for this context, employ voxels and raycasting to reinterpret the data to make it less costly to render, perform line culling to reduce occluded lines, " +
-            "utilize instanced rendering of meshes using vertex attributes, and implement level of detail rendering.";
+@"In life there are those who may seem
+Undeserving of a smile or a beam
+Of kindness, warmth, and empathy too
+Yet still we must show them love anew
+
+For who are we to judge and decide
+Who deserves our love and who should be denied?
+We must rise above our narrow view
+And recognize their struggles too
+
+Perhaps behind their hardened shell
+Lies a heart that's been through hell
+Or maybe they're just having a bad day
+And a little kindness goes a long way
+
+So let us not withhold our grace
+Or turn our backs on those who need a loving embrace
+For every single human being
+Deserves kindness and love, a smile on their face";
 
         private string textBoxContent = "This is the only reliable way to contact us.";
 
@@ -75,12 +87,11 @@ public struct IMGUIScene : ISceneCreator
         public override void Update()
         {
             var layout = Onion.Layout;
-            var decoration = Ui.Decorators;
 
             Draw.Reset();
             Draw.ScreenSpace = true;
             Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer - 1);
-            Draw.Colour = Onion.Theme.Base.Background[ControlState.None].Color;
+            Draw.Colour = Onion.Theme.Base.Background[ControlState.Active].Color.Brightness(1.2f);
             Draw.Quad(new Rect(0, 0, Window.Width, Window.Height));
 
             {
@@ -169,8 +180,16 @@ public struct IMGUIScene : ISceneCreator
                 Ui.EnumDropdown(ref s.DebugOverlay);
             }
 
-            layout.Size(128 + 150, 256).Move(128, 24 + Onion.Theme.Base.Padding);
-            Ui.TextRect(textRectContents, HorizontalTextAlign.Left, VerticalTextAlign.Top);
+            {
+                layout.Size(512, Window.Height / 2 - (24 + Onion.Theme.Base.Padding)).Move(128, 24 + Onion.Theme.Base.Padding);
+                layout.VerticalLayout();
+                Ui.StartScrollView();
+                {
+                    layout.PreferredSize().FitWidth();
+                    Ui.TextRect(textRectContents, HorizontalTextAlign.Left, VerticalTextAlign.Top);
+                }
+                Ui.End();
+            }
 
             for (int i = 0; i < 2; i++)
             {
@@ -264,7 +283,7 @@ public readonly struct HoverCrosshairDecorator : IDecorator
     }
 
     public void RenderAfter(in ControlParams p)
-    {
+    { 
         float pr = p.Instance.GetTransitionProgress();
         if (!p.Instance.IsHover)
             pr = 1 - pr;
@@ -279,7 +298,8 @@ public readonly struct HoverCrosshairDecorator : IDecorator
         Draw.Order = Draw.Order.OffsetLayer(1);
         Draw.Colour = Colors.Transparent;
         Draw.OutlineColour = Onion.Theme.Base.Accent[ControlState.None];
-        Draw.OutlineWidth = 3;
+        Draw.OutlineColour.A = pr;
+        Draw.OutlineWidth = 8;
         Draw.Quad(p.Instance.Rects.ComputedGlobal.Expand(3 + pr * pr * Utilities.MapRange(-1, 1, 1, 3, MathF.Sin(t * 5))));
         Draw.OutlineWidth = 0;
     }

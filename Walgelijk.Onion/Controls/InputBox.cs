@@ -459,6 +459,8 @@ public readonly struct InputBox : IControl
         var fg = p.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
+        Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
+        Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
 
@@ -474,6 +476,7 @@ public readonly struct InputBox : IControl
         Draw.Colour = p.Theme.Background[instance.State].Color;
         Draw.Texture = p.Theme.Background[instance.State].Texture;
         anim.AnimateColour(ref Draw.Colour, t);
+        Draw.OutlineWidth = 0;
         Draw.Quad(instance.Rects.Rendered.Expand(-2), 0, p.Theme.Rounding);
 
         Draw.ResetTexture();
@@ -502,6 +505,7 @@ public readonly struct InputBox : IControl
                 selRect.MaxY -= p.Theme.Padding;
                 selRect.MinY += p.Theme.Padding;
 
+                Draw.OutlineWidth = 0;
                 Draw.Quad(selRect, 0, p.Theme.Rounding);
                 //textColourInstructions[0] = new TextMeshGenerator.ColourInstruction(0, Colors.White);
                 //textColourInstructions[1] = new TextMeshGenerator.ColourInstruction(selection.Value.From, fg.Color);
@@ -540,6 +544,7 @@ public readonly struct InputBox : IControl
                     );
 
                 Draw.Colour = Colors.White;
+                Draw.OutlineWidth = 0;
                 Draw.Quad(rect.Translate(cursorPosition + p.Theme.Padding, 0), 0, 0);
             }
         }

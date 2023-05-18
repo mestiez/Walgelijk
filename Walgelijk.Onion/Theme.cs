@@ -18,9 +18,13 @@ public struct Theme
 
     public int Padding = 5;
     public float Rounding = 1;
+
+    public StateDependent<int> OutlineWidth = new StateDependent<int>(1, 2, 1, 2);
+    public StateDependent<Color> OutlineColour = new Color("#838383");
+
     public StateDependent<float> WindowTitleBarHeight = 24;
 
-    public Color FocusBoxColour = new Color("#3adeda");
+    public Color FocusBoxColour = new Color("#ffc61c");
     public float FocusBoxSize = 5;
     public float FocusBoxWidth = 4;
 

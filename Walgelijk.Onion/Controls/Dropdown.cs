@@ -74,7 +74,7 @@ public readonly struct Dropdown<T> : IControl
                 Onion.Layout.Height(height);
                 Onion.Layout.Width(instance.Rects.ComputedGlobal.Width - instance.Theme.Padding * 2);
                 Onion.Layout.CenterHorizontal();
-                Onion.Theme.SetAll(instance.Theme).Once();
+                Onion.Theme.SetAll(instance.Theme).OutlineWidth(0).Once();
                 Onion.Animation.Add(new MoveInAnimation(instance.Rects.ComputedGlobal.GetCenter()));
                 if (Button.Click(values[i]?.ToString() ?? "???", i + instance.Identity))
                     selectedIndex = i;
@@ -181,6 +181,8 @@ public readonly struct Dropdown<T> : IControl
         var fg = p.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
+        Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
+        Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
         anim.AnimateColour(ref Draw.Colour, t);

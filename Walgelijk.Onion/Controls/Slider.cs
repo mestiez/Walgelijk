@@ -120,6 +120,8 @@ public readonly struct Slider : IControl
         var fg = p.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
+        Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
+        Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
         anim.AnimateColour(ref Draw.Colour, t);
@@ -142,6 +144,7 @@ public readonly struct Slider : IControl
 
         Draw.Colour = p.Theme.Accent[instance.State];
         anim.AnimateColour(ref Draw.Colour, t);
+        Draw.OutlineWidth = 0;
         Draw.Quad(sliderRect.Expand(-p.Theme.Padding), 0, p.Theme.Rounding);
 
         if (labelFormat != null)
@@ -159,7 +162,7 @@ public readonly struct Slider : IControl
 
     public void OnEnd(in ControlParams p)
     {
-        
+
     }
 
     public void OnRemove(in ControlParams p)

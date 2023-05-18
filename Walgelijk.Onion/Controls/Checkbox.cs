@@ -52,6 +52,8 @@ public readonly struct Checkbox : IControl
         var fg = p.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
+        Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
+        Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
 
@@ -67,6 +69,7 @@ public readonly struct Checkbox : IControl
 
         if (states[p.Identity].Value)
         {
+            Draw.OutlineWidth = 0;
             Draw.Colour = p.Theme.Accent[p.Instance.State];
             anim.AnimateColour(ref Draw.Colour, t);
             Draw.Quad(checkBoxRect.Expand(-6), 0, p.Theme.Rounding);
