@@ -135,12 +135,10 @@ public struct IMGUIScene : ISceneCreator
             }
 
             layout.Size(128, 256).StickRight().StickTop().VerticalLayout();
-            Ui.Theme.Padding(12);
             Ui.StartDummy();
             {
                 layout.Size(128, 32);
                 Ui.Decorators.Tooltip("Animation duration");
-                Ui.Theme.Text(Colors.Red).FontSize(24).Once();
                 Ui.FloatInputBox(ref Game.Console.UI.AnimationDuration, (0, 1));
 
                 layout.Size(128, 32);
@@ -162,7 +160,6 @@ public struct IMGUIScene : ISceneCreator
             {
                 layout.Size(128, 24);
                 layout.Move(128, Onion.Theme.Base.Padding);
-                Ui.Theme.Text(Colors.Magenta).Font(Resources.Load<Font>("inter-tight.fnt")).Once();
                 Ui.Dropdown(DropdownOptions, ref DropdownSelectedIndex);
             }
 
