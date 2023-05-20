@@ -7,7 +7,7 @@ public class DecoratorQueue
     /// <summary>
     /// Default decorators to apply
     /// </summary>
-    public readonly List<IDecorator>? Default = null;
+    public List<IDecorator>? Default = null;
 
     internal readonly Queue<IDecorator> Queue = new();
     internal bool ForceNoDecorators = false;
