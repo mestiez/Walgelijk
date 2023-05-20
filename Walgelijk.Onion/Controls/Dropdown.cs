@@ -179,13 +179,14 @@ public readonly struct Dropdown<T> : IControl
         var anim = instance.Animations;
 
         var fg = p.Theme.Foreground[instance.State];
+        anim.AnimateColour(ref fg.Color, t);
+
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
         Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
         Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
-        anim.AnimateColour(ref Draw.Colour, t);
 
         Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
 
@@ -193,8 +194,15 @@ public readonly struct Dropdown<T> : IControl
         {
             Draw.Colour = fg.Color.Brightness(0.8f);
             Draw.Texture = fg.Texture;
-            anim.AnimateColour(ref Draw.Colour, t);
             Draw.Quad(currentState.DropdownRect, 0, p.Theme.Rounding);
+
+            var inner = currentState.DropdownRect;
+            inner.MinX += p.Theme.Padding - 1;
+            inner.MaxX -= p.Theme.Padding - 1;
+            inner.MinY += p.Theme.Padding + p.Theme.Rounding / 2;
+            inner.MaxY -= p.Theme.Padding + p.Theme.Rounding / 2;
+            Draw.Colour = fg.Color;
+            Draw.Quad(inner, 0, 0);
         }
 
         if (anim.ShouldRenderText(t))

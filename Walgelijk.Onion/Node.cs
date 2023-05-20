@@ -30,6 +30,11 @@ public class Node
     public int RequestedLocalOrder;
 
     /// <summary>
+    /// Should this node be considered when calculating the parent scroll bounds?
+    /// </summary>
+    public bool ContributeToParentScrollRect = true;
+
+    /// <summary>
     /// This control will always be considered to be on top if this is true. 
     /// Used for things like tooltips or dropdown menus.
     /// Note that the behaviour of this is undefined if multiple nodes are always on top.
@@ -257,7 +262,8 @@ public class Node
             else
             {
                 //living child should count towards child content rect
-                inst.Rects.ChildContent = inst.Rects.ChildContent.StretchToContain(childInst.Rects.Intermediate);
+                if (item.ContributeToParentScrollRect)
+                    inst.Rects.ChildContent = inst.Rects.ChildContent.StretchToContain(childInst.Rects.Intermediate);
                 item.SiblingIndex = siblingIndex++;
             }
         }

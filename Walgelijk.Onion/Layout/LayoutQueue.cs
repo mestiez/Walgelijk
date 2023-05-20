@@ -86,6 +86,11 @@ public class LayoutQueue
     public LayoutQueue Height(float h) => EnqueueConstraint(new HeightConstraint(h));
 
     /// <summary>
+    /// Ignore parent scroll
+    /// </summary>
+    public LayoutQueue IgnoreScroll() => EnqueueConstraint(new IgnoreScroll());
+
+    /// <summary>
     /// Offset the size by adding the given values to the width and height respectively
     /// </summary>
     public LayoutQueue Scale(float w, float h) => EnqueueConstraint(new OffsetSize(w, h));
@@ -121,6 +126,11 @@ public class LayoutQueue
     /// Some controls calculate a preferred size. This constraint will apply this size if it is available, otherwise it will do nothing.
     /// </summary>
     public LayoutQueue PreferredSize() => EnqueueConstraint(new PreferredSize());
+
+    /// <summary>
+    /// Set the local order within its parent
+    /// </summary>
+    public LayoutQueue Order(int order) => EnqueueConstraint(new Order(order));
 
     /// <summary>
     /// Stretch to fit the container.

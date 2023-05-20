@@ -1,8 +1,8 @@
-﻿namespace Walgelijk.ParticleSystem
+﻿namespace Walgelijk.ParticleSystem;
+
+public static class ParticleMaterialInitialiser
 {
-    internal static class ParticleMaterialInitialiser
-    {
-        public static readonly Shader DefaultShader = new(
+    public static readonly Shader DefaultShader = new(
 
 //vertex
 @"
@@ -31,8 +31,8 @@ void main()
    gl_Position = projection * view * (model * particleModel) * vec4(position, 1.0);
 }",
 
-    //fragment
-    @"
+//fragment
+@"
 #version 460
 
 in vec2 uv;
@@ -46,13 +46,12 @@ void main()
 {
     color = vertexColor * texture(mainTex, uv);
 }"
-    );
+);
 
-        public static Material CreateDefaultMaterial()
-        {
-            var mat = new Material(DefaultShader);
-            mat.SetUniform(ShaderDefaults.MainTextureUniform, Texture.White);
-            return mat;
-        }
+    public static Material CreateDefaultMaterial()
+    {
+        var mat = new Material(DefaultShader);
+        mat.SetUniform(ShaderDefaults.MainTextureUniform, Texture.White);
+        return mat;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Xml.Linq;
 using Walgelijk.Onion.Controls;
+using Walgelijk.Onion.Layout;
 using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion;
@@ -109,8 +110,12 @@ public class ControlTree
         var inst = EnsureInstance(CurrentNode.Identity);
         var p = new ControlParams(CurrentNode, inst);
 
-        //if (b is ISetupChildren sc)
-        //    sc.OnEndChildren(p);
+        //if (p.Theme.ShowScrollbars && MathF.Max(p.Instance.Rects.ComputedScrollBounds.Width, p.Instance.Rects.ComputedScrollBounds.Height) > 0)
+        //{
+        //    Onion.Layout.Width(p.Theme.ScrollbarWidth).Height(p.Instance.Rects.Rendered.Height).IgnoreScroll().EnqueueConstraint(new EscapeScroll()) ;
+        //    Slider.Float(ref p.Instance.InnerScrollOffset.Y, Slider.Direction.Vertical, (-100, 100), 1, identity: p.Identity + 1);
+        //}
+
         CurrentNode.Behaviour.OnEnd(p);
         CurrentNode = CurrentNode.Parent;
     }
