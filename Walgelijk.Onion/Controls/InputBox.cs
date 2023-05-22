@@ -536,14 +536,14 @@ public readonly struct InputBox : IControl
                     Draw.Text(instance.Name, offset, new Vector2(ratio), HorizontalTextAlign.Left, VerticalTextAlign.Middle/*,colours: drawSelectionTextColour ? textColourInstructions : null*/);
             }
 
-            if (instance.HasFocus && cursorBlinkTimer % 1 < 0.3f)
+            if (instance.HasFocus && cursorBlinkTimer % 1 < 0.5f)
             {
-                var rect = new Rect(default, new Vector2(1, instance.Rects.Rendered.Height - p.Theme.Padding * 2)).Translate(
+                var rect = new Rect(default, new Vector2(1, instance.Rects.Rendered.Height - p.Theme.Padding * 3)).Translate(
                     instance.Rects.ComputedGlobal.MinX + textOffset,
                     (instance.Rects.ComputedGlobal.MinY + instance.Rects.ComputedGlobal.MaxY) / 2
                     );
 
-                Draw.Colour = Colors.White;
+                Draw.Colour = p.Theme.Text[ControlState.None] ;
                 Draw.OutlineWidth = 0;
                 Draw.Quad(rect.Translate(cursorPosition + p.Theme.Padding, 0), 0, 0);
             }

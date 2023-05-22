@@ -66,8 +66,8 @@ public readonly struct Tooltip : IDecorator
         Draw.Colour = appearance.Color.WithAlpha(0.95f * p.Instance.GetTransitionProgress());
         //Draw.Colour = Colors.Red.WithAlpha(0.95f);
         Draw.Texture = appearance.Texture;
-        Draw.OutlineWidth = 1;
-        Draw.OutlineColour= p.Theme.Foreground[ControlState.None].Color;
+        Draw.OutlineWidth = p.Theme.OutlineWidth[ControlState.None];
+        Draw.OutlineColour= p.Theme.OutlineColour[ControlState.None];
         Draw.Quad(rect);
         Draw.OutlineWidth = 0;
 

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Numerics;
 using Walgelijk;
+using Walgelijk.Onion.Controls;
 using Walgelijk.OpenTK;
 
 namespace TestWorld;
@@ -36,7 +37,7 @@ public class Program
         Resources.SetBasePathForType<Texture>("textures");
         Resources.SetBasePathForType<Font>("fonts");
 
-        game.Scene = new IMGUIScene().Load(game);
+        game.Scene = new TextTestScene().Load(game);
 
 #if DEBUG
         game.DevelopmentMode = true;

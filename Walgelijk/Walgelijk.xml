@@ -5776,21 +5776,6 @@
             The default font
             </summary>
         </member>
-        <member name="T:Walgelijk.KerningPair">
-            <summary>
-            The two characters a kerning amount applies to
-            </summary>
-        </member>
-        <member name="F:Walgelijk.KerningPair.PreviousChar">
-            <summary>
-            Previous character in the sequence
-            </summary>
-        </member>
-        <member name="F:Walgelijk.KerningPair.CurrentChar">
-            <summary>
-            Current character in the sequence
-            </summary>
-        </member>
         <member name="T:Walgelijk.Glyph">
             <summary>
             Structure with font glyph information
@@ -5864,6 +5849,21 @@
         <member name="F:Walgelijk.Kerning.Amount">
             <summary>
             Offset amount
+            </summary>
+        </member>
+        <member name="T:Walgelijk.KerningPair">
+            <summary>
+            The two characters a kerning amount applies to
+            </summary>
+        </member>
+        <member name="F:Walgelijk.KerningPair.PreviousChar">
+            <summary>
+            Previous character in the sequence
+            </summary>
+        </member>
+        <member name="F:Walgelijk.KerningPair.CurrentChar">
+            <summary>
+            Current character in the sequence
             </summary>
         </member>
         <member name="T:Walgelijk.RichTextTags">
@@ -6105,6 +6105,11 @@
         <member name="F:Walgelijk.TextMeshResult.LocalTextBounds">
             <summary>
             Resulting local bounding box of the text, taking the line height and amount of lines into account
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Typesetter">
+            <summary>
+            Generates text meshes
             </summary>
         </member>
         <member name="T:Walgelijk.VerticalTextAlign">

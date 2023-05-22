@@ -11,6 +11,7 @@ public struct Theme
 
     public StateDependent<Color> Text = new Color("#f0f0f0");
     public StateDependent<Color> Accent = new Color("#cc820a");
+    public StateDependent<Color> Image = Colors.White;
     public Color Highlight = new Color("#ffffff");
 
     public Font Font = Font.Default;
