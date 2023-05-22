@@ -1,12 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
-using Walgelijk.Onion.Layout;
 
 namespace Walgelijk.Onion.Controls;
 
 public readonly struct Dummy : IControl
 {
     /// <summary>
-    /// Starts a dummy control. This is an empty control that doesn't render anything and can't do anything except contain other controls.
+    /// Starts a dummy control. This is an empty control that doesn't render anything and can't do anything except contain other controls. It automatically fills its parent.
     /// </summary>
     [RequiresManualEnd]
     public static void Start(int identity = 0, [CallerLineNumber] int site = 0)

@@ -16,6 +16,11 @@ public class ThemeStack
     private readonly Stack<Theme> stack = new();
 
     /// <summary>
+    /// Get a copy of the most recent changes including <see cref="Next"/>
+    /// </summary>
+    public Theme GetChanges() => Next ?? Peek() ?? Base;
+
+    /// <summary>
     /// The theme to edit for the current context
     /// </summary>
     public Theme? Next;
@@ -40,7 +45,7 @@ public class ThemeStack
     }
 
     /// <summary>
-    /// Try and get the most recent changes, excluding <see cref="Next"/>
+    /// Try and get the most recent changes before <see cref="Next"/>. That means these are <b>not</b> the current changes. If you want to include all changes, you need <see cref="GetChanges()"/>
     /// </summary>
     public Theme? Peek()
     {

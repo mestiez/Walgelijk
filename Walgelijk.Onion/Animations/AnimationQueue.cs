@@ -2,7 +2,7 @@
 
 public class AnimationQueue
 {
-    public readonly IList<IAnimation> Default = new IAnimation[] { new FadeAnimation() };
+    public IList<IAnimation> Default = new IAnimation[] { new FadeAnimation() };
     public float DefaultDurationSeconds = 0.1f;
 
     public readonly Queue<IAnimation> Queue = new();

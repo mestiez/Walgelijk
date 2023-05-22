@@ -145,6 +145,8 @@ public class ControlInstance
         Identity = id;
     }
 
+    public float TimeSinceStateChange => Game.Main.State.Time.SecondsSinceSceneChangeUnscaled - LastStateChangeTime;
+
     public float GetTransitionProgress(float secondsSinceSceneChangeUnscaled) => Utilities.Clamp((secondsSinceSceneChangeUnscaled - LastStateChangeTime) / Onion.Animation.DefaultDurationSeconds);
-    public float GetTransitionProgress() => Utilities.Clamp((Game.Main.State.Time.SecondsSinceSceneChangeUnscaled - LastStateChangeTime) / Onion.Animation.DefaultDurationSeconds);
+    public float GetTransitionProgress() => Utilities.Clamp(TimeSinceStateChange / Onion.Animation.DefaultDurationSeconds);
 }

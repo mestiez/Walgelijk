@@ -163,7 +163,7 @@ Deserves kindness and love, a smile on their face";
                 Ui.Label("Font size");
                 layout.Size(128, 32);
                 Ui.Decorators.Tooltip("Font size");
-                Ui.IntSlider(ref Onion.Theme.Base.FontSize.Default, Slider.Direction.Horizontal, (8, 24), 1, "{0}px");
+                Ui.IntSlider(ref Onion.Theme.Base.FontSize.Default, Direction.Horizontal, (8, 24), 1, "{0}px");
             }
             Ui.End();
 
@@ -213,7 +213,7 @@ Deserves kindness and love, a smile on their face";
                         {
                             layout.Height(32).FitWidth().Move(Onion.Theme.Base.Padding, Onion.Theme.Base.Padding);
                             Ui.Decorators.Tooltip("Onion.Configuration.SoundVolume");
-                            Ui.FloatSlider(ref Onion.Configuration.SoundVolume, Slider.Direction.Horizontal, (0, 1), identity: i);
+                            Ui.FloatSlider(ref Onion.Configuration.SoundVolume, Direction.Horizontal, (0, 1), identity: i);
 
                             layout.Size(256, 590).FitWidth().Move(Onion.Theme.Base.Padding, Onion.Theme.Base.Padding).Move(0, 32).PreferredSize();
                             Ui.TextRect(textRectContents, HorizontalTextAlign.Left, VerticalTextAlign.Top, identity: i);
@@ -234,35 +234,35 @@ Deserves kindness and love, a smile on their face";
 
             layout.Size(256, 32);
             layout.Move(Onion.Theme.Base.Padding, Window.Height / 2 + Onion.Theme.Base.Padding);
-            Ui.IntSlider(ref Onion.Theme.Base.Padding, Slider.Direction.Horizontal, new MinMax<int>(0, 8), 1, "Padding: {0}px");
+            Ui.IntSlider(ref Onion.Theme.Base.Padding, Direction.Horizontal, new MinMax<int>(0, 8), 1, "Padding: {0}px");
 
             layout.Size(256, 32);
             layout.Move(Onion.Theme.Base.Padding, Window.Height / 2 + Onion.Theme.Base.Padding * 2 + 32);
-            Ui.FloatSlider(ref Onion.Theme.Base.Rounding, Slider.Direction.Horizontal, new MinMax<float>(0, 24), 0.5f, "Rounding: {0}px");
+            Ui.FloatSlider(ref Onion.Theme.Base.Rounding, Direction.Horizontal, new MinMax<float>(0, 24), 0.5f, "Rounding: {0}px");
 
             layout.Size(256, 32);
             layout.Move(Onion.Theme.Base.Padding, Window.Height / 2 + Onion.Theme.Base.Padding * 3 + 32 * 2);
-            Ui.FloatSlider(ref Onion.Theme.Base.FocusBoxSize, Slider.Direction.Horizontal, new MinMax<float>(0, 24), 1);
+            Ui.FloatSlider(ref Onion.Theme.Base.FocusBoxSize, Direction.Horizontal, new MinMax<float>(0, 24), 1);
 
             {
                 layout.Size(32, (Window.Height / 2 + Onion.Theme.Base.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Base.Padding));
                 layout.Move(Onion.Theme.Base.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Base.Padding);
-                Ui.FloatSlider(ref Onion.Theme.Base.Accent.Default.R, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f, "R");
+                Ui.FloatSlider(ref Onion.Theme.Base.Accent.Default.R, Direction.Vertical, new MinMax<float>(0, 1), 0.01f, "R");
 
                 layout.Size(32, (Window.Height / 2 + Onion.Theme.Base.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Base.Padding));
                 layout.Move(Onion.Theme.Base.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Base.Padding);
                 layout.Move(32 + Onion.Theme.Base.Padding, 0);
-                Ui.FloatSlider(ref Onion.Theme.Base.Accent.Default.B, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f, "G");
+                Ui.FloatSlider(ref Onion.Theme.Base.Accent.Default.B, Direction.Vertical, new MinMax<float>(0, 1), 0.01f, "G");
 
                 layout.Size(32, (Window.Height / 2 + Onion.Theme.Base.Padding * 3 + 32 * 2 + 32) - (Window.Height / 2 + Onion.Theme.Base.Padding));
                 layout.Move(Onion.Theme.Base.Padding * 2 + 256, Window.Height / 2 + Onion.Theme.Base.Padding);
                 layout.Move(32 + Onion.Theme.Base.Padding, 0);
                 layout.Move(32 + Onion.Theme.Base.Padding, 0);
-                Ui.FloatSlider(ref Onion.Theme.Base.Accent.Default.G, Slider.Direction.Vertical, new MinMax<float>(0, 1), 0.01f, "B");
+                Ui.FloatSlider(ref Onion.Theme.Base.Accent.Default.G, Direction.Vertical, new MinMax<float>(0, 1), 0.01f, "B");
 
                 layout.Size(256 + ((32 + Onion.Theme.Base.Padding) * 3), 32);
                 layout.Move(Onion.Theme.Base.Padding, Window.Height / 2 + Onion.Theme.Base.Padding * 4 + 32 * 3);
-                Ui.FloatSlider(ref Onion.Animation.DefaultDurationSeconds, Slider.Direction.Horizontal, new MinMax<float>(float.Epsilon, 1), 0.01f);
+                Ui.FloatSlider(ref Onion.Animation.DefaultDurationSeconds, Direction.Horizontal, new MinMax<float>(float.Epsilon, 1), 0.01f);
             }
 
             layout.Size(256, 256).StickRight().StickBottom();

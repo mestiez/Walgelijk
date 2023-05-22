@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Walgelijk.Onion.Animations;
 using Walgelijk.Onion.Controls;
 using Walgelijk.SimpleDrawing;
 
@@ -7,10 +8,6 @@ namespace Walgelijk.Onion;
 public class OnionSystem : Walgelijk.System
 {
     public UiDebugOverlay DebugOverlay = UiDebugOverlay.None;
-
-    public override void Initialise()
-    {
-    }
 
     public override void Update()
     {

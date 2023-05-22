@@ -18,11 +18,14 @@ public class ControlTree
     /// </summary>
     public float CacheTimeToLive = 15;
     public Node? CurrentNode;
+    public Node LastNode { get => lastNode ?? Root; set => lastNode = value; }
+    public ControlInstance GetLastInstance() => EnsureInstance(LastNode.Identity);
 
     private int incrementor;
     private readonly Queue<Node> toDelete = new();
     private float focusAnimationProgress = 0;
     private int? lastFocus;
+    private Node? lastNode;
 
     public ControlTree()
     {
@@ -98,7 +101,7 @@ public class ControlTree
         Onion.Animation.Process(inst);
         Onion.Decorators.Process(inst);
         Onion.Theme.ApplyTo(inst);
-        
+
         return (inst, node);
     }
 
@@ -109,6 +112,8 @@ public class ControlTree
 
         var inst = EnsureInstance(CurrentNode.Identity);
         var p = new ControlParams(CurrentNode, inst);
+
+        LastNode = CurrentNode;
 
         //if (p.Theme.ShowScrollbars && MathF.Max(p.Instance.Rects.ComputedScrollBounds.Width, p.Instance.Rects.ComputedScrollBounds.Height) > 0)
         //{
@@ -122,7 +127,12 @@ public class ControlTree
 
     public void Process(float dt)
     {
+        Onion.Animation.Clear();
+        Onion.Decorators.Clear();
+        Onion.Layout.Reset();
         Onion.Theme.Reset();
+
+        LastNode = null;
 
         foreach (var node in Nodes.Values)
         {

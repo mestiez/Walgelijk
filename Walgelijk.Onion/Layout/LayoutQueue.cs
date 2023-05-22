@@ -137,22 +137,22 @@ public class LayoutQueue
     /// </summary>
     /// <param name="w">Optional value ranging from 0 to 1 where 1 is 100% of the parent width</param>
     /// <param name="h">Optional value ranging from 0 to 1 where 1 is 100% of the parent height</param>
-    public LayoutQueue FitContainer(float? w, float? h) => EnqueueConstraint(new FitContainer(w, h));
+    public LayoutQueue FitContainer(float? w, float? h, bool pad = true) => EnqueueConstraint(new FitContainer(w, h, pad));
 
     /// <summary>
     /// Stretch to fit the container.
     /// </summary>
-    public LayoutQueue FitContainer() => EnqueueConstraint(new FitContainer(1, 1));
+    public LayoutQueue FitContainer() => EnqueueConstraint(new FitContainer(1, 1, true));
 
     /// <summary>
     /// Stretch to the width of the container
     /// </summary>
-    public LayoutQueue FitWidth() => EnqueueConstraint(new FitContainer(1, null));
+    public LayoutQueue FitWidth(bool pad = true) => EnqueueConstraint(new FitContainer(1, null, pad));
 
     /// <summary>
     /// Stretch to the height of the container
     /// </summary>
-    public LayoutQueue FitHeight() => EnqueueConstraint(new FitContainer(null, 1));
+    public LayoutQueue FitHeight(bool pad = true) => EnqueueConstraint(new FitContainer(null, 1, pad));
 
     /// <summary>
     /// Center the control horizontally within its parent

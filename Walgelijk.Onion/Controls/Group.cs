@@ -5,10 +5,17 @@ namespace Walgelijk.Onion.Controls;
 
 public readonly struct Group : IControl
 {
-    [RequiresManualEnd]
-    public static void Start(int identity = 0, [CallerLineNumber] int site = 0)
+    private readonly bool drawBackground;
+
+    public Group(bool background)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Group).GetHashCode(), identity, site), new Group());
+        this.drawBackground = background;
+    }
+
+    [RequiresManualEnd]
+    public static void Start(bool background = true, int identity = 0, [CallerLineNumber] int site = 0)
+    {
+        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Group).GetHashCode(), identity, site), new Group(background));
     }
 
     public void OnAdd(in ControlParams p)
@@ -33,6 +40,9 @@ public readonly struct Group : IControl
 
     public void OnRender(in ControlParams p)
     {
+        if (!drawBackground)
+            return;
+
         (ControlTree tree, Layout.LayoutQueue layout, Input input, GameState state, Node node, ControlInstance instance) = p;
 
         instance.Rects.Rendered = instance.Rects.ComputedGlobal;

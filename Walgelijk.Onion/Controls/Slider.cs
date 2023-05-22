@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using Walgelijk.SimpleDrawing;
 
@@ -18,12 +17,6 @@ public readonly struct Slider : IControl
         this.range = range;
         this.step = step;
         this.labelFormat = labelFormat;
-    }
-
-    public enum Direction
-    {
-        Horizontal,
-        Vertical
     }
 
     private static readonly OptionalControlState<float> states = new();
@@ -150,7 +143,8 @@ public readonly struct Slider : IControl
         if (labelFormat != null)
         {
             // TODO string allocation :S
-            var str = states[p.Identity].ToString();
+            var v = states[p.Identity];
+            var str = v.ToString();
             if (!string.IsNullOrWhiteSpace(labelFormat))
                 str = string.Format(labelFormat, str);
 

@@ -8,7 +8,7 @@ namespace Walgelijk.Onion.Controls;
 
 public readonly struct InputBox : IControl
 {
-    public static readonly char[] WordDelimiters = //TODO implement
+    public static readonly char[] WordDelimiters =
     {
         ' ',
         '\t',
@@ -53,7 +53,7 @@ public readonly struct InputBox : IControl
 
     public static bool Float(ref float value, in MinMax<float>? range = null, string? placeholder = null, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var options = new TextBoxOptions(placeholder, null, null, false);
+        var options = new TextBoxOptions(placeholder, null, null, false, true);
 
         var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(InputBox).GetHashCode(), identity, site), new InputBox());
         instance.RenderFocusBox = true;
@@ -67,6 +67,19 @@ public readonly struct InputBox : IControl
             value = current;
         else
         {
+            if (instance.HasScroll)
+            {
+                if (Onion.Input.ScrollDelta.Y > float.Epsilon)
+                    value += 1;
+                else if (Onion.Input.ScrollDelta.Y < -float.Epsilon)
+                    value -= 1;
+
+                if (range.HasValue)
+                    value = Utilities.Clamp(value, range.Value.Min, range.Value.Max);
+                instance.Name = value.ToString();
+                return true;
+            }
+
             if (MathF.Abs(value - current) > float.Epsilon)
                 floatInputState.SetValue(instance.Identity, value);
 
@@ -99,6 +112,7 @@ public readonly struct InputBox : IControl
 
         instance.Name = buffer;
         states.Add(instance.Identity, new TextBoxState(false, options));
+
         return false;
     }
 
@@ -164,7 +178,7 @@ public readonly struct InputBox : IControl
             local.X -= textOffset;
             local.X -= p.Theme.Padding;
 
-            //we dont use MoveCursor here because this is a special case where the mouse input determines the cursor position
+            // we dont use MoveCursor here because this is a special case where the mouse input determines the cursor position
             cursorIndex = OffsetToIndex(p, p.Instance.Name, local.X, out cursorPosition);
 
             if (p.Input.MousePrimaryPressed && !p.Input.ShiftHeld && !p.Input.DoubleClicked)
@@ -195,18 +209,21 @@ public readonly struct InputBox : IControl
 
             if (p.Instance.HasScroll)
             {
-                var textWidth = GetTextWidth(p, p.Instance.Name);
-                var maxWidth = p.Instance.Rects.ComputedGlobal.Width - p.Theme.Padding * 2;
-
-                if (textWidth > maxWidth)
+                if (states[p.Identity].Options.ScrollIsValueChange) // this input box has a number in it so scrolling should not move the text
                 {
-                    textOffset += Onion.Input.ScrollDelta.Y;
-                    textOffset = Utilities.Clamp(
-                        textOffset,
-                        -textWidth + maxWidth, 0);
+                    var textWidth = GetTextWidth(p, p.Instance.Name);
+                    var maxWidth = p.Instance.Rects.ComputedGlobal.Width - p.Theme.Padding * 2;
+
+                    if (textWidth > maxWidth)
+                    {
+                        textOffset += Onion.Input.ScrollDelta.Y;
+                        textOffset = Utilities.Clamp(
+                            textOffset,
+                            -textWidth + maxWidth, 0);
+                    }
+                    else
+                        textOffset = 0;
                 }
-                else
-                    textOffset = 0;
             }
         }
         else
@@ -307,7 +324,7 @@ public readonly struct InputBox : IControl
             string textToAdd = string.Empty;
             int backspaceCount = 0;
             int deleteCount = 0;
-            var regex = states[p.Identity].Options.Filter;
+            //var regex = states[p.Identity].Options.Filter;
             for (int i = 0; i < p.Input.TextEntered.Length; i++)
             {
                 var c = p.Input.TextEntered[i];
@@ -543,7 +560,7 @@ public readonly struct InputBox : IControl
                     (instance.Rects.ComputedGlobal.MinY + instance.Rects.ComputedGlobal.MaxY) / 2
                     );
 
-                Draw.Colour = p.Theme.Text[ControlState.None] ;
+                Draw.Colour = p.Theme.Text[ControlState.None];
                 Draw.OutlineWidth = 0;
                 Draw.Quad(rect.Translate(cursorPosition + p.Theme.Padding, 0), 0, 0);
             }

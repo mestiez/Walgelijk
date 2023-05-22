@@ -112,17 +112,18 @@ public class Node
         p.Tree.DrawboundStack.Push(drawBounds);
 
         Draw.BlendMode = BlendMode.AlphaBlend;
+        Draw.ScreenSpace = true;
         Draw.Font = p.Theme.Font;
         Draw.FontSize = p.Theme.FontSize[p.Instance.State];
         Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, p.Node.ComputedGlobalOrder);
-        Draw.DrawBounds = new DrawBounds(drawBounds.GetSize(), drawBounds.BottomLeft, true);
         p.Instance.Rects.ComputedDrawBounds = drawBounds;
         p.Instance.Rects.Rendered = p.Instance.Rects.ComputedGlobal;
 
         foreach (var decorator in p.Instance.Decorators)
             decorator.RenderBefore(p);
 
-        if (drawBounds.Width > 0 && drawBounds.Height > 0)
+        Draw.DrawBounds = new DrawBounds(p.Instance.Rects.ComputedDrawBounds, true);
+        if (p.Instance.Rects.ComputedDrawBounds.Width > 0 && p.Instance.Rects.ComputedDrawBounds.Height > 0)
         {
             Behaviour.OnRender(p);
             foreach (var child in GetChildren())

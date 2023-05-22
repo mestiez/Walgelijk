@@ -36,6 +36,7 @@ public readonly struct TextTestScene : ISceneCreator
         Ui.Theme.Base.FocusBoxWidth = 1;
         Ui.Theme.Base.FocusBoxSize = 2;
         Ui.Theme.Base.Background = (Appearance)Colors.White;
+        Ui.Theme.Base.Image = Colors.Black;
         Ui.Theme.Base.Foreground = new StateDependent<Appearance>(Colors.WhiteSmoke, Colors.White, Colors.WhiteSmoke);
 
         Draw.CacheTextMeshes = -1;
@@ -45,6 +46,12 @@ public readonly struct TextTestScene : ISceneCreator
 
     public class TextTestSystem : Walgelijk.System, IDisposable
     {
+        public enum Gizmos
+        {
+            GeometryBounds = 0,
+            TextBounds = 1
+        }
+
         public readonly TextMeshGenerator LegacyGenerator = new TextMeshGenerator();
         public readonly Typesetter ModernGenerator = new Typesetter();
 
@@ -59,6 +66,8 @@ public readonly struct TextTestScene : ISceneCreator
 
         public HorizontalTextAlign HorizontalAlign = HorizontalTextAlign.Left;
         public VerticalTextAlign VerticalAlign = VerticalTextAlign.Bottom;
+
+        public bool[] gizmoToggles = { false, false };
 
         private const int maxVertexCount = 1024;
         private readonly VertexBuffer vtx = new VertexBuffer(new Vertex[maxVertexCount], new uint[maxVertexCount * 6]);
@@ -122,23 +131,13 @@ public readonly struct TextTestScene : ISceneCreator
             Ui.Layout.Size(128, 32).Move(padding * 2 + 128, padding * 2 + 32);
             Ui.EnumDropdown(ref HorizontalAlign);
 
-            Ui.Layout.Size(128, 32).Move(padding * 3 + 128 * 2, padding * 2 + 32);
+            Ui.Layout.Size(133, 32).Move(padding * 3 + 128 * 2, padding * 2 + 32);
             Ui.Decorators.Tooltip("Font size");
-            Ui.IntInputBox(ref FontSize, (8, 110));
+            Ui.IntStepper(ref FontSize, (8, 72), 1);
 
-            Ui.Layout.Size(32, 16 - padding / 2).Move(padding * 4 + 128 * 3, padding * 2 + 32);
-            Ui.Theme.Image(Colors.Black).Once();
-            if (Ui.ClickImageButton(BuiltInAssets.Icons.ChevronUp, ImageContainmentMode.Contain))
-                FontSize += 12;  
-
-            Ui.Layout.Size(32, 16 - padding / 2).Move(padding * 4 + 128 * 3, padding * 2.5f + 32 + 16);
-            Ui.Theme.Image(Colors.Black).Once();
-            if (Ui.ClickImageButton(BuiltInAssets.Icons.ChevronDown, ImageContainmentMode.Contain))
-                FontSize -= 12;
-
-            Ui.Layout.Size(128, 32).Move(padding * 5 + 128 * 3 + 48, padding * 2 + 32);
+            Ui.Layout.Size(100, 32).Move(padding * 5 + 128 * 3, padding * 2 + 32);
             Ui.Decorators.Tooltip("Tracking");
-            Ui.FloatSlider(ref Tracking, Slider.Direction.Horizontal, (0, 4), 0.1f, "{0}x");
+            Ui.FloatSlider(ref Tracking, Direction.Horizontal, (0, 4), 0.1f, "{0}x");
 
             FontSize = Math.Max(6, FontSize);
             Font = Fonts[selectedFontIndex];
