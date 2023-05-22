@@ -49,7 +49,8 @@ public readonly struct TextTestScene : ISceneCreator
         public enum Gizmos
         {
             GeometryBounds = 0,
-            TextBounds = 1
+            TextBounds = 1,
+            Baseline = 2
         }
 
         public readonly TextMeshGenerator LegacyGenerator = new TextMeshGenerator();
@@ -57,8 +58,8 @@ public readonly struct TextTestScene : ISceneCreator
 
         public string Text = "Hallo Wereld!";
 
-        public Vector2 LegacyPosition;
-        public Vector2 ModernPosition;
+        public float LegacyPosition;
+        public float ModernPosition;
 
         public Font Font = Font.Default;
         public int FontSize = 24;
@@ -67,10 +68,14 @@ public readonly struct TextTestScene : ISceneCreator
         public HorizontalTextAlign HorizontalAlign = HorizontalTextAlign.Left;
         public VerticalTextAlign VerticalAlign = VerticalTextAlign.Bottom;
 
-        public bool[] gizmoToggles = { false, false };
+        public bool[] gizmoToggles = { false, false, true };
 
         private const int maxVertexCount = 1024;
         private readonly VertexBuffer vtx = new VertexBuffer(new Vertex[maxVertexCount], new uint[maxVertexCount * 6]);
+
+        public static readonly Color GeometryBoundsCol = Colors.Red;
+        public static readonly Color TextBoundsCol = Colors.Blue;
+        public static readonly Color BaselineCol = new Color("#0acf52");
 
         private Font[] Fonts =
         {
@@ -110,8 +115,8 @@ public readonly struct TextTestScene : ISceneCreator
             ModernGenerator.VerticalAlign = VerticalAlign;
             ModernGenerator.Color = Ui.Theme.Base.Text.Default;
 
-            LegacyPosition = new Vector2(32, Window.Height * (1 / 3f));
-            ModernPosition = new Vector2(32, Window.Height * (2 / 3f));
+            LegacyPosition = Window.Height * (1 / 3f);
+            ModernPosition = Window.Height * (2 / 3f);
         }
 
         public override void Update()
@@ -125,19 +130,45 @@ public readonly struct TextTestScene : ISceneCreator
             Ui.Layout.Size(ddw, 32).Move(w - ddw + padding * 2, padding);
             Ui.Dropdown(Fonts, ref selectedFontIndex);
 
-            Ui.Layout.Size(128, 32).Move(padding, padding * 2 + 32);
-            Ui.EnumDropdown(ref VerticalAlign);
+            Ui.Layout.Size(Window.Width, 32 + padding * 2).Move(0, padding * 2 + 32).HorizontalLayout();
+            Ui.StartScrollView();
+            {
+                Ui.Layout.Size(128, 32);
+                Ui.EnumDropdown(ref VerticalAlign);
 
-            Ui.Layout.Size(128, 32).Move(padding * 2 + 128, padding * 2 + 32);
-            Ui.EnumDropdown(ref HorizontalAlign);
+                Ui.Layout.Size(128, 32);
+                Ui.EnumDropdown(ref HorizontalAlign);
 
-            Ui.Layout.Size(133, 32).Move(padding * 3 + 128 * 2, padding * 2 + 32);
-            Ui.Decorators.Tooltip("Font size");
-            Ui.IntStepper(ref FontSize, (8, 72), 1);
+                Ui.Layout.Size(64, 32);
+                Ui.Decorators.Tooltip("Font size");
+                Ui.IntStepper(ref FontSize, (8, 72), 1);
 
-            Ui.Layout.Size(100, 32).Move(padding * 5 + 128 * 3, padding * 2 + 32);
-            Ui.Decorators.Tooltip("Tracking");
-            Ui.FloatSlider(ref Tracking, Direction.Horizontal, (0, 4), 0.1f, "{0}x");
+                Ui.Layout.Size(64, 32);
+                Ui.Decorators.Tooltip("Tracking");
+                Ui.FloatStepper(ref Tracking, (0, 4), 0.1f);
+
+                Ui.Layout.Size(130, 32);
+                Ui.StartGroup(false);
+                {
+                    Ui.Layout.Size(130, 14);
+                    Ui.Theme.Accent(GeometryBoundsCol);
+                    Ui.Checkbox(ref gizmoToggles[0], nameof(Gizmos.GeometryBounds));
+                    Ui.Layout.Size(140, 14).Move(0, 18);
+                    Ui.Theme.Accent(TextBoundsCol);
+                    Ui.Checkbox(ref gizmoToggles[1], nameof(Gizmos.TextBounds));
+                }
+                Ui.End();
+
+                Ui.Layout.Size(130, 32);
+                Ui.StartGroup(false);
+                {
+                    Ui.Layout.Size(130, 14);
+                    Ui.Theme.Accent(BaselineCol);
+                    Ui.Checkbox(ref gizmoToggles[2], nameof(Gizmos.Baseline));
+                }
+                Ui.End();
+            }
+            Ui.End();
 
             FontSize = Math.Max(6, FontSize);
             Font = Fonts[selectedFontIndex];
@@ -150,7 +181,7 @@ public readonly struct TextTestScene : ISceneCreator
 
         private void RenderAction(IGraphics g)
         {
-            const float s = 1;
+            const float padding = 32;
 
             var target = g.CurrentTarget;
 
@@ -160,27 +191,65 @@ public readonly struct TextTestScene : ISceneCreator
             target.ViewMatrix = Matrix4x4.Identity;
             float ratio = (float)FontSize / Font.Size;
 
+            float x = padding;
+            switch (HorizontalAlign)
+            {
+                case HorizontalTextAlign.Center:
+                    x = Window.Width / 2;
+                    break;
+                case HorizontalTextAlign.Right:
+                    x = Window.Width - padding;
+                    break;
+            }
+
             Synchronise();
 
-            var r = PrepareLegacy();
-            var a = LegacyPosition;
-            var b = new Vector2(LegacyPosition.X + r.LocalBounds.Width * ratio, LegacyPosition.Y);
-            DrawLine(g, a, b, 2, Colors.Red);
-            DrawLine(g, new Vector2(a.X, a.Y - r.LocalBounds.Height * ratio), new Vector2(b.X, b.Y - r.LocalBounds.Height * ratio), 2, Colors.Blue);
+            var legacyPos = new Vector2(x, LegacyPosition);
+            var modernPos = new Vector2(x, ModernPosition);
 
-            target.ModelMatrix =
-                Matrix4x4.CreateScale(s * ratio, -s * ratio, 1) *
-                Matrix4x4.CreateTranslation(LegacyPosition.X, LegacyPosition.Y, 0);
-            g.Draw(vtx, Font.Material);
+            var r = LegacyGenerator.Generate(Text, vtx.Vertices, vtx.Indices);
+            DrawResult(g, ratio, legacyPos, r);
 
-            r = PrepareModern();
-            target.ModelMatrix =
-                Matrix4x4.CreateScale(s, -s, 1) *
-                Matrix4x4.CreateTranslation(ModernPosition.X, ModernPosition.Y, 0);
-            g.Draw(vtx, Font.Material);
+            r = ModernGenerator.Generate(Text, vtx.Vertices, vtx.Indices);
+            DrawResult(g, ratio, modernPos, r);
 
             target.ViewMatrix = view;
             target.ProjectionMatrix = proj;
+        }
+
+        private void DrawResult(IGraphics g, float ratio, Vector2 pos, TextMeshResult r)
+        {
+            var target = g.CurrentTarget;
+            vtx.ForceUpdate();
+            vtx.AmountOfIndicesToRender = r.IndexCount;
+
+            if (gizmoToggles[(int)Gizmos.Baseline])
+                DrawLine(g, new Vector2(0, pos.Y), new Vector2(Window.Width, pos.Y), 2, BaselineCol);
+
+            if (gizmoToggles[(int)Gizmos.GeometryBounds])
+            {
+                var v = r.LocalBounds;
+                v.MinX *= ratio;
+                v.MinY *= -ratio;
+                v.MaxX *= ratio;
+                v.MaxY *= -ratio;
+                DrawRect(g, v.Translate(pos), 2, GeometryBoundsCol);
+            }
+
+            if (gizmoToggles[(int)Gizmos.TextBounds])
+            {
+                var v = r.LocalTextBounds;
+                v.MinX *= ratio;
+                v.MinY *= -ratio;
+                v.MaxX *= ratio;
+                v.MaxY *= -ratio;
+                DrawRect(g, v.Translate(pos), 2, TextBoundsCol);
+            }
+
+            target.ModelMatrix =
+                Matrix4x4.CreateScale(ratio, -ratio, 1) *
+                Matrix4x4.CreateTranslation(pos.X, pos.Y, 0);
+            g.Draw(vtx, Font.Material);
         }
 
         private void DrawLine(IGraphics g, Vector2 from, Vector2 to, float width, Color color)
@@ -199,20 +268,12 @@ public readonly struct TextTestScene : ISceneCreator
             g.Draw(PrimitiveMeshes.Quad, lineMat);
         }
 
-        private TextMeshResult PrepareModern()
+        private void DrawRect(IGraphics g, Rect r, float width, Color color)
         {
-            var r = ModernGenerator.Generate(Text, vtx.Vertices, vtx.Indices);
-            vtx.ForceUpdate();
-            vtx.AmountOfIndicesToRender = r.IndexCount;
-            return r;
-        }
-
-        private TextMeshResult PrepareLegacy()
-        {
-            var r = LegacyGenerator.Generate(Text, vtx.Vertices, vtx.Indices);
-            vtx.ForceUpdate();
-            vtx.AmountOfIndicesToRender = r.IndexCount;
-            return r;
+            DrawLine(g, r.TopLeft, r.TopRight, width, color);
+            DrawLine(g, r.BottomLeft, r.BottomRight, width, color);
+            DrawLine(g, r.TopLeft, r.BottomLeft, width, color);
+            DrawLine(g, r.BottomRight, r.TopRight, width, color);
         }
 
         public void Dispose()

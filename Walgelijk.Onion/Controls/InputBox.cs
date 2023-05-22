@@ -209,7 +209,7 @@ public readonly struct InputBox : IControl
 
             if (p.Instance.HasScroll)
             {
-                if (states[p.Identity].Options.ScrollIsValueChange) // this input box has a number in it so scrolling should not move the text
+                if (!states[p.Identity].Options.ScrollIsValueChange) // this input box has a number in it so scrolling should not move the text
                 {
                     var textWidth = GetTextWidth(p, p.Instance.Name);
                     var maxWidth = p.Instance.Rects.ComputedGlobal.Width - p.Theme.Padding * 2;

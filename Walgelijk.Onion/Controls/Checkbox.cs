@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
+using Walgelijk.Onion.Assets;
 using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion.Controls;
@@ -58,8 +59,7 @@ public readonly struct Checkbox : IControl
         anim.AnimateRect(ref instance.Rects.Rendered, t);
 
         var checkBoxRect = instance.Rects.Rendered with { Width = instance.Rects.Rendered.Height };
-        var textBoxRect = instance.Rects.Rendered.Translate(checkBoxRect.Width, 0) with
-        { Width = instance.Rects.Rendered.Width - checkBoxRect.Width };
+        var textBoxRect = instance.Rects.Rendered.Translate(checkBoxRect.Width, 0) with { Width = instance.Rects.Rendered.Width - checkBoxRect.Width };
 
         anim.AnimateRect(ref checkBoxRect, t);
         anim.AnimateRect(ref textBoxRect, t);
@@ -72,7 +72,10 @@ public readonly struct Checkbox : IControl
             Draw.OutlineWidth = 0;
             Draw.Colour = p.Theme.Accent[p.Instance.State];
             anim.AnimateColour(ref Draw.Colour, t);
-            Draw.Quad(checkBoxRect.Expand(-6), 0, p.Theme.Rounding);
+            Draw.Colour.A *= 0.1f;
+            Draw.Quad(checkBoxRect, 0, p.Theme.Rounding);
+            Draw.Colour.A /= 0.1f;
+            Draw.Image(BuiltInAssets.Icons.Check, checkBoxRect.Expand(-p.Theme.Padding / 4), ImageContainmentMode.Contain, 0, p.Theme.Rounding);
         }
 
         Draw.ResetTexture();
@@ -81,8 +84,9 @@ public readonly struct Checkbox : IControl
         if (anim.ShouldRenderText(t))
         {
             var ratio = instance.Rects.Rendered.Area / instance.Rects.ComputedGlobal.Area;
-            Draw.Text(instance.Name, textBoxRect.GetCenter(), new Vector2(ratio),
-                HorizontalTextAlign.Center, VerticalTextAlign.Middle, textBoxRect.Width);
+            var c = (textBoxRect.BottomLeft + textBoxRect.TopLeft) / 2;
+            c.X += p.Theme.Padding;
+            Draw.Text(instance.Name, c, new Vector2(ratio), HorizontalTextAlign.Left, VerticalTextAlign.Middle, textBoxRect.Width);
         }
     }
 
