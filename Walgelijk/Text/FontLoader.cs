@@ -27,7 +27,7 @@ internal struct FontLoader
         ParseGlyphs(text, font, info);
         ParseKernings(text, font, info);
 
-        font.Material = TextMaterial.CreateFor(font);
+        font.Material = FontMaterial.CreateFor(font);
         return font;
     }
 
@@ -41,21 +41,22 @@ internal struct FontLoader
         font.Height = info.Height;
         font.Base = info.Base;
         font.LineHeight = info.LineHeight;
-        font.Smooth = info.Smooth;
+        font.Rendering = info.Rendering;
     }
 
     private static void ParsePages(string metadataPath, in Font font, FontInfo info)
     {
-        FilterMode filterMode = info.Smooth ? FilterMode.Linear : FilterMode.Nearest;
+        var filterMode = info.Smooth ? FilterMode.Linear : FilterMode.Nearest; this is wrong
+            // maak walgelijk font format
 
-        font.Pages = new IReadableTexture[info.PageCount];
-        for (int i = 0; i < info.PageCount; i++)
-        {
-            string path = Path.Combine(Path.GetDirectoryName(metadataPath) ?? string.Empty, info.PagePaths[i]);
-            var tex = Texture.Load(path, false);
-            tex.FilterMode = filterMode;
-            font.Pages[i] = tex;
-        }
+        // we don't support multiple plages
+        if (info.PageCount != 1)
+            throw new Exception("Only fonts with 1 page are supported");
+
+        string path = Path.Combine(Path.GetDirectoryName(metadataPath) ?? string.Empty, info.PagePaths[0]);
+        var tex = Texture.Load(path, false);
+        tex.FilterMode = filterMode;
+        font.Page = tex;
     }
 
     private static void ParseKernings(string[] text, in Font font, FontInfo info)

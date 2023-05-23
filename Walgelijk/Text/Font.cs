@@ -20,9 +20,9 @@ public class Font
     /// </summary>
     public bool Bold { get; internal set; }
     /// <summary>
-    /// Retrieve if the font was loaded with the smooth flag. The flag determined the <see cref="FilterMode"/> the pages were loaded with.
+    /// Specifies the rendering method of the font. This determines what shader should be used.
     /// </summary>
-    public bool Smooth { get; internal set; }
+    public FontRendering Rendering;
     /// <summary>
     /// Retrieve if the font was loaded with the italic style
     /// </summary>
@@ -44,26 +44,22 @@ public class Font
     /// </summary>
     public int Base { get; internal set; }
     /// <summary>
-    /// Array of texture pages this font uses
+    /// The texture containing all glyphs
     /// </summary>
-    public IReadableTexture[]? Pages { get; internal set; }
+    public IReadableTexture Page { get; internal set; } = Texture.ErrorTexture;
     /// <summary>
     /// Glyphs by character
     /// </summary>
-    public Dictionary<char, Glyph>? Glyphs { get; internal set; }
+    public Dictionary<char, Glyph> Glyphs { get; internal set; } = new Dictionary<char, Glyph>();
     /// <summary>
     /// Kernings by <see cref="KerningPair"/>
     /// </summary>
-    public Dictionary<KerningPair, Kerning>? Kernings { get; internal set; }
+    public Dictionary<KerningPair, Kerning> Kernings { get; internal set; } = new Dictionary<KerningPair, Kerning>();
 
     /// <summary>
-    /// Material this font uses. Be aware this may be shared across text. Use <see cref="TextMaterial.CreateFor(Font)"/> to create a new material.
+    /// Material this font uses. Be aware this may be shared across text. Use <see cref="FontMaterial.CreateFor(Font)"/> to create a new material.
     /// </summary>
-    public Material? Material
-    {
-        get;
-        set;
-    }
+    public Material? Material { get; set; }
 
     /// <summary>
     /// Load a font from a metadata file (BMFont .fnt)

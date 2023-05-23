@@ -328,7 +328,7 @@ public class DebugConsoleUi : IDisposable
         textMesh.AmountOfIndicesToRender = result.IndexCount;
         textMesh.ForceUpdate();
 
-        mat.SetUniform("mainTex", Font.Default.Pages![0]);
+        mat.SetUniform("mainTex", Font.Default.Page);
         mat.SetUniform("bgIntensity", 0f);
         mat.SetUniform("tint", Colors.White);
         graphics.Draw(textMesh, mat);
