@@ -174,11 +174,20 @@ public class Node
 
             AdjustRaycastRect(p);
             EnforceScrollBounds(p);
-
         }
+
+        QuantiseRects(p);
 
         foreach (var child in GetChildren())
             child.Process(new ControlParams(child, p.Tree.EnsureInstance(child.Identity)));
+    }
+
+    private void QuantiseRects(in ControlParams p)
+    {
+        p.Instance.Rects.Intermediate = p.Instance.Rects.Intermediate.Quantise();
+
+        if (p.Instance.Rects.Raycast.HasValue)
+            p.Instance.Rects.Raycast = p.Instance.Rects.Raycast.Value.Quantise();
     }
 
     private static void AdjustRaycastRect(in ControlParams p)

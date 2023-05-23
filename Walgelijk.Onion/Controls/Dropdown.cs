@@ -187,8 +187,15 @@ public readonly struct Dropdown<T> : IControl
         Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
+        var arrowRect = new Rect(
+            0,0, 
+            instance.Rects.Rendered.Height, instance.Rects.Rendered.Height)
+            .Translate(instance.Rects.Rendered.BottomLeft)
+            .Translate(instance.Rects.Rendered.Width - instance.Rects.Rendered.Height, 0);
+        var textRect = instance.Rects.Rendered with { Width = instance.Rects.Rendered.Width - instance.Rects.Rendered.Height + 1 };
 
-        Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
+        Draw.Quad(arrowRect, 0, p.Theme.Rounding);
+        Draw.Quad(textRect, 0, p.Theme.Rounding);
 
         if (instance.IsTriggered)
         {
@@ -210,8 +217,7 @@ public readonly struct Dropdown<T> : IControl
             if (DrawArrow)
             {
                 const float arrowSize = 16;
-                var arrowPos = new Vector2(instance.Rects.Rendered.MaxX, (instance.Rects.Rendered.MinY + instance.Rects.Rendered.MaxY) / 2);
-                arrowPos.X -= instance.Rects.Rendered.Height / 2;
+                var arrowPos = arrowRect.GetCenter().Quantise();
                 Draw.Colour = p.Theme.Accent[instance.State];
                 anim.AnimateColour(ref Draw.Colour, t);
                 Draw.Image(instance.IsTriggered ? BuiltInAssets.Icons.ChevronUp : BuiltInAssets.Icons.ChevronDown, new Rect(arrowPos, new Vector2(arrowSize)), ImageContainmentMode.Contain);
@@ -224,8 +230,7 @@ public readonly struct Dropdown<T> : IControl
             Draw.Colour = p.Theme.Text[instance.State];
             anim.AnimateColour(ref Draw.Colour, t);
             var selected = GetValue(currentState.SelectedIndex);
-            Draw.Text(selected, instance.Rects.Rendered.GetCenter(), new Vector2(ratio),
-                HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.Rendered.Width);
+            Draw.Text(selected, textRect.GetCenter().Quantise(), new Vector2(ratio), HorizontalTextAlign.Center, VerticalTextAlign.Middle, textRect.Width);
         }
     }
 

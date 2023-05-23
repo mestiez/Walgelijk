@@ -279,6 +279,7 @@ public readonly struct TextTestScene : ISceneCreator
         public void Dispose()
         {
             vtx.Dispose();
+            lineMat.Dispose();
         }
     }
 }
