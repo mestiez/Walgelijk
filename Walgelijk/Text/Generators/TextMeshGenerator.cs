@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Walgelijk.BmFont;
-using Walgelijk.FontFormat;
 
 namespace Walgelijk;
 

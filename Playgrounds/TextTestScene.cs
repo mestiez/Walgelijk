@@ -80,7 +80,7 @@ public readonly struct TextTestScene : ISceneCreator
         private Font[] Fonts =
         {
             Font.Default,
-            Resources.Load<Font>("arial narrow bold.fnt"),
+            Resources.Load<Font>("pt-serif-regular.wf"),
             Resources.Load<Font>("broadway.fnt"),
             Resources.Load<Font>("cambria.fnt"),
             Resources.Load<Font>("inter.fnt"),

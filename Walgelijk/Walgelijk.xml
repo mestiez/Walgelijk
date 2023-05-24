@@ -5888,7 +5888,7 @@
             Material this font uses. Be aware this may be shared across text. Use <see cref="M:Walgelijk.FontMaterialCreator.CreateFor(Walgelijk.Font)"/> to create a new material.
             </summary>
         </member>
-        <member name="M:Walgelijk.Font.GetGlyph(System.Char,Walgelijk.FontFormat.Glyph)">
+        <member name="M:Walgelijk.Font.GetGlyph(System.Char,Walgelijk.Glyph)">
             <summary>
             Get the glyph for a character. 
             </summary>

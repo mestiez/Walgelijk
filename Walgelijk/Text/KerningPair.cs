@@ -16,6 +16,18 @@ public struct KerningPair : IEquatable<KerningPair>
     /// </summary>
     public char CurrentChar;
 
+    public KerningPair(char previousChar, char currentChar)
+    {
+        PreviousChar = previousChar;
+        CurrentChar = currentChar;
+    }
+
+    public KerningPair()
+    {
+        PreviousChar = default;
+        CurrentChar = default;
+    }
+
     public override bool Equals(object? obj)
     {
         return obj is KerningPair pair &&

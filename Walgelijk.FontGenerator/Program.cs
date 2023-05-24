@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Numerics;
-using Walgelijk.FontFormat;
 
 namespace Walgelijk.FontGenerator;
 
@@ -28,8 +27,8 @@ internal class Program
         var intermediateMetadataOut = $"{intermediatePrefix}{fontName}.json";
         var finalOut = fontName + ".wf";
 
-        var packageImageName = fontName + ".png";
-        var packageMetadataName = fontName + ".json";
+        var packageImageName = "atlas.png";
+        var packageMetadataName = "meta.json";
 
         MsdfGen(pathToTtf, intermediateImageOut, intermediateMetadataOut);
 
@@ -38,18 +37,16 @@ internal class Program
         using var archiveStream = new FileStream(finalOut, FileMode.Create, FileAccess.Write);
         using var archive = new ZipArchive(archiveStream, ZipArchiveMode.Create, false);
 
-        var final = new
-        {
-            Name = fontName,
-            Atlas = packageImageName,
-            Kernings = metadata.Kerning?.Select(a => new { Amount = a.Advance, FirstChar = (int)a.Unicode1, SecondChar = (int)a.Unicode2 }),
-            Glyphs = metadata.Glyphs?.Select(g => new {
-                Character = (int)g.Unicode,
-                Advance = g.Advance,
-                TextureRect = AbsoluteToTexcoords(g.AtlasBounds.GetRect(), new Vector2(metadata.Atlas.Width, metadata.Atlas.Height)),
-                GeometryRect = g.PlaneBounds.GetRect(),
-            }),
-        };
+        var final = new FontFormat(
+            name: fontName,
+            atlas: null!,
+            kernings: (metadata.Kerning?.Select(a => new Kerning{ Amount = a.Advance, FirstChar = a.Unicode1, SecondChar = a.Unicode2 }).ToArray())!,
+            glyphs: (metadata.Glyphs?.Select(g => new Glyph(
+                character: g.Unicode,
+                advance: g.Advance,
+                textureRect:  AbsoluteToTexcoords(g.AtlasBounds.GetRect(), new Vector2(metadata.Atlas.Width, metadata.Atlas.Height)),
+                geometryRect: g.PlaneBounds.GetRect()
+            )).ToArray())!);
 
         using var metadataEntry = new StreamWriter(archive.CreateEntry(packageMetadataName, CompressionLevel.Fastest).Open());
         metadataEntry.Write(JsonConvert.SerializeObject(final));
@@ -66,8 +63,10 @@ internal class Program
 
     private static Rect AbsoluteToTexcoords(Rect rect, Vector2 size)
     {
-        rect.Width /= size.X;
-        rect.Height /= size.Y;
+        rect.MinX /= size.X;
+        rect.MinY /= size.Y;   
+        rect.MaxX /= size.X;
+        rect.MaxY /= size.Y;
         return rect;
     }
 
