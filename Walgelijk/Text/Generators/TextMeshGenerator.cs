@@ -288,29 +288,32 @@ public class TextMeshGenerator
                     if (ce.CharIndex == i)
                         colorToSet = ce.Colour * Color;
 
-            textBounds = textBounds.StretchToContain(pos.XY() with { Y = rawCursor.Y});
-            textBounds = textBounds.StretchToContain(pos.XY() with { Y = rawCursor.Y - (VerticalAlign is VerticalTextAlign.Middle ? Font.LineHeight : Font.Base) });
-            textBounds = textBounds.StretchToContain(pos.XY() with { X = rawCursor.X + glyph.Advance });
-            textBounds = textBounds.StretchToContain(pos.XY() with { X = rawCursor.X });
+            if (!char.IsWhiteSpace(c))
+            {
+                textBounds = textBounds.StretchToContain(pos.XY() with { Y = rawCursor.Y });
+                textBounds = textBounds.StretchToContain(pos.XY() with { Y = rawCursor.Y - (VerticalAlign is VerticalTextAlign.Middle ? Font.LineHeight : Font.Base) });
+                textBounds = textBounds.StretchToContain(pos.XY() with { X = rawCursor.X + glyph.Advance });
+                textBounds = textBounds.StretchToContain(pos.XY() with { X = rawCursor.X });
 
-            vertices[vertexIndex + 0] = appendVertex(pos, glyph, colorToSet, 0, 0);
-            vertices[vertexIndex + 1] = appendVertex(pos, glyph, colorToSet, 1, 0);
-            vertices[vertexIndex + 2] = appendVertex(pos, glyph, colorToSet, 1, 1, skew);
-            vertices[vertexIndex + 3] = appendVertex(pos, glyph, colorToSet, 0, 1, skew);
+                vertices[vertexIndex + 0] = appendVertex(pos, glyph, colorToSet, 0, 0);
+                vertices[vertexIndex + 1] = appendVertex(pos, glyph, colorToSet, 1, 0);
+                vertices[vertexIndex + 2] = appendVertex(pos, glyph, colorToSet, 1, 1, skew);
+                vertices[vertexIndex + 3] = appendVertex(pos, glyph, colorToSet, 0, 1, skew);
 
-            indices[indexIndex + 0] = vertexIndex + 0;
-            indices[indexIndex + 1] = vertexIndex + 1;
-            indices[indexIndex + 2] = vertexIndex + 2;
+                indices[indexIndex + 0] = vertexIndex + 0;
+                indices[indexIndex + 1] = vertexIndex + 1;
+                indices[indexIndex + 2] = vertexIndex + 2;
 
-            indices[indexIndex + 3] = vertexIndex + 0;
-            indices[indexIndex + 4] = vertexIndex + 3;
-            indices[indexIndex + 5] = vertexIndex + 2;
+                indices[indexIndex + 3] = vertexIndex + 0;
+                indices[indexIndex + 4] = vertexIndex + 3;
+                indices[indexIndex + 5] = vertexIndex + 2;
 
-            vertexCountSinceNewLine += 4;
-            glyphCountWithoutTags++;
+                vertexCountSinceNewLine += 4;
+                glyphCountWithoutTags++;
 
-            vertexIndex += 4;
-            indexIndex += 6;
+                vertexIndex += 4;
+                indexIndex += 6;
+            }
             cursor += glyph.Advance * TrackingMultiplier;
 
             lastChar = c;
