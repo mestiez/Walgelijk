@@ -16,6 +16,6 @@
         /// <summary>
         /// Offset amount
         /// </summary>
-        public int Amount;
+        public float Amount;
     }
 }

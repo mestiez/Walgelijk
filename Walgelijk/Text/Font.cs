@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Walgelijk.FontFormat;
 
 namespace Walgelijk;
 
@@ -57,17 +58,9 @@ public class Font
     public Dictionary<KerningPair, Kerning> Kernings { get; internal set; } = new Dictionary<KerningPair, Kerning>();
 
     /// <summary>
-    /// Material this font uses. Be aware this may be shared across text. Use <see cref="FontMaterial.CreateFor(Font)"/> to create a new material.
+    /// Material this font uses. Be aware this may be shared across text. Use <see cref="FontMaterialCreator.CreateFor(Font)"/> to create a new material.
     /// </summary>
     public Material? Material { get; set; }
-
-    /// <summary>
-    /// Load a font from a metadata file (BMFont .fnt)
-    /// </summary>
-    public static Font Load(string path)
-    {
-        return FontLoader.LoadFromMetadata(path);
-    }
 
     /// <summary>
     /// Get the glyph for a character. 

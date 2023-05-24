@@ -40,8 +40,8 @@ public static class Resources
             return;
         initialised = true;
 
-        RegisterType(typeof(Texture), (string path) => TextureLoader.FromFile(path));
-        RegisterType(typeof(Font), Font.Load);
+        RegisterType(typeof(Texture), static (string path) => TextureLoader.FromFile(path));
+        RegisterType(typeof(Font), FontLoader.Load);
         RegisterType(typeof(string), File.ReadAllText);
         RegisterType(typeof(string[]), File.ReadAllLines);
         RegisterType(typeof(byte[]), File.ReadAllBytes);
@@ -70,7 +70,8 @@ public static class Resources
 
     /// <summary>
     /// Load a <see cref="ResourceRef{T}"/> at the given path.
-    /// The advantage this offers over <see cref="Load{T}(string, bool)"/> is that a <see cref="ResourceRef{T}"/> doesn't actually store the resource, but only the ID and a helper function to retrieve the resource.
+    /// The advantage this offers over <see cref="Load{T}(string, bool)"/> is that a <see cref="ResourceRef{T}"/> doesn't actually store the resource, 
+    /// but only the ID and a helper function to retrieve the resource.
     /// This improves support for unloading and hotloading.
     /// </summary>
     /// <typeparam name="T">The type of the object to load</typeparam>

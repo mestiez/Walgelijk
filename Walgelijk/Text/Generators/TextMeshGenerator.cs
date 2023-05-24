@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Walgelijk.BmFont;
+using Walgelijk.FontFormat;
 
 namespace Walgelijk;
 
@@ -164,7 +166,10 @@ public class TextMeshGenerator
 
             var glyph = Font.GetGlyph(c);
             Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
-            var pos = new Vector3(cursor + glyph.XOffset + kerning.Amount * KerningMultiplier, -glyph.YOffset - (line * Font.LineHeight * LineHeightMultiplier), 0);
+            //var pos = new Vector3(
+            //    cursor + glyph.XOffset + kerning.Amount * KerningMultiplier, 
+            //    -glyph.YOffset - (line * Font.LineHeight * LineHeightMultiplier), 
+            //    0);
             glyphCountWithoutTags++;
             cursor += glyph.Advance * TrackingMultiplier;
             lastChar = c;
@@ -272,25 +277,26 @@ public class TextMeshGenerator
             Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
             var rawCursor = new Vector2(cursor, -(line * Font.LineHeight * LineHeightMultiplier));
             var pos = new Vector3(
-                rawCursor.X + glyph.XOffset + kerning.Amount * KerningMultiplier,
-                -glyph.YOffset + rawCursor.Y,
+                rawCursor.X + kerning.Amount * KerningMultiplier + glyph.GeometryRect.MinX,
+                rawCursor.Y - glyph.GeometryRect.MaxY + Font.Base,
                 0);
 
-            GlyphUVInfo uvInfo = new(glyph.X / width, glyph.Y / height, glyph.Width / width, glyph.Height / height);
+            //BmFontGlyphUVInfo uvInfo = new(glyph.X / width, glyph.Y / height, glyph.GeometryRect.Width / width, glyph.GeometryRect.Height / height);
 
             if (colours != null)
                 foreach (var ce in colours)
                     if (ce.CharIndex == i)
                         colorToSet = ce.Colour * Color;
 
-            textBounds = textBounds.StretchToContain(pos.XY() with { Y = rawCursor.Y });
-            textBounds = textBounds.StretchToContain(pos.XY() with { Y = rawCursor.Y - Font.Base });
-            textBounds = textBounds.StretchToContain(pos.XY() with { X = rawCursor.X + glyph.Width });
+            textBounds = textBounds.StretchToContain(pos.XY() with { Y = rawCursor.Y});
+            textBounds = textBounds.StretchToContain(pos.XY() with { Y = rawCursor.Y - (VerticalAlign is VerticalTextAlign.Middle ? Font.LineHeight : Font.Base) });
+            textBounds = textBounds.StretchToContain(pos.XY() with { X = rawCursor.X + glyph.Advance });
+            textBounds = textBounds.StretchToContain(pos.XY() with { X = rawCursor.X });
 
-            vertices[vertexIndex + 0] = appendVertex(pos, glyph, uvInfo, colorToSet, 0, 0);
-            vertices[vertexIndex + 1] = appendVertex(pos, glyph, uvInfo, colorToSet, 1, 0);
-            vertices[vertexIndex + 2] = appendVertex(pos, glyph, uvInfo, colorToSet, 1, 1, skew);
-            vertices[vertexIndex + 3] = appendVertex(pos, glyph, uvInfo, colorToSet, 0, 1, skew);
+            vertices[vertexIndex + 0] = appendVertex(pos, glyph, colorToSet, 0, 0);
+            vertices[vertexIndex + 1] = appendVertex(pos, glyph, colorToSet, 1, 0);
+            vertices[vertexIndex + 2] = appendVertex(pos, glyph, colorToSet, 1, 1, skew);
+            vertices[vertexIndex + 3] = appendVertex(pos, glyph, colorToSet, 0, 1, skew);
 
             indices[indexIndex + 0] = vertexIndex + 0;
             indices[indexIndex + 1] = vertexIndex + 1;
@@ -325,11 +331,11 @@ public class TextMeshGenerator
                     break;
             }
 
-            textBounds.MinY += textBoundsOffset;
-            textBounds.MaxY += textBoundsOffset;
+            textBounds.MinY += (int)textBoundsOffset;
+            textBounds.MaxY += (int)textBoundsOffset;
 
             for (int i = 0; i < vertexIndex; i++)
-                vertices[i].Position.Y += textBoundsOffset;
+                vertices[i].Position.Y += (int)textBoundsOffset;
         }
 
         if (HorizontalAlign != HorizontalTextAlign.Left)
@@ -343,8 +349,8 @@ public class TextMeshGenerator
                     break;
             }
 
-            textBounds.MinX -= textBoundsOffset;
-            textBounds.MaxX -= textBoundsOffset;
+            textBounds.MinX -= (int)textBoundsOffset;
+            textBounds.MaxX -= (int)textBoundsOffset;
         }
 
         geometryBounds = new Rect(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);
@@ -360,13 +366,16 @@ public class TextMeshGenerator
             IndexCount = glyphCountWithoutTags * 6,
         };
 
-        Vertex appendVertex(Vector3 pos, Glyph glyph, GlyphUVInfo uvInfo, Color color, float xFactor, float yFactor, float skew = 0)
+        Vertex appendVertex(Vector3 pos, Glyph glyph, Color color, float xFactor, float yFactor, float skew = 0)
         {
+            var o = new Vector3(glyph.GeometryRect.Width * xFactor + skew, glyph.GeometryRect.Height * yFactor - Font.Base, 0);
+            o.X = (int)o.X;
+            o.Y = (int)o.Y;
             var vertex = new Vertex(
-                pos + new Vector3(glyph.Width * xFactor - skew, -glyph.Height * yFactor, 0),
-                new Vector2(uvInfo.X + uvInfo.Width * xFactor, uvInfo.Y + uvInfo.Height * yFactor),
+                pos + o,
+                new Vector2(glyph.TextureRect.MinX + glyph.TextureRect.Width * xFactor, glyph.TextureRect.MaxY - glyph.TextureRect.Height * yFactor),
                 color
-                );
+                ); ;
 
             return vertex;
         }

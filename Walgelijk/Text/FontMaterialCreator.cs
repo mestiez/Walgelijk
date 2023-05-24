@@ -6,7 +6,7 @@ namespace Walgelijk;
 /// <summary>
 /// Utility struct that provides static text material creation functions
 /// </summary>
-public struct FontMaterial
+public static class FontMaterialCreator
 {
     public static readonly Shader BitmapShader = new Shader(ShaderDefaults.WorldSpaceVertex, BitmapFragmentShader);
     public static readonly Shader SdfShader = new Shader(ShaderDefaults.WorldSpaceVertex, SdfFragmentShader);
@@ -22,7 +22,7 @@ public struct FontMaterial
         switch (font.Rendering)
         {
             case FontRendering.Bitmap:
-                return CreateSDFMaterial(font.Page);
+                return CreateBitmapFontMaterial(font.Page);
             case FontRendering.SDF:
                 return CreateSDFMaterial(font.Page);
             case FontRendering.MSDF:

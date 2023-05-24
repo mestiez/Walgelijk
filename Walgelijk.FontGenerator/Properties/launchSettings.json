@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Walgelijk.FontGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": "pt-serif_regular.ttf"
+    }
+  }
+}
