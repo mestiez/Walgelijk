@@ -31,7 +31,7 @@ public static class FontLoader
                         Width = format.Atlas.Width,
                         Height = format.Atlas.Height,
                         Base = 12,
-                        LineHeight = 12,
+                        LineHeight = 12, dit werkt nog niet en alles 
                         Size = 12,
                         Material = FontMaterialCreator.CreateMSDFMaterial(format.Atlas)
                     };
