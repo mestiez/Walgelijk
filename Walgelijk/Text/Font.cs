@@ -28,21 +28,13 @@ public class Font
     /// </summary>
     public bool Italic { get; internal set; }
     /// <summary>
-    /// Page width in pixels
-    /// </summary>
-    public int Width { get; internal set; }
-    /// <summary>
-    /// Page height in pixels
-    /// </summary>
-    public int Height { get; internal set; }
-    /// <summary>
     /// This is the distance in pixels between each line of text
     /// </summary>
     public int LineHeight { get; internal set; }
     /// <summary>
-    /// The number of pixels from the absolute top of the line to the base of the characters
+    /// The distance from the baseline to the top of lowercase characters (a.k.a the mean line)
     /// </summary>
-    public int Base { get; internal set; }
+    public int XHeight { get; internal set; }
     /// <summary>
     /// The texture containing all glyphs
     /// </summary>

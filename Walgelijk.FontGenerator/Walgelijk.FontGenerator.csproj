@@ -1,5 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
@@ -8,24 +8,21 @@
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
     <PackAsTool>True</PackAsTool>
     <ToolCommandName>Walgelijk.GenerateFont</ToolCommandName>
+    <Version>1.0.1</Version>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>embedded</DebugType>
     <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>embedded</DebugType>
     <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <None Update="charset.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -34,5 +31,4 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
 </Project>

@@ -5848,24 +5848,14 @@
             Retrieve if the font was loaded with the italic style
             </summary>
         </member>
-        <member name="P:Walgelijk.Font.Width">
-            <summary>
-            Page width in pixels
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Font.Height">
-            <summary>
-            Page height in pixels
-            </summary>
-        </member>
         <member name="P:Walgelijk.Font.LineHeight">
             <summary>
             This is the distance in pixels between each line of text
             </summary>
         </member>
-        <member name="P:Walgelijk.Font.Base">
+        <member name="P:Walgelijk.Font.XHeight">
             <summary>
-            The number of pixels from the absolute top of the line to the base of the characters
+            The distance from the baseline to the top of lowercase characters (a.k.a the mean line)
             </summary>
         </member>
         <member name="P:Walgelijk.Font.Page">
@@ -5901,6 +5891,46 @@
         <member name="F:Walgelijk.Font.Default">
             <summary>
             The default font
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontFormat.Name">
+            <summary>
+            Name of the font
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontFormat.Atlas">
+            <summary>
+            Reference to the atlas texture
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontFormat.Kernings">
+            <summary>
+            Kernings between different characters
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontFormat.Glyphs">
+            <summary>
+            Set of glyphs in the font
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontFormat.LineHeight">
+            <summary>
+            Height of a line of text in pixels
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontFormat.Size">
+            <summary>
+            Font size in points
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontFormat.XHeight">
+            <summary>
+            The distance from the baseline to the mean line
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontFormat.Style">
+            <summary>
+            The style this font represents
             </summary>
         </member>
         <member name="T:Walgelijk.FontLoader">

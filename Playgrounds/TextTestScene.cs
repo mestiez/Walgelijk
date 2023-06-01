@@ -27,6 +27,7 @@ public readonly struct TextTestScene : ISceneCreator
             ClearColour = Colors.WhiteSmoke
         });
 
+        Ui.Animation.DefaultDurationSeconds = 0;
         Ui.Theme.Base.Rounding = 0;
         Ui.Theme.Base.Text = Colors.Black;
         Ui.Theme.Base.Accent = Colors.Sky;
@@ -41,11 +42,15 @@ public readonly struct TextTestScene : ISceneCreator
 
         Draw.CacheTextMeshes = -1;
 
+        game.UpdateRate = 60;
+
         return scene;
     }
 
     public class TextTestSystem : Walgelijk.System, IDisposable
     {
+        public bool RenderUi = true;
+
         public enum Gizmos
         {
             GeometryBounds = 0,
@@ -80,12 +85,12 @@ public readonly struct TextTestScene : ISceneCreator
         private Font[] Fonts =
         {
             Font.Default,
-            Resources.Load<Font>("pt-serif-regular.wf"),
-            Resources.Load<Font>("broadway.fnt"),
-            Resources.Load<Font>("cambria.fnt"),
-            Resources.Load<Font>("inter.fnt"),
-            Resources.Load<Font>("inter-tight.fnt"),
-            Resources.Load<Font>("roboto mono.fnt"),
+            Resources.Load<Font>("AbrilFatface-Regular.wf"),
+            Resources.Load<Font>("Inter-SemiBold.wf"),
+            Resources.Load<Font>("RobotoMono-Regular.wf"),
+            Resources.Load<Font>("NimbusRomNo9L-Reg.wf"),
+            Resources.Load<Font>("Rye-Regular.wf"),
+            Resources.Load<Font>("Amarante-Regular.wf"),
         };
 
         private int selectedFontIndex = 0;
@@ -121,54 +126,62 @@ public readonly struct TextTestScene : ISceneCreator
 
         public override void Update()
         {
-            float padding = Ui.Theme.Base.Padding;
-            const float ddw = 180;
-            float w = Window.Width - padding * 3;
-            Ui.Layout.Width(w - ddw).Height(32).Move(padding, padding);
-            Ui.StringInputBox(ref Text, default);
-
-            Ui.Layout.Size(ddw, 32).Move(w - ddw + padding * 2, padding);
-            Ui.Dropdown(Fonts, ref selectedFontIndex);
-
-            Ui.Layout.Size(Window.Width, 32 + padding * 2).Move(0, padding * 2 + 32).HorizontalLayout();
-            Ui.StartScrollView();
+            if (RenderUi)
             {
-                Ui.Layout.Size(128, 32);
-                Ui.EnumDropdown(ref VerticalAlign);
+                float padding = Ui.Theme.Base.Padding;
+                const float ddw = 180;
+                float w = Window.Width - padding * 3;
+                Ui.Layout.Width(w - ddw).Height(32).Move(padding, padding);
+                Ui.StringInputBox(ref Text, default);
 
-                Ui.Layout.Size(128, 32);
-                Ui.EnumDropdown(ref HorizontalAlign);
+                Ui.Layout.Size(ddw, 32).Move(w - ddw + padding * 2, padding);
+                Ui.Dropdown(Fonts, ref selectedFontIndex);
 
-                Ui.Layout.Size(64, 32);
-                Ui.Decorators.Tooltip("Font size");
-                Ui.IntStepper(ref FontSize, (8, 72), 1);
-
-                Ui.Layout.Size(64, 32);
-                Ui.Decorators.Tooltip("Tracking");
-                Ui.FloatStepper(ref Tracking, (0, 4), 0.1f);
-
-                Ui.Layout.Size(130, 32);
-                Ui.StartGroup(false);
+                Ui.Layout.Size(Window.Width, 32 + padding * 2).Move(0, padding * 2 + 32).HorizontalLayout();
+                Ui.StartScrollView();
                 {
-                    Ui.Layout.Size(130, 14);
-                    Ui.Theme.Accent(GeometryBoundsCol);
-                    Ui.Checkbox(ref gizmoToggles[0], nameof(Gizmos.GeometryBounds));
-                    Ui.Layout.Size(140, 14).Move(0, 18);
-                    Ui.Theme.Accent(TextBoundsCol);
-                    Ui.Checkbox(ref gizmoToggles[1], nameof(Gizmos.TextBounds));
+                    Ui.Layout.Size(128, 32);
+                    Ui.EnumDropdown(ref VerticalAlign);
+
+                    Ui.Layout.Size(128, 32);
+                    Ui.EnumDropdown(ref HorizontalAlign);
+
+                    Ui.Layout.Size(64, 32);
+                    Ui.Decorators.Tooltip("Font size");
+                    Ui.IntStepper(ref FontSize, (8, 144), 1);
+
+                    Ui.Layout.Size(64, 32);
+                    Ui.Decorators.Tooltip("Tracking");
+                    Ui.FloatStepper(ref Tracking, (0, 4), 0.1f);
+
+                    Ui.Layout.Size(130, 32);
+                    Ui.StartGroup(false);
+                    {
+                        Ui.Layout.Size(130, 14);
+                        Ui.Theme.Accent(GeometryBoundsCol);
+                        Ui.Checkbox(ref gizmoToggles[0], nameof(Gizmos.GeometryBounds));
+                        Ui.Layout.Size(140, 14).Move(0, 18);
+                        Ui.Theme.Accent(TextBoundsCol);
+                        Ui.Checkbox(ref gizmoToggles[1], nameof(Gizmos.TextBounds));
+                    }
+                    Ui.End();
+
+                    Ui.Layout.Size(130, 32);
+                    Ui.StartGroup(false);
+                    {
+                        Ui.Layout.Size(130, 14);
+                        Ui.Theme.Accent(BaselineCol);
+                        Ui.Checkbox(ref gizmoToggles[2], nameof(Gizmos.Baseline));
+                    }
+                    Ui.End();
                 }
                 Ui.End();
 
-                Ui.Layout.Size(130, 32);
-                Ui.StartGroup(false);
-                {
-                    Ui.Layout.Size(130, 14);
-                    Ui.Theme.Accent(BaselineCol);
-                    Ui.Checkbox(ref gizmoToggles[2], nameof(Gizmos.Baseline));
-                }
-                Ui.End();
+                if (Input.IsKeyReleased(Key.Tab))
+                    RenderUi = false;
             }
-            Ui.End();
+            else if (Input.IsKeyReleased(Key.Tab))
+                RenderUi = true;
 
             FontSize = Math.Max(6, FontSize);
             Font = Fonts[selectedFontIndex];

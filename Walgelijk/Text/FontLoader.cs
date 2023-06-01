@@ -25,14 +25,12 @@ public static class FontLoader
                     {
                         Name = format.Name,
                         Page = format.Atlas,
-                        Kernings = format.Kernings.ToDictionary(a => new KerningPair(a.FirstChar, a.SecondChar)),
+                        Kernings = format.Kernings.ToDictionary(static a => new KerningPair(a.FirstChar, a.SecondChar)),
                         Glyphs = format.Glyphs.ToDictionary(static g => g.Character),
                         Rendering = FontRendering.MSDF,
-                        Width = format.Atlas.Width,
-                        Height = format.Atlas.Height,
-                        Base = 12,
-                        LineHeight = 12, dit werkt nog niet en alles 
-                        Size = 12,
+                        XHeight = (int)format.XHeight,
+                        LineHeight = (int)format.LineHeight,
+                        Size = format.Size,
                         Material = FontMaterialCreator.CreateMSDFMaterial(format.Atlas)
                     };
                 }

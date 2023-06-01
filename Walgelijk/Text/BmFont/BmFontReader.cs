@@ -27,6 +27,29 @@ internal static class BmFontReader
         ParseGlyphs(text, font, info);
         ParseKernings(text, font, info);
 
+        var xheight = 0f;
+        int c = 0;
+        foreach (var item in font.Glyphs)
+        {
+            if (!char.IsLower(item.Key) || !char.IsLetter(item.Key))
+                continue;
+            xheight += item.Value.GeometryRect.Height;
+            c++;
+        }
+        xheight /= c;
+        font.XHeight = (int)xheight;
+
+        foreach (var key in font.Glyphs.Keys)
+        {
+            var x = font.Glyphs[key];
+            font.Glyphs[key] = new Glyph(
+                key,
+                x.Advance,
+                x.GeometryRect.Translate(0, -font.XHeight / 2),
+                x.TextureRect
+            );
+        }
+
         font.Material = FontMaterialCreator.CreateFor(font);
         return font;
     }
@@ -37,9 +60,6 @@ internal static class BmFontReader
         font.Size = info.Size;
         font.Bold = info.Bold;
         font.Italic = info.Italic;
-        font.Width = info.Width;
-        font.Height = info.Height;
-        font.Base = info.Base;
         font.LineHeight = info.LineHeight;
         font.Rendering = info.Smooth ? FontRendering.SDF : FontRendering.Bitmap;
     }

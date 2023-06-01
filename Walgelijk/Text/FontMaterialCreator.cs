@@ -62,12 +62,12 @@ public static class FontMaterialCreator
     /// </summary>
     public static Material CreateMSDFMaterial(IReadableTexture page)
     {
-        Material mat = new Material(SdfShader);
+        Material mat = new Material(MsdfShader);
 
         //TODO meer pages
         mat.SetUniform("mainTex", page);
         mat.SetUniform("thickness", 0.5f);
-        mat.SetUniform("softness", 0.0f);
+        mat.SetUniform("softness", 8f);
         mat.SetUniform("tint", Colors.White);
         return mat;
     }
@@ -125,16 +125,26 @@ out vec4 color;
 
 uniform sampler2D mainTex;
 uniform float softness;
+uniform vec4 tint;
+uniform float pxRange = 2;
 
-float msdf(vec3 rgb) {
-    float dist = median(rgb.r, rgb.g, rgb.b);
-    return smoothstep(0.5 - softness/2.0, 0.5 + softness/2.0, dist);
+float median(float r, float g, float b) 
+{
+    return max(min(r, g), min(max(r, g), b));
+}
+
+float screenPxRange() {
+    vec2 unitRange = vec2(pxRange)/vec2(textureSize(mainTex, 0));
+    vec2 screenTexSize = vec2(1.0)/fwidth(uv);
+    return max(0.5*dot(unitRange, screenTexSize), 1.0);
 }
 
 void main() {
     vec3 msd = texture(mainTex, uv).rgb;
-    float opacity = msdf(msd) * smoothstep(0.0, 1.0, fwidth(msdf(msd)));
-    color = mix(bgColor, fgColor, opacity);
+    float sd = median(msd.r, msd.g, msd.b);
+    float screenPxDistance = screenPxRange()*(sd - 0.5);
+    float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
+    color = vec4(vertexColor.rgb, opacity) * tint;
 }
 ";
 }

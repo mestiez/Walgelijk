@@ -114,8 +114,6 @@ public class TextMeshGenerator
     public float CalculateTextHeight(ReadOnlySpan<char> displayString)
     {
         float cursor = 0;
-        float width = Font.Width;
-        float height = Font.Height;
         char lastChar = default;
         int line = 0;
         int glyphCountWithoutTags = 0;
@@ -204,8 +202,6 @@ public class TextMeshGenerator
     public TextMeshResult Generate(ReadOnlySpan<char> displayString, Vertex[] vertices, uint[] indices, IList<ColourInstruction>? colours = null)
     {
         float cursor = 0;
-        float width = Font.Width;
-        float height = Font.Height;
 
         var geometryBounds = new Rect(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);
         var textBounds = new Rect(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);
@@ -273,14 +269,8 @@ public class TextMeshGenerator
             }
 
             var glyph = Font.GetGlyph(c);
-            Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
-            var rawCursor = new Vector2(cursor, -(line * Font.LineHeight * LineHeightMultiplier));
-            var pos = new Vector3(
-                rawCursor.X + kerning.Amount * KerningMultiplier + glyph.GeometryRect.MinX,
-                rawCursor.Y - glyph.GeometryRect.MaxY + Font.Base,
-                0);
 
-            //BmFontGlyphUVInfo uvInfo = new(glyph.X / width, glyph.Y / height, glyph.GeometryRect.Width / width, glyph.GeometryRect.Height / height);
+            var rawCursor = new Vector2(cursor, -(line * Font.LineHeight * LineHeightMultiplier));
 
             if (colours != null)
                 foreach (var ce in colours)
@@ -289,10 +279,16 @@ public class TextMeshGenerator
 
             if (!char.IsWhiteSpace(c))
             {
-                textBounds = textBounds.StretchToContain(pos.XY() with { Y = rawCursor.Y });
-                textBounds = textBounds.StretchToContain(pos.XY() with { Y = rawCursor.Y - (VerticalAlign is VerticalTextAlign.Middle ? Font.LineHeight : Font.Base) });
-                textBounds = textBounds.StretchToContain(pos.XY() with { X = rawCursor.X + glyph.Advance });
-                textBounds = textBounds.StretchToContain(pos.XY() with { X = rawCursor.X });
+                Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
+                var pos = new Vector3(
+                    rawCursor.X + kerning.Amount * KerningMultiplier + glyph.GeometryRect.MinX,
+                    rawCursor.Y - glyph.GeometryRect.MaxY,
+                    0);
+
+                textBounds = textBounds.StretchToContain(new Vector2(rawCursor.X, rawCursor.Y));
+                textBounds = textBounds.StretchToContain(new Vector2(rawCursor.X, rawCursor.Y - Font.XHeight));
+                textBounds = textBounds.StretchToContain(new Vector2(rawCursor.X + glyph.Advance, rawCursor.Y));
+                textBounds = textBounds.StretchToContain(new Vector2(rawCursor.X + glyph.Advance, rawCursor.Y - Font.XHeight));
 
                 vertices[vertexIndex + 0] = appendVertex(pos, glyph, colorToSet, 0, 0);
                 vertices[vertexIndex + 1] = appendVertex(pos, glyph, colorToSet, 1, 0);
@@ -370,7 +366,7 @@ public class TextMeshGenerator
 
         Vertex appendVertex(Vector3 pos, Glyph glyph, Color color, float xFactor, float yFactor, float skew = 0)
         {
-            var o = new Vector3(glyph.GeometryRect.Width * xFactor + skew, glyph.GeometryRect.Height * yFactor - Font.Base, 0);
+            var o = new Vector3(glyph.GeometryRect.Width * xFactor + skew, glyph.GeometryRect.Height * yFactor, 0);
             o.X = (int)o.X;
             o.Y = (int)o.Y;
             var vertex = new Vertex(
@@ -390,7 +386,13 @@ public class TextMeshGenerator
 
             if (tagContents.StartsWith(RichTextTags.Colour)) //Colour tag
             {
-                colorToSet = isClosingTag ? Color : new Color(tagContents[(RichTextTags.Colour.Length + 1)..]);//+1 to remove the equal sign
+                try
+                {
+                    colorToSet = isClosingTag ? Color : new Color(tagContents[(RichTextTags.Colour.Length + 1)..]);//+1 to remove the equal sign
+                }
+                catch (Exception)
+                {
+                }
                 return;
             }
 
