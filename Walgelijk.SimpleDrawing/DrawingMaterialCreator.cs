@@ -74,13 +74,13 @@ void main()
     float corner = 1;
     float outline = 0;
 
-    float clampedRoundness = clamp({RoundednessUniform}, 0, min(scale.x / 2, scale.y / 2));
-    float d = sdRoundBox(uv, scale, clampedRoundness * 2.0);
+    float clampedRoundness = clamp({RoundednessUniform}, 0, min({ScaleUniform}.x / 2, {ScaleUniform}.y / 2));
+    float d = sdRoundBox(uv, {ScaleUniform}, clampedRoundness * 2.0);
 
     corner = d < 0 ? 1 : 0;
     outline = d < -{OutlineWidthUniform} ? 0 : 1;
 
-    color = vertexColor * texture({MainTexUniform}, uv) * mix(tint, {OutlineColourUniform}, outline * {OutlineColourUniform}.a);
+    color = vertexColor * texture({MainTexUniform}, uv) * mix({TintUniform}, {OutlineColourUniform}, outline * {OutlineColourUniform}.a);
     color.a *= corner;
 }}";
 
