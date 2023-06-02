@@ -177,7 +177,8 @@ Deserves kindness and love, a smile on their face";
                 layout.Size(150, 24);
                 layout.Move(128 + 128 + Onion.Theme.Base.Padding, Onion.Theme.Base.Padding);
                 var s = Scene.GetSystem<OnionSystem>();
-                Ui.EnumDropdown(ref s.DebugOverlay);
+                if (Ui.EnumDropdown(ref s.DebugOverlay))
+                    Logger.Log("Debug overlay chosen!");
             }
 
             {
@@ -206,7 +207,8 @@ Deserves kindness and love, a smile on their face";
                         layout.Move(Onion.Theme.Base.Padding, Onion.Theme.Base.Padding);
                         Ui.Decorators.Add(new HoverCrosshairDecorator());
                         Ui.Decorators.Tooltip("This control has a HoverCrosshairDecorator that adds a cool Nurose-like outline on hover");
-                        Ui.Dropdown(DropdownOptions, ref DropdownSelectedIndex, identity: i);
+                        if (Ui.Dropdown(DropdownOptions, ref DropdownSelectedIndex, identity: i))
+                            Logger.Log("Window dropdown selected!");
 
                         layout.FitContainer().Move(0, Onion.Theme.Base.Padding + 32).Scale(0, -80);
                         Ui.StartScrollView(i);
@@ -229,6 +231,40 @@ Deserves kindness and love, a smile on their face";
                     Ui.End(); //end container child
                 }
 
+                Ui.End();
+            }
+
+            if (false)
+            {
+                Ui.Layout.Size(256, 256).Resizable();
+                Ui.StartDragWindow("Layout demo");
+                {
+                    Ui.Layout.Move(0, Ui.Theme.Base.WindowTitleBarHeight.Default);
+                    Ui.Layout.VerticalLayout();
+                    Ui.StartDummy();
+                    {
+                        Ui.Layout.FitWidth().Height(48).HorizontalLayout().Move(Ui.Theme.Base.Padding);
+                        Ui.StartGroup(false);
+                        {
+                            Ui.Layout.Size(128, 48);
+                            Ui.ClickButton("Is this okay");
+                            Ui.Layout.Size(128, 48);
+                            Ui.ClickButton("I am also a button");
+                        }
+                        Ui.End();
+
+                        Ui.Layout.FitWidth().Height(48).HorizontalLayout().Move(Ui.Theme.Base.Padding);
+                        Ui.StartGroup(false);
+                        {
+                            Ui.Layout.Size(128, 48);
+                            Ui.ClickButton("I am in row 2");
+                            Ui.Layout.Size(128, 48);
+                            Ui.ClickButton("I always come last");
+                        }
+                        Ui.End();
+                    }
+                    Ui.End();
+                }
                 Ui.End();
             }
 
@@ -276,6 +312,7 @@ Deserves kindness and love, a smile on their face";
     }
 }
 
+
 public readonly struct HoverCrosshairDecorator : IDecorator
 {
     public void RenderBefore(in ControlParams p)
@@ -283,7 +320,7 @@ public readonly struct HoverCrosshairDecorator : IDecorator
     }
 
     public void RenderAfter(in ControlParams p)
-    { 
+    {
         float pr = p.Instance.GetTransitionProgress();
         if (!p.Instance.IsHover)
             pr = 1 - pr;

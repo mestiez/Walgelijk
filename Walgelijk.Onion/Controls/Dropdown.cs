@@ -33,7 +33,7 @@ public readonly struct Dropdown<T> : IControl
         DrawArrow = drawArrow;
     }
 
-    public static ControlState Enum<EnumType>(ref EnumType selected, bool arrow = true, int identity = 0, [CallerLineNumber] int site = 0) where EnumType : struct, Enum
+    public static bool Enum<EnumType>(ref EnumType selected, bool arrow = true, int identity = 0, [CallerLineNumber] int site = 0) where EnumType : struct, Enum
     {
         EnumType[] arr;
         if (!enumValues.TryGetValue(typeof(EnumType), out var a))
@@ -50,10 +50,10 @@ public readonly struct Dropdown<T> : IControl
         return result;
     }
 
-    public static ControlState Start<ValueType>(IList<ValueType> values, ref int selectedIndex, bool arrow = true, int identity = 0, [CallerLineNumber] int site = 0)
+    public static bool Start<ValueType>(IList<ValueType> values, ref int selectedIndex, bool arrow = true, int identity = 0, [CallerLineNumber] int site = 0)
     {
         var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Dropdown<ValueType>).GetHashCode(), identity, site), new Dropdown<ValueType>(values, arrow));
-
+        bool result = false;
         var dropdownRect = new Rect();
         if (currentStates.TryGetValue(instance.Identity, out var currentState))
             dropdownRect = currentState.DropdownRect;
@@ -77,7 +77,10 @@ public readonly struct Dropdown<T> : IControl
                 Onion.Theme.SetAll(instance.Theme).OutlineWidth(0).Once();
                 Onion.Animation.Add(new MoveInAnimation(instance.Rects.ComputedGlobal.GetCenter()));
                 if (Button.Click(values[i]?.ToString() ?? "???", i + instance.Identity))
+                {
+                    result = true;
                     selectedIndex = i;
+                }
             }
 
             Onion.Tree.End();
@@ -88,12 +91,15 @@ public readonly struct Dropdown<T> : IControl
         {
             var s = currentStates[instance.Identity];
             if (s.IncomingChange)
+            {
+                result = true;
                 selectedIndex = s.SelectedIndex;
+            }
             else
                 s.SelectedIndex = selectedIndex;
             s.IncomingChange = false;
         }
-        return instance.State;
+        return result;
     }
 
     public void OnAdd(in ControlParams p) { }
