@@ -58,9 +58,7 @@ public sealed class ConsoleSessionHistory
         if (string.IsNullOrEmpty(input))
             return;
 
-        buffer[bufferCursor] = input;
+        buffer[bufferCursor % BufferSize] = input;
         bufferCursor++;
-        if (bufferCursor >= BufferSize)
-            bufferCursor = 0;
     }
 }
