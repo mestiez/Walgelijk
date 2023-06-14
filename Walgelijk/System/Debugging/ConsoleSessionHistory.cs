@@ -33,18 +33,13 @@ public sealed class ConsoleSessionHistory
         {
             var content = File.ReadAllText(fullPath, Encoding.UTF8);
             if (!string.IsNullOrEmpty(content) && !string.IsNullOrWhiteSpace(content))
-            {
-                var lines = File.ReadAllLines(fullPath, Encoding.UTF8).ToList();
-                lines.Reverse();
-                LastSessionCommands = lines.ToArray();
-            }
+                LastSessionCommands = content.Split(Environment.NewLine);
         }
 
         // Session history only gets written on a relatively clean exit.
         Game.Main.BeforeExit.AddListener(() =>
         {
-            File.WriteAllText(fullPath, string.Empty);
-            var filteredBuffer = buffer.Where(x => !string.IsNullOrEmpty(x));
+            var filteredBuffer = buffer.Where(static x => !string.IsNullOrWhiteSpace(x));
             File.WriteAllLines(fullPath, filteredBuffer, Encoding.UTF8);
         });
     }
