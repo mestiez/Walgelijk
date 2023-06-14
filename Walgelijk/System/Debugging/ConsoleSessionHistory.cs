@@ -14,6 +14,7 @@ public sealed class ConsoleSessionHistory
     /// Size of the buffer to write to disk.
     /// </summary>
     public readonly int BufferSize = 5;
+
     public string FilePath = "console_session.txt";
 
     /// <summary>
@@ -21,7 +22,7 @@ public sealed class ConsoleSessionHistory
     /// </summary>
     public readonly string[]? LastSessionCommands;
 
-    private string[] buffer;
+    private readonly string[] buffer;
     private int bufferCursor = 0;
 
     public ConsoleSessionHistory()
