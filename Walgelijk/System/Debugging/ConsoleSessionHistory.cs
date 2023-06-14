@@ -34,7 +34,7 @@ public sealed class ConsoleSessionHistory
         {
             var content = File.ReadAllText(fullPath, Encoding.UTF8);
             if (!string.IsNullOrEmpty(content) && !string.IsNullOrWhiteSpace(content))
-                LastSessionCommands = content.Split(Environment.NewLine);
+                LastSessionCommands = content.Split(Environment.NewLine, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         }
 
         // Session history only gets written on a relatively clean exit.
