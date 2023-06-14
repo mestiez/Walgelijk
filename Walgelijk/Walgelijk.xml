@@ -1325,6 +1325,11 @@
             Returns true if the system of the given type exists in the scene and returns false otherwise.
             </summary>
         </member>
+        <member name="M:Walgelijk.Scene.HasSystem(System.Type)">
+            <summary>
+            Returns true if the system of the given type exists in the scene and returns false otherwise.
+            </summary>
+        </member>
         <member name="M:Walgelijk.Scene.RemoveSystem``1">
             <summary>
             Remove system from the list. Getting rid of any references to it is not handled, so the object might remain in memory.
@@ -1359,6 +1364,11 @@
         <member name="P:Walgelijk.Scene.EntityCount">
             <summary>
             Amount of entities in the scene
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Scene.Disposed">
+            <summary>
+            Returns true if this scene has been disposed and should no longer be used
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.GetAllComponentsFrom(Walgelijk.Entity)">
