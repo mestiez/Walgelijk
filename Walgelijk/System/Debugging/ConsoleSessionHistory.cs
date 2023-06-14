@@ -29,12 +29,15 @@ public sealed class ConsoleSessionHistory
         buffer = new string[BufferSize];
         var fullPath = new StringBuilder(Directory.GetCurrentDirectory()).Append(Path.DirectorySeparatorChar).Append(FilePath).ToString();
 
-        var content = File.ReadAllText(fullPath, Encoding.UTF8);
-        if (!string.IsNullOrEmpty(content) && !string.IsNullOrWhiteSpace(content))
+        if (File.Exists(fullPath))
         {
-            var lines = File.ReadAllLines(fullPath, Encoding.UTF8).ToList();
-            lines.Reverse();
-            LastSessionCommands = lines.ToArray();
+            var content = File.ReadAllText(fullPath, Encoding.UTF8);
+            if (!string.IsNullOrEmpty(content) && !string.IsNullOrWhiteSpace(content))
+            {
+                var lines = File.ReadAllLines(fullPath, Encoding.UTF8).ToList();
+                lines.Reverse();
+                LastSessionCommands = lines.ToArray();
+            }
         }
 
         // Session history only gets written on a relatively clean exit.
