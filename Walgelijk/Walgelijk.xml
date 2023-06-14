@@ -4895,6 +4895,27 @@
             Error message
             </summary>
         </member>
+        <member name="T:Walgelijk.ConsoleSessionHistory">
+            <summary>
+            Writes session commands to disk in a circular buffer.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ConsoleSessionHistory.BufferSize">
+            <summary>
+            Size of the buffer to write to disk.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ConsoleSessionHistory.LastSessionCommands">
+            <summary>
+            The history from last session.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ConsoleSessionHistory.Add(System.String@)">
+            <summary>
+            Add input from the console into the buffer.
+            </summary>
+            <param name="input"></param>
+        </member>
         <member name="T:Walgelijk.DebugConsole">
             <summary>
             Class that renders and controls the debug console
