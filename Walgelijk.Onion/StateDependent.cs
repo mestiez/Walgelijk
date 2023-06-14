@@ -1,13 +1,13 @@
 ﻿namespace Walgelijk.Onion;
 
-public struct ThemeProperty<T> where T : struct
+public struct StateDependent<T> where T : struct
 {
     public T Default;
     public T? Hover;
     public T? Active;
     public T? Triggered;
 
-    public ThemeProperty(T @default, T? hover = null, T? active = null, T? triggered = null) : this()
+    public StateDependent(T @default, T? hover = null, T? active = null, T? triggered = null) : this()
     {
         Default = @default;
         Hover = hover;
@@ -42,7 +42,7 @@ public struct ThemeProperty<T> where T : struct
     }
 
     //public static implicit operator T(ThemeProperty<T> theme) => theme.Get(ControlState.None);
-    public static implicit operator ThemeProperty<T>(T val) => new(val);
+    public static implicit operator StateDependent<T>(T val) => new(val);
 
     public T this[ControlState state]
     {
@@ -50,28 +50,3 @@ public struct ThemeProperty<T> where T : struct
         set => Set(state, value);
     }
 }
-
-//public class ThemeProperty<T> where T : notnull
-//{
-//    public readonly T Default;
-
-//    public ThemeProperty(in T @default)
-//    {
-//        Default = @default;
-//    }
-
-//    private readonly Stack<T> stack = new();
-
-//    public void Push(T val) => stack.Push(val);
-
-//    public T Pop() => stack.Pop();
-
-//    public T Get()
-//    {
-//        if (stack.TryPeek(out var val))
-//            return val;
-//        return Default;
-//    }
-
-//    public static implicit operator T(ThemeProperty<T> theme) => theme.Get();
-//}

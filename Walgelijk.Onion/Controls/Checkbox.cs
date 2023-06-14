@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
+using Walgelijk.Onion.Assets;
 using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion.Controls;
@@ -44,42 +45,48 @@ public readonly struct Checkbox : IControl
 
     public void OnRender(in ControlParams p)
     {
-        (ControlTree tree, Layout.Layout layout, Input input, GameState state, Node node, ControlInstance instance) = p;
+        (ControlTree tree, Layout.LayoutQueue layout, Input input, GameState state, Node node, ControlInstance instance) = p;
 
         var t = node.GetAnimationTime();
         var anim = instance.Animations;
 
-        var fg = Onion.Theme.Foreground[instance.State];
+        var fg = p.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
+        Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
+        Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
 
         var checkBoxRect = instance.Rects.Rendered with { Width = instance.Rects.Rendered.Height };
-        var textBoxRect = instance.Rects.Rendered.Translate(checkBoxRect.Width, 0) with
-        { Width = instance.Rects.Rendered.Width - checkBoxRect.Width };
+        var textBoxRect = instance.Rects.Rendered.Translate(checkBoxRect.Width, 0) with { Width = instance.Rects.Rendered.Width - checkBoxRect.Width };
 
         anim.AnimateRect(ref checkBoxRect, t);
         anim.AnimateRect(ref textBoxRect, t);
 
         anim.AnimateColour(ref Draw.Colour, t);
-        Draw.Quad(checkBoxRect, 0, Onion.Theme.Rounding);
+        Draw.Quad(checkBoxRect, 0, p.Theme.Rounding);
 
         if (states[p.Identity].Value)
         {
-            Draw.Colour = Onion.Theme.Accent[p.Instance.State];
+            Draw.OutlineWidth = 0;
+            Draw.Colour = p.Theme.Accent[p.Instance.State];
             anim.AnimateColour(ref Draw.Colour, t);
-            Draw.Quad(checkBoxRect.Expand(-6), 0, Onion.Theme.Rounding);
+            Draw.Colour.A *= 0.1f;
+            Draw.Quad(checkBoxRect, 0, p.Theme.Rounding);
+            Draw.Colour.A /= 0.1f;
+            Draw.Image(BuiltInAssets.Icons.Check, checkBoxRect.Expand(-p.Theme.Padding / 4), ImageContainmentMode.Contain, 0, p.Theme.Rounding);
         }
 
         Draw.ResetTexture();
-        Draw.Font = Onion.Theme.Font;
-        Draw.Colour = Onion.Theme.Text[instance.State] with { A = Draw.Colour.A };
+        Draw.Font = p.Theme.Font;
+        Draw.Colour = p.Theme.Text[instance.State] with { A = Draw.Colour.A };
         if (anim.ShouldRenderText(t))
         {
             var ratio = instance.Rects.Rendered.Area / instance.Rects.ComputedGlobal.Area;
-            Draw.Text(instance.Name, textBoxRect.GetCenter(), new Vector2(ratio),
-                HorizontalTextAlign.Center, VerticalTextAlign.Middle, textBoxRect.Width);
+            var c = (textBoxRect.BottomLeft + textBoxRect.TopLeft) / 2;
+            c.X += p.Theme.Padding;
+            Draw.Text(instance.Name, c, new Vector2(ratio), HorizontalTextAlign.Left, VerticalTextAlign.Middle, textBoxRect.Width);
         }
     }
 

@@ -39,15 +39,15 @@ public readonly struct TextRect : IControl
 
     public void OnRender(in ControlParams p)
     {
-        (ControlTree tree, Layout.Layout layout, Input input, GameState state, Node node, ControlInstance instance) = p;
+        (ControlTree tree, Layout.LayoutQueue layout, Input input, GameState state, Node node, ControlInstance instance) = p;
 
         var t = node.GetAnimationTime();
         var anim = instance.Animations;
 
         instance.Rects.Rendered = instance.Rects.ComputedGlobal;
 
-        Draw.Font = Onion.Theme.Font;
-        Draw.Colour = Onion.Theme.Text[p.Instance.State];
+        Draw.Font = p.Theme.Font;
+        Draw.Colour = p.Theme.Text[p.Instance.State];
         anim.AnimateColour(ref Draw.Colour, t);
 
         Vector2 pivot = instance.Rects.Rendered.GetCenter();
@@ -55,24 +55,26 @@ public readonly struct TextRect : IControl
         switch (horizontal)
         {
             case HorizontalTextAlign.Left:
-                pivot.X = instance.Rects.Rendered.MinX + Onion.Theme.Padding;
+                pivot.X = instance.Rects.Rendered.MinX + p.Theme.Padding;
                 break;
             case HorizontalTextAlign.Right:
-                pivot.X = instance.Rects.Rendered.MaxX - Onion.Theme.Padding;
+                pivot.X = instance.Rects.Rendered.MaxX - p.Theme.Padding;
                 break;
         }
 
         switch (vertical)
         {
             case VerticalTextAlign.Top:
-                pivot.Y = instance.Rects.Rendered.MinY + Onion.Theme.Padding;
+                pivot.Y = instance.Rects.Rendered.MinY + p.Theme.Padding;
                 break;
             case VerticalTextAlign.Bottom:
-                pivot.Y = instance.Rects.Rendered.MaxY - Onion.Theme.Padding;
+                pivot.Y = instance.Rects.Rendered.MaxY - p.Theme.Padding;
                 break;
         }
 
-        Draw.Text(instance.Name, pivot, Vector2.One, horizontal, vertical, instance.Rects.ComputedGlobal.Width - Onion.Theme.Padding * 2);
+        int wrapWidth = (int)instance.Rects.ComputedGlobal.Width - p.Theme.Padding * 2;
+        Draw.Text(instance.Name, pivot, Vector2.One, horizontal, vertical, wrapWidth);
+        instance.PreferredHeight = Draw.CalculateTextHeight(instance.Name, wrapWidth) + p.Theme.Padding * 2;
     }
 
     public void OnEnd(in ControlParams p)

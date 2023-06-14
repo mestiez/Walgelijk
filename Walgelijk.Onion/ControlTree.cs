@@ -1,5 +1,6 @@
 ﻿using System.Xml.Linq;
 using Walgelijk.Onion.Controls;
+using Walgelijk.Onion.Layout;
 using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion;
@@ -17,11 +18,14 @@ public class ControlTree
     /// </summary>
     public float CacheTimeToLive = 15;
     public Node? CurrentNode;
+    public Node LastNode { get => lastNode ?? Root; set => lastNode = value; }
+    public ControlInstance GetLastInstance() => EnsureInstance(LastNode.Identity);
 
     private int incrementor;
     private readonly Queue<Node> toDelete = new();
     private float focusAnimationProgress = 0;
     private int? lastFocus;
+    private Node? lastNode;
 
     public ControlTree()
     {
@@ -95,9 +99,8 @@ public class ControlTree
         Onion.Layout.Reset();
 
         Onion.Animation.Process(inst);
-
-        //if (node.Behaviour is ISetupChildren sc)
-        //    sc.OnSetupChildren(p);
+        Onion.Decorators.Process(inst);
+        Onion.Theme.ApplyTo(inst);
 
         return (inst, node);
     }
@@ -110,14 +113,27 @@ public class ControlTree
         var inst = EnsureInstance(CurrentNode.Identity);
         var p = new ControlParams(CurrentNode, inst);
 
-        //if (b is ISetupChildren sc)
-        //    sc.OnEndChildren(p);
+        LastNode = CurrentNode;
+
+        //if (p.Theme.ShowScrollbars && MathF.Max(p.Instance.Rects.ComputedScrollBounds.Width, p.Instance.Rects.ComputedScrollBounds.Height) > 0)
+        //{
+        //    Onion.Layout.Width(p.Theme.ScrollbarWidth).Height(p.Instance.Rects.Rendered.Height).IgnoreScroll().EnqueueConstraint(new EscapeScroll()) ;
+        //    Slider.Float(ref p.Instance.InnerScrollOffset.Y, Slider.Direction.Vertical, (-100, 100), 1, identity: p.Identity + 1);
+        //}
+
         CurrentNode.Behaviour.OnEnd(p);
         CurrentNode = CurrentNode.Parent;
     }
 
     public void Process(float dt)
     {
+        Onion.Animation.Clear();
+        Onion.Decorators.Clear();
+        Onion.Layout.Reset();
+        Onion.Theme.Reset();
+
+        LastNode = null;
+
         foreach (var node in Nodes.Values)
         {
             node.ChronologicalPositionLastFrame = node.ChronologicalPosition;
@@ -157,7 +173,7 @@ public class ControlTree
         Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, int.MaxValue);
         if (Game.Main.Window.HasFocus && focus.HasValue && Instances.TryGetValue(focus.Value, out var inst) && inst.RenderFocusBox)
         {
-            float expand = Onion.Theme.FocusBoxSize;
+            float expand = Onion.Theme.Base.FocusBoxSize;
 
             if (inst.Rects.ComputedDrawBounds.Width > 0 && inst.Rects.ComputedDrawBounds.Height > 0)
             {
@@ -168,9 +184,9 @@ public class ControlTree
                     drawBounds.BottomLeft);
 
                 Draw.Colour = Colors.Transparent;
-                Draw.OutlineColour = Onion.Theme.FocusBoxColour.WithAlpha(Utilities.MapRange(1, 0, 0.6f, 1, Easings.Cubic.In(focusAnimationProgress)));
-                Draw.OutlineWidth = Onion.Theme.FocusBoxWidth;
-                Draw.Quad(inst.Rects.Rendered.Expand(expand), 0, Onion.Theme.Rounding + expand);
+                Draw.OutlineColour = Onion.Theme.Base.FocusBoxColour.WithAlpha(Utilities.MapRange(1, 0, 0.6f, 1, Easings.Cubic.In(focusAnimationProgress)));
+                Draw.OutlineWidth = Onion.Theme.Base.FocusBoxWidth;
+                Draw.Quad(inst.Rects.Rendered.Expand(expand), 0, Onion.Theme.Base.Rounding + expand);
                 Draw.OutlineWidth = 0;
             }
         }

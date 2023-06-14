@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Walgelijk;
 
@@ -8,7 +9,7 @@ namespace Walgelijk;
 /// This ensures that the ownership of the component remains with the scene and prevents memory leaks and "rogue" components.
 /// </summary>
 /// <typeparam name="T">The type of component.</typeparam>
-public readonly struct ComponentRef<T> where T : Component
+public readonly struct ComponentRef<T> : IEquatable<ComponentRef<T>> where T : Component
 {
     /// <summary>
     /// The entity to which the component is attached.
@@ -46,4 +47,29 @@ public readonly struct ComponentRef<T> where T : Component
     /// <returns>True if the entity exists in the scene and has the component of type T; otherwise, false.</returns>
     public readonly bool IsValid(Scene scene) 
         => scene.HasEntity(Entity) && scene.HasComponent<T>(Entity);
+
+    public override bool Equals(object? obj)
+    {
+        return obj is ComponentRef<T> @ref && Equals(@ref);
+    }
+
+    public bool Equals(ComponentRef<T> other)
+    {
+        return Entity.Equals(other.Entity);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Entity);
+    }
+
+    public static bool operator ==(ComponentRef<T> left, ComponentRef<T> right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(ComponentRef<T> left, ComponentRef<T> right)
+    {
+        return !(left == right);
+    }
 }

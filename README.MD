@@ -1,4 +1,4 @@
-![logo](https://i.imgur.com/EiCDNR7.png)
+![logo](https://imagedelivery.net/5o26WuCU9khNJnleuT61wg/a3029739-7d73-4b13-2a2e-6088af77ee00/public)
 
 ![Nuget](https://img.shields.io/nuget/v/Walgelijk?color=1650EC&logo=nuget&style=flat-square)
 

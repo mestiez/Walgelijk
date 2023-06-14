@@ -5,9 +5,9 @@ using System.IO;
 namespace Walgelijk;
 
 /// <summary>
-/// Utility struct responsible for decoding and loading image files
+/// Utility class responsible for decoding and loading image files
 /// </summary>
-public struct TextureLoader
+public static class TextureLoader
 {
     /// <summary>
     /// Default import settings

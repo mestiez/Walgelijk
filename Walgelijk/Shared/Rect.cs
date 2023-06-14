@@ -88,6 +88,7 @@ public struct Rect : IEquatable<Rect>
     /// <summary>
     /// Equivalent to Width * Height
     /// </summary>
+    [Newtonsoft.Json.JsonIgnore]
     public float Area => Width * Height;
 
     /// <summary>
@@ -142,6 +143,16 @@ public struct Rect : IEquatable<Rect>
         MaxX = center.X + halfSize.X;
         MaxY = center.Y + halfSize.Y;
     }
+
+
+    /// <summary>
+    /// Ensures that the Min and Max components are the minimum and maximum respectively.
+    /// </summary>
+    /// <returns></returns>
+    public Rect SortComponents()
+        => new Rect(
+                MathF.Min(MinX, MaxX), MathF.Min(MinY, MaxY),
+                MathF.Max(MinX, MaxX), MathF.Max(MinY, MaxY));
 
     /// <summary>
     /// Identical to <see cref="SDF.Rectangle(Vector2, Vector2, Vector2)"/>
@@ -250,8 +261,8 @@ public struct Rect : IEquatable<Rect>
     public readonly Rect Scale(float scale)
     {
         return new Rect(GetCenter(), GetSize() * scale);
-    }   
-    
+    }
+
     /// <summary>
     /// Return the rectangle that represents the intersection between this rectangle and the given rectangle
     /// </summary>

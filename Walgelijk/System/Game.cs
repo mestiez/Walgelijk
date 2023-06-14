@@ -42,6 +42,9 @@ public class Game
 
         set
         {
+            if (value != null && value.Disposed)
+                throw new Exception("This scene has been disposed and can no longer be used");
+
             if (scene != null && scene.ShouldBeDisposedOnSceneChange)
                 scene.Dispose();
 
@@ -244,9 +247,9 @@ public class Game
     private static string Version()
     {
 #if DEBUG
-        const string config = "DEBUG mode";
+        const string config = "Engine is in DEBUG mode";
 #elif RELEASE
-        const string config = "RELEASE mode";
+        const string config = "Engine is in RELEASE mode";
 #endif
         var walgelijk = Assembly.GetAssembly(typeof(Game)) ?? throw new Exception("Walgelijk assembly not found");
         var game = Assembly.GetEntryAssembly() ?? throw new Exception("Game assembly not found");

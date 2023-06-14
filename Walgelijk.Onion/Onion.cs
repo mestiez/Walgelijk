@@ -1,19 +1,59 @@
-﻿using System.Reflection;
+﻿using Newtonsoft.Json.Linq;
+using System;
+using System.Reflection;
+using Walgelijk.Onion.Animations;
+using Walgelijk.Onion.Assets;
+using Walgelijk.Onion.Decorators;
 using Walgelijk.Onion.Layout;
 
 namespace Walgelijk.Onion;
 
+/// <summary>
+/// Calculates the "hold ticker" for a control. 
+/// A hold ticker is a timer that ticks repeatedly after a control is held for a set amount of time
+/// It is meant for features such as "key repeat delay"
+/// </summary>
+public class HoldTicker
+{
+    public float MinHoldDuration = 0.5f;
+    public float RepeatInterval = 0.06f;
+
+    private float timer = 0;
+
+    public bool IsTicked(ControlInstance inst)
+    {
+        timer += Game.Main.State.Time.DeltaTimeUnscaled;
+        if (Onion.Input.MousePrimaryRelease || (inst.TimeSinceStateChange > MinHoldDuration && timer > RepeatInterval))
+        {
+            timer = 0;
+            return true;
+        }
+        return false;
+    }
+}
+
 public static class Onion
 {
-    public static readonly Layout.Layout Layout = new();
+    public static readonly LayoutQueue Layout = new();
     public static readonly ControlTree Tree = new();
     public static readonly Navigator Navigator = new();
     public static readonly Input Input = new();
     public static readonly Configuration Configuration = new();
+
     public static readonly AnimationQueue Animation = new();
-    public static Theme Theme = new();
+    public static readonly DecoratorQueue Decorators = new();
+    public static readonly ThemeStack Theme = new();
+
+    public static Sound? HoverSound;
+    public static Sound? ActiveSound = new(BuiltInAssets.Click, false, false);
+    public static Sound? ScrollSound;
+    public static Sound? TriggerSound;
+    public static Sound? FocusSound;
+
+    public static readonly HoldTicker HoldTicker = new();
 
     public static bool Initialised { get; private set; }
+
     public static readonly Hook OnClear = new();
 
     static Onion()
@@ -37,6 +77,8 @@ public static class Onion
         Animation.Clear();
         Layout.Reset();
         Navigator.Clear();
+        Decorators.Clear();
+        Theme.Reset();
 
         OnClear.Dispatch();
     }
@@ -46,19 +88,19 @@ public static class Onion
         switch (state)
         {
             case ControlState.Hover:
-                p(Theme.HoverSound);
+                p(HoverSound);
                 break;
             case ControlState.Scroll:
-                p(Theme.ScrollSound);
+                p(ScrollSound);
                 break;
             case ControlState.Focus:
-                p(Theme.FocusSound);
+                p(FocusSound);
                 break;
             case ControlState.Active:
-                p(Theme.ActiveSound);
+                p(ActiveSound);
                 break;
             case ControlState.Triggered:
-                p(Theme.TriggerSound);
+                p(TriggerSound);
                 break;
         }
 
@@ -68,16 +110,4 @@ public static class Onion
                 Game.Main.AudioRenderer.PlayOnce(sound, Configuration.SoundVolume, 1, Configuration.AudioTrack);
         }
     }
-
-    #region Controls
-
-    //public static ControlState Text(string text, HorizontalTextAlign horizontal, VerticalTextAlign vertical, int identity = 0, [CallerLineNumber] int site = 0)
-    //    => TextRect.Create(text, horizontal, vertical, identity, site);
-
-    #endregion
-
-    /*TODO 
-     * scrollbars etc. (pseudo controls)
-     * heel veel basic functies hier (label, button. etc.)
-    */
 }

@@ -39,8 +39,8 @@ public class TransformSystem : System
                 if (!item.Parent.HasValue)
                     continue;
 
-                var parent = Scene.GetComponentFrom<TransformComponent>(item.Parent.Value);
-                parent.InternalChildren.Add(item.Entity);
+                if (item.Parent.HasValue && item.Parent.Value.IsValid(Scene))
+                    item.Parent.Value.Get(Scene).InternalChildren.Add(new ComponentRef<TransformComponent>(item.Entity));
             }
 
             // calculate transforms
@@ -52,7 +52,7 @@ public class TransformSystem : System
                 CalculateMatrix(item, Matrix3x2.Identity);
             }
         }
-        else 
+        else
             foreach (var item in all)
             {
                 item.InternalChildren.Clear();
@@ -99,6 +99,7 @@ public class TransformSystem : System
 
         if (recurse)
             foreach (var child in transform.InternalChildren)
-                CalculateMatrix(Scene.GetComponentFrom<TransformComponent>(child), transform.LocalToWorldMatrix);
+                if (child.TryGet(Scene, out var childTransform))
+                    CalculateMatrix(childTransform, transform.LocalToWorldMatrix);
     }
 }

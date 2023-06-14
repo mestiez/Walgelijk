@@ -54,7 +54,7 @@ vec4 overlay(vec4 base, vec4 blend) {
 void main()
 {
     vec4 bg = texture(bgTex, (gl_FragCoord.xy / 400.0 + time)) * 0.5;
-    bg += texture(bgTex, (gl_FragCoord.xy / 800.0 - time)) * 0.5;
+    bg += texture(bgTex, (gl_FragCoord.xy / 800.0 - vec2(time, time * 0.5))) * 0.5;
     bg.a = 1;
 
     color = tint * vertexColor * texture(mainTex, uv);

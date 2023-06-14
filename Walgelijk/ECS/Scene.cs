@@ -23,7 +23,6 @@ public sealed class Scene : IDisposable
     private readonly IComponentCollection components = new FilterComponentCollection();
     private readonly ISystemCollection systems;
 
-
     internal bool HasBeenLoadedAlready = false;
 
     /// <summary>
@@ -100,6 +99,11 @@ public sealed class Scene : IDisposable
     public bool HasSystem<T>() where T : System => systems.Has<T>();
 
     /// <summary>
+    /// Returns true if the system of the given type exists in the scene and returns false otherwise.
+    /// </summary>
+    public bool HasSystem(Type type) => systems.Has(type);
+
+    /// <summary>
     /// Remove system from the list. Getting rid of any references to it is not handled, so the object might remain in memory.
     /// </summary>
     public bool RemoveSystem<T>() where T : System => systems.Remove<T>();
@@ -148,6 +152,11 @@ public sealed class Scene : IDisposable
     /// Amount of entities in the scene
     /// </summary>
     public int EntityCount => entities.Count;
+
+    /// <summary>
+    /// Returns true if this scene has been disposed and should no longer be used
+    /// </summary>
+    public bool Disposed { get; private set; }
 
     /// <summary>
     /// Get all components attached to the given entity
@@ -345,10 +354,11 @@ public sealed class Scene : IDisposable
 
         entities.SyncBuffers();
         components.SyncBuffers();
-        //systems.SyncBuffers();
 
         systems.Dispose();
         components.Dispose();
+
+        Disposed = true;
     }
 
     //TODO voeg manier to om meerdere componenten te krijgen per keer

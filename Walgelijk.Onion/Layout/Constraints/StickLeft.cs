@@ -10,7 +10,7 @@ public readonly struct StickLeft : IConstraint
         //    return;
 
         //var parent = p.Tree.EnsureInstance(p.Node.Parent.Identity);
-        var offset = 0 - p.Instance.Rects.Intermediate.MinX + Onion.Theme.Padding;
+        var offset = 0 - p.Instance.Rects.Intermediate.MinX + p.Theme.Padding;
         p.Instance.Rects.Intermediate = p.Instance.Rects.Intermediate.Translate(offset, 0);
     }
 }

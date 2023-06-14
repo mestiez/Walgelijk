@@ -5,9 +5,17 @@ namespace Walgelijk.Onion.Controls;
 
 public readonly struct Group : IControl
 {
-    public static void Start(int identity = 0, [CallerLineNumber] int site = 0)
+    private readonly bool drawBackground;
+
+    public Group(bool background)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Group).GetHashCode(), identity, site), new Group());
+        this.drawBackground = background;
+    }
+
+    [RequiresManualEnd]
+    public static void Start(bool background = true, int identity = 0, [CallerLineNumber] int site = 0)
+    {
+        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Group).GetHashCode(), identity, site), new Group(background));
     }
 
     public void OnAdd(in ControlParams p)
@@ -32,7 +40,10 @@ public readonly struct Group : IControl
 
     public void OnRender(in ControlParams p)
     {
-        (ControlTree tree, Layout.Layout layout, Input input, GameState state, Node node, ControlInstance instance) = p;
+        if (!drawBackground)
+            return;
+
+        (ControlTree tree, Layout.LayoutQueue layout, Input input, GameState state, Node node, ControlInstance instance) = p;
 
         instance.Rects.Rendered = instance.Rects.ComputedGlobal;
         var t = node.GetAnimationTime();
@@ -42,13 +53,15 @@ public readonly struct Group : IControl
 
         var anim = instance.Animations;
 
-        var fg = Onion.Theme.Foreground[instance.State];
+        var fg = p.Theme.Foreground[ControlState.None];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
+        Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
+        Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
         anim.AnimateColour(ref Draw.Colour, t);
-        Draw.Quad(instance.Rects.Rendered, 0, Onion.Theme.Rounding);
+        Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
     }
 
     public void OnEnd(in ControlParams p) { }

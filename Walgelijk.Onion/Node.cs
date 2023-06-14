@@ -30,6 +30,11 @@ public class Node
     public int RequestedLocalOrder;
 
     /// <summary>
+    /// Should this node be considered when calculating the parent scroll bounds?
+    /// </summary>
+    public bool ContributeToParentScrollRect = true;
+
+    /// <summary>
     /// This control will always be considered to be on top if this is true. 
     /// Used for things like tooltips or dropdown menus.
     /// Note that the behaviour of this is undefined if multiple nodes are always on top.
@@ -107,14 +112,18 @@ public class Node
         p.Tree.DrawboundStack.Push(drawBounds);
 
         Draw.BlendMode = BlendMode.AlphaBlend;
-        Draw.Font = Onion.Theme.Font;
-        Draw.FontSize = Onion.Theme.FontSize[p.Instance.State];
+        Draw.ScreenSpace = true;
+        Draw.Font = p.Theme.Font;
+        Draw.FontSize = p.Theme.FontSize[p.Instance.State];
         Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, p.Node.ComputedGlobalOrder);
-        Draw.DrawBounds = new DrawBounds(drawBounds.GetSize(), drawBounds.BottomLeft, true);
         p.Instance.Rects.ComputedDrawBounds = drawBounds;
         p.Instance.Rects.Rendered = p.Instance.Rects.ComputedGlobal;
 
-        if (drawBounds.Width > 0 && drawBounds.Height > 0)
+        foreach (var decorator in p.Instance.Decorators)
+            decorator.RenderBefore(p);
+
+        Draw.DrawBounds = new DrawBounds(p.Instance.Rects.ComputedDrawBounds, true);
+        if (p.Instance.Rects.ComputedDrawBounds.Width > 0 && p.Instance.Rects.ComputedDrawBounds.Height > 0)
         {
             Behaviour.OnRender(p);
             foreach (var child in GetChildren())
@@ -123,10 +132,16 @@ public class Node
         }
 
         p.Tree.DrawboundStack.Pop();
+
+        foreach (var decorator in p.Instance.Decorators)
+            decorator.RenderAfter(p);
     }
 
     public void ApplyParentLayout(in ControlParams p)
     {
+        if (!AliveLastFrame)
+            return;
+
         if (Parent != null && Parent.ChildrenLayout != null)
             foreach (var layout in Parent.ChildrenLayout)
                 layout.Apply(new ControlParams(Parent, p.Tree.EnsureInstance(Parent.Identity)), SiblingIndex, Identity);
@@ -159,11 +174,20 @@ public class Node
 
             AdjustRaycastRect(p);
             EnforceScrollBounds(p);
-
         }
+
+        QuantiseRects(p);
 
         foreach (var child in GetChildren())
             child.Process(new ControlParams(child, p.Tree.EnsureInstance(child.Identity)));
+    }
+
+    private void QuantiseRects(in ControlParams p)
+    {
+        p.Instance.Rects.Intermediate = p.Instance.Rects.Intermediate.Quantise();
+
+        if (p.Instance.Rects.Raycast.HasValue)
+            p.Instance.Rects.Raycast = p.Instance.Rects.Raycast.Value.Quantise();
     }
 
     private static void AdjustRaycastRect(in ControlParams p)
@@ -194,8 +218,8 @@ public class Node
 
             //all we need is the size lol
             var newLocal = rects.Intermediate;
-            newLocal.MaxX -= rects.Intermediate.MinX + Onion.Theme.Padding;
-            newLocal.MaxY -= rects.Intermediate.MinY + Onion.Theme.Padding;
+            newLocal.MaxX -= rects.Intermediate.MinX + p.Theme.Padding;
+            newLocal.MaxY -= rects.Intermediate.MinY + p.Theme.Padding;
             newLocal.MinX = newLocal.MinY = 0;
 
             var remainingSpaceLeft = MathF.Max(newLocal.MinX - childContent.MinX, 0);
@@ -248,7 +272,8 @@ public class Node
             else
             {
                 //living child should count towards child content rect
-                inst.Rects.ChildContent = inst.Rects.ChildContent.StretchToContain(childInst.Rects.Intermediate);
+                if (item.ContributeToParentScrollRect)
+                    inst.Rects.ChildContent = inst.Rects.ChildContent.StretchToContain(childInst.Rects.Intermediate);
                 item.SiblingIndex = siblingIndex++;
             }
         }

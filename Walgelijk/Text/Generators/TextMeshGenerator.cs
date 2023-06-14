@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Walgelijk.BmFont;
 
 namespace Walgelijk;
 
@@ -113,8 +114,6 @@ public class TextMeshGenerator
     public float CalculateTextHeight(ReadOnlySpan<char> displayString)
     {
         float cursor = 0;
-        float width = Font.Width;
-        float height = Font.Height;
         char lastChar = default;
         int line = 0;
         int glyphCountWithoutTags = 0;
@@ -164,7 +163,10 @@ public class TextMeshGenerator
 
             var glyph = Font.GetGlyph(c);
             Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
-            var pos = new Vector3(cursor + glyph.XOffset + kerning.Amount * KerningMultiplier, -glyph.YOffset - (line * Font.LineHeight * LineHeightMultiplier), 0);
+            //var pos = new Vector3(
+            //    cursor + glyph.XOffset + kerning.Amount * KerningMultiplier, 
+            //    -glyph.YOffset - (line * Font.LineHeight * LineHeightMultiplier), 
+            //    0);
             glyphCountWithoutTags++;
             cursor += glyph.Advance * TrackingMultiplier;
             lastChar = c;
@@ -200,8 +202,6 @@ public class TextMeshGenerator
     public TextMeshResult Generate(ReadOnlySpan<char> displayString, Vertex[] vertices, uint[] indices, IList<ColourInstruction>? colours = null)
     {
         float cursor = 0;
-        float width = Font.Width;
-        float height = Font.Height;
 
         var geometryBounds = new Rect(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);
         var textBounds = new Rect(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);
@@ -269,48 +269,52 @@ public class TextMeshGenerator
             }
 
             var glyph = Font.GetGlyph(c);
-            Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
-            var rawCursor = new Vector2(cursor, -(line * Font.LineHeight * LineHeightMultiplier));
-            var pos = new Vector3(
-                rawCursor.X + glyph.XOffset + kerning.Amount * KerningMultiplier,
-                -glyph.YOffset + rawCursor.Y,
-                0);
 
-            GlyphUVInfo uvInfo = new(glyph.X / width, glyph.Y / height, glyph.Width / width, glyph.Height / height);
+            var rawCursor = new Vector2(cursor, -(line * Font.LineHeight * LineHeightMultiplier));
 
             if (colours != null)
                 foreach (var ce in colours)
                     if (ce.CharIndex == i)
                         colorToSet = ce.Colour * Color;
 
-            textBounds = textBounds.StretchToContain(pos.XY() with { Y = rawCursor.Y });
-            textBounds = textBounds.StretchToContain(pos.XY() with { Y = rawCursor.Y - Font.Base });
-            textBounds = textBounds.StretchToContain(pos.XY() with { X = rawCursor.X + glyph.Width });
+            if (!char.IsWhiteSpace(c))
+            {
+                Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
+                var pos = new Vector3(
+                    rawCursor.X + kerning.Amount * KerningMultiplier + glyph.GeometryRect.MinX,
+                    rawCursor.Y - glyph.GeometryRect.MaxY,
+                    0);
 
-            vertices[vertexIndex + 0] = appendVertex(pos, glyph, uvInfo, colorToSet, 0, 0);
-            vertices[vertexIndex + 1] = appendVertex(pos, glyph, uvInfo, colorToSet, 1, 0);
-            vertices[vertexIndex + 2] = appendVertex(pos, glyph, uvInfo, colorToSet, 1, 1, skew);
-            vertices[vertexIndex + 3] = appendVertex(pos, glyph, uvInfo, colorToSet, 0, 1, skew);
+                textBounds = textBounds.StretchToContain(new Vector2(rawCursor.X, rawCursor.Y));
+                textBounds = textBounds.StretchToContain(new Vector2(rawCursor.X, rawCursor.Y - Font.XHeight));
+                textBounds = textBounds.StretchToContain(new Vector2(rawCursor.X + glyph.Advance, rawCursor.Y));
+                textBounds = textBounds.StretchToContain(new Vector2(rawCursor.X + glyph.Advance, rawCursor.Y - Font.XHeight));
 
-            indices[indexIndex + 0] = vertexIndex + 0;
-            indices[indexIndex + 1] = vertexIndex + 1;
-            indices[indexIndex + 2] = vertexIndex + 2;
+                vertices[vertexIndex + 0] = appendVertex(pos, glyph, colorToSet, 0, 0);
+                vertices[vertexIndex + 1] = appendVertex(pos, glyph, colorToSet, 1, 0);
+                vertices[vertexIndex + 2] = appendVertex(pos, glyph, colorToSet, 1, 1, skew);
+                vertices[vertexIndex + 3] = appendVertex(pos, glyph, colorToSet, 0, 1, skew);
 
-            indices[indexIndex + 3] = vertexIndex + 0;
-            indices[indexIndex + 4] = vertexIndex + 3;
-            indices[indexIndex + 5] = vertexIndex + 2;
+                indices[indexIndex + 0] = vertexIndex + 0;
+                indices[indexIndex + 1] = vertexIndex + 1;
+                indices[indexIndex + 2] = vertexIndex + 2;
 
-            vertexCountSinceNewLine += 4;
-            glyphCountWithoutTags++;
+                indices[indexIndex + 3] = vertexIndex + 0;
+                indices[indexIndex + 4] = vertexIndex + 3;
+                indices[indexIndex + 5] = vertexIndex + 2;
 
-            vertexIndex += 4;
-            indexIndex += 6;
+                vertexCountSinceNewLine += 4;
+                glyphCountWithoutTags++;
+
+                vertexIndex += 4;
+                indexIndex += 6;
+            }
             cursor += glyph.Advance * TrackingMultiplier;
 
             lastChar = c;
         }
 
-        if (displayString.Length > 1)
+        if (displayString.Length > 0)
             startNewLine(displayString.Length, displayString);
 
         //TODO dit is niet goed
@@ -325,11 +329,11 @@ public class TextMeshGenerator
                     break;
             }
 
-            textBounds.MinY += textBoundsOffset;
-            textBounds.MaxY += textBoundsOffset;
+            textBounds.MinY += (int)textBoundsOffset;
+            textBounds.MaxY += (int)textBoundsOffset;
 
             for (int i = 0; i < vertexIndex; i++)
-                vertices[i].Position.Y += textBoundsOffset;
+                vertices[i].Position.Y += (int)textBoundsOffset;
         }
 
         if (HorizontalAlign != HorizontalTextAlign.Left)
@@ -343,8 +347,8 @@ public class TextMeshGenerator
                     break;
             }
 
-            textBounds.MinX -= textBoundsOffset;
-            textBounds.MaxX -= textBoundsOffset;
+            textBounds.MinX -= (int)textBoundsOffset;
+            textBounds.MaxX -= (int)textBoundsOffset;
         }
 
         geometryBounds = new Rect(float.MaxValue, float.MaxValue, float.MinValue, float.MinValue);
@@ -360,13 +364,16 @@ public class TextMeshGenerator
             IndexCount = glyphCountWithoutTags * 6,
         };
 
-        Vertex appendVertex(Vector3 pos, Glyph glyph, GlyphUVInfo uvInfo, Color color, float xFactor, float yFactor, float skew = 0)
+        Vertex appendVertex(Vector3 pos, Glyph glyph, Color color, float xFactor, float yFactor, float skew = 0)
         {
+            var o = new Vector3(glyph.GeometryRect.Width * xFactor + skew, glyph.GeometryRect.Height * yFactor, 0);
+            o.X = (int)o.X;
+            o.Y = (int)o.Y;
             var vertex = new Vertex(
-                pos + new Vector3(glyph.Width * xFactor - skew, -glyph.Height * yFactor, 0),
-                new Vector2(uvInfo.X + uvInfo.Width * xFactor, uvInfo.Y + uvInfo.Height * yFactor),
+                pos + o,
+                new Vector2(glyph.TextureRect.MinX + glyph.TextureRect.Width * xFactor, glyph.TextureRect.MaxY - glyph.TextureRect.Height * yFactor),
                 color
-                );
+                ); ;
 
             return vertex;
         }
@@ -379,7 +386,13 @@ public class TextMeshGenerator
 
             if (tagContents.StartsWith(RichTextTags.Colour)) //Colour tag
             {
-                colorToSet = isClosingTag ? Color : new Color(tagContents[(RichTextTags.Colour.Length + 1)..]);//+1 to remove the equal sign
+                try
+                {
+                    colorToSet = isClosingTag ? Color : new Color(tagContents[(RichTextTags.Colour.Length + 1)..]);//+1 to remove the equal sign
+                }
+                catch (Exception)
+                {
+                }
                 return;
             }
 
@@ -396,7 +409,7 @@ public class TextMeshGenerator
             {
                 int start = lastLineLetterStartIndex;
                 int end = i;
-                var part = str[start..end];
+                var part = str[start..end].Trim();
                 var lengthOfLastLine = (int)CalculateTextWidth(part);
                 var verticesInLine = vertices.AsSpan()[((int)vertexIndex - vertexCountSinceNewLine)..(int)vertexIndex];
 
@@ -467,48 +480,5 @@ public class TextMeshGenerator
         {
             return !(left == right);
         }
-    }
-}
-
-internal struct GlyphUVInfo
-{
-    public float X;
-    public float Y;
-    public float Width;
-    public float Height;
-
-    public GlyphUVInfo(float x, float y, float w, float h)
-    {
-        X = x;
-        Y = y;
-        Width = w;
-        Height = h;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is GlyphUVInfo info &&
-               X == info.X &&
-               Y == info.Y &&
-               Width == info.Width &&
-               Height == info.Height;
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(X, Y, Width, Height);
-    }
-
-    public static bool operator ==(GlyphUVInfo left, GlyphUVInfo right)
-    {
-        return left.X == right.X &&
-               left.Y == right.Y &&
-               left.Width == right.Width &&
-               left.Height == right.Height;
-    }
-
-    public static bool operator !=(GlyphUVInfo left, GlyphUVInfo right)
-    {
-        return !(left == right);
     }
 }

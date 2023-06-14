@@ -1,5 +1,4 @@
 ﻿using Walgelijk.Onion.Controls;
-using static Walgelijk.Onion.Layout.Resizable;
 
 namespace Walgelijk.Onion.Layout;
 
@@ -7,11 +6,13 @@ public readonly struct FitContainer : IConstraint
 {
     public readonly float? WidthRatio = 1;
     public readonly float? HeightRatio = 1;
+    public readonly bool Pad;
 
-    public FitContainer(float? widthRatio, float? heightRatio)
+    public FitContainer(float? widthRatio, float? heightRatio, bool pad = true)
     {
         WidthRatio = widthRatio;
         HeightRatio = heightRatio;
+        Pad = pad;
     }
 
     public void Apply(in ControlParams p)
@@ -20,7 +21,7 @@ public readonly struct FitContainer : IConstraint
             return;
 
         var parent = p.Tree.EnsureInstance(p.Node.Parent.Identity);
-        var padding = Onion.Theme.Padding * 2;
+        var padding = Pad ? p.Theme.Padding * 2 : 0;
 
         if (WidthRatio.HasValue)
             p.Instance.Rects.Intermediate.Width = WidthRatio.Value * (parent.Rects.Intermediate.Width - padding);

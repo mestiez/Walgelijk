@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion.Controls;
@@ -8,27 +9,21 @@ public readonly struct Slider : IControl
     private readonly Direction direction;
     private readonly MinMax<float> range;
     private readonly float step;
-    private readonly string? LabelFormat;
+    private readonly string? labelFormat;
 
     public Slider(Direction direction, MinMax<float> range, float step, string? labelFormat = null)
     {
         this.direction = direction;
         this.range = range;
         this.step = step;
-        LabelFormat = labelFormat;
-    }
-
-    public enum Direction
-    {
-        Horizontal,
-        Vertical
+        this.labelFormat = labelFormat;
     }
 
     private static readonly OptionalControlState<float> states = new();
 
-    public static bool Float(ref float value, Direction dir, MinMax<float> range, float step = 0, int identity = 0, [CallerLineNumber] int site = 0)
+    public static bool Float(ref float value, Direction dir, MinMax<float> range, float step = 0, string? label = null, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Slider).GetHashCode(), (int)dir, identity, site), new Slider(dir, range, step));
+        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Slider).GetHashCode(), (int)dir, identity, site), new Slider(dir, range, step, label));
         instance.RenderFocusBox = false;
         Onion.Tree.End();
         var r = states.HasIncomingChange(instance.Identity);
@@ -37,12 +32,12 @@ public readonly struct Slider : IControl
         return r;
     }
 
-    public static bool Int(ref int value, Direction dir, MinMax<int> range, int step = 1, int identity = 0, [CallerLineNumber] int site = 0)
+    public static bool Int(ref int value, Direction dir, MinMax<int> range, int step = 1, string? label = null, int identity = 0, [CallerLineNumber] int site = 0)
     {
         float vv = value;
         var rr = new MinMax<float>(range.Min, range.Max);
         bool r;
-        if (r = Float(ref vv, dir, rr, Math.Max(1, step), identity, site))
+        if (r = Float(ref vv, dir, rr, Math.Max(1, step), label, identity, site))
             value = (int)vv;
         return r;
     }
@@ -58,7 +53,11 @@ public readonly struct Slider : IControl
     public void OnProcess(in ControlParams p)
     {
         ControlUtils.ProcessButtonLike(p);
-        p.Instance.CaptureFlags |= CaptureFlags.Scroll;
+
+        if (p.Input.CtrlHeld)
+            p.Instance.CaptureFlags |= CaptureFlags.Scroll;
+        else
+            p.Instance.CaptureFlags &= ~CaptureFlags.Scroll;
 
         var v = 0f;
 
@@ -106,18 +105,20 @@ public readonly struct Slider : IControl
 
     public void OnRender(in ControlParams p)
     {
-        (ControlTree tree, Layout.Layout layout, Input input, GameState state, Node node, ControlInstance instance) = p;
+        (ControlTree tree, Layout.LayoutQueue layout, Input input, GameState state, Node node, ControlInstance instance) = p;
 
         var t = node.GetAnimationTime();
         var anim = instance.Animations;
 
-        var fg = Onion.Theme.Foreground[instance.State];
+        var fg = p.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
+        Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
+        Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
         anim.AnimateColour(ref Draw.Colour, t);
-        Draw.Quad(instance.Rects.Rendered, 0, Onion.Theme.Rounding);
+        Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
 
         var sliderRect = instance.Rects.Rendered;
         float animatedMin = Utilities.Lerp(range.Max, range.Min, Utilities.Clamp(t));
@@ -131,16 +132,31 @@ public readonly struct Slider : IControl
                 break;
         }
 
-        sliderRect.MaxX = MathF.Max(sliderRect.MaxX, sliderRect.MinX + Onion.Theme.Padding * 3);
-        sliderRect.MinY = MathF.Min(sliderRect.MinY, sliderRect.MaxY - Onion.Theme.Padding * 3);
+        sliderRect.MaxX = MathF.Max(sliderRect.MaxX, sliderRect.MinX + p.Theme.Padding * 3);
+        sliderRect.MinY = MathF.Min(sliderRect.MinY, sliderRect.MaxY - p.Theme.Padding * 3);
 
-        Draw.Colour = Onion.Theme.Accent[instance.State];
+        Draw.Colour = p.Theme.Accent[instance.State];
         anim.AnimateColour(ref Draw.Colour, t);
-        Draw.Quad(sliderRect.Expand(-Onion.Theme.Padding), 0, Onion.Theme.Rounding);
+        Draw.OutlineWidth = 0;
+        Draw.Quad(sliderRect.Expand(-p.Theme.Padding), 0, p.Theme.Rounding);
+
+        if (labelFormat != null)
+        {
+            // TODO string allocation :S
+            var v = states[p.Identity];
+            var str = v.ToString();
+            if (!string.IsNullOrWhiteSpace(labelFormat))
+                str = string.Format(labelFormat, str);
+
+            Draw.Font = p.Theme.Font;
+            Draw.Colour = p.Theme.Text[instance.State];
+            Draw.Text(str, instance.Rects.Rendered.GetCenter(), Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.Rendered.Width);
+        }
     }
 
     public void OnEnd(in ControlParams p)
     {
+
     }
 
     public void OnRemove(in ControlParams p)

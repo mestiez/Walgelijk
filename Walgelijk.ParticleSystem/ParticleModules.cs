@@ -60,6 +60,8 @@ public struct NoiseModule : IParticleModule
 {
     public bool Disabled { get; set; } = false;
 
+    public bool SharedSeed = true;
+
     public float Frequency = 0.5f;
     public float Evolution = 0.2f;
     public FloatRange VelocityIntensity = new(0, 1);
@@ -75,16 +77,20 @@ public struct NoiseModule : IParticleModule
     public void Process(int index, ref Particle particle, in GameState gameState, ParticlesComponent component, TransformComponent transform)
     {
         var influence = Influence * InfluenceOverTime.Evaluate(particle.NormalisedLife);
+        float perParticleOffset = 0;
+
+        if (!SharedSeed)
+            perParticleOffset = index * 382.5923f;
 
         var x = Noise.GetSimplex(
             particle.Position.X * Frequency,
             particle.Position.Y * Frequency,
-            Evolution * (gameState.Time.SecondsSinceLoad + index * 382.5923f));
+            Evolution * (gameState.Time.SecondsSinceLoad + perParticleOffset));
 
         var y = Noise.GetSimplex(
             particle.Position.X * Frequency,
             particle.Position.Y * Frequency,
-            4892.2938f - Evolution * -(gameState.Time.SecondsSinceLoad + index * 382.5923f));
+            4892.2938f - Evolution * -(gameState.Time.SecondsSinceLoad + perParticleOffset));
 
         particle.Acceleration.X += x * influence;
         particle.Acceleration.Y += y * influence;

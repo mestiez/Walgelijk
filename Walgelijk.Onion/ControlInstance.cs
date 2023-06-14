@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using Walgelijk.Onion.Animations;
+using Walgelijk.Onion.Decorators;
 
 namespace Walgelijk.Onion;
 
@@ -21,6 +22,16 @@ public class ControlInstance
     /// The active rectangles that define the areas on the screen that represent this control for different purposes.
     /// </summary>
     public ControlRects Rects;
+
+    /// <summary>
+    /// Preferred width as determined by the control behaviour. Can be null.
+    /// </summary>
+    public float? PreferredWidth;
+
+    /// <summary>
+    /// Preferred height as determined by the control behaviour. Can be null.
+    /// </summary>
+    public float? PreferredHeight;
 
     /// <summary>
     /// The offset of every child as adjusted by scrolling
@@ -64,6 +75,11 @@ public class ControlInstance
     public bool HasKeyboard => Onion.Navigator.KeyControl == Identity;
 
     /// <summary>
+    /// The last unscaled timestamp when the control state (hover, active, etc.) was changed
+    /// </summary>
+    public float LastStateChangeTime = float.MinValue;
+
+    /// <summary>
     /// Determines what events this control is capable of capturing. 
     /// Normally set to just <see cref="CaptureFlags.Hover"/>, it will only capture hover events.
     /// </summary>
@@ -85,15 +101,19 @@ public class ControlInstance
     public bool IsNew = true;
 
     /// <summary>
-    /// This control has changed the value of a given ref parameter in its creation function.
-    /// This is used, for example, when a dropdown does its processing and changes the selection index. <see cref="IncomingChange"/> is set to true and read the next time the creation function is called
-    /// </summary>
-    //public bool IncomingChange;
-
-    /// <summary>
     /// List of visual animations to apply to this control
     /// </summary>
     public readonly AnimationCollection Animations = new();
+
+    /// <summary>
+    /// Control-specific theme
+    /// </summary>
+    public Theme Theme;
+
+    /// <summary>
+    /// List of decorators to apply to this control, maximum of 8
+    /// </summary>
+    public readonly ClampedArray<IDecorator> Decorators = new(DecoratorQueue.MaxDecoratorsPerControl);
 
     public ControlState State
     {
@@ -112,7 +132,7 @@ public class ControlInstance
 
             if (Onion.Navigator.ActiveControl == Identity)
                 state |= ControlState.Active;
-            
+
             if (Onion.Navigator.KeyControl == Identity)
                 state |= ControlState.Key;
 
@@ -124,4 +144,9 @@ public class ControlInstance
     {
         Identity = id;
     }
+
+    public float TimeSinceStateChange => Game.Main.State.Time.SecondsSinceSceneChangeUnscaled - LastStateChangeTime;
+
+    public float GetTransitionProgress(float secondsSinceSceneChangeUnscaled) => Utilities.Clamp((secondsSinceSceneChangeUnscaled - LastStateChangeTime) / Onion.Animation.DefaultDurationSeconds);
+    public float GetTransitionProgress() => Utilities.Clamp(TimeSinceStateChange / Onion.Animation.DefaultDurationSeconds);
 }

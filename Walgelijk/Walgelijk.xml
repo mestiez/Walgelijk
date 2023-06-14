@@ -1325,6 +1325,11 @@
             Returns true if the system of the given type exists in the scene and returns false otherwise.
             </summary>
         </member>
+        <member name="M:Walgelijk.Scene.HasSystem(System.Type)">
+            <summary>
+            Returns true if the system of the given type exists in the scene and returns false otherwise.
+            </summary>
+        </member>
         <member name="M:Walgelijk.Scene.RemoveSystem``1">
             <summary>
             Remove system from the list. Getting rid of any references to it is not handled, so the object might remain in memory.
@@ -1359,6 +1364,11 @@
         <member name="P:Walgelijk.Scene.EntityCount">
             <summary>
             Amount of entities in the scene
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Scene.Disposed">
+            <summary>
+            Returns true if this scene has been disposed and should no longer be used
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.GetAllComponentsFrom(Walgelijk.Entity)">
@@ -2071,7 +2081,7 @@
         </member>
         <member name="T:Walgelijk.TextureLoader">
             <summary>
-            Utility struct responsible for decoding and loading image files
+            Utility class responsible for decoding and loading image files
             </summary>
         </member>
         <member name="F:Walgelijk.TextureLoader.Settings">
@@ -3542,6 +3552,30 @@
             Returns every unloaded item ever loaded
             </summary>
         </member>
+        <member name="T:Walgelijk.ClampedArray`1">
+            <summary>
+            An array with a fixed capacity that keeps track of how many objects were entered;
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Walgelijk.ClampedArray`1.Insert(System.Int32,`0)">
+            <summary>
+            Not supported.
+            </summary>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:Walgelijk.ClampedArray`1.Remove(`0)">
+            <summary>
+            Not supported.
+            </summary>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:Walgelijk.ClampedArray`1.RemoveAt(System.Int32)">
+            <summary>
+            Not supported.
+            </summary>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
         <member name="T:Walgelijk.Curve`1">
             <summary>
             Linear curve
@@ -4232,6 +4266,12 @@
             <summary>
             Create a rectangle given the center and the size
             </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.SortComponents">
+            <summary>
+            Ensures that the Min and Max components are the minimum and maximum respectively.
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:Walgelijk.Rect.SignedDistanceTo(System.Numerics.Vector2)">
             <summary>
@@ -5388,7 +5428,8 @@
         <member name="M:Walgelijk.Resources.LoadRef``1(System.String,System.Boolean)">
             <summary>
             Load a <see cref="T:Walgelijk.ResourceRef`1"/> at the given path.
-            The advantage this offers over <see cref="M:Walgelijk.Resources.Load``1(System.String,System.Boolean)"/> is that a <see cref="T:Walgelijk.ResourceRef`1"/> doesn't actually store the resource, but only the ID and a helper function to retrieve the resource.
+            The advantage this offers over <see cref="M:Walgelijk.Resources.Load``1(System.String,System.Boolean)"/> is that a <see cref="T:Walgelijk.ResourceRef`1"/> doesn't actually store the resource, 
+            but only the ID and a helper function to retrieve the resource.
             This improves support for unloading and hotloading.
             </summary>
             <typeparam name="T">The type of the object to load</typeparam>
@@ -5683,199 +5724,49 @@
             Intended amount of time in seconds between fixed updates
             </summary>
         </member>
-        <member name="T:Walgelijk.Font">
-            <summary>
-            Object that holds font information and pages
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Font.Name">
-            <summary>
-            Display name of the font
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Font.Size">
-            <summary>
-            Retrieve the point size this font was loaded with
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Font.Bold">
-            <summary>
-            Retrieve if the font was loaded with the bold style
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Font.Smooth">
-            <summary>
-            Retrieve if the font was loaded with the smooth flag. The flag determined the <see cref="T:Walgelijk.FilterMode"/> the pages were loaded with.
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Font.Italic">
-            <summary>
-            Retrieve if the font was loaded with the italic style
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Font.Width">
-            <summary>
-            Page width in pixels
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Font.Height">
-            <summary>
-            Page height in pixels
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Font.LineHeight">
-            <summary>
-            This is the distance in pixels between each line of text
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Font.Base">
-            <summary>
-            The number of pixels from the absolute top of the line to the base of the characters
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Font.Pages">
-            <summary>
-            Array of texture pages this font uses
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Font.Glyphs">
-            <summary>
-            Glyphs by character
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Font.Kernings">
-            <summary>
-            Kernings by <see cref="T:Walgelijk.KerningPair"/>
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Font.Material">
-            <summary>
-            Material this font uses. Be aware this may be shared across text. Use <see cref="M:Walgelijk.TextMaterial.CreateFor(Walgelijk.Font)"/> to create a new material.
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Font.Load(System.String)">
-            <summary>
-            Load a font from a metadata file (BMFont .fnt)
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Font.GetGlyph(System.Char,Walgelijk.Glyph)">
-            <summary>
-            Get the glyph for a character. 
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Font.GetKerning(System.Char,System.Char)">
-            <summary>
-            Get kerning for two characters
-            </summary>
-        </member>
-        <member name="F:Walgelijk.Font.Default">
-            <summary>
-            The default font
-            </summary>
-        </member>
-        <member name="T:Walgelijk.KerningPair">
-            <summary>
-            The two characters a kerning amount applies to
-            </summary>
-        </member>
-        <member name="F:Walgelijk.KerningPair.PreviousChar">
-            <summary>
-            Previous character in the sequence
-            </summary>
-        </member>
-        <member name="F:Walgelijk.KerningPair.CurrentChar">
-            <summary>
-            Current character in the sequence
-            </summary>
-        </member>
-        <member name="T:Walgelijk.Glyph">
+        <member name="T:Walgelijk.BmFont.BmFontGlyph">
             <summary>
             Structure with font glyph information
             </summary>
         </member>
-        <member name="F:Walgelijk.Glyph.Identity">
+        <member name="F:Walgelijk.BmFont.BmFontGlyph.Identity">
             <summary>
             Character this glyph belongs to
             </summary>
         </member>
-        <member name="F:Walgelijk.Glyph.X">
+        <member name="F:Walgelijk.BmFont.BmFontGlyph.X">
             <summary>
             X position on the page in pixels
             </summary>
         </member>
-        <member name="F:Walgelijk.Glyph.Y">
+        <member name="F:Walgelijk.BmFont.BmFontGlyph.Y">
             <summary>
             Y position on the page in pixels
             </summary>
         </member>
-        <member name="F:Walgelijk.Glyph.Width">
+        <member name="F:Walgelijk.BmFont.BmFontGlyph.Width">
             <summary>
             Width of the glyph in pixels
             </summary>
         </member>
-        <member name="F:Walgelijk.Glyph.Height">
+        <member name="F:Walgelijk.BmFont.BmFontGlyph.Height">
             <summary>
             Height of the glyph in pixels
             </summary>
         </member>
-        <member name="F:Walgelijk.Glyph.XOffset">
+        <member name="F:Walgelijk.BmFont.BmFontGlyph.XOffset">
             <summary>
             Horizontal offset of this character in pixels
             </summary>
         </member>
-        <member name="F:Walgelijk.Glyph.YOffset">
+        <member name="F:Walgelijk.BmFont.BmFontGlyph.YOffset">
             <summary>
             Vertical offset of this character in pixels
             </summary>
         </member>
-        <member name="F:Walgelijk.Glyph.Advance">
+        <member name="F:Walgelijk.BmFont.BmFontGlyph.Advance">
             <summary>
             How many pixels to advance the cursor after this glyph
-            </summary>
-        </member>
-        <member name="F:Walgelijk.Glyph.Page">
-            <summary>
-            Page index of the glyph
-            </summary>
-        </member>
-        <member name="T:Walgelijk.HorizontalTextAlign">
-            <summary>
-            Ways to align text horizontally
-            </summary>
-        </member>
-        <member name="T:Walgelijk.Kerning">
-            <summary>
-            Structure with kerning information
-            </summary>
-        </member>
-        <member name="F:Walgelijk.Kerning.FirstChar">
-            <summary>
-            Preceding character
-            </summary>
-        </member>
-        <member name="F:Walgelijk.Kerning.SecondChar">
-            <summary>
-            Current character
-            </summary>
-        </member>
-        <member name="F:Walgelijk.Kerning.Amount">
-            <summary>
-            Offset amount
-            </summary>
-        </member>
-        <member name="T:Walgelijk.RichTextTags">
-            <summary>
-            Contains the rich text tags as string constants
-            </summary>
-        </member>
-        <member name="F:Walgelijk.RichTextTags.Colour">
-            <summary>
-            &lt;color=&quot;#ff00ff&quot;&gt;Text goes here&lt;/color&gt;
-            </summary>
-        </member>
-        <member name="F:Walgelijk.RichTextTags.Italic">
-            <summary>
-            &lt;color=&quot;#ff00ff&quot;&gt;Text goes here&lt;/color&gt;
             </summary>
         </member>
         <member name="T:Walgelijk.TextComponent">
@@ -5958,26 +5849,171 @@
             Distance between each line.  Changing this forces a vertex array update.
             </summary>
         </member>
-        <member name="T:Walgelijk.TextMaterial">
+        <member name="T:Walgelijk.Font">
+            <summary>
+            Object that holds font information and pages
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Name">
+            <summary>
+            Display name of the font
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Size">
+            <summary>
+            Retrieve the point size this font was loaded with
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Bold">
+            <summary>
+            Retrieve if the font was loaded with the bold style
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Font.Rendering">
+            <summary>
+            Specifies the rendering method of the font. This determines what shader should be used.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Italic">
+            <summary>
+            Retrieve if the font was loaded with the italic style
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.LineHeight">
+            <summary>
+            This is the distance in pixels between each line of text
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.XHeight">
+            <summary>
+            The distance from the baseline to the top of lowercase characters (a.k.a the mean line)
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Page">
+            <summary>
+            The texture containing all glyphs
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Glyphs">
+            <summary>
+            Glyphs by character
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Kernings">
+            <summary>
+            Kernings by <see cref="T:Walgelijk.KerningPair"/>
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Font.Material">
+            <summary>
+            Material this font uses. Be aware this may be shared across text. Use <see cref="M:Walgelijk.FontMaterialCreator.CreateFor(Walgelijk.Font)"/> to create a new material.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Font.GetGlyph(System.Char,Walgelijk.Glyph)">
+            <summary>
+            Get the glyph for a character. 
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Font.GetKerning(System.Char,System.Char)">
+            <summary>
+            Get kerning for two characters
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Font.Default">
+            <summary>
+            The default font
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontFormat.Name">
+            <summary>
+            Name of the font
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontFormat.Atlas">
+            <summary>
+            Reference to the atlas texture
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontFormat.Kernings">
+            <summary>
+            Kernings between different characters
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontFormat.Glyphs">
+            <summary>
+            Set of glyphs in the font
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontFormat.LineHeight">
+            <summary>
+            Height of a line of text in pixels
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontFormat.Size">
+            <summary>
+            Font size in points
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontFormat.XHeight">
+            <summary>
+            The distance from the baseline to the mean line
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontFormat.Style">
+            <summary>
+            The style this font represents
+            </summary>
+        </member>
+        <member name="T:Walgelijk.FontLoader">
+            <summary>
+            Loads fonts based on the format that is detected or provided
+            </summary>
+        </member>
+        <member name="T:Walgelijk.FontMaterialCreator">
             <summary>
             Utility struct that provides static text material creation functions
             </summary>
         </member>
-        <member name="M:Walgelijk.TextMaterial.CreateFor(Walgelijk.Font)">
+        <member name="M:Walgelijk.FontMaterialCreator.CreateFor(Walgelijk.Font)">
             <summary>
             Create a material for a given font
             </summary>
             <param name="font"></param>
             <returns></returns>
         </member>
-        <member name="M:Walgelijk.TextMaterial.CreateClipMaterial(Walgelijk.IReadableTexture[])">
+        <member name="M:Walgelijk.FontMaterialCreator.CreateBitmapFontMaterial(Walgelijk.IReadableTexture)">
             <summary>
-            Create a material for a set of sharp textures
+            Create a material for simple bitmap fonts
             </summary>
         </member>
-        <member name="M:Walgelijk.TextMaterial.CreateSDFMaterial(Walgelijk.IReadableTexture[])">
+        <member name="M:Walgelijk.FontMaterialCreator.CreateSDFMaterial(Walgelijk.IReadableTexture)">
             <summary>
-            Create a material for a set of SDF textures
+            Create a material for SDF (signed distance field) fonts
+            </summary>
+        </member>
+        <member name="M:Walgelijk.FontMaterialCreator.CreateMSDFMaterial(Walgelijk.IReadableTexture)">
+            <summary>
+            Create a material for MSDF (multichannel signed distance field) fonts
+            </summary>
+        </member>
+        <member name="T:Walgelijk.FontRendering">
+            <summary>
+            The different types of font rendering methods
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontRendering.Bitmap">
+            <summary>
+            Bitmap font type.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontRendering.SDF">
+            <summary>
+            Signed Distance Field (SDF) font type.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontRendering.MSDF">
+            <summary>
+            Multi-channel Signed Distance Field (MSDF) font type.
             </summary>
         </member>
         <member name="T:Walgelijk.TextMeshGenerator">
@@ -6072,6 +6108,66 @@
         <member name="F:Walgelijk.TextMeshGenerator.ColourInstruction.Colour">
             <summary>
             Colour to set when we reach <see cref="F:Walgelijk.TextMeshGenerator.ColourInstruction.CharIndex"/>
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Typesetter">
+            <summary>
+            Generates text meshes
+            </summary>
+        </member>
+        <member name="T:Walgelijk.HorizontalTextAlign">
+            <summary>
+            Ways to align text horizontally
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Kerning">
+            <summary>
+            Structure with kerning information
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Kerning.FirstChar">
+            <summary>
+            Preceding character
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Kerning.SecondChar">
+            <summary>
+            Current character
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Kerning.Amount">
+            <summary>
+            Offset amount
+            </summary>
+        </member>
+        <member name="T:Walgelijk.KerningPair">
+            <summary>
+            The two characters a kerning amount applies to
+            </summary>
+        </member>
+        <member name="F:Walgelijk.KerningPair.PreviousChar">
+            <summary>
+            Previous character in the sequence
+            </summary>
+        </member>
+        <member name="F:Walgelijk.KerningPair.CurrentChar">
+            <summary>
+            Current character in the sequence
+            </summary>
+        </member>
+        <member name="T:Walgelijk.RichTextTags">
+            <summary>
+            Contains the rich text tags as string constants
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RichTextTags.Colour">
+            <summary>
+            &lt;color=&quot;#ff00ff&quot;&gt;Text goes here&lt;/color&gt;
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RichTextTags.Italic">
+            <summary>
+            &lt;color=&quot;#ff00ff&quot;&gt;Text goes here&lt;/color&gt;
             </summary>
         </member>
         <member name="T:Walgelijk.TextMeshResult">
