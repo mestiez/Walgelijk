@@ -10,7 +10,7 @@ namespace Walgelijk;
 /// </summary>
 public class TransformComponent : Component
 {
-    private Entity? parent;
+    private ComponentRef<TransformComponent>? parent;
 
     private Vector2 position;
     private float rotation;
@@ -27,17 +27,17 @@ public class TransformComponent : Component
     public InterpolationFlags InterpolationFlags = InterpolationFlags.None;
 
     [NonSerialized, JsonIgnore]
-    internal readonly List<Entity> InternalChildren = new();
+    internal readonly List<ComponentRef<TransformComponent>> InternalChildren = new();
 
     /// <summary>
     /// Get the list of children
     /// </summary>
-    public IReadOnlyList<Entity> Children => InternalChildren;
+    public IReadOnlyList<ComponentRef<TransformComponent>> Children => InternalChildren;
 
     /// <summary>
     /// Parent entity with a transform
     /// </summary>
-    public Entity? Parent
+    public ComponentRef<TransformComponent>? Parent
     {
         get => parent;
         set

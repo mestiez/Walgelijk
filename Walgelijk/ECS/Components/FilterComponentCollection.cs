@@ -172,7 +172,7 @@ public class FilterComponentCollection : IComponentCollection
             if (item.Entity == entity && item is T tt)
                 return tt;
 
-        throw new Exception("Entity has no component of that type");
+        throw new Exception($"Entity has no component of type {typeof(T)}");
     }
 
     public bool Has<T>(Entity entity) where T : Component
