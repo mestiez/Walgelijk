@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics.SymbolStore;
-using System.Net.Http.Headers;
 using System.Numerics;
 
 namespace Walgelijk;
