@@ -27,7 +27,6 @@ public class DebugConsoleUi : IDisposable
 
     public int MaxLineCount => (Height - InputHeight - Padding) / LineHeight;
     public int VisibleLineCount { get; private set; }
-    public int WidthOverflow { get; private set; }
 
     public float CaretBlinkTime = 0;
 
@@ -190,11 +189,9 @@ public class DebugConsoleUi : IDisposable
         foreach (var item in lines)
             item.Buffer.Clear();
 
+        VisibleLineCount = 0;
         int lineIndex = 0;
         var b = debugConsole.GetBuffer();
-
-        VisibleLineCount = 0;
-        var lastColor = Colors.Magenta;
         int continuationIteration = 0;
         int width = 0;
 
@@ -222,14 +219,14 @@ public class DebugConsoleUi : IDisposable
                             shouldEndLine = true;
                         }
                     }
-                    break;
+                    break;  
             }
 
             if (shouldEndLine)
             {
                 var cleanLine = line.Buffer.AsSpan().Trim();
                 var messageType = debugConsole.DetectMessageType(cleanLine);
-                lastColor = line.Color = continuationIteration == 1 ? lastColor : GetColourForMessageType(messageType);
+                line.Color = continuationIteration == 1 ? lines[lineIndex-1].Color : GetColourForMessageType(messageType);
 
                 if (cleanLine.IsEmpty || (messageType == ConsoleMessageType.None && debugConsole.Filter is not ConsoleMessageType.All) || !debugConsole.Filter.HasFlag(messageType))
                     line.Buffer.Clear();  // this line is bs, go away
@@ -250,11 +247,8 @@ public class DebugConsoleUi : IDisposable
     {
         var lineRect = new Rect(0, 0, graphics.CurrentTarget.Size.X, LineHeight).Expand(-Padding).Translate(0, dropdownOffset);
         var totalRect = (backgroundRect with { MaxY = Height - InputHeight }).Translate(0, dropdownOffset);
-
-        graphics.DrawBounds = new DrawBounds(totalRect);
-
         int lineOffset = debugConsole.ScrollOffset;
-        WidthOverflow = 0;
+        graphics.DrawBounds = new DrawBounds(totalRect);
 
         for (int i = lineOffset; i < VisibleLineCount; i++)
         {
@@ -262,8 +256,7 @@ public class DebugConsoleUi : IDisposable
             int offsetLineIndex = i - lineOffset;
 
             var t = line.Buffer.AsSpan().Trim();
-            var r = DrawText(graphics, t, lineRect.Translate(0, LineHeight * offsetLineIndex), line.Color, false);
-            WidthOverflow = Math.Max(WidthOverflow, (int)(r.LocalTextBounds.Width - totalRect.Width));
+            DrawText(graphics, t, lineRect.Translate(0, LineHeight * offsetLineIndex), line.Color, false);
 
             if (offsetLineIndex >= MaxLineCount - 1)
                 return;
