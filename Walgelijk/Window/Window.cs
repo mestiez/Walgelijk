@@ -58,6 +58,11 @@ public abstract class Window
     public abstract IGraphics Graphics { get; }
 
     /// <summary>
+    /// DPI of the display this window is in
+    /// </summary>
+    public abstract float DPI { get; }
+
+    /// <summary>
     /// If true, the cursor will be hidden and prevented from interacting with anything outside the window.
     /// </summary>
     public abstract bool IsCursorLocked { get; set; }

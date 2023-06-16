@@ -49,6 +49,29 @@ public class Program
 
         game.Start();
     }
+
+    [Command(HelpString = "Set the scene. Pass ?? as an argument to list all available scenes")]
+    public static CommandResult SetScene(string name)
+    {
+        var scenes = typeof(ISceneCreator).Assembly.GetTypes().Where(a => !a.IsAbstract && !a.IsInterface && a.IsAssignableTo(typeof(ISceneCreator)));
+
+        switch (name)
+        {
+            case "??":
+                return string.Join(", ", scenes.Select(t => t.Name));
+            default:
+                {
+                    foreach (var type in scenes)
+                        if (type.Name.Equals(name.Trim(), StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            var act = Activator.CreateInstance(type) as ISceneCreator ?? throw new Exception("Invalid scene: not an ISceneCreator");
+                            Game.Main.Scene = act.Load(Game.Main);
+                            return "Scene set to " + type.Name;
+                        }
+                    throw new Exception("Invalid scene name");
+                }
+        }
+    }
 }
 
 public interface ISceneCreator

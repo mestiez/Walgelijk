@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Diagnostics.SymbolStore;
+using System.Net.Http.Headers;
 using System.Numerics;
 
 namespace Walgelijk;
 
 public class DebugConsoleUi : IDisposable
 {
+    public const int MaxLineSize = 256;
     public readonly ActionRenderTask RenderTask;
 
     public int Padding = 8;
@@ -24,7 +27,7 @@ public class DebugConsoleUi : IDisposable
 
     public int MaxLineCount => (Height - InputHeight - Padding) / LineHeight;
     public int VisibleLineCount { get; private set; }
-    public int ProcessedLineCount { get; private set; }
+    public int WidthOverflow { get; private set; }
 
     public float CaretBlinkTime = 0;
 
@@ -32,7 +35,7 @@ public class DebugConsoleUi : IDisposable
     private readonly Material mat;
     private readonly VertexBuffer textMesh;
     private readonly TextMeshGenerator textMeshGenerator = new();
-    private readonly char[] lineBuffer = new char[256];
+    //private readonly char[] lineBuffer = new char[MaxLineSize];
     private float animationProgress = 0;
     private int dropdownOffset;
     private Color flashColour;
@@ -42,7 +45,14 @@ public class DebugConsoleUi : IDisposable
     private Rect inputBoxRect;
     private Rect filterBoxRect;
 
+    private readonly Line[] lines = new Line[256];
     private readonly FilterIcon[] filterButtons;
+
+    private class Line
+    {
+        public readonly ClampedArray<char> Buffer = new(MaxLineSize);
+        public Color Color = Colors.Magenta;
+    }
 
     private struct FilterIcon
     {
@@ -88,6 +98,9 @@ public class DebugConsoleUi : IDisposable
             new FilterIcon(DebugConsoleAssets.InfoIcon, ConsoleMessageType.Info, new Color(240, 240, 240) ),
             new FilterIcon(DebugConsoleAssets.DebugIcon, ConsoleMessageType.Debug, new Color(0.8f, 0.2f, 1) ),
         };
+
+        for (int i = 0; i < lines.Length; i++)
+            lines[i] = new Line();
     }
 
     public void Flash(Color colour)
@@ -109,6 +122,8 @@ public class DebugConsoleUi : IDisposable
 
         if (!debugConsole.IsActive)
             dt *= -1;
+
+        ParseLines();
 
         flashTime = Utilities.Clamp(flashTime - game.State.Time.DeltaTimeUnscaled);
 
@@ -170,69 +185,88 @@ public class DebugConsoleUi : IDisposable
         target.ViewMatrix = ov;
     }
 
+    public void ParseLines()
+    {
+        foreach (var item in lines)
+            item.Buffer.Clear();
+
+        int lineIndex = 0;
+        var b = debugConsole.GetBuffer();
+
+        VisibleLineCount = 0;
+        var lastColor = Colors.Magenta;
+        int continuationIteration = 0;
+        int width = 0;
+
+        for (int i = 0; i < b.Length; i++)
+        {
+            var c = (char)b[i];
+            var line = lines[lineIndex];
+
+            bool shouldEndLine = false;
+
+            switch (c)
+            {
+                case '\n':
+                    shouldEndLine = true;
+                    break;
+                default:
+                    if (!char.IsControl(c))
+                    {
+                        width += (int)textMeshGenerator.Font.Glyphs['x'].Advance;
+                        line.Buffer.Add(c);
+
+                        if (width > backgroundRect.Width - Padding * 4)
+                        {
+                            continuationIteration = 2;
+                            shouldEndLine = true;
+                        }
+                    }
+                    break;
+            }
+
+            if (shouldEndLine)
+            {
+                var cleanLine = line.Buffer.AsSpan().Trim();
+                var messageType = debugConsole.DetectMessageType(cleanLine);
+                lastColor = line.Color = continuationIteration == 1 ? lastColor : GetColourForMessageType(messageType);
+
+                if (cleanLine.IsEmpty || (messageType == ConsoleMessageType.None && debugConsole.Filter is not ConsoleMessageType.All) || !debugConsole.Filter.HasFlag(messageType))
+                    line.Buffer.Clear();  // this line is bs, go away
+                else  // this line should be considered
+                {
+                    VisibleLineCount++;
+                    lineIndex++;
+                    width = 0;
+                    continuationIteration = Math.Max(continuationIteration - 1, 0);
+                    if (lineIndex >= lines.Length)
+                        return;
+                }
+            }
+        }
+    }
+
     private void DrawConsoleBuffer(IGraphics graphics)
     {
-        var b = debugConsole.GetBuffer();
         var lineRect = new Rect(0, 0, graphics.CurrentTarget.Size.X, LineHeight).Expand(-Padding).Translate(0, dropdownOffset);
         var totalRect = (backgroundRect with { MaxY = Height - InputHeight }).Translate(0, dropdownOffset);
 
         graphics.DrawBounds = new DrawBounds(totalRect);
 
-        int lineBufferIndex = 0;
-        int lineIndex = 0;
         int lineOffset = debugConsole.ScrollOffset;
+        WidthOverflow = 0;
 
-        ProcessedLineCount = 0;
-        VisibleLineCount = 0;
-        // split the buffer into lines
-        for (int i = 0; i < b.Length; i++)
+        for (int i = lineOffset; i < VisibleLineCount; i++)
         {
-            var c = (char)b[i];
-            int offsetLineIndex = lineIndex - lineOffset;
+            var line = lines[i];
+            int offsetLineIndex = i - lineOffset;
 
-            // found a new line, time to render what we already found and reset the cursor
-            if (c == '\n')
-            {
-                // are we in line offset range
-                if (lineIndex >= lineOffset)
-                {
-                    // get the actual line text
-                    ReadOnlySpan<char> t = lineBuffer.AsSpan(0, lineBufferIndex).Trim();
-                    if (t.IsEmpty || t.IsWhiteSpace())
-                    {
-                        DrawText(graphics, "<empty line>", lineRect.Translate(0, LineHeight * offsetLineIndex), Colors.White.WithAlpha(0.2f), false);
-                        VisibleLineCount++;
-                    }
-                    else
-                    {
-                        var messageType = debugConsole.DetectMessageType(t);
-                        var col = GetColourForMessageType(messageType);
-                        if ((messageType == ConsoleMessageType.None && debugConsole.Filter is not ConsoleMessageType.All) || !debugConsole.Filter.HasFlag(messageType))
-                        {
-                            lineBufferIndex = 0;
-                            continue;
-                            //col = InputTextColour * 0.3f;
-                        }
-                        DrawText(graphics, t, lineRect.Translate(0, LineHeight * offsetLineIndex), col, false);
-                        VisibleLineCount++;
-                    }
-                }
+            var t = line.Buffer.AsSpan().Trim();
+            var r = DrawText(graphics, t, lineRect.Translate(0, LineHeight * offsetLineIndex), line.Color, false);
+            WidthOverflow = Math.Max(WidthOverflow, (int)(r.LocalTextBounds.Width - totalRect.Width));
 
-                ProcessedLineCount++;
-                lineIndex++;
-                if (offsetLineIndex >= MaxLineCount - 1)
-                    return;
-                lineBufferIndex = 0;
-                continue;
-            }
-            else if (char.IsControl(c))
-                continue;
-
-            if (lineBufferIndex >= lineBuffer.Length - 1)
-                continue;
-
-            lineBuffer[lineBufferIndex] = c;
-            lineBufferIndex++;
+            if (offsetLineIndex >= MaxLineCount - 1)
+                return;
         }
     }
 
@@ -254,7 +288,7 @@ public class DebugConsoleUi : IDisposable
         if (!string.IsNullOrWhiteSpace(debugConsole.CurrentInput))
         {
             graphics.DrawBounds = new DrawBounds(inputBoxRect);
-            DrawText(graphics, debugConsole.CurrentInput.AsSpan(0, Math.Min(debugConsole.CurrentInput.Length, 256)), r, InputTextColour, false);
+            DrawText(graphics, debugConsole.CurrentInput.AsSpan(0, Math.Min(debugConsole.CurrentInput.Length, 256)), r.Translate(0, -3), InputTextColour, false, HorizontalTextAlign.Left, VerticalTextAlign.Bottom);
             cursorPos = textMeshGenerator.CalculateTextWidth(debugConsole.CurrentInput.AsSpan(0, debugConsole.CursorPosition));
         }
 
@@ -307,10 +341,14 @@ public class DebugConsoleUi : IDisposable
         graphics.Draw(PrimitiveMeshes.Quad, mat);
     }
 
-    private TextMeshResult DrawText(IGraphics graphics, ReadOnlySpan<char> text, Rect rect, Color color, bool wrap = true)
+    private TextMeshResult DrawText(IGraphics graphics, ReadOnlySpan<char> text, Rect rect, Color color,
+        bool wrap = true, HorizontalTextAlign horizontalTextAlign = HorizontalTextAlign.Left, VerticalTextAlign verticalTextAlign = VerticalTextAlign.Top)
     {
         if (text.IsEmpty || text.IsWhiteSpace())
             return default;
+
+        if (verticalTextAlign == VerticalTextAlign.Bottom)
+            rect = rect.Translate(0, rect.Height);
 
         graphics.CurrentTarget.ModelMatrix =
             new Matrix4x4(
@@ -320,6 +358,8 @@ public class DebugConsoleUi : IDisposable
 
         textMeshGenerator.Color = color;
         textMeshGenerator.ParseRichText = false;
+        textMeshGenerator.HorizontalAlign = horizontalTextAlign;
+        textMeshGenerator.VerticalAlign = verticalTextAlign;
         textMeshGenerator.WrappingWidth = wrap ? rect.Width : float.MaxValue;
         textMeshGenerator.Font = Font.Default;
         textMeshGenerator.Multiline = false;

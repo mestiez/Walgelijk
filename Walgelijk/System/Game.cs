@@ -139,6 +139,7 @@ public class Game
         DebugDraw = new DebugDraw(this);
         Compositor = new Compositor(this);
         Logger.Log(Version());
+        Logger.Log($"Display DPI: {window.DPI}");
     }
 
     /// <summary>

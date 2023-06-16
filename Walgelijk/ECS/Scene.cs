@@ -230,28 +230,6 @@ public sealed class Scene : IDisposable
         return components.Attach(entity, component);
     }
 
-    //TODO dit werkt meer denk ik
-    private void AssertComponentRequirements<T>(Entity entity, T component) where T : Component
-    {
-        //RequiresComponents[] requirements = ReflectionCache.GetAttributes<RequiresComponents, T>();
-        //if (requirements.Length == 0) return;
-
-        //foreach (var requirement in requirements)
-        //    if (requirement.Types != null)
-        //        foreach (var type in requirement.Types)
-        //        {
-        //            bool isOk = false;
-        //            foreach (var e in GetAllComponentsFrom(entity))
-        //                if (type.IsAssignableFrom(e.GetType()))
-        //                {
-        //                    isOk = true;
-        //                    break;
-        //                }
-        //            if (!isOk)
-        //                throw new InvalidOperationException($"{component.GetType()} requires a {type}");
-        //        }
-    }
-
     /// <summary>
     /// Detach a component from an entity
     /// </summary>

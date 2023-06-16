@@ -973,14 +973,9 @@
             Enable transform parenting?
             </summary>
         </member>
-        <member name="T:Walgelijk.ComponentRelationAttribute">
+        <member name="T:Walgelijk.ComponentAttribute">
             <summary>
-            Base class for attributes that indicate a component relationship
-            </summary>
-        </member>
-        <member name="P:Walgelijk.ComponentRelationAttribute.Types">
-            <summary>
-            Relevant component types
+            Base class for attributes that indicate a component constraint
             </summary>
         </member>
         <member name="T:Walgelijk.BasicComponentCollection">
@@ -1245,6 +1240,11 @@
             Attribute that lets the <see cref="T:Walgelijk.Scene"/> know that something needs something else.
             </summary>
         </member>
+        <member name="F:Walgelijk.RequiresComponents.Types">
+            <summary>
+            Relevant component types
+            </summary>
+        </member>
         <member name="M:Walgelijk.RequiresComponents.#ctor(System.Type[])">
             <summary>
             Construct a <see cref="T:Walgelijk.RequiresComponents"/> with the given types
@@ -1450,6 +1450,11 @@
         <member name="M:Walgelijk.Scene.Dispose">
             <summary>
             Unload all entities and components in the scene.
+            </summary>
+        </member>
+        <member name="T:Walgelijk.SingleInstanceAttribute">
+            <summary>
+            Attribute that ensures no more than one instance of the component may exist in the scene at a time
             </summary>
         </member>
         <member name="T:Walgelijk.BasicSystemCollection">
@@ -3576,6 +3581,25 @@
             </summary>
             <exception cref="T:System.NotImplementedException"></exception>
         </member>
+        <member name="M:Walgelijk.ClampedArray`1.AsSpan">
+            <summary>
+            Creates a new span over the target array.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ClampedArray`1.AsSpan(System.Int32,System.Int32)">
+            <summary>
+            Creates a new Span over the portion of the target array beginning
+            at 'start' index and ending at 'end' index (exclusive).
+            </summary>
+            <param name="array">The target array.</param>
+            <param name="start">The index at which to begin the Span.</param>
+            <param name="length">The number of items in the Span.</param>
+            <remarks>Returns default when <paramref name="array"/> is null.</remarks>
+            <exception cref="T:System.ArrayTypeMismatchException">Thrown when <paramref name="array"/> is covariant and array's type is not exactly T[].</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;Length).
+            </exception>
+        </member>
         <member name="T:Walgelijk.Curve`1">
             <summary>
             Linear curve
@@ -4981,12 +5005,6 @@
             <summary>
             Return the <see cref="T:Walgelijk.ConsoleMessageType"/> flags for the given text based on the prefix
             </summary>
-        </member>
-        <member name="M:Walgelijk.DebugConsole.GetLineCount">
-            <summary>
-            Get the amount of lines in the current buffer
-            </summary>
-            <returns></returns>
         </member>
         <member name="M:Walgelijk.DebugConsole.Clear">
             <summary>
@@ -6473,6 +6491,11 @@
         <member name="P:Walgelijk.Window.Graphics">
             <summary>
             Graphics functions
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Window.DPI">
+            <summary>
+            DPI of the display this window is in
             </summary>
         </member>
         <member name="P:Walgelijk.Window.IsCursorLocked">

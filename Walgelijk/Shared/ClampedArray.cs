@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Walgelijk;
 
@@ -37,7 +38,6 @@ public sealed class ClampedArray<T> : ICloneable, IList<T>
         array = new T[length];
         Array.Copy(vals, array, filled);
         count = filled;
-
         Capacity = array.Length;
     }
 
@@ -138,5 +138,32 @@ public sealed class ClampedArray<T> : ICloneable, IList<T>
     {
         for (int i = 0; i < count; i++)
             yield return array[i];
+    }
+
+    /// <summary>
+    /// Creates a new span over the target array.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<T> AsSpan()
+    {
+        return new Span<T>(array, 0, Count);
+    }
+
+    /// <summary>
+    /// Creates a new Span over the portion of the target array beginning
+    /// at 'start' index and ending at 'end' index (exclusive).
+    /// </summary>
+    /// <param name="array">The target array.</param>
+    /// <param name="start">The index at which to begin the Span.</param>
+    /// <param name="length">The number of items in the Span.</param>
+    /// <remarks>Returns default when <paramref name="array"/> is null.</remarks>
+    /// <exception cref="ArrayTypeMismatchException">Thrown when <paramref name="array"/> is covariant and array's type is not exactly T[].</exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;Length).
+    /// </exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Span<T> AsSpan(int start, int length)
+    {
+        return array.AsSpan(0, Count).Slice(start, length);
     }
 }

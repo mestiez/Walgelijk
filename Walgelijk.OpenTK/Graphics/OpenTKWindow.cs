@@ -19,6 +19,15 @@ public class OpenTKWindow : Window
     public override bool HasFocus => window.IsFocused;
     public override bool IsVisible { get => window.IsVisible; set => window.IsVisible = value; }
     public override bool Resizable { get => window.WindowBorder == WindowBorder.Resizable; set => window.WindowBorder = value ? WindowBorder.Resizable : WindowBorder.Fixed; }
+    public override float DPI
+    {
+        get
+        {
+            if (window.TryGetCurrentMonitorDpi(out var hdpi, out var vdpi))
+                return hdpi;
+            return 96;
+        }
+    }
     public override WindowType WindowType
     {
         get

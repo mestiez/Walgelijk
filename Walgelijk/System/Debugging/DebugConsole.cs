@@ -154,7 +154,7 @@ public class DebugConsole : IDisposable
                 ScrollOffset -= scrollSpeed;
             else if (Input.MouseScrollDelta < -float.Epsilon)
                 ScrollOffset += scrollSpeed;
-            ScrollOffset = Utilities.Clamp(ScrollOffset, 0, GetLineCount() - UI.MaxLineCount);
+            ScrollOffset = Utilities.Clamp(ScrollOffset, 0, UI.VisibleLineCount - UI.MaxLineCount);
 
             if (Input.IsKeyPressed(Key.Escape))
                 IsActive = false;
@@ -339,7 +339,8 @@ public class DebugConsole : IDisposable
         }
 
         writer.WriteLine(v);
-        ScrollOffset = GetLineCount() - UI.MaxLineCount;
+        UI.ParseLines();
+        ScrollOffset = UI.VisibleLineCount - UI.MaxLineCount;
     }
 
 
@@ -358,21 +359,6 @@ public class DebugConsole : IDisposable
         if (message.StartsWith(ErrorPrefix))
             t |= ConsoleMessageType.Error;
         return t;
-    }
-
-    /// <summary>
-    /// Get the amount of lines in the current buffer
-    /// </summary>
-    /// <returns></returns>
-    public int GetLineCount()
-    {
-        // TODO count lines that match current filter
-        var b = GetBuffer();
-        var c = 0;
-        for (int i = 0; i < b.Length; i++)
-            if (b[i] == '\n')
-                c++;
-        return c;
     }
 
     [Obsolete("use Write and WriteLine instead")]

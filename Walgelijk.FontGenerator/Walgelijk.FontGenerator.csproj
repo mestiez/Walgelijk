@@ -7,8 +7,9 @@
     <Nullable>enable</Nullable>
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
     <PackAsTool>True</PackAsTool>
-    <ToolCommandName>Walgelijk.GenerateFont</ToolCommandName>
-    <Version>1.0.1</Version>
+    <ToolCommandName>wfont</ToolCommandName>
+    <Version>1.0.2</Version>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>embedded</DebugType>

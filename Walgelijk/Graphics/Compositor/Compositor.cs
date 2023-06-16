@@ -58,6 +58,9 @@ public class Compositor
 
     public void Render(RenderQueue queue)
     {
+        if (passes.Count == 0)
+            return;
+
         if (framesRendered != 0 && (ForceUpdateTargets || buffer == null))
         {
             buffer?.Dispose();

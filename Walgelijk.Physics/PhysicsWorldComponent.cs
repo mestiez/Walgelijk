@@ -6,6 +6,7 @@ namespace Walgelijk.Physics;
 /// <summary>
 /// Physics world component. Contains all data that describes a physics world
 /// </summary>
+[SingleInstance]
 public class PhysicsWorldComponent : Component, IDisposable
 {
     /// <summary>

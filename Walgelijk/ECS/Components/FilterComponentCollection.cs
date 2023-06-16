@@ -263,12 +263,20 @@ public class FilterComponentCollection : IComponentCollection
 
     private void InternalAddComponent(Component component)
     {
+        if (Game.Main.DevelopmentMode)
+            AssertComponentRequirements(component);
+
         all.Add(component);
         foreach (var filter in GetFiltersFor(component))
-        {
-            //Console.WriteLine("{0} for {1}", filter, component);
             components.Ensure(filter).Add(component);
-        }
+    }
+
+    private void AssertComponentRequirements<T>(T component) where T : Component
+    {
+        var constraints = ReflectionCache.GetAttributes<ComponentAttribute, T>();
+
+        foreach (var constraint in constraints)
+            constraint.Assert(component, this);
     }
 
     public void Dispose()
