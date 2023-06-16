@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 using System.Text;
 using TextCopy;
 
@@ -67,10 +65,10 @@ public class DebugConsole : IDisposable
     private readonly string[] suggestionBuffer = new string[8];
     private int suggestionIndex;
 
-    public string DebugPrefix = "[DBG]";
-    public string InfoPrefix = "[INF]";
+    public string DebugPrefix   = "[DBG]";
+    public string InfoPrefix    = "[INF]";
     public string WarningPrefix = "[WRN]";
-    public string ErrorPrefix = "[ERR]";
+    public string ErrorPrefix   = "[ERR]";
 
     internal const int MaxShownBuffer = 8192;
     internal ReadOnlySpan<byte> GetBuffer()
@@ -85,7 +83,7 @@ public class DebugConsole : IDisposable
     /// Current user input
     /// </summary>
     public string? CurrentInput;
-
+    
     public DebugConsole(Game game)
     {
         Game = game;
@@ -297,6 +295,14 @@ public class DebugConsole : IDisposable
         Game.RenderQueue.Add(UI.RenderTask, RenderOrder.Top);
     }
 
+    public bool PassesFilter(ConsoleMessageType t)
+    {
+        if (t is ConsoleMessageType.Plain)
+            t = ConsoleMessageType.Info;
+
+        return Filter.HasFlag(t);
+    }
+
     private static int GetNextWordIndex(ReadOnlySpan<char> str, int startIndex, int direction)
     {
         direction = Math.Sign(direction);
@@ -338,6 +344,12 @@ public class DebugConsole : IDisposable
                 break;
         }
 
+        if (v.Contains('\a'))
+        {
+            UI.Flash(Colors.Yellow);
+            Game.AudioRenderer.Play(Sound.Beep);
+        }
+
         writer.WriteLine(v);
         UI.ParseLines();
         ScrollOffset = UI.VisibleLineCount - UI.MaxLineCount;
@@ -349,20 +361,20 @@ public class DebugConsole : IDisposable
     /// </summary>
     public ConsoleMessageType DetectMessageType(ReadOnlySpan<char> message)
     {
-        var t = ConsoleMessageType.None;
+        var t = ConsoleMessageType.Plain;
         if (message.StartsWith(DebugPrefix))
-            t |= ConsoleMessageType.Debug;
-        if (message.StartsWith(InfoPrefix))
-            t |= ConsoleMessageType.Info;
-        if (message.StartsWith(WarningPrefix))
-            t |= ConsoleMessageType.Warning;
-        if (message.StartsWith(ErrorPrefix))
-            t |= ConsoleMessageType.Error;
+            t = ConsoleMessageType.Debug;
+        else if(message.StartsWith(InfoPrefix))
+            t = ConsoleMessageType.Info;
+        else if (message.StartsWith(WarningPrefix))
+            t = ConsoleMessageType.Warning;
+        else if (message.StartsWith(ErrorPrefix))
+            t = ConsoleMessageType.Error;
         return t;
     }
 
     [Obsolete("use Write and WriteLine instead")]
-    public void Print(ReadOnlySpan<char> text, Color color, ConsoleMessageType level = ConsoleMessageType.None)
+    public void Print(ReadOnlySpan<char> text, Color color, ConsoleMessageType level = ConsoleMessageType.Plain)
         => WriteLine(text, level);
 
     [Obsolete("use Write and WriteLine instead")]

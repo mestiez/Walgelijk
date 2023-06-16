@@ -170,7 +170,8 @@ Deserves kindness and love, a smile on their face";
             {
                 layout.Size(128, 24);
                 layout.Move(128, Onion.Theme.Base.Padding);
-                Ui.Dropdown(DropdownOptions, ref DropdownSelectedIndex);
+                if (Ui.Dropdown(DropdownOptions, ref DropdownSelectedIndex) && DropdownSelectedIndex == 1)
+                    Logger.Log("Bell sound! \a");
             }
 
             {
@@ -232,40 +233,6 @@ Deserves kindness and love, a smile on their face";
                     Ui.End(); //end container child
                 }
 
-                Ui.End();
-            }
-
-            if (false)
-            {
-                Ui.Layout.Size(256, 256).Resizable();
-                Ui.StartDragWindow("Layout demo");
-                {
-                    Ui.Layout.Move(0, Ui.Theme.Base.WindowTitleBarHeight.Default);
-                    Ui.Layout.VerticalLayout();
-                    Ui.StartDummy();
-                    {
-                        Ui.Layout.FitWidth().Height(48).HorizontalLayout().Move(Ui.Theme.Base.Padding);
-                        Ui.StartGroup(false);
-                        {
-                            Ui.Layout.Size(128, 48);
-                            Ui.ClickButton("Is this okay");
-                            Ui.Layout.Size(128, 48);
-                            Ui.ClickButton("I am also a button");
-                        }
-                        Ui.End();
-
-                        Ui.Layout.FitWidth().Height(48).HorizontalLayout().Move(Ui.Theme.Base.Padding);
-                        Ui.StartGroup(false);
-                        {
-                            Ui.Layout.Size(128, 48);
-                            Ui.ClickButton("I am in row 2");
-                            Ui.Layout.Size(128, 48);
-                            Ui.ClickButton("I always come last");
-                        }
-                        Ui.End();
-                    }
-                    Ui.End();
-                }
                 Ui.End();
             }
 

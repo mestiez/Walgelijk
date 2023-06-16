@@ -49,6 +49,8 @@ public class DebugConsoleUi : IDisposable
     {
         public readonly ClampedArray<char> Buffer = new(MaxLineSize);
         public Color Color = Colors.Magenta;
+        public ConsoleMessageType Type = ConsoleMessageType.Plain;
+        public bool Complete = true;
     }
 
     private struct FilterIcon
@@ -90,9 +92,9 @@ public class DebugConsoleUi : IDisposable
 
         filterButtons = new FilterIcon[]
         {
+            new FilterIcon(DebugConsoleAssets.InfoIcon, ConsoleMessageType.Info, new Color(240, 240, 240) ),
             new FilterIcon(DebugConsoleAssets.AlertIcon, ConsoleMessageType.Error, new Color(1, 0.25f, 0.1f) ),
             new FilterIcon(DebugConsoleAssets.AlertIcon, ConsoleMessageType.Warning, new Color(1, 0.7f, 0.2f) ),
-            new FilterIcon(DebugConsoleAssets.InfoIcon, ConsoleMessageType.Info, new Color(240, 240, 240) ),
             new FilterIcon(DebugConsoleAssets.DebugIcon, ConsoleMessageType.Debug, new Color(0.8f, 0.2f, 1) ),
         };
 
@@ -190,20 +192,19 @@ public class DebugConsoleUi : IDisposable
         VisibleLineCount = 0;
         int lineIndex = 0;
         var b = debugConsole.GetBuffer();
-        int continuationIteration = 0;
         int width = 0;
 
         for (int i = 0; i < b.Length; i++)
         {
             var c = (char)b[i];
             var line = lines[lineIndex];
-
             bool shouldEndLine = false;
 
             switch (c)
             {
                 case '\n':
                     shouldEndLine = true;
+                    line.Complete = true;
                     break;
                 default:
                     if (!char.IsControl(c))
@@ -211,29 +212,29 @@ public class DebugConsoleUi : IDisposable
                         width += (int)textMeshGenerator.Font.Glyphs['x'].Advance;
                         line.Buffer.Add(c);
 
-                        if (width > backgroundRect.Width - Padding * 4)
+                        if (width > backgroundRect.Width - Padding * 4 && debugConsole.PassesFilter(debugConsole.DetectMessageType(line.Buffer.AsSpan().Trim())))
                         {
-                            continuationIteration = 2;
+                            line.Complete = false;
                             shouldEndLine = true;
                         }
                     }
-                    break;  
+                    break;
             }
 
             if (shouldEndLine)
             {
+                width = 0;
                 var cleanLine = line.Buffer.AsSpan().Trim();
-                var messageType = debugConsole.DetectMessageType(cleanLine);
-                line.Color = continuationIteration == 1 ? lines[lineIndex-1].Color : GetColourForMessageType(messageType);
+                var lastLine = lineIndex == 0 ? line : lines[lineIndex - 1];
+                line.Type = !lastLine.Complete ? lastLine.Type : debugConsole.DetectMessageType(cleanLine);
+                line.Color = !lastLine.Complete ? lastLine.Color : GetColourForMessageType(line.Type);
 
-                if (cleanLine.IsEmpty || (messageType == ConsoleMessageType.None && debugConsole.Filter is not ConsoleMessageType.All) || !debugConsole.Filter.HasFlag(messageType))
+                if (cleanLine.IsEmpty || !debugConsole.PassesFilter(line.Type))
                     line.Buffer.Clear();  // this line is bs, go away
                 else  // this line should be considered
                 {
                     VisibleLineCount++;
                     lineIndex++;
-                    width = 0;
-                    continuationIteration = Math.Max(continuationIteration - 1, 0);
                     if (lineIndex >= lines.Length)
                         return;
                 }
@@ -248,7 +249,7 @@ public class DebugConsoleUi : IDisposable
         int lineOffset = debugConsole.ScrollOffset;
         graphics.DrawBounds = new DrawBounds(totalRect);
 
-        for (int i = lineOffset; i < VisibleLineCount; i++)
+        for (int i = Math.Max(lineOffset, 0); i < VisibleLineCount; i++)
         {
             var line = lines[i];
             int offsetLineIndex = i - lineOffset;

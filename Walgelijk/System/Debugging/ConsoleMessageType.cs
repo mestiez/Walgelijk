@@ -14,25 +14,22 @@ namespace Walgelijk
         /// Shows up regardless of filter
         /// </summary>
         All = byte.MaxValue,
-        /// <summary>
-        /// Just raw text, man
-        /// </summary>
-        None = byte.MinValue,
+        Plain = 1,
         /// <summary>
         /// Debug message
         /// </summary>
-        Debug = 1,
+        Debug = 2,
         /// <summary>
         /// Info message
         /// </summary>
-        Info = 2,
+        Info = 4,
         /// <summary>
         /// Warning message
         /// </summary>
-        Warning = 4,
+        Warning = 8,
         /// <summary>
         /// Error message
         /// </summary>
-        Error = 8,
+        Error = 16,
     }
 }

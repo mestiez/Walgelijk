@@ -36,7 +36,7 @@ public struct CommandProcessor
     /// </summary>
     public static void Execute(string command, DebugConsole console)
     {
-        console.WriteLine(command, ConsoleMessageType.None);
+        console.WriteLine(command, ConsoleMessageType.Plain);
 
         if (string.IsNullOrWhiteSpace(command))
             return;

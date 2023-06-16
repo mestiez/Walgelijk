@@ -4894,11 +4894,6 @@
             Shows up regardless of filter
             </summary>
         </member>
-        <member name="F:Walgelijk.ConsoleMessageType.None">
-            <summary>
-            Just raw text, man
-            </summary>
-        </member>
         <member name="F:Walgelijk.ConsoleMessageType.Debug">
             <summary>
             Debug message
