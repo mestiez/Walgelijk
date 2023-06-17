@@ -51,6 +51,7 @@ public struct IMGUIScene : ISceneCreator
         };
 
         public static Color PickedColour = Colors.Purple;
+        private static bool EditableAlpha = true;
         public static int DropdownSelectedIndex;
         private static bool PasswordCheckbox = true;
 
@@ -165,6 +166,10 @@ Deserves kindness and love, a smile on their face";
                 layout.Size(128, 32);
                 Ui.Decorators.Tooltip("Font size");
                 Ui.IntSlider(ref Onion.Theme.Base.FontSize.Default, Direction.Horizontal, (8, 24), 1, "{0}px");
+
+                Ui.Spacer(16);
+                layout.Size(128, 32);
+                Ui.Checkbox(ref EditableAlpha, "Editable alpha");
             }
             Ui.End();
 
@@ -274,7 +279,7 @@ Deserves kindness and love, a smile on their face";
             Ui.StartDragWindow(nameof(Ui.ColourPicker));
             {
                 layout.FitContainer().StickTop().StickLeft();
-                Ui.ColourPicker(ref PickedColour);
+                Ui.ColourPicker(ref PickedColour, EditableAlpha);
             }
             Ui.End();
         }

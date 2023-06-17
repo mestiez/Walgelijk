@@ -9,6 +9,7 @@ public readonly struct ColourPicker : IControl
     public const int BottomBarHeight = 64;
     public const int SliderHeight = BottomBarHeight / 3;
     public const int HueSliderWidth = 32;
+    public const int AlphaSliderHeight = 32;
 
     public readonly bool EditableAlpha;
 
@@ -18,6 +19,7 @@ public readonly struct ColourPicker : IControl
     }
 
     private static readonly Texture rainbowTexture;
+    private static readonly Texture checkboardTexture;
     private static readonly OptionalControlState<ColourPickerState> states = new();
 
     private static readonly Material hsBox = new Material(new Shader(Shader.Default.VertexShader,
@@ -106,6 +108,8 @@ void main()
         var r = p.Instance.Rects.ComputedGlobal.Expand(-p.Theme.Padding);
         r.MaxY -= BottomBarHeight + p.Theme.Padding;
         r.MaxX -= HueSliderWidth;
+        if (EditableAlpha)
+            r.MaxY -= AlphaSliderHeight;
         return r;
     }
 
@@ -114,6 +118,8 @@ void main()
         var r = p.Instance.Rects.ComputedGlobal.Expand(-p.Theme.Padding);
         r.MaxY -= BottomBarHeight + p.Theme.Padding;
         r.MinX = r.MaxX - HueSliderWidth;
+        if (EditableAlpha)
+            r.MaxY -= AlphaSliderHeight;
         return r;
     }
 
@@ -132,6 +138,8 @@ void main()
 
         rainbowTexture.ForceUpdate();
         rainbowTexture.DisposeLocalCopyAfterUpload = true;
+
+        checkboardTexture = TexGen.Checkerboard(100, 32, 4, Colors.White, Colors.Gray);
     }
 
     public static Color GetColor(Vector2 pos, float hue)
@@ -177,6 +185,12 @@ void main()
         Onion.Theme.Accent(Colors.Red).Once();
         sliderInput |= Slider.Float(ref value.R, Direction.Horizontal, (0, 1), 0.025f, null, instance.Identity);
 
+        if (editableAlpha)
+        {
+            Onion.Layout.FitWidth().Height(AlphaSliderHeight - instance.Theme.Padding).StickLeft().StickBottom().Move(0, -SliderHeight * 2 - AlphaSliderHeight + instance.Theme.Padding);
+            sliderInput |= Slider.Float(ref value.A, Direction.Horizontal, (0, 1), 0.025f, "Alpha", instance.Identity);
+        }
+
         Onion.Tree.End();
 
         if (sliderInput)
@@ -218,7 +232,7 @@ void main()
                 var v = svRect.ClosestPoint(p.Input.MousePosition);
                 v.X = Utilities.MapRange(svRect.MinX, svRect.MaxX, 0, 1, v.X);
                 v.Y = Utilities.MapRange(svRect.MinY, svRect.MaxY, 0, 1, v.Y);
-                var col = GetColor(v, state.SelectedHue);
+                var col = GetColor(v, state.SelectedHue).WithAlpha(state.Color.A);
                 states[p.Identity] = state with { Color = col };
             }
             else if (hueRect.ContainsPoint(p.Input.MousePosition))
@@ -226,7 +240,7 @@ void main()
                 var vv = hueRect.ClosestPoint(p.Input.MousePosition);
                 float hue = Utilities.MapRange(hueRect.MinY, hueRect.MaxY, 0, 1, vv.Y);
                 state.Color.GetHsv(out _, out var s, out var v);
-                states[p.Identity] = state with { Color = Color.FromHsv(hue, s, v), SelectedHue = hue };
+                states[p.Identity] = state with { Color = Color.FromHsv(hue, s, v).WithAlpha(state.Color.A), SelectedHue = hue };
             }
         }
     }
@@ -253,13 +267,25 @@ void main()
 
         Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
 
-        Draw.ResetTexture();
-        Draw.Colour = value.Color;
-        anim.AnimateColour(ref Draw.Colour, t);
-        Draw.Quad(new Rect(1, 0, 100, 32 - p.Theme.Padding).
+        var previewBox = new Rect(0, 0, 100, 32 - p.Theme.Padding).
             Translate(p.Theme.Padding, p.Theme.Padding + 2).
             Translate(instance.Rects.Rendered.BottomLeft).
-            Translate(instance.Rects.Rendered.Width - 100 - p.Theme.Padding  *2, svRect.Height + p.Theme.Padding), 0, p.Theme.Rounding);
+            Translate(instance.Rects.Rendered.Width - 100 - p.Theme.Padding * 2, instance.Rects.Rendered.Height - 32 * 2 - p.Theme.Padding * 2);
+
+        if (EditableAlpha)
+        {
+            Draw.Texture = checkboardTexture;
+            Draw.Colour = Colors.White;
+            anim.AnimateColour(ref Draw.Colour, t);
+            Draw.Quad(previewBox, 0, p.Theme.Rounding);
+        }
+
+        Draw.ResetTexture();
+        Draw.Colour = value.Color;
+        if (!EditableAlpha)
+            Draw.Colour.A = 1;
+        anim.AnimateColour(ref Draw.Colour, t);
+        Draw.Quad(previewBox, 0, p.Theme.Rounding);
 
         Draw.ResetTexture();
         Draw.Colour = pickedColour.Color with { A = pickedColour.SelectedHue };

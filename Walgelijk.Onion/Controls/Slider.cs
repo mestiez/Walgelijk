@@ -121,7 +121,7 @@ public readonly struct Slider : IControl
         Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
 
         var sliderRect = instance.Rects.Rendered;
-        float animatedMin = Utilities.Lerp(range.Max, range.Min, Utilities.Clamp(t));
+        float animatedMin = Utilities.Lerp(range.Max, range.Min, Utilities.Clamp(p.Node.AliveLastFrame ? t - 0.2f : t));
         switch (direction)
         {
             case Direction.Horizontal:
@@ -150,6 +150,7 @@ public readonly struct Slider : IControl
 
             Draw.Font = p.Theme.Font;
             Draw.Colour = p.Theme.Text[instance.State];
+            anim.AnimateColour(ref Draw.Colour, t);
             Draw.Text(str, instance.Rects.Rendered.GetCenter(), Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.Rendered.Width);
         }
     }

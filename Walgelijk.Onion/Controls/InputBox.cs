@@ -542,6 +542,8 @@ public readonly struct InputBox : IControl
             {
                 Draw.Colour = col;
 
+                var oldDrawbounds = Draw.DrawBounds;
+                Draw.DrawBounds = new DrawBounds(instance.Rects.ComputedDrawBounds.Expand(-p.Theme.Padding));
                 if (states[node.Identity].Options.Password)
                 {
                     float w = GetPasswordCharWidth(instance);
@@ -551,6 +553,7 @@ public readonly struct InputBox : IControl
                 }
                 else
                     Draw.Text(instance.Name, offset, new Vector2(ratio), HorizontalTextAlign.Left, VerticalTextAlign.Middle/*,colours: drawSelectionTextColour ? textColourInstructions : null*/);
+                Draw.DrawBounds = oldDrawbounds;
             }
 
             if (instance.HasFocus && cursorBlinkTimer % 1 < 0.5f)
