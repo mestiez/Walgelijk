@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Numerics;
 
@@ -117,6 +118,16 @@ public struct Color : IEquatable<Color>
         return (r, g, b, a);
     }
 
+    public string ToHexCode()
+    {
+        int r = (int)(R * 255);
+        int g = (int)(G * 255);
+        int b = (int)(B * 255);
+        int a = (int)(A * 255);
+
+        return $"#{r:X2}{g:X2}{b:X2}{a:X2}";
+    }
+
     public override string ToString()
     {
         return $"({R},{G},{B},{A})";
@@ -127,45 +138,26 @@ public struct Color : IEquatable<Color>
     /// </summary>
     public void GetHsv(out float h, out float s, out float v)
     {
-        float rabs, gabs, babs, rr, gg, bb, diff;
-        h = 0;
-        s = 0;
-        v = 0;
+        float max = Math.Max(R, Math.Max(G, B));
+        float min = Math.Min(R, Math.Min(G, B));
+        float delta = max - min;
 
-        rabs = R;
-        gabs = G;
-        babs = B;
-        v = MathF.Max(rabs, MathF.Max(gabs, babs));
-        diff = v - MathF.Min(rabs, MathF.Min(gabs, babs));
+        if (delta == 0)
+            h = 0;
+        else if (max == R)
+            h = ((G - B) / delta) % 6;
+        else if (max == G)
+            h = (B - R) / delta + 2;
+        else // max == B
+            h = (R - G) / delta + 4;
 
-        static float diffc(float c, float v, float diff) => (v - c) / 6f / diff + 1 / 2f;
+        h /= 6;
+        if (h < 0)
+            h += 1;
 
-        if (diff == 0)
-            h = s = 0;
-        else
-        {
-            s = diff / v;
-            rr = diffc(rabs, v, diff);
-            gg = diffc(gabs, v, diff);
-            bb = diffc(babs, v, diff);
-
-            if (rabs == v)
-                h = bb - gg;
-            else if (gabs == v)
-                h = (1 / 3) + rr - bb;
-            else if (babs == v)
-                h = (2 / 3) + gg - rr;
-            if (h < 0)
-                h += 1;
-            else if (h > 1)
-                h -= 1;
-        }
+        s = max == 0 ? 0 : delta / max;
+        v = max;
     }
-
-    /// <summary>
-    /// Get the perceived luminance
-    /// </summary>
-    public float GetLuminance() => (R + R + B + G + G + G) / 6f;
 
     /// <summary>
     /// Create an RGBA colour from the given HSV values in the range 0 to 1
@@ -173,16 +165,43 @@ public struct Color : IEquatable<Color>
     /// <returns></returns>
     public static Color FromHsv(float h, float s, float v, float alpha = 1)
     {
-        h *= 360;
+        float r = 0, g = 0, b = 0;
 
-        static float f(float n, float h, float s, float v)
+        float i = (int)(h * 6);
+        float f = h * 6 - i;
+        float p = v * (1 - s);
+        float q = v * (1 - f * s);
+        float t = v * (1 - (1 - f) * s);
+
+        switch (((int)i) % 6)
         {
-            float k = (n + h / 60) % 6;
-            return v - v * s * MathF.Max(MathF.Min(k, MathF.Min(4 - k, 1)), 0);
+            case 0:
+                r = v; g = t; b = p;
+                break;
+            case 1:
+                r = q; g = v; b = p;
+                break;
+            case 2:
+                r = p; g = v; b = t;
+                break;
+            case 3:
+                r = p; g = q; b = v;
+                break;
+            case 4:
+                r = t; g = p; b = v;
+                break;
+            case 5:
+                r = v; g = p; b = q;
+                break;
         }
 
-        return new Vector4(f(5, h, s, v), f(3, h, s, v), f(1, h, s, v), alpha);
+        return new Color(r, g, b, alpha);
     }
+
+    /// <summary>
+    /// Get the perceived luminance
+    /// </summary>
+    public float GetLuminance() => (R + R + B + G + G + G) / 6f;
 
     public override bool Equals(object? obj)
     {

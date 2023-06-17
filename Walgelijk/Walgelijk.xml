@@ -1910,16 +1910,16 @@
             Get HSV all of which are in range 0 to 1
             </summary>
         </member>
-        <member name="M:Walgelijk.Color.GetLuminance">
-            <summary>
-            Get the perceived luminance
-            </summary>
-        </member>
         <member name="M:Walgelijk.Color.FromHsv(System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Create an RGBA colour from the given HSV values in the range 0 to 1
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:Walgelijk.Color.GetLuminance">
+            <summary>
+            Get the perceived luminance
+            </summary>
         </member>
         <member name="T:Walgelijk.Colors">
             <summary>

@@ -52,7 +52,10 @@ public class OptionalControlState<T>
             ByIdentity[identity] = new(v, false);
         }
         else
+        {
+            r = true;
             ByIdentity.Add(identity, new(v, false));
+        }
 
         return r;
     }

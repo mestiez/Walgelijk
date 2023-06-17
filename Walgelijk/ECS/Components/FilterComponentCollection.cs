@@ -263,7 +263,7 @@ public class FilterComponentCollection : IComponentCollection
 
     private void InternalAddComponent(Component component)
     {
-        if (Game.Main.DevelopmentMode)
+        if (Game.Main?.DevelopmentMode ?? true)
             AssertComponentRequirements(component);
 
         all.Add(component);

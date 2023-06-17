@@ -6,33 +6,133 @@ namespace Walgelijk.Onion.Controls;
 
 public readonly struct ColourPicker : IControl
 {
+    public const int BottomBarHeight = 64;
+    public const int SliderHeight = BottomBarHeight / 3;
+    public const int HueSliderWidth = 32;
+
     private static readonly Texture rainbowTexture;
     private static readonly OptionalControlState<ColourPickerState> states = new();
 
+    private static readonly Material hsBox = new Material(new Shader(Shader.Default.VertexShader,
+@"#version 460
+
+in vec2 uv;
+in vec4 vertexColor;
+
+out vec4 color;
+
+uniform vec4 tint;
+uniform sampler2D mainTex;
+
+float fff(float n, float h, float s, float v) 
+{
+    float k = mod(n + h / 60.0, 6.0);
+    return v - v * s * max(min(k, min(4.0 - k, 1.0)), 0.0);
+}
+
+vec3 fromHsv(float h, float s, float v) 
+{
+    h *= 360.0;
+    return vec3(fff(5, h, s, v), fff(3, h, s, v), fff(1, h, s, v));
+}
+
+float diffc(float c, float v, float diff) 
+{
+    return (v - c) / 6.0 / diff + 0.5;
+}
+
+vec3 toHsv(in vec3 rgb) 
+{
+    float rabs, gabs, babs, rr, gg, bb, diff;
+    float h = 0.0;
+    float s = 0.0;
+    float v = 0.0;
+
+    rabs = rgb.r;
+    gabs = rgb.g;
+    babs = rgb.b;
+    v = max(rabs, max(gabs, babs));
+    diff = v - min(rabs, min(gabs, babs));
+
+    if (diff == 0.0) {
+        h = s = 0.0;
+    } else {
+        s = diff / v;
+        rr = diffc(rabs, v, diff);
+        gg = diffc(gabs, v, diff);
+        bb = diffc(babs, v, diff);
+
+        if (rabs == v) {
+            h = bb - gg;
+        } else if (gabs == v) {
+            h = (1.0 / 3.0) + rr - bb;
+        } else if (babs == v) {
+            h = (2.0 / 3.0) + gg - rr;
+        }
+        if (h < 0.0) {
+            h += 1.0;
+        } else if (h > 1.0) {
+            h -= 1.0;
+        }
+    }
+
+    return vec3(h,s,v);
+}
+
+void main()
+{
+    vec3 hsv = toHsv(tint.rgb);
+
+    hsv.x = tint.a;
+    hsv.y = uv.x;
+    hsv.z = uv.y;
+
+    color = vec4(fromHsv(hsv.x, hsv.y, hsv.z), 1);
+    //color = tint * vertexColor * texture(mainTex, uv);
+}"
+));
+
     private record ColourPickerState(Color Color, float SelectedHue);
+
+    public Rect GetSVRect(in ControlParams p)
+    {
+        var r = p.Instance.Rects.ComputedGlobal.Expand(-p.Theme.Padding);
+        r.MaxY -= BottomBarHeight + p.Theme.Padding;
+        r.MaxX -= HueSliderWidth;
+        return r;
+    }
+
+    public Rect GetHueRect(in ControlParams p)
+    {
+        var r = p.Instance.Rects.ComputedGlobal.Expand(-p.Theme.Padding);
+        r.MaxY -= BottomBarHeight + p.Theme.Padding;
+        r.MinX = r.MaxX - HueSliderWidth;
+        return r;
+    }
 
     static ColourPicker()
     {
         const int res = 128;
-        rainbowTexture = new Texture(res, 1, false, false);
+        rainbowTexture = new Texture(1, res, false, false);
         rainbowTexture.FilterMode = FilterMode.Linear;
+        rainbowTexture.WrapMode = WrapMode.Mirror;
 
-        for (int x = 0; x < res; x++)
+        for (int y = 0; y < res; y++)
         {
-            var c = Color.FromHsv((float)x / res, 1, 1);
-            rainbowTexture.SetPixel(x, 0, c);
+            var c = Color.FromHsv(1 - (float)y / res, 1, 1);
+            rainbowTexture.SetPixel(0, y, c);
         }
 
         rainbowTexture.ForceUpdate();
         rainbowTexture.DisposeLocalCopyAfterUpload = true;
     }
 
-    public static Color GetColourAt(Vector2 pos, float hue)
+    public static Color GetColor(Vector2 pos, float hue)
     {
         return Color.FromHsv(hue, pos.X, 1 - pos.Y);
     }
 
-    public static Vector2 GetPositionFor(Color col)
+    public static Vector2 GetPosition(Color col)
     {
         col.GetHsv(out _, out float x, out float y);
         return new Vector2(x, 1 - y);
@@ -42,19 +142,42 @@ public readonly struct ColourPicker : IControl
     {
         var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(ColourPicker).GetHashCode(), identity, site), new ColourPicker());
         instance.RenderFocusBox = false;
+
+        Onion.Layout.Width(100).Height(32).StickRight().StickBottom();
+        if (InputBox.String(ref instance.Name, new TextBoxOptions(), instance.Identity))
+        {
+            try
+            {
+                value = new Color(instance.Name);
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        var sliderWidth = instance.Rects.ComputedGlobal.Width - 100 - instance.Theme.Padding * 3;
+
+        Onion.Layout.Width(sliderWidth).Height(SliderHeight).StickLeft().StickBottom();
+        Onion.Theme.Accent(Colors.Blue).Once();
+        Slider.Float(ref value.B, Direction.Horizontal, (0, 1), 0.025f, null, instance.Identity);
+
+        Onion.Layout.Width(sliderWidth).Height(SliderHeight).StickLeft().StickBottom().Move(0, -SliderHeight);
+        Onion.Theme.Accent(Colors.Green).Once();
+        Slider.Float(ref value.G, Direction.Horizontal, (0, 1), 0.025f, null, instance.Identity);
+
+        Onion.Layout.Width(sliderWidth).Height(SliderHeight).StickLeft().StickBottom().Move(0, -SliderHeight * 2);
+        Onion.Theme.Accent(Colors.Red).Once();
+        Slider.Float(ref value.R, Direction.Horizontal, (0, 1), 0.025f, null, instance.Identity);
+
         Onion.Tree.End();
 
-        if (states.TryGetState(instance.Identity, out var state))
+        value.GetHsv(out var hue, out _, out _);
+        var vv = new ColourPickerState(value, hue);
+
+        if (states.UpdateFor(instance.Identity, ref vv))
         {
-            if (states.HasIncomingChange(instance.Identity))
-                value = state.Color;
-            else
-                states[instance.Identity] = state with { Color = value };
-        }
-        else
-        {
-            value.GetHsv(out var hue, out _, out _);
-            states[instance.Identity] = new ColourPickerState(value, hue);
+            instance.Name = value.ToHexCode();
+            value = vv.Color;
         }
 
         return instance.State;
@@ -77,11 +200,23 @@ public readonly struct ColourPicker : IControl
 
         if (p.Instance.IsActive)
         {
-            var v = p.Instance.Rects.Rendered.ClosestPoint(p.Input.MousePosition);
-            v.X = Utilities.MapRange(p.Instance.Rects.Rendered.MinX, p.Instance.Rects.Rendered.MaxX, 0, 1, v.X);
-            v.Y = Utilities.MapRange(p.Instance.Rects.Rendered.MinY, p.Instance.Rects.Rendered.MaxY, 0, 1, v.Y);
-            var col = GetColourAt(v, state.SelectedHue);
-            states[p.Identity] = state with { Color = col };
+            var svRect = GetSVRect(p);
+            var hueRect = GetHueRect(p);
+            if (svRect.ContainsPoint(p.Input.MousePosition))
+            {
+                var v = svRect.ClosestPoint(p.Input.MousePosition);
+                v.X = Utilities.MapRange(svRect.MinX, svRect.MaxX, 0, 1, v.X);
+                v.Y = Utilities.MapRange(svRect.MinY, svRect.MaxY, 0, 1, v.Y);
+                var col = GetColor(v, state.SelectedHue);
+                states[p.Identity] = state with { Color = col };
+            }
+            else if (hueRect.ContainsPoint(p.Input.MousePosition))
+            {
+                var vv = hueRect.ClosestPoint(p.Input.MousePosition);
+                float hue = Utilities.MapRange(hueRect.MinY, hueRect.MaxY, 0, 1, vv.Y);
+                state.Color.GetHsv(out _, out var s, out var v);
+                states[p.Identity] = state with { Color = Color.FromHsv(hue, s, v), SelectedHue = hue };
+            }
         }
     }
 
@@ -91,27 +226,53 @@ public readonly struct ColourPicker : IControl
 
         var t = node.GetAnimationTime();
         var anim = instance.Animations;
+        var pickedColour = states.GetValue(p.Identity);
+        var svRect = GetSVRect(p);
+        var hueRect = GetHueRect(p);
+        var value = states[p.Identity];
 
-        var fg = p.Theme.Foreground[instance.State];
+        var fg = p.Theme.Foreground[ControlState.None];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
-
+        anim.AnimateRect(ref svRect, t);
+        anim.AnimateRect(ref hueRect, t);
         anim.AnimateColour(ref Draw.Colour, t);
+
         Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
 
-        Draw.Colour = Color.White;// states[p.Identity];
+        Draw.ResetTexture();
+        Draw.Colour = value.Color;
+        anim.AnimateColour(ref Draw.Colour, t);
+        Draw.Quad(new Rect(1, 0, 100, 32 - p.Theme.Padding).
+            Translate(p.Theme.Padding, p.Theme.Padding + 2).
+            Translate(instance.Rects.Rendered.BottomLeft).
+            Translate(instance.Rects.Rendered.Width - 100 - p.Theme.Padding  *2, svRect.Height + p.Theme.Padding), 0, p.Theme.Rounding);
+
+        Draw.ResetTexture();
+        Draw.Colour = pickedColour.Color with { A = pickedColour.SelectedHue };
+        anim.AnimateColour(ref Draw.Colour, t);
+        Draw.Material = hsBox;
+        Draw.Quad(svRect);
+
+        Draw.ResetMaterial();
         Draw.Texture = rainbowTexture;
-        Draw.Quad(instance.Rects.Rendered.Expand(-p.Theme.Padding));
+        Draw.Colour = Colors.White;
+        anim.AnimateColour(ref Draw.Colour, t);
+        Draw.Quad(hueRect);
         Draw.ResetTexture();
 
-        Draw.Colour = Colors.White;
+        Draw.Colour = Vector4.One - value.Color;
         Draw.Colour.A = 1;
-        var colourPos = GetPositionFor(states[p.Identity].Color);
 
-        colourPos.X = Utilities.MapRange(0, 1, instance.Rects.Rendered.MinX, instance.Rects.Rendered.MaxX, colourPos.X);
-        colourPos.Y = Utilities.MapRange(0, 1, instance.Rects.Rendered.MinY, instance.Rects.Rendered.MaxY, colourPos.Y);
+        const float triangleSize = 8;
+        var hueBarY = Utilities.MapRange(0, 1, hueRect.MinY, hueRect.MaxY, value.SelectedHue);
+        Draw.TriangleIscoCentered(new Vector2(hueRect.MinX + triangleSize / 2, hueBarY), new Vector2(triangleSize), -90);
+        Draw.TriangleIscoCentered(new Vector2(hueRect.MaxX - triangleSize / 2, hueBarY), new Vector2(triangleSize), 90);
+        var colourPos = GetPosition(value.Color);
+        colourPos.X = Utilities.MapRange(0, 1, svRect.MinX, svRect.MaxX, colourPos.X);
+        colourPos.Y = Utilities.MapRange(0, 1, svRect.MinY, svRect.MaxY, colourPos.Y);
 
         Draw.Circle(colourPos, new Vector2(4));
     }

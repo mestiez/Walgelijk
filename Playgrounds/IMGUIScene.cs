@@ -50,6 +50,7 @@ public struct IMGUIScene : ISceneCreator
             "Apeldoorn"
         };
 
+        public static Color PickedColour = Colors.Purple;
         public static int DropdownSelectedIndex;
         private static bool PasswordCheckbox = true;
 
@@ -269,8 +270,13 @@ Deserves kindness and love, a smile on their face";
                 Ui.FloatSlider(ref Onion.Animation.DefaultDurationSeconds, Direction.Horizontal, new MinMax<float>(float.Epsilon, 1), 0.01f);
             }
 
-            layout.Size(256, 256).StickRight().StickBottom();
-            Ui.ColourPicker(ref Onion.Theme.Base.Background.Default.Color);
+            layout.Size(290, 320).Move(Window.Width - 290, Window.Height - 320).Resizable(new Vector2(148), new Vector2(1024));
+            Ui.StartDragWindow(nameof(Ui.ColourPicker));
+            {
+                layout.FitContainer().Move(8, 32).Scale(-6, -30);
+                Ui.ColourPicker(ref PickedColour);
+            }
+            Ui.End();
         }
 
         public override void Render()
