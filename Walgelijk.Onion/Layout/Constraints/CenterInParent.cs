@@ -20,7 +20,7 @@ public readonly struct CenterInParent : IConstraint
             return;
 
         var parent = p.Tree.EnsureInstance(p.Node.Parent.Identity);
-        var container = parent.Rects.Intermediate;
+        var container = parent.Rects.GetInnerContentRect();
         var center = Vector2.Zero;
         var rect = p.Instance.Rects.Intermediate;
 

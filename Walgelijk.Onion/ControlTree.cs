@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using System.Numerics;
+using System.Xml.Linq;
 using Walgelijk.Onion.Controls;
 using Walgelijk.Onion.Layout;
 using Walgelijk.SimpleDrawing;
@@ -91,6 +92,7 @@ public class ControlTree
         node.ChronologicalPosition = incrementor++;
         node.Alive = true;
 
+        inst.Rects.InnerContentRectAdjustment = Vector4.Zero;
         node.Behaviour.OnStart(p);
         inst.Rects.Intermediate = inst.Rects.Local;
 

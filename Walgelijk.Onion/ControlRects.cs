@@ -15,6 +15,27 @@ public struct ControlRects
     public Rect Intermediate;
 
     /// <summary>
+    /// The adjustment to <see cref="Intermediate"/> that is considered when a constraint resolves parent size and position. Every component is respectively mapped to:
+    /// <list type="number">
+    /// <item><see cref="Rect.MinX"/></item>
+    /// <item><see cref="Rect.MinY"/></item>
+    /// <item><see cref="Rect.MaxX"/></item>
+    /// <item><see cref="Rect.MaxY"/></item>
+    /// </list>
+    /// </summary>
+    public Vector4 InnerContentRectAdjustment;
+
+    public Rect GetInnerContentRect()
+    {
+        var r = Intermediate;
+        r.MinX += InnerContentRectAdjustment.X;
+        r.MinY += InnerContentRectAdjustment.Y;
+        r.MaxX += InnerContentRectAdjustment.Z;
+        r.MaxY += InnerContentRectAdjustment.W;
+        return r;
+    }
+
+    /// <summary>
     /// The rectangle derived from <see cref="Local"/> after layout processing, transformed to global space
     /// <br></br>
     /// Defined in global (screen) space
@@ -45,7 +66,7 @@ public struct ControlRects
     /// <br></br>
     /// Defined in local (parent) space
     /// </summary>
-    public Rect ChildContent;
+    public Rect ComputedChildContent;
 
     /// <summary>
     /// The rectangle that is determined by the minimum and maximum values of <see cref="ControlInstance.InnerScrollOffset"/>

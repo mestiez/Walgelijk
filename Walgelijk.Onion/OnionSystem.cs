@@ -120,7 +120,7 @@ public class OnionSystem : Walgelijk.System
                     rect = inst.Rects.Raycast ?? default;
                     break;
                 case UiDebugOverlay.ChildContentRect:
-                    rect = inst.Rects.ChildContent;
+                    rect = inst.Rects.ComputedChildContent;
                     break;
                 case UiDebugOverlay.DrawBounds:
                     rect = inst.Rects.DrawBounds ?? default;

@@ -168,7 +168,7 @@ public class Node
             p.Instance.Rects.ComputedGlobal = p.Instance.Rects.Intermediate;
             ControlUtils.ConsiderParentScroll(p);
             if (Parent != null && p.Tree.Instances.TryGetValue(Parent.Identity, out var parentInst))
-                p.Instance.Rects.ComputedGlobal = p.Instance.Rects.ComputedGlobal.Translate(parentInst.Rects.ComputedGlobal.BottomLeft);
+                p.Instance.Rects.ComputedGlobal = p.Instance.Rects.ComputedGlobal.Translate(parentInst.Rects.ComputedGlobal.BottomLeft).Translate(parentInst.Rects.InnerContentRectAdjustment.XY());
 
             Behaviour.OnProcess(p);
 
@@ -204,7 +204,7 @@ public class Node
 
     private static void EnforceScrollBounds(in ControlParams p)
     {
-        var childContent = p.Instance.Rects.ChildContent;//.Expand(5);
+        var childContent = p.Instance.Rects.ComputedChildContent;//.Expand(5);
         bool childrenFitInsideParent = p.Instance.Rects.Intermediate.ContainsRect(childContent);
 
         if (childrenFitInsideParent)
@@ -255,7 +255,7 @@ public class Node
     {
         ChronologicalPosition = -1;
         var inst = tree.EnsureInstance(Identity);
-        inst.Rects.ChildContent = inst.Rects.Local;
+        inst.Rects.ComputedChildContent = inst.Rects.Local;
 
         // remove dead children from the child list
         var toDelete = ArrayPool<int>.Shared.Rent(Children.Count);
@@ -273,7 +273,7 @@ public class Node
             {
                 //living child should count towards child content rect
                 if (item.ContributeToParentScrollRect)
-                    inst.Rects.ChildContent = inst.Rects.ChildContent.StretchToContain(childInst.Rects.Intermediate);
+                    inst.Rects.ComputedChildContent = inst.Rects.ComputedChildContent.StretchToContain(childInst.Rects.Intermediate);
                 item.SiblingIndex = siblingIndex++;
             }
         }

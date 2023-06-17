@@ -12,7 +12,6 @@ public readonly struct DragWindow : IControl
     public static string CloseTooltipText = "Close";
 
     public readonly bool IsOpen;
-    public readonly OptionalControlState<Vector2> Size = new(Vector2.One);
 
     public DragWindow(bool isOpen)
     {
@@ -24,7 +23,7 @@ public readonly struct DragWindow : IControl
     {
         var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(DragWindow).GetHashCode(), identity, site), new DragWindow(true));
         instance.Name = title;
-        node.RequestedLocalOrder = Math.Max(1, node.RequestedLocalOrder);
+        node.RequestedLocalOrder = Math.Max(1, node.RequestedLocalOrder); var padding = instance.Theme.Padding;
         return instance.State;
     }
 
@@ -39,9 +38,10 @@ public readonly struct DragWindow : IControl
         instance.RenderFocusBox = false;
 
         float buttonSize = instance.Theme.WindowTitleBarHeight[instance.State] - instance.Theme.Padding;
-        Onion.Layout.Size(buttonSize, buttonSize);
-        Onion.Layout.EnqueueConstraint(new StickTop());
-        Onion.Layout.EnqueueConstraint(new StickRight());
+        Onion.Layout.Size(buttonSize, buttonSize)
+            .StickTop()
+            .StickRight()
+            .Move(instance.Theme.Padding, -instance.Theme.Padding - instance.Theme.WindowTitleBarHeight[instance.State]);
         Ui.Decorators.Tooltip(CloseTooltipText);
         if (ImageButton.Click(BuiltInAssets.Icons.Exit, ImageContainmentMode.Cover, instance.Identity))
             isOpen = !isOpen;
@@ -49,13 +49,22 @@ public readonly struct DragWindow : IControl
         return instance.State;
     }
 
-    public void OnAdd(in ControlParams p) { }
+    public void OnAdd(in ControlParams p)
+    {
+
+    }
 
     public void OnRemove(in ControlParams p) { }
 
     public void OnStart(in ControlParams p)
     {
-
+        var padding = p.Instance.Theme.Padding;
+        p.Instance.Rects.InnerContentRectAdjustment = new Vector4(
+            padding,
+            padding + p.Instance.Theme.WindowTitleBarHeight[p.Instance.State],
+            -padding,
+            -padding
+        );
     }
 
     public void OnProcess(in ControlParams p)
@@ -98,14 +107,12 @@ public readonly struct DragWindow : IControl
         anim.AnimateColour(ref Draw.Colour, t);
 
         var titleBarHeight = p.Theme.WindowTitleBarHeight[instance.State];
-        //var oldBounds = Draw.DrawBounds;
-        ////instance.Rects.Rendered.Width - Onion.Theme.Padding * 2 - titleBarHeight
-        //Draw.DrawBounds = new DrawBounds(instance.Rects.Rendered.BottomLeft, instance.Rects.Rendered.GetSize());
-
+        var oldBounds = Draw.DrawBounds;
+        Draw.DrawBounds = new DrawBounds(instance.Rects.Rendered with { MaxX = instance.Rects.Rendered.MaxX - p.Theme.Padding - titleBarHeight });
         Draw.Text(
             instance.Name, instance.Rects.Rendered.BottomLeft + new Vector2(p.Theme.Padding, 0.5f * titleBarHeight),
             Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Middle);
-        //Draw.DrawBounds = oldBounds;
+        Draw.DrawBounds = oldBounds;
 
         var bg = p.Theme.Background[instance.State];
         Draw.Colour = bg.Color;
@@ -121,6 +128,5 @@ public readonly struct DragWindow : IControl
 
     public void OnEnd(in ControlParams p)
     {
-
     }
 }

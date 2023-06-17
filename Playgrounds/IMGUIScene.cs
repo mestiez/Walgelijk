@@ -199,21 +199,22 @@ Deserves kindness and love, a smile on their face";
                 if (!WindowsOpen[i])
                     continue;
 
-                layout.Move(i * 64, i * 64).Size(300, 128).Resizable(new Vector2(148), new Vector2(512));
+                layout.Move(i * 64, i * 64).Size(300, 256).Resizable(new Vector2(148), new Vector2(512));
                 Ui.Decorators.Tooltip("DPI is " + Window.DPI);
                 Ui.StartDragWindow(textBoxContent, ref WindowsOpen[i], i);
                 {
-                    layout.FitContainer(1, 1).Scale(0, -24).Move(0, 24).Move(Onion.Theme.Base.Padding, Onion.Theme.Base.Padding);
+                    layout.FitContainer().StickTop().StickLeft().Scale(0, Onion.Theme.Base.Padding);
+                    //Ui.Theme.Padding(0).Once();
                     Ui.StartScrollView(i);
                     {
                         layout.Size(128, 32);
-                        layout.Move(Onion.Theme.Base.Padding, Onion.Theme.Base.Padding);
                         Ui.Decorators.Add(new HoverCrosshairDecorator());
                         Ui.Decorators.Tooltip("This control has a HoverCrosshairDecorator that adds a cool Nurose-like outline on hover");
                         if (Ui.Dropdown(DropdownOptions, ref DropdownSelectedIndex, identity: i))
                             Logger.Log("Window dropdown selected!");
 
-                        layout.FitContainer().Move(0, Onion.Theme.Base.Padding + 32).Scale(0, -80);
+                        layout.FitContainer(1,1,false).Move(0, 32).Scale(0, -80);
+                        Ui.Theme.Padding(0).Once();
                         Ui.StartScrollView(i);
                         {
                             layout.Height(32).FitWidth().Move(Onion.Theme.Base.Padding, Onion.Theme.Base.Padding);
@@ -225,9 +226,8 @@ Deserves kindness and love, a smile on their face";
                         }
                         Ui.End();
 
-                        layout.Size(256, 32);
-                        layout.FitContainer(1, null);
-                        layout.Move(Onion.Theme.Base.Padding, Onion.Theme.Base.Padding);
+                        layout.Size(32, 32);
+                        layout.FitContainer(1, null, false);
                         layout.StickBottom();
                         Ui.StringInputBox(ref textBoxContent, new TextBoxOptions(placeholder: "Placeholder!", password: i == 0 && PasswordCheckbox), identity: i);
                     }
@@ -273,7 +273,7 @@ Deserves kindness and love, a smile on their face";
             layout.Size(290, 320).Move(Window.Width - 290, Window.Height - 320).Resizable(new Vector2(148), new Vector2(1024));
             Ui.StartDragWindow(nameof(Ui.ColourPicker));
             {
-                layout.FitContainer().Move(8, 32).Scale(-6, -30);
+                layout.FitContainer().StickTop().StickLeft();
                 Ui.ColourPicker(ref PickedColour);
             }
             Ui.End();

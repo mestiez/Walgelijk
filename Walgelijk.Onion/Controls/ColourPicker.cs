@@ -10,6 +10,13 @@ public readonly struct ColourPicker : IControl
     public const int SliderHeight = BottomBarHeight / 3;
     public const int HueSliderWidth = 32;
 
+    public readonly bool EditableAlpha;
+
+    public ColourPicker(bool editableAlpha)
+    {
+        EditableAlpha = editableAlpha;
+    }
+
     private static readonly Texture rainbowTexture;
     private static readonly OptionalControlState<ColourPickerState> states = new();
 
@@ -138,9 +145,9 @@ void main()
         return new Vector2(x, 1 - y);
     }
 
-    public static ControlState Create(ref Color value, int identity = 0, [CallerLineNumber] int site = 0)
+    public static ControlState Create(ref Color value, bool editableAlpha = false, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(ColourPicker).GetHashCode(), identity, site), new ColourPicker());
+        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(ColourPicker).GetHashCode(), identity, site), new ColourPicker(editableAlpha));
         instance.RenderFocusBox = false;
 
         Onion.Layout.Width(100).Height(32).StickRight().StickBottom();
@@ -156,20 +163,24 @@ void main()
         }
 
         var sliderWidth = instance.Rects.ComputedGlobal.Width - 100 - instance.Theme.Padding * 3;
+        bool sliderInput = false;
 
         Onion.Layout.Width(sliderWidth).Height(SliderHeight).StickLeft().StickBottom();
         Onion.Theme.Accent(Colors.Blue).Once();
-        Slider.Float(ref value.B, Direction.Horizontal, (0, 1), 0.025f, null, instance.Identity);
+        sliderInput |= Slider.Float(ref value.B, Direction.Horizontal, (0, 1), 0.025f, null, instance.Identity);
 
         Onion.Layout.Width(sliderWidth).Height(SliderHeight).StickLeft().StickBottom().Move(0, -SliderHeight);
         Onion.Theme.Accent(Colors.Green).Once();
-        Slider.Float(ref value.G, Direction.Horizontal, (0, 1), 0.025f, null, instance.Identity);
+        sliderInput |= Slider.Float(ref value.G, Direction.Horizontal, (0, 1), 0.025f, null, instance.Identity);
 
         Onion.Layout.Width(sliderWidth).Height(SliderHeight).StickLeft().StickBottom().Move(0, -SliderHeight * 2);
         Onion.Theme.Accent(Colors.Red).Once();
-        Slider.Float(ref value.R, Direction.Horizontal, (0, 1), 0.025f, null, instance.Identity);
+        sliderInput |= Slider.Float(ref value.R, Direction.Horizontal, (0, 1), 0.025f, null, instance.Identity);
 
         Onion.Tree.End();
+
+        if (sliderInput)
+            instance.Name = value.ToHexCode();
 
         value.GetHsv(out var hue, out _, out _);
         var vv = new ColourPickerState(value, hue);

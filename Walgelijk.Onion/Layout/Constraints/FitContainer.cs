@@ -20,13 +20,13 @@ public readonly struct FitContainer : IConstraint
         if (p.Node.Parent == null)
             return;
 
-        var parent = p.Tree.EnsureInstance(p.Node.Parent.Identity);
+        var parent = p.Tree.EnsureInstance(p.Node.Parent.Identity).Rects.GetInnerContentRect();
         var padding = Pad ? p.Theme.Padding * 2 : 0;
 
         if (WidthRatio.HasValue)
-            p.Instance.Rects.Intermediate.Width = WidthRatio.Value * (parent.Rects.Intermediate.Width - padding);
+            p.Instance.Rects.Intermediate.Width = WidthRatio.Value * (parent.Width - padding);
 
         if (HeightRatio.HasValue)
-            p.Instance.Rects.Intermediate.Height = HeightRatio.Value * (parent.Rects.Intermediate.Height - padding);
+            p.Instance.Rects.Intermediate.Height = HeightRatio.Value * (parent.Height - padding);
     }
 }
