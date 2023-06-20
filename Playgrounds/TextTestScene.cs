@@ -69,6 +69,7 @@ public readonly struct TextTestScene : ISceneCreator
         public Font Font = Font.Default;
         public int FontSize = 24;
         public float Tracking = 1;
+        public float Kerning = 1;
 
         public HorizontalTextAlign HorizontalAlign = HorizontalTextAlign.Left;
         public VerticalTextAlign VerticalAlign = VerticalTextAlign.Bottom;
@@ -109,6 +110,7 @@ public readonly struct TextTestScene : ISceneCreator
 
             LegacyGenerator.Font = Font;
             LegacyGenerator.TrackingMultiplier = Tracking;
+            LegacyGenerator.KerningMultiplier = Kerning;
             LegacyGenerator.HorizontalAlign = HorizontalAlign;
             LegacyGenerator.VerticalAlign = VerticalAlign;
             LegacyGenerator.Color = Ui.Theme.Base.Text.Default;
@@ -116,6 +118,7 @@ public readonly struct TextTestScene : ISceneCreator
             ModernGenerator.Font = Font;
             ModernGenerator.FontSize = FontSize;
             ModernGenerator.TrackingMultiplier = Tracking;
+            ModernGenerator.KerningMultiplier = Kerning;
             ModernGenerator.HorizontalAlign = HorizontalAlign;
             ModernGenerator.VerticalAlign = VerticalAlign;
             ModernGenerator.Color = Ui.Theme.Base.Text.Default;
@@ -153,6 +156,10 @@ public readonly struct TextTestScene : ISceneCreator
                     Ui.Layout.Size(64, 32);
                     Ui.Decorators.Tooltip("Tracking");
                     Ui.FloatStepper(ref Tracking, (0, 4), 0.1f);
+
+                    Ui.Layout.Size(64, 32);
+                    Ui.Decorators.Tooltip("Kerning");
+                    Ui.FloatStepper(ref Kerning, (0, 20), 0.1f);
 
                     Ui.Layout.Size(130, 32);
                     Ui.StartGroup(false);

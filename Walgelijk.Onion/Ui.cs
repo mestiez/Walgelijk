@@ -23,11 +23,11 @@ public static partial class Ui
         Ui.StartGroup(false, identity + 73, site);
         {
             Ui.Layout.FitContainer(1, 1, pad: false).Scale(-arrowBoxSize + 1, 0);
-            r |= Ui.IntInputBox(ref value, range, identity: identity);
+            r |= Ui.IntInputBox(ref value, range, identity: identity + site);
 
             Ui.Layout.Width(arrowBoxSize).FitContainer(null, 0.5f, false).StickRight().Move(padding, 0);
             Ui.Theme.Image(imgCol).Once();
-            if (Ui.HoldImageButton(BuiltInAssets.Icons.ChevronUp, ImageContainmentMode.Contain))
+            if (Ui.HoldImageButton(BuiltInAssets.Icons.ChevronUp, ImageContainmentMode.Contain, identity: identity + site))
             {
                 if (Onion.HoldTicker.IsTicked(Onion.Tree.GetLastInstance()))
                     value = Utilities.Clamp(value + step, range.Min, range.Max);
@@ -36,7 +36,7 @@ public static partial class Ui
 
             Ui.Layout.Width(arrowBoxSize).FitContainer(null, 0.5f, false).StickRight().StickBottom().Move(padding, padding);
             Ui.Theme.Image(imgCol).Once();
-            if (Ui.HoldImageButton(BuiltInAssets.Icons.ChevronDown, ImageContainmentMode.Contain))
+            if (Ui.HoldImageButton(BuiltInAssets.Icons.ChevronDown, ImageContainmentMode.Contain, identity: identity + site))
             {
                 if (Onion.HoldTicker.IsTicked(Onion.Tree.GetLastInstance()))
                     value = Utilities.Clamp(value - step, range.Min, range.Max);
@@ -59,11 +59,11 @@ public static partial class Ui
         Ui.StartGroup(false, identity + 62, site);
         {
             Ui.Layout.FitContainer(1, 1, pad: false).Scale(-arrowBoxSize + 1, 0);
-            r |= Ui.FloatInputBox(ref value, range, identity: identity);
+            r |= Ui.FloatInputBox(ref value, range, identity: identity + site);
 
             Ui.Layout.Width(arrowBoxSize).FitContainer(null, 0.5f, false).StickRight().Move(padding, 0);
             Ui.Theme.Image(imgCol).Once();
-            if (Ui.HoldImageButton(BuiltInAssets.Icons.ChevronUp, ImageContainmentMode.Contain))
+            if (Ui.HoldImageButton(BuiltInAssets.Icons.ChevronUp, ImageContainmentMode.Contain, identity: identity + site))
             {
                 if (Onion.HoldTicker.IsTicked(Onion.Tree.GetLastInstance()))
                     value = Utilities.Clamp(value + step, range.Min, range.Max);
@@ -72,7 +72,7 @@ public static partial class Ui
 
             Ui.Layout.Width(arrowBoxSize).FitContainer(null, 0.5f, false).StickRight().StickBottom().Move(padding, padding);
             Ui.Theme.Image(imgCol).Once();
-            if (Ui.HoldImageButton(BuiltInAssets.Icons.ChevronDown, ImageContainmentMode.Contain))
+            if (Ui.HoldImageButton(BuiltInAssets.Icons.ChevronDown, ImageContainmentMode.Contain, identity: identity + site))
             {
                 if (Onion.HoldTicker.IsTicked(Onion.Tree.GetLastInstance()))
                     value = Utilities.Clamp(value - step, range.Min, range.Max);

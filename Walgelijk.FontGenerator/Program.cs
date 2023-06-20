@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Diagnostics;
 using System.IO.Compression;
+using System.Linq;
 using System.Numerics;
 using System.Reflection;
 
@@ -36,6 +37,8 @@ public class Program
         MsdfGen(pathToTtf, intermediateImageOut, intermediateMetadataOut);
 
         var metadata = JsonConvert.DeserializeObject<MsdfGenFont>(File.ReadAllText(intermediateMetadataOut)) ?? throw new Exception("Exported metadata does not exist...");
+
+        AddLegacyKernings(pathToTtf, metadata);
 
         using var archiveStream = new FileStream(finalOut, FileMode.Create, FileAccess.Write);
         using var archive = new ZipArchive(archiveStream, ZipArchiveMode.Create, false);
@@ -97,7 +100,8 @@ public class Program
         var execDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!;
         var processPath = Path.Combine(execDir, "msdf-atlas-gen");
         var charsetPath = Path.Combine(execDir, "charset.txt");
-        process.StartInfo = new ProcessStartInfo(processPath, $"-font \"{pathToTtf}\" -size {FontSize} -charset \"{charsetPath}\" -format png -pots -imageout \"{intermediateImageOut}\" -json \"{intermediateMetadataOut}\"")
+        process.StartInfo = new ProcessStartInfo(processPath,
+            $"-font \"{pathToTtf}\" -size {FontSize} -charset \"{charsetPath}\" -format png -pots -imageout \"{intermediateImageOut}\" -json \"{intermediateMetadataOut}\"")
         {
             RedirectStandardOutput = true,
             RedirectStandardError = true
@@ -105,8 +109,52 @@ public class Program
         Console.WriteLine("Starting msdf-atlas-gen...");
         process.Start();
         process.WaitForExit();
+        while (!process.StandardError.EndOfStream)
+            Console.WriteLine(process.StandardError.ReadLine());
         while (!process.StandardOutput.EndOfStream)
             Console.WriteLine(process.StandardOutput.ReadLine());
+        Console.WriteLine("msdf-atlas-gen complete");
+    }
+
+    private static void AddLegacyKernings(string ttfPath, MsdfGenFont msdfGenFont)
+    {
+        using var process = new Process();
+        var execDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!;
+        var processPath = Path.Combine(execDir, "ConvertGpos/", "index.js");
+        process.StartInfo = new ProcessStartInfo("node", processPath + " " + ttfPath)
+        {
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            WorkingDirectory = Path.GetDirectoryName(processPath)
+        };
+        Console.WriteLine("Starting ConvertGpos...");
+        process.ErrorDataReceived += (o, e) =>
+        {
+            throw new Exception(e.Data);
+        };
+        process.Start();
+        process.WaitForExit();
+
+        Console.WriteLine(process.StandardError.ReadToEnd());
+        Console.WriteLine(process.StandardOutput.ReadToEnd());
+
+        var kerningIntermediate = Path.Combine(execDir, "ConvertGpos/", "kerning_intermediate.json");
+
+        var json = File.ReadAllText(kerningIntermediate);
+        File.Delete(kerningIntermediate);
+        var arr = JsonConvert.DeserializeObject<MsdfKerning[]>(json);
+        if (arr == null)
+            return;
+
+        for (int i = 0; i < arr.Length; i++)
+            arr[i].Advance /= FontSize;
+
+        if (msdfGenFont.Kerning == null)
+            msdfGenFont.Kerning = arr;
+        else
+            msdfGenFont.Kerning = arr.Concat(msdfGenFont.Kerning).Distinct().ToArray();
+
+        Console.WriteLine("ConvertGpos complete");
     }
 
     // all of these are here for the deserialisation of the metadata that msdf-atlas-gen outputs.

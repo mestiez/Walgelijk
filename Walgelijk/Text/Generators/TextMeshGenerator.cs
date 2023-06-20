@@ -168,7 +168,7 @@ public class TextMeshGenerator
             //    -glyph.YOffset - (line * Font.LineHeight * LineHeightMultiplier), 
             //    0);
             glyphCountWithoutTags++;
-            cursor += glyph.Advance * TrackingMultiplier;
+            cursor += glyph.Advance * TrackingMultiplier + kerning.Amount * KerningMultiplier;
             lastChar = c;
         }
 
@@ -277,11 +277,12 @@ public class TextMeshGenerator
                     if (ce.CharIndex == i)
                         colorToSet = ce.Colour * Color;
 
+            //Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
+            Kerning kerning = i == displayString.Length - 1 ? default : Font.GetKerning(c, displayString[i+1]);
             if (!char.IsWhiteSpace(c))
             {
-                Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
                 var pos = new Vector3(
-                    rawCursor.X + kerning.Amount * KerningMultiplier + glyph.GeometryRect.MinX,
+                    rawCursor.X + glyph.GeometryRect.MinX,
                     rawCursor.Y - glyph.GeometryRect.MaxY,
                     0);
 
@@ -309,7 +310,7 @@ public class TextMeshGenerator
                 vertexIndex += 4;
                 indexIndex += 6;
             }
-            cursor += glyph.Advance * TrackingMultiplier;
+            cursor += glyph.Advance * TrackingMultiplier + kerning.Amount * KerningMultiplier;
 
             lastChar = c;
         }

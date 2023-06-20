@@ -305,7 +305,7 @@ public class Navigator
             return;
 
         if (sortedByDepthRaw!.Length <= index + 1)
-            Array.Resize(ref sortedByDepthRaw, index + 10);
+            Array.Resize(ref sortedByDepthRaw, index + 32);
 
         if (node.AlwaysOnTop)
             alwaysOnTopCounter++;
@@ -314,6 +314,10 @@ public class Navigator
         foreach (var child in node.GetChildren().OrderByDescending(static s => s.RequestedLocalOrder))
             RecurseNodeOrder(child, ref index, ref treeDepth);
         treeDepth--;
+
+        // resize again because it mightve increased again
+        if (sortedByDepthRaw!.Length <= index + 1)
+            Array.Resize(ref sortedByDepthRaw, index + 32);
 
         sortedByDepthRaw![index] = new SortedNode(node.Identity, index, alwaysOnTopCounter > 0);
         index++;
