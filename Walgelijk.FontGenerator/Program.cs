@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Numerics;
+using System.Reflection;
 
 namespace Walgelijk.FontGenerator;
 
@@ -17,7 +18,7 @@ public class Program
         if (!args[0].EndsWith(".ttf"))
             throw new Exception("Input is not a ttf file because it doesn't end with .ttf");
 
-        var pathToTtf = args[0];
+        var pathToTtf = Path.GetFullPath(args[0]);
         var fontName = Path.GetFileNameWithoutExtension(pathToTtf).Replace(' ', '_');
 
         foreach (var invalid in Path.GetInvalidFileNameChars().Append('_'))
@@ -25,8 +26,8 @@ public class Program
 
         const string intermediatePrefix = "wf-intermediate-";
 
-        var intermediateImageOut = $"{intermediatePrefix}{fontName}.png";
-        var intermediateMetadataOut = $"{intermediatePrefix}{fontName}.json";
+        var intermediateImageOut = Path.GetFullPath($"{intermediatePrefix}{fontName}.png");
+        var intermediateMetadataOut = Path.GetFullPath($"{intermediatePrefix}{fontName}.json");
         var finalOut = new FileInfo(pathToTtf).DirectoryName + Path.DirectorySeparatorChar + fontName + ".wf";
 
         var packageImageName = "atlas.png";
@@ -93,7 +94,10 @@ public class Program
     private static void MsdfGen(string pathToTtf, string intermediateImageOut, string intermediateMetadataOut)
     {
         using var process = new Process();
-        process.StartInfo = new ProcessStartInfo("msdf-atlas-gen", $"-font \"{pathToTtf}\" -size {FontSize} -charset charset.txt -format png -pots -imageout \"{intermediateImageOut}\" -json \"{intermediateMetadataOut}\"")
+        var execDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!;
+        var processPath = Path.Combine(execDir, "msdf-atlas-gen");
+        var charsetPath = Path.Combine(execDir, "charset.txt");
+        process.StartInfo = new ProcessStartInfo(processPath, $"-font \"{pathToTtf}\" -size {FontSize} -charset \"{charsetPath}\" -format png -pots -imageout \"{intermediateImageOut}\" -json \"{intermediateMetadataOut}\"")
         {
             RedirectStandardOutput = true,
             RedirectStandardError = true
