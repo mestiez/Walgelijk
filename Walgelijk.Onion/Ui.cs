@@ -99,11 +99,42 @@ public static partial class Ui
         }
     }
 
+    /// <summary>
+    /// Adds the specified animation to the animation queue.
+    /// </summary>
     public static AnimationQueue Animate(in IAnimation anim) { Onion.Animation.Add(anim); return Onion.Animation; }
+
+    /// <summary>
+    /// Adds the specified decorator to the decorator queue.
+    /// </summary>
     public static DecoratorQueue Decorate(in IDecorator dec) { Onion.Decorators.Add(dec); return Onion.Decorators; }
 
+    /// <summary>
+    /// Provides access to the layout queue.
+    /// </summary>
     public static LayoutQueue Layout => Onion.Layout;
+
+    /// <summary>
+    /// Provides access to the animation queue.
+    /// </summary>
     public static AnimationQueue Animation => Onion.Animation;
+
+    /// <summary>
+    /// Provides access to the decorator queue.
+    /// </summary>
     public static DecoratorQueue Decorators => Onion.Decorators;
+
+    /// <summary>
+    /// Provides access to the theme stack.
+    /// </summary>
     public static ThemeStack Theme => Onion.Theme;
+
+    /// <summary>
+    /// Provides access to the global scale value.
+    /// </summary>
+    public static float GlobalScale
+    {
+        get => Onion.GlobalScale;
+        set => Onion.GlobalScale = value;
+    }
 }

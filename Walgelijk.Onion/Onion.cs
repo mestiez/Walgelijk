@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json.Linq;
-using System;
 using System.Reflection;
 using Walgelijk.Onion.Animations;
 using Walgelijk.Onion.Assets;
@@ -26,6 +25,7 @@ public static class Onion
     public static Sound? TriggerSound;
     public static Sound? FocusSound;
 
+    public static float GlobalScale = 1;
     public static readonly HoldTicker HoldTicker = new();
 
     public static bool Initialised { get; private set; }
