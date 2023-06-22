@@ -1,8 +1,9 @@
 const fontkit = require('fontkit');
 const fs = require('fs');
 
-const charset = "!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\`abcdefghijklmnopqrstuvwxyz{|}~ ��������������������\����������������������������������������������������������������������������";
+const charset = " !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_\`abcdefghijklmnopqrstuvwxyz{|}~ ��������������������\����������������������������������������������������������������������������";
 const font = fontkit.openSync(process.argv[2]);
+//const charset = font.characterSet.map(n => String.fromCodePoint(n));
 
 let kernings = [];
 
@@ -11,7 +12,7 @@ for (var b = 0; b < charset.length; b++)
         getKerning(charset[a], charset[b]);
     }
 
-fs.writeFileSync('kerning_intermediate.json', JSON.stringify(kernings))
+fs.writeFileSync(process.argv[3], JSON.stringify(kernings), { encoding: 'utf8', })
 
 function getKerning(left, right) {
 

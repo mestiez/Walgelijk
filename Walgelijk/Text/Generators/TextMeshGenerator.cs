@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Walgelijk.BmFont;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Walgelijk;
 
@@ -76,7 +77,6 @@ public class TextMeshGenerator
     {
         float pos = 0;
         int tagStack = 0;
-        char lastChar = default;
 
         for (int i = 0; i < text.Length; i++)
         {
@@ -100,10 +100,9 @@ public class TextMeshGenerator
                 continue;
 
             var glyph = Font.GetGlyph(c);
-            Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
-            lastChar = c;
+            Kerning kerning = i == text.Length - 1 ? default : Font.GetKerning(c, text[i + 1]);
 
-            pos += glyph.Advance * TrackingMultiplier + kerning.Amount * KerningMultiplier;
+            pos += (glyph.Advance + (kerning.Amount) * KerningMultiplier) * TrackingMultiplier;
         }
         return pos;
     }
@@ -114,10 +113,8 @@ public class TextMeshGenerator
     public float CalculateTextHeight(ReadOnlySpan<char> displayString)
     {
         float cursor = 0;
-        char lastChar = default;
         int line = 0;
         int glyphCountWithoutTags = 0;
-        int lastLineLetterStartIndex = 0;
         for (int i = 0; i < displayString.Length; i++)
         {
             var c = displayString[i];
@@ -139,7 +136,7 @@ public class TextMeshGenerator
                     continue;
                 case '\n':
                     if (Multiline)
-                        startNewLine(i, displayString);
+                        startNewLine();
                     continue;
             }
 
@@ -151,38 +148,31 @@ public class TextMeshGenerator
                 var cursorPosUntilNextWord = cursor + CalculateTextWidth(GetTextUntilWhitespace(displayString[i..]));
                 if (cursorPosUntilNextWord > WrappingWidth)
                 {
-                    startNewLine(i, displayString);
+                    startNewLine();
                     continue;
                 }
             }
             else if (cursor > WrappingWidth)
             {
-                startNewLine(i, displayString);
+                startNewLine();
                 //continue;
             }
 
             var glyph = Font.GetGlyph(c);
-            Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
-            //var pos = new Vector3(
-            //    cursor + glyph.XOffset + kerning.Amount * KerningMultiplier, 
-            //    -glyph.YOffset - (line * Font.LineHeight * LineHeightMultiplier), 
-            //    0);
+            Kerning kerning = i == displayString.Length - 1 ? default : Font.GetKerning(c, displayString[i + 1]);
             glyphCountWithoutTags++;
-            cursor += glyph.Advance * TrackingMultiplier + kerning.Amount * KerningMultiplier;
-            lastChar = c;
+            cursor += (glyph.Advance + (kerning.Amount) * KerningMultiplier) * TrackingMultiplier;
         }
 
         if (displayString.Length > 1)
-            startNewLine(displayString.Length, displayString);
+            startNewLine();
 
         return Math.Max(0, line) * Font.LineHeight * LineHeightMultiplier;
 
-        void startNewLine(int i, ReadOnlySpan<char> str)
+        void startNewLine()
         {
             line++;
             cursor = 0;
-            lastLineLetterStartIndex = i + 1;
-            lastChar = default;
         }
     }
 
@@ -210,7 +200,6 @@ public class TextMeshGenerator
 
         uint vertexIndex = 0;
         uint indexIndex = 0;
-        char lastChar = default;
         int line = 0;
 
         var colorToSet = Color;
@@ -277,8 +266,6 @@ public class TextMeshGenerator
                     if (ce.CharIndex == i)
                         colorToSet = ce.Colour * Color;
 
-            //Kerning kerning = i == 0 ? default : Font.GetKerning(lastChar, c);
-            Kerning kerning = i == displayString.Length - 1 ? default : Font.GetKerning(c, displayString[i+1]);
             if (!char.IsWhiteSpace(c))
             {
                 var pos = new Vector3(
@@ -310,9 +297,8 @@ public class TextMeshGenerator
                 vertexIndex += 4;
                 indexIndex += 6;
             }
-            cursor += glyph.Advance * TrackingMultiplier + kerning.Amount * KerningMultiplier;
-
-            lastChar = c;
+            Kerning kerning = i == displayString.Length - 1 ? default : Font.GetKerning(c, displayString[i + 1]);
+            cursor += (glyph.Advance + (kerning.Amount) * KerningMultiplier) * TrackingMultiplier;
         }
 
         if (displayString.Length > 0)
@@ -431,7 +417,6 @@ public class TextMeshGenerator
             cursor = 0;
             lastLineLetterStartIndex = i + 1;
             vertexCountSinceNewLine = 0;
-            lastChar = default;
         }
     }
 

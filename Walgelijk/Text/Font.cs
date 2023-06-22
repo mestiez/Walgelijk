@@ -68,11 +68,11 @@ public class Font
     /// <summary>
     /// Get kerning for two characters
     /// </summary>
-    public Kerning GetKerning(char previous, char current)
+    public Kerning GetKerning(char current, char next)
     {
         if (Kernings == null || Kernings.Count == 0)
             return default;
-        if (Kernings.TryGetValue(new KerningPair { CurrentChar = current, PreviousChar = previous }, out var kerning))
+        if (Kernings.TryGetValue(new KerningPair { Current = current, Next = next }, out var kerning))
             return kerning;
         return default;
     }

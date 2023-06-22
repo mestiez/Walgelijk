@@ -115,17 +115,21 @@ public class Program
             Console.WriteLine(process.StandardOutput.ReadLine());
         Console.WriteLine("msdf-atlas-gen complete");
     }
-
+            
     private static void AddLegacyKernings(string ttfPath, MsdfGenFont msdfGenFont)
     {
         using var process = new Process();
         var execDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!;
-        var processPath = Path.Combine(execDir, "ConvertGpos/", "index.js");
-        process.StartInfo = new ProcessStartInfo("node", processPath + " " + ttfPath)
+        var processPath = Path.Combine(execDir, "ConvertGpos/");
+        var intermediatePath = Path.GetFullPath("kerning_intermediate.json");
+        process.StartInfo = new ProcessStartInfo("cmd")
         {
             RedirectStandardOutput = true,
             RedirectStandardError = true,
-            WorkingDirectory = Path.GetDirectoryName(processPath)
+            RedirectStandardInput = true,
+            WindowStyle = ProcessWindowStyle.Normal,
+            CreateNoWindow = false,
+            WorkingDirectory = processPath
         };
         Console.WriteLine("Starting ConvertGpos...");
         process.ErrorDataReceived += (o, e) =>
@@ -133,21 +137,19 @@ public class Program
             throw new Exception(e.Data);
         };
         process.Start();
+        process.StandardInput.WriteLine($"npm run getKerning \"{ttfPath}\" \"{intermediatePath}\" & exit");
         process.WaitForExit();
 
         Console.WriteLine(process.StandardError.ReadToEnd());
         Console.WriteLine(process.StandardOutput.ReadToEnd());
 
-        var kerningIntermediate = Path.Combine(execDir, "ConvertGpos/", "kerning_intermediate.json");
-
-        var json = File.ReadAllText(kerningIntermediate);
-        File.Delete(kerningIntermediate);
+        var json = File.ReadAllText(intermediatePath);
         var arr = JsonConvert.DeserializeObject<MsdfKerning[]>(json);
         if (arr == null)
             return;
 
         for (int i = 0; i < arr.Length; i++)
-            arr[i].Advance /= FontSize;
+            arr[i].Advance *= FontSize;
 
         if (msdfGenFont.Kerning == null)
             msdfGenFont.Kerning = arr;
@@ -155,6 +157,7 @@ public class Program
             msdfGenFont.Kerning = arr.Concat(msdfGenFont.Kerning).Distinct().ToArray();
 
         Console.WriteLine("ConvertGpos complete");
+        File.Delete(intermediatePath);
     }
 
     // all of these are here for the deserialisation of the metadata that msdf-atlas-gen outputs.

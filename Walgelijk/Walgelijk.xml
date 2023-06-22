@@ -6158,12 +6158,12 @@
             The two characters a kerning amount applies to
             </summary>
         </member>
-        <member name="F:Walgelijk.KerningPair.PreviousChar">
+        <member name="F:Walgelijk.KerningPair.Current">
             <summary>
             Previous character in the sequence
             </summary>
         </member>
-        <member name="F:Walgelijk.KerningPair.CurrentChar">
+        <member name="F:Walgelijk.KerningPair.Next">
             <summary>
             Current character in the sequence
             </summary>

@@ -8,7 +8,7 @@
 		<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
 		<PackAsTool>True</PackAsTool>
 		<ToolCommandName>wfont</ToolCommandName>
-		<Version>1.0.9</Version>
+		<Version>1.0.13</Version>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -28,11 +28,13 @@
 		<None Include="$(ProjectDir)ConvertGpos\**" CopyToOutputDirectory="Always" />
 	</ItemGroup>
 	<ItemGroup>
+	  <None Include="C:\Projects\Walgelijk\Walgelijk.FontGenerator\pt-serif_regular.ttf">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+	<ItemGroup>
 		<None Update="charset.txt">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="ConvertGpos\old.js">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="msdf-atlas-gen.exe">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>

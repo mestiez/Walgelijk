@@ -92,7 +92,7 @@ internal static class BmFontReader
             kerning.SecondChar = (char)GetIntFrom("second", line);
             kerning.Amount = GetIntFrom("amount", line);
 
-            font.Kernings.Add(new KerningPair { CurrentChar = kerning.FirstChar, PreviousChar = kerning.SecondChar }, kerning);
+            font.Kernings.Add(new KerningPair { Next = kerning.FirstChar, Current = kerning.SecondChar }, kerning);
         }
     }
 

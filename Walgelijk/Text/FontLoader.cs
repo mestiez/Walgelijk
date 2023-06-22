@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Walgelijk.BmFont;
@@ -25,8 +27,8 @@ public static class FontLoader
                     {
                         Name = format.Name,
                         Page = format.Atlas,
-                        Kernings = format.Kernings.ToDictionary(static a => new KerningPair(a.FirstChar, a.SecondChar)),
-                        Glyphs = format.Glyphs.ToDictionary(static g => g.Character),
+                        Kernings = format.Kernings.Distinct(new KerningComparer()).ToDictionary(static a => new KerningPair(a.FirstChar, a.SecondChar)),
+                        Glyphs = format.Glyphs.Distinct().ToDictionary(static g => g.Character),
                         Rendering = FontRendering.MSDF,
                         XHeight = (int)format.XHeight,
                         LineHeight = (int)format.LineHeight,
@@ -36,6 +38,19 @@ public static class FontLoader
                 }
             default:
                 throw new Exception("Could not detect format for given font file: " + path);
+        }
+    }
+
+    private class KerningComparer : IEqualityComparer<Kerning>
+    {
+        public bool Equals(Kerning x, Kerning y)
+        {
+            return (x.FirstChar == y.FirstChar) && (y.SecondChar == x.SecondChar);
+        }
+
+        public int GetHashCode([DisallowNull] Kerning obj)
+        {
+            return HashCode.Combine(obj.FirstChar, obj.SecondChar);
         }
     }
 }
