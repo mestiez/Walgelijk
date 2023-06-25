@@ -42,12 +42,15 @@ public readonly struct Label : IControl
 
         var t = node.GetAnimationTime();
         var anim = instance.Animations;
-
         instance.Rects.Rendered = instance.Rects.ComputedGlobal;
+
+        if (!anim.ShouldRenderText(t))
+            return;
 
         Draw.Font = p.Theme.Font;
         Draw.Colour = p.Theme.Text[p.Instance.State];
         anim.AnimateColour(ref Draw.Colour, t);
+        anim.AnimateAlpha(ref Draw.Colour.A, t);
 
         Vector2 pivot = instance.Rects.Rendered.GetCenter();
 

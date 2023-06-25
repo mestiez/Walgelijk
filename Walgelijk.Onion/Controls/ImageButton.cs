@@ -68,7 +68,7 @@ public readonly struct ImageButton : IControl
 
         Draw.ResetMaterial();
         Draw.Colour = p.Theme.Image[instance.State].WithAlpha(Draw.Colour.A);
-        Draw.Image(Texture, instance.Rects.Rendered.Scale(0.9f), ContainmentMode, 0, p.Theme.Rounding);
+        Draw.Image(Texture, instance.Rects.Rendered, ContainmentMode, 0, p.Theme.Rounding);
         Draw.ResetTexture();
     }
 

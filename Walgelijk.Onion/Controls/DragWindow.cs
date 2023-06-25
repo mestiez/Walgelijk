@@ -110,7 +110,7 @@ public readonly struct DragWindow : IControl
         var oldBounds = Draw.DrawBounds;
         Draw.DrawBounds = new DrawBounds(instance.Rects.ComputedDrawBounds with { MaxX = instance.Rects.ComputedDrawBounds.MaxX - p.Theme.Padding - titleBarHeight });
         Draw.Text(
-            instance.Name, instance.Rects.Rendered.BottomLeft + new Vector2(p.Theme.Padding, 0.5f * titleBarHeight),
+            instance.Name, instance.Rects.Rendered.BottomLeft + new Vector2(p.Theme.Padding, p.Theme.Padding + 0.5f * titleBarHeight),
             Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Middle);
         Draw.DrawBounds = oldBounds;
 

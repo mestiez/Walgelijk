@@ -9,6 +9,11 @@ public class OnionSystem : Walgelijk.System
 {
     public UiDebugOverlay DebugOverlay = UiDebugOverlay.None;
 
+    public OnionSystem()
+    {
+        ExecutionOrder = -1;
+    }
+
     public override void Update()
     {
         if (!Onion.Initialised)
