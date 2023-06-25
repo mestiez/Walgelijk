@@ -59,7 +59,7 @@ public readonly struct Tooltip : IDecorator
         var appearance = p.Theme.Background[ControlState.None];
         var rect = new Rect(0, rectHeight, rectWidth, 0).Translate(
             rightPivot ? point.X - rectWidth : point.X,
-            bottomPivot ? point.Y - rectHeight: point.Y);
+            bottomPivot ? point.Y - rectHeight: point.Y).SortComponents();
 
         Draw.ResetDrawBounds();
         Draw.Order = Draw.Order.WithOrder(int.MaxValue);
@@ -72,6 +72,6 @@ public readonly struct Tooltip : IDecorator
         Draw.OutlineWidth = 0;
 
         Draw.Colour = p.Theme.Text[ControlState.None];
-        Draw.Text(Message, rect.TopLeft + new Vector2(padding), Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Top, rectWidth - padding * 2);
+        Draw.Text(Message, (rect.BottomLeft + rect.TopLeft) / 2 + new Vector2(padding, 0), Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Middle, rectWidth - padding * 2);
     }
 }
