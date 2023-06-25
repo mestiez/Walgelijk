@@ -94,12 +94,15 @@ public class FontFormat
         zip.Dispose();
         file.Dispose();
 
+        var texture = TextureLoader.FromBytes(atlas);
+        texture.FilterMode = FilterMode.Linear;
+
         return new FontFormat(
                 metadata.Name,
                 metadata.Size,
                 metadata.XHeight,
                 metadata.LineHeight,
-                TextureLoader.FromBytes(atlas),
+                texture,
                 metadata.Kernings,
                 metadata.Glyphs,
                 metadata.Style);

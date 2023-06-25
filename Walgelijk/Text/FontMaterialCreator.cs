@@ -8,9 +8,9 @@ namespace Walgelijk;
 /// </summary>
 public static class FontMaterialCreator
 {
-    public static readonly Shader BitmapShader = new Shader(ShaderDefaults.WorldSpaceVertex, BitmapFragmentShader);
-    public static readonly Shader SdfShader = new Shader(ShaderDefaults.WorldSpaceVertex, SdfFragmentShader);
-    public static readonly Shader MsdfShader = new Shader(ShaderDefaults.WorldSpaceVertex, MsdfFragmentShader);
+    public static readonly Shader BitmapShader = new(ShaderDefaults.WorldSpaceVertex, BitmapFragmentShader);
+    public static readonly Shader SdfShader = new(ShaderDefaults.WorldSpaceVertex, SdfFragmentShader);
+    public static readonly Shader MsdfShader = new(ShaderDefaults.WorldSpaceVertex, MsdfFragmentShader);
 
     /// <summary>
     /// Create a material for a given font
@@ -66,8 +66,6 @@ public static class FontMaterialCreator
 
         //TODO meer pages
         mat.SetUniform("mainTex", page);
-        mat.SetUniform("thickness", 0.5f);
-        mat.SetUniform("softness", 8f);
         mat.SetUniform("tint", Colors.White);
         return mat;
     }
@@ -124,7 +122,6 @@ in vec4 vertexColor;
 out vec4 color;
 
 uniform sampler2D mainTex;
-uniform float softness;
 uniform vec4 tint;
 uniform float pxRange = 2;
 

@@ -187,4 +187,10 @@ public abstract class Window
     /// Set the window icon
     /// </summary>
     public abstract void SetIcon(IReadableTexture texture, bool flipY = true);
+
+    /// <summary>
+    /// The bounds of the window in world space. 
+    /// E.g <see cref="WorldBounds.MinX"/> represents the leftmost world space X coordinate still visible in the window
+    /// </summary>
+    public Rect WorldBounds;
 }

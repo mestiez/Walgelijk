@@ -36,7 +36,7 @@ public class Program
         Resources.SetBasePathForType<Font>("fonts");
 
         // Here we create a scene and add some systems to it. Scenes contain entities, components, and systems.
-        // Entities are the binding between different components, components contain data, systems manipulate components.
+        // Entities are the binding between different components; components contain data; systems manipulate components.
         var scene = Game.Scene = new Scene(Game);
         scene.AddSystem(new CameraSystem());
         scene.AddSystem(new TransformSystem());
@@ -46,11 +46,11 @@ public class Program
         var camera = scene.CreateEntity();
         scene.AttachComponent(camera, new TransformComponent()); // Cameras need transform components, they have information about position, scale, and rotation
         scene.AttachComponent(camera, new CameraComponent() // Cameras also need the camera component. The have information about zoom, clear colour, etc.
-            {
-                PixelsPerUnit = 1, // One pixel per in-game unit. For example, an object being at (10, 0, 0) means it's 10 "units" from the world origin. Pixels per unit determines how many pixels represent a single unit.
-                OrthographicSize = 1, // The "zoom" of the camera. This is independent from PixelsPerUnit, but it essentially does the same thing. The larger this value, the further it is zoomed out.
-                ClearColour = new Color("#2c2436") // The background colour of the world
-            }
+        {
+            PixelsPerUnit = 1, // One pixel per in-game unit. For example, an object being at (10, 0, 0) means it's 10 "units" from the world origin. Pixels per unit determines how many pixels represent a single unit.
+            OrthographicSize = 1, // The "zoom" of the camera. This is independent from PixelsPerUnit, but it essentially does the same thing. The larger this value, the further it is zoomed out.
+            ClearColour = new Color("#ff0061") // The background colour of the world
+        }
         );
 
         // Create our example thing
@@ -73,46 +73,45 @@ public class Program
 
         Game.Start();
     }
+}
 
-    // Example component for the example scene
-    public class ExampleComponent : Walgelijk.Component
+// Example component for the example scene
+public class ExampleComponent : Walgelijk.Component
+{
+    public Vector2 Position;
+    public float Speed = 5;
+}
+
+// Example system for the example scene
+public class ExampleSystem : Walgelijk.System
+{
+    public override void FixedUpdate()
     {
-        public Vector2 Position;
-        public float Speed = 5;
+        foreach (var inst in Scene.GetAllComponentsOfType<ExampleComponent>())
+        {
+            // Query for user input
+            if (Input.IsKeyHeld(Key.A))
+                inst.Position.X -= inst.Speed;
+            if (Input.IsKeyHeld(Key.D))
+                inst.Position.X += inst.Speed;
+            if (Input.IsKeyHeld(Key.W))
+                inst.Position.Y += inst.Speed;
+            if (Input.IsKeyHeld(Key.S))
+                inst.Position.Y -= inst.Speed;
+        }
     }
 
-    // Example system for the example scene
-    public class ExampleSystem : Walgelijk.System
+    public override void Render()
     {
-        public override void FixedUpdate()
+        // Always good practice to reset the SimpleDraw state before 
+        Draw.Reset();
+        Draw.Font = Resources.Load<Font>("inter.wf");
+        Draw.Colour = Colors.White;
+        Draw.FontSize = 72;
+        foreach (var inst in Scene.GetAllComponentsOfType<ExampleComponent>())
         {
-            foreach (var inst in Scene.GetAllComponentsOfType<ExampleComponent>())
-            {
-                // Query for user input
-                if (Input.IsKeyHeld(Key.A))
-                    inst.Position.X -= inst.Speed;
-                if (Input.IsKeyHeld(Key.D))
-                    inst.Position.X += inst.Speed;
-                if (Input.IsKeyHeld(Key.W))
-                    inst.Position.Y += inst.Speed;
-                if (Input.IsKeyHeld(Key.S))
-                    inst.Position.Y -= inst.Speed;
-            }
-        }
-
-        public override void Render()
-        {
-            // Always good practice to reset the SimpleDraw state before 
-            Draw.Reset();
-            foreach (var inst in Scene.GetAllComponentsOfType<ExampleComponent>())
-            {
-                //Draw image for each instance of ExampleComponent
-                Draw.Image(
-                    Texture.ErrorTexture, // We will just use the error texture for now
-                    new Rect(inst.Position, new Vector2(48)), // Create a rectangle at center inst.Position with a size of (48,48)
-                    ImageContainmentMode.Stretch // Stretch the image over rectangle
-                    );
-            }
+            //Draw some text to show that everything is working properly
+            Draw.Text("Het werkt gewoon", inst.Position, Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle);
         }
     }
 }

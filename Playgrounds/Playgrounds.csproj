@@ -5,7 +5,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>1.0.26</Version>
+    <Version>1.0.28</Version>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Walgelijk.Imgui\Walgelijk.Imgui.csproj" />
@@ -21,5 +21,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="resources\fonts\roboto mono.fnt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\fonts\roboto mono.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

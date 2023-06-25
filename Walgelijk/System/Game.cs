@@ -195,12 +195,12 @@ public class Game
 
                 State.Time.FixedInterval = (float)fixedUpdateInterval;
                 State.Time.Interpolation = (float)(accumulator / fixedUpdateInterval);
-                //State.Time.Interpolation = (float)((fixedUpdateClock % fixedUpdateInterval) / fixedUpdateInterval);
 
                 Scene?.UpdateSystems();
             }
 
             Compositor.Render(Window.RenderQueue);
+            SetWindowWorldBounds();
             Window.LoopCycle();
 
             if (!Window.IsOpen)
@@ -208,10 +208,8 @@ public class Game
 
             if (UpdateRate != 0)
             {
-                //var timeToSleep = TimeSpan.FromSeconds(1d / UpdateRate - clock.Elapsed.TotalSeconds);
                 var expected = TimeSpan.FromSeconds(1d / UpdateRate);
                 var msToSleep = expected.TotalMilliseconds - clock.Elapsed.TotalMilliseconds;
-                //Logger.Debug($"TTS: {timeToSleep.TotalSeconds} s because we need to wait {1d/UpdateRate} s and the frame took {elapsed.TotalSeconds} s.");
                 if (msToSleep > 1)
                     Thread.Sleep((int)msToSleep / 2); //Waarom deel ik door twee?
                 while (clock.Elapsed < expected)
@@ -219,7 +217,6 @@ public class Game
             }
 
             dt = clock.Elapsed.TotalSeconds;
-            //Logger.Debug($"Frame duration: {dt} s.");
             clock.Restart();
         }
         Stop();
@@ -227,6 +224,13 @@ public class Game
         clock.Stop();
         Window.Deinitialise();
         Scene?.Dispose();
+    }
+
+    private void SetWindowWorldBounds()
+    {
+        var topLeft = Window.WindowToWorldPoint(default);
+        var bottomRight = Window.WindowToWorldPoint(Window.Size);
+        Window.WorldBounds = new Rect(topLeft.X, topLeft.Y, bottomRight.X, bottomRight.Y).SortComponents();
     }
 
     /// <summary>
