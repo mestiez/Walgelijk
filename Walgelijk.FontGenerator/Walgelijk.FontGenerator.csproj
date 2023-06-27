@@ -1,55 +1,55 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
-    <PackAsTool>True</PackAsTool>
-    <ToolCommandName>wfont</ToolCommandName>
-    <Version>1.1.3</Version>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <PackageIcon>icon.png</PackageIcon>
-    <Description>Tool to turn font files into archives that can be read by Walgelijk</Description>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>embedded</DebugType>
-    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>embedded</DebugType>
-    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <Target Name="PostBuild" Condition="'$(Configuration)'=='Release'" AfterTargets="PostBuildEvent">
-    <Exec Command="dotnet pack -c Release --no-restore --no-build --output &quot;$(SolutionDir)OutputPackages&quot;" />
-  </Target>
-  <ItemGroup>
-    <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <None Include="pt-serif_regular.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="charset.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="icon.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Update="msdf-atlas-gen.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ConvertGpos\index.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="ConvertGpos\package.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
+		<PackAsTool>True</PackAsTool>
+		<ToolCommandName>wfont</ToolCommandName>
+		<Version>1.1.4</Version>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageIcon>icon.png</PackageIcon>
+		<Description>Tool to turn font files into archives that can be read by Walgelijk</Description>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DebugType>embedded</DebugType>
+		<GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+		<TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DebugType>embedded</DebugType>
+		<GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+		<TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+	</PropertyGroup>
+	<Target Name="PostBuild" Condition="'$(Configuration)'=='Release'" AfterTargets="PostBuildEvent">
+		<Exec Command="dotnet pack -c Release --no-restore --no-build --output &quot;$(SolutionDir)OutputPackages&quot;" />
+	</Target>
+	<ItemGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<None Include="pt-serif_regular.ttf">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="charset.txt">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="icon.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Update="msdf-atlas-gen.exe">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="ConvertGpos\index.js">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="ConvertGpos\package.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 </Project>
