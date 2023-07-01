@@ -37,7 +37,7 @@ public readonly struct Resizable : IConstraint
         None = 0b_00,
         Horizontal = 0b_01,
         Vertical = 0b_10,
-        Both = 0b_11,
+        Both = Horizontal | Vertical,
     }
 
     public void Apply(in ControlParams p)

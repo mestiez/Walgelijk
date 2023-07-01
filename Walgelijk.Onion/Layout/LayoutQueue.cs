@@ -11,12 +11,20 @@ public class LayoutQueue
     public readonly Queue<IConstraint> Constraints = new();
 
     /// <summary>
+    /// Constraints applied to every control
+    /// </summary>
+    public readonly List<IConstraint> DefaultConstraints = new();
+
+    /// <summary>
     /// Layout for the next object's children
     /// </summary>
     public readonly Queue<ILayout> Layouts = new();
 
     public void Apply(in ControlParams p)
     {
+        foreach (var c in DefaultConstraints)
+            c.Apply(p);    
+        
         while (Constraints.TryDequeue(out var c))
             c.Apply(p);
 
@@ -136,6 +144,26 @@ public class LayoutQueue
     /// Set the local order within its parent
     /// </summary>
     public LayoutQueue Order(int order) => EnqueueConstraint(new Order(order));
+
+    /// <summary>
+    /// Set the maximum width
+    /// </summary>
+    public LayoutQueue MaxWidth(float maxWidth) => EnqueueConstraint(new MaxSize(maxWidth, null));
+
+    /// <summary>
+    /// Set the maximum height
+    /// </summary>
+    public LayoutQueue MaxHeight(float maxHeight) => EnqueueConstraint(new MaxSize(null, maxHeight));
+
+    /// <summary>
+    /// Set the maximum size
+    /// </summary>
+    public LayoutQueue MaxSize(float maxWidth, float maxHeight) => EnqueueConstraint(new MaxSize(maxWidth, maxHeight));
+
+    /// <summary>
+    /// Set the size to fit the size of its children
+    /// </summary>
+    public LayoutQueue FitContent() => EnqueueConstraint(new FitContent(true, true));
 
     /// <summary>
     /// Stretch to fit the container.
