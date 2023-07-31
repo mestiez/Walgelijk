@@ -12,7 +12,7 @@ public readonly struct Checkbox : IControl
 
     public static ControlState Start(ref bool value, string? label = null, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Checkbox).GetHashCode(), identity, site), new Checkbox());
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(Checkbox).GetHashCode(), identity, site), new Checkbox());
         instance.RenderFocusBox = false;
         instance.Name = label ?? string.Empty;
         Onion.Tree.End();

@@ -52,7 +52,7 @@ public readonly struct Dropdown<T> : IControl
 
     public static bool Start<ValueType>(IList<ValueType> values, ref int selectedIndex, bool arrow = true, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Dropdown<ValueType>).GetHashCode(), identity, site), new Dropdown<ValueType>(values, arrow));
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(Dropdown<ValueType>).GetHashCode(), identity, site), new Dropdown<ValueType>(values, arrow));
         bool result = false;
         var dropdownRect = new Rect();
         if (currentStates.TryGetValue(instance.Identity, out var currentState))

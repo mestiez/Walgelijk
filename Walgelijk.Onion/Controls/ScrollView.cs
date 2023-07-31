@@ -15,7 +15,7 @@ public readonly struct ScrollView : IControl
     [RequiresManualEnd]
     public static void Start(int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(ScrollView).GetHashCode(), identity, site), new ScrollView());
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(ScrollView).GetHashCode(), identity, site), new ScrollView());
     }
 
     public void OnAdd(in ControlParams p) { }

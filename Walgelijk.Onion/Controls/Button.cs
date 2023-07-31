@@ -14,7 +14,7 @@ public readonly struct Button : IControl
 
     private static ControlState CreateButton(string label, int identity = 0, int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Button).GetHashCode(), identity, site), new Button());
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(Button).GetHashCode(), identity, site), new Button());
         instance.RenderFocusBox = false;
         instance.Name = label;
         Onion.Tree.End();

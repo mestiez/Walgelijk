@@ -26,7 +26,7 @@ public readonly struct ImageButton : IControl
 
     private static ControlState CreateButton(IReadableTexture texture, ImageContainmentMode containmentMode, int identity = 0, int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(ImageButton).GetHashCode(), identity, site), new ImageButton(texture, containmentMode));
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(ImageButton).GetHashCode(), identity, site), new ImageButton(texture, containmentMode));
         instance.RenderFocusBox = false;
         Onion.Tree.End();
         return instance.State;

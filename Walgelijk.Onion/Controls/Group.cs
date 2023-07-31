@@ -15,7 +15,7 @@ public readonly struct Group : IControl
     [RequiresManualEnd]
     public static void Start(bool background = true, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Group).GetHashCode(), identity, site), new Group(background));
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(Group).GetHashCode(), identity, site), new Group(background));
     }
 
     public void OnAdd(in ControlParams p)

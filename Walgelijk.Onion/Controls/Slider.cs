@@ -23,7 +23,7 @@ public readonly struct Slider : IControl
 
     public static bool Float(ref float value, Direction dir, MinMax<float> range, float step = 0, string? label = null, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Slider).GetHashCode(), (int)dir, identity, site), new Slider(dir, range, step, label));
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(Slider).GetHashCode(), (int)dir, identity, site), new Slider(dir, range, step, label));
         instance.RenderFocusBox = false;
         Onion.Tree.End();
         var r = states.HasIncomingChange(instance.Identity);

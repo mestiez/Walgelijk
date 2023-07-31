@@ -155,7 +155,7 @@ void main()
 
     public static ControlState Create(ref Color value, bool editableAlpha = false, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(ColourPicker).GetHashCode(), identity, site), new ColourPicker(editableAlpha));
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(ColourPicker).GetHashCode(), identity, site), new ColourPicker(editableAlpha));
         instance.RenderFocusBox = false;
 
         Onion.Layout.Width(100).Height(32).StickRight().StickBottom();

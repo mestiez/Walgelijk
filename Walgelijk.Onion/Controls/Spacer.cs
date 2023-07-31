@@ -10,7 +10,7 @@ public readonly struct Spacer : IControl
     public static void Start(float width, float height, int identity = 0, [CallerLineNumber] int site = 0)
     {
         Onion.Layout.Size(width, height);
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Spacer).GetHashCode(), identity, site), new Spacer());
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(Spacer).GetHashCode(), identity, site), new Spacer());
         Onion.Tree.End();
     }
 
@@ -20,7 +20,7 @@ public readonly struct Spacer : IControl
     public static void Start(float size, int identity = 0, [CallerLineNumber] int site = 0)
     {
         Onion.Layout.Size(size, size);
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Spacer).GetHashCode(), identity, site), new Spacer());
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(Spacer).GetHashCode(), identity, site), new Spacer());
         Onion.Tree.End();
     }
 

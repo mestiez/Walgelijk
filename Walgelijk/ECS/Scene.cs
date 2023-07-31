@@ -127,6 +127,16 @@ public sealed class Scene : IDisposable
     }
 
     /// <summary>
+    /// Add an entity with a specific identity. Note that this might cause a collision
+    /// </summary>
+    /// <param name="entity"></param>
+    public void RegisterExistingEntity(Entity entity)
+    {
+        entities.Add(entity);
+        OnCreateEntity?.Invoke(entity);
+    }
+
+    /// <summary>
     /// Removes the entity from the list. Also removes all attached components. Any references to the entity will become useless as they will point to nothing. References to any attached components are not handled, so they may remain in memory.
     /// </summary>
     /// <param name="identity"></param>

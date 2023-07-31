@@ -16,7 +16,7 @@ public readonly struct Image : IControl
 
     public static void Start(IReadableTexture? texture, ImageContainmentMode containmentMode, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Image).GetHashCode(), identity, site), new Image(texture, containmentMode));
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(Image).GetHashCode(), identity, site), new Image(texture, containmentMode));
         Onion.Tree.End();
     }
 

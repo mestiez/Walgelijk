@@ -16,7 +16,7 @@ public readonly struct Label : IControl
     public static ControlState Create(string text, HorizontalTextAlign horizontal = HorizontalTextAlign.Left, int identity = 0, [CallerLineNumber] int site = 0)
     {
         Onion.Layout.PreferredSize();
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Label).GetHashCode(), identity, site), new Label(horizontal));
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(Label).GetHashCode(), identity, site), new Label(horizontal));
         instance.Name = text;
         Onion.Tree.End();
         return instance.State;

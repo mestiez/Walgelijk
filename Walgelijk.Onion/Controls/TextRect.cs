@@ -17,7 +17,7 @@ public readonly struct TextRect : IControl
 
     public static ControlState Create(string text, HorizontalTextAlign horizontal, VerticalTextAlign vertical, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(TextRect).GetHashCode(), identity, site), new TextRect(horizontal, vertical));
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(TextRect).GetHashCode(), identity, site), new TextRect(horizontal, vertical));
         instance.Name = text;
         Onion.Tree.End();
         return instance.State;

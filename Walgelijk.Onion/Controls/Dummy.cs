@@ -10,7 +10,7 @@ public readonly struct Dummy : IControl
     [RequiresManualEnd]
     public static void Start(int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(Dummy).GetHashCode(), identity, site), new Dummy());
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(Dummy).GetHashCode(), identity, site), new Dummy());
     }
 
     public void OnAdd(in ControlParams p)

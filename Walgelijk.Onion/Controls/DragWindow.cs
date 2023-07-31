@@ -21,7 +21,7 @@ public readonly struct DragWindow : IControl
     [RequiresManualEnd]
     public static ControlState Start(string title, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(DragWindow).GetHashCode(), identity, site), new DragWindow(true));
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(DragWindow).GetHashCode(), identity, site), new DragWindow(true));
         instance.Name = title;
         node.RequestedLocalOrder = Math.Max(1, node.RequestedLocalOrder); var padding = instance.Theme.Padding;
         return instance.State;
@@ -32,7 +32,7 @@ public readonly struct DragWindow : IControl
     {
         Onion.Animation.Add(new FadeAnimation());
         Onion.Animation.Add(new ShrinkAnimation(0.9f));
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(DragWindow).GetHashCode(), identity, site), new DragWindow(true));
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(DragWindow).GetHashCode(), identity, site), new DragWindow(true));
         instance.Name = title;
         instance.Muted = true;
         instance.RenderFocusBox = false;

@@ -55,7 +55,7 @@ public readonly struct InputBox : IControl
     {
         var options = new TextBoxOptions(placeholder, null, null, false, true);
 
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(InputBox).GetHashCode(), identity, site), new InputBox());
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(InputBox).GetHashCode(), identity, site), new InputBox());
         instance.RenderFocusBox = true;
         instance.Muted = true;
         Onion.Tree.End();
@@ -118,7 +118,7 @@ public readonly struct InputBox : IControl
 
     public static bool String(ref string text, in TextBoxOptions options, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Hash(nameof(InputBox).GetHashCode(), identity, site), new InputBox());
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(InputBox).GetHashCode(), identity, site), new InputBox());
         instance.RenderFocusBox = true;
         instance.Muted = true;
         Onion.Tree.End();

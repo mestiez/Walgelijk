@@ -28,6 +28,8 @@ public class ControlTree
     private int? lastFocus;
     private Node? lastNode;
 
+    internal int NodesCreatedThisFrame = 0;
+
     public ControlTree()
     {
         Nodes.Add(0, Root);
@@ -59,6 +61,8 @@ public class ControlTree
 
     public (ControlInstance Instance, Node node) Start<T>(int id, T behaviour) where T : IControl
     {
+        NodesCreatedThisFrame++;
+
         bool alreadyExisted = Instances.ContainsKey(id);
         var inst = EnsureInstance(id);
 
@@ -115,7 +119,7 @@ public class ControlTree
         var inst = EnsureInstance(CurrentNode.Identity);
         var p = new ControlParams(CurrentNode, inst);
 
-        LastNode = CurrentNode;
+        lastNode = CurrentNode;
 
         //if (p.Theme.ShowScrollbars && MathF.Max(p.Instance.Rects.ComputedScrollBounds.Width, p.Instance.Rects.ComputedScrollBounds.Height) > 0)
         //{
@@ -134,7 +138,8 @@ public class ControlTree
         Onion.Layout.Reset();
         Onion.Theme.Reset();
 
-        LastNode = null;
+        lastNode = null;
+        NodesCreatedThisFrame = 0;
 
         foreach (var node in Nodes.Values)
         {
