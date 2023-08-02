@@ -151,9 +151,18 @@ public class ControlTree
                 toDelete.Enqueue(node);
         }
         var p = new ControlParams(Root, EnsureInstance(Root.Identity));
+
+        Onion.Layout.Apply(p);
+        Onion.Layout.Reset();
+
+        Onion.Animation.Process(p.Instance);
+        Onion.Decorators.Process(p.Instance);
+        Onion.Theme.ApplyTo(p.Instance);
+
         Root.ApplyParentLayout(p);
         Root.RefreshChildrenList(this, dt);
         Root.Process(p);
+
         incrementor = 0;
 
         //while (toDelete.TryDequeue(out var node))

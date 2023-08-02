@@ -117,15 +117,18 @@ Deserves kindness and love, a smile on their face";
                         WindowsOpen[i % WindowsOpen.Length] = !WindowsOpen[i % WindowsOpen.Length];
                 }
 
+                layout.Move(Onion.Theme.Base.Padding).Height(32).FitWidth();
+                var type = Window.WindowType;
+                if (Ui.EnumDropdown(ref type))
+                    Window.WindowType = type;
+
                 Ui.End();
             }
 
             {
                 const float hotbarHeight = 64;
-                layout.FitContainer(1, 0);
-                layout.Height(hotbarHeight);
-                layout.CenterHorizontal();
-                layout.Move(0, Window.Height - hotbarHeight - Onion.Theme.Base.Padding);
+                layout.FitContainer(1, 0).Height(hotbarHeight).CenterHorizontal().StickBottom();
+                //layout.Move(0, Window.Height - hotbarHeight - Onion.Theme.Base.Padding);
 
                 Ui.StartScrollView();
                 for (int i = 0; i < 4; i++)

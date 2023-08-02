@@ -32,11 +32,20 @@ public class OpenTKWindow : Window
     {
         get
         {
-            if (window.WindowBorder == WindowBorder.Hidden)
-                return window.WindowState == WindowState.Fullscreen ? WindowType.BorderlessFullscreen : WindowType.Borderless;
-
-            if (window.WindowState == WindowState.Fullscreen)
-                return WindowType.Fullscreen;
+            if (window.WindowState == WindowState.Normal)
+            {
+                if (window.WindowBorder == WindowBorder.Resizable)
+                    return WindowType.Normal;
+                else if (window.WindowBorder == WindowBorder.Hidden)
+                    return WindowType.Borderless;
+            }
+            else if (window.WindowState == WindowState.Fullscreen)
+            {
+                if (window.WindowBorder == WindowBorder.Resizable)
+                    return WindowType.Fullscreen;
+                else if (window.WindowBorder == WindowBorder.Hidden)
+                    return WindowType.BorderlessFullscreen;
+            }
 
             return WindowType.Normal;
         }
@@ -56,10 +65,12 @@ public class OpenTKWindow : Window
                 case WindowType.BorderlessFullscreen:
                     window.WindowBorder = WindowBorder.Hidden;
                     window.WindowState = WindowState.Fullscreen;
+                    window.Size = Monitors.GetMonitorFromWindow(window).ClientArea.Size;
                     break;
                 case WindowType.Fullscreen:
                     window.WindowBorder = WindowBorder.Resizable;
                     window.WindowState = WindowState.Fullscreen;
+                    window.Size = Monitors.GetMonitorFromWindow(window).ClientArea.Size;
                     break;
             }
         }
@@ -68,8 +79,8 @@ public class OpenTKWindow : Window
     public override IGraphics Graphics => internalGraphics;
     public override Vector2 Size
     {
-        get => new(window.Size.X, window.Size.Y);
-        set => window.Size = new global::OpenTK.Mathematics.Vector2i((int)value.X, (int)value.Y);
+        get => new(window.ClientSize.X, window.ClientSize.Y);
+        set => window.ClientSize = new global::OpenTK.Mathematics.Vector2i((int)value.X, (int)value.Y);
     }
     public override bool IsCursorLocked
     {
@@ -171,7 +182,7 @@ public class OpenTKWindow : Window
             Position = position;
         else
             window.CenterWindow();
-        //window.MousePosition
+
         renderTarget = new OpenTKWindowRenderTarget();
         renderTarget.Window = this;
 
@@ -197,11 +208,11 @@ public class OpenTKWindow : Window
         {
             getCoords(i / 4, out int x, out int y);
             var pixel = texture.GetPixel(x, flipY ? res - 1 - y : y);
-            var bytes = pixel.ToBytes();
-            icon[i + 0] = bytes.r;
-            icon[i + 1] = bytes.g;
-            icon[i + 2] = bytes.b;
-            icon[i + 3] = bytes.a;
+            var (r, g, b, a) = pixel.ToBytes();
+            icon[i + 0] = r;
+            icon[i + 1] = g;
+            icon[i + 2] = b;
+            icon[i + 3] = a;
         }
 
         static void getCoords(int index, out int x, out int y)
@@ -219,7 +230,7 @@ public class OpenTKWindow : Window
         window.MakeCurrent();
         window.IsVisible = true;
         OnWindowLoad();
-        OnWindowResize(new ResizeEventArgs(window.Size));
+        OnWindowResize(new ResizeEventArgs(window.ClientSize));
         window.Move += OnWindowMove;
         window.Resize += OnWindowResize;
         window.FileDrop += OnFileDropped;
@@ -240,7 +251,7 @@ public class OpenTKWindow : Window
         inputHandler.Reset();
 
         window.Context.SwapBuffers();
-        window.ProcessInputEvents();
+        //window.ProcessEvents();
         NativeWindow.ProcessWindowEvents(window.IsEventDriven);
 
         Game.State.Input = inputHandler.InputState;

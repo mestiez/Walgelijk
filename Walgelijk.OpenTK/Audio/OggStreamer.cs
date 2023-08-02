@@ -157,7 +157,7 @@ public class OggStreamer : IDisposable
         // deal with looping ourselves
         AL.Source(SourceHandle, ALSourceb.Looping, false);
 
-        var state = AL.GetSourceState(SourceHandle);
+        var state = SourceHandle.GetSourceState();
         AL.GetSource(SourceHandle, ALGetSourcei.BuffersQueued, out int queued);
         AL.GetSource(SourceHandle, ALGetSourcei.BuffersProcessed, out int processed);
 

@@ -6,8 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Walgelijk" Version="0.13.1" />
-        <PackageReference Include="Walgelijk.Onion" Version="0.3.0" />
+        <PackageReference Include="Walgelijk" Version="0.13.3" />
+        <PackageReference Include="Walgelijk.Onion" Version="0.4.2" />
         <PackageReference Include="Walgelijk.OpenTK" Version="0.11.4" />
         <PackageReference Include="Walgelijk.ParticleSystem" Version="0.2.11" />
         <PackageReference Include="Walgelijk.SimpleDrawing" Version="1.24.2" />

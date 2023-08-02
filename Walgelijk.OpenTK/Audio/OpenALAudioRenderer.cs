@@ -329,7 +329,7 @@ public class OpenALAudioRenderer : AudioRenderer
             if (sound.Data is StreamAudioData)
                 continue;
 
-            var sourceState = AL.GetSourceState(source);
+            var sourceState = source.GetSourceState();
             switch (sound.State)
             {
                 case SoundState.Idle:
@@ -373,7 +373,7 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public override bool IsPlaying(Sound sound)
     {
-        return sound.State == SoundState.Playing || AL.GetSourceState(AudioObjects.Sources.Load(sound)) == ALSourceState.Playing;
+        return sound.State == SoundState.Playing || AudioObjects.Sources.Load(sound).GetSourceState() == ALSourceState.Playing;
     }
 
     public override void DisposeOf(AudioData audioData)
@@ -427,7 +427,7 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public void Resume(Sound sound)
     {
-        if (AL.GetSourceState(AudioObjects.Sources.Load(sound)) == ALSourceState.Paused)
+        if (AudioObjects.Sources.Load(sound).GetSourceState() == ALSourceState.Paused)
             Play(sound);
     }
 
