@@ -80,7 +80,8 @@ public readonly struct Checkbox : IControl
 
         Draw.ResetTexture();
         Draw.Font = p.Theme.Font;
-        Draw.Colour = p.Theme.Text[instance.State] with { A = Draw.Colour.A };
+        Draw.Colour = p.Theme.Text[instance.State];
+        anim.AnimateColour(ref Draw.Colour, t);
         if (anim.ShouldRenderText(t))
         {
             var ratio = instance.Rects.Rendered.Area / instance.Rects.ComputedGlobal.Area;
