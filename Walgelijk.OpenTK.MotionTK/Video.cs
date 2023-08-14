@@ -1,65 +1,7 @@
-﻿using FFmpeg.Loader;
-using MotionTK;
+﻿using MotionTK;
 using System.Numerics;
 
 namespace Walgelijk.OpenTK.MotionTK;
-
-public class VideoSystem : Walgelijk.System
-{
-    public override void Render()
-    {
-        foreach (var c in Scene.GetAllComponentsOfType<VideoComponent>())
-            c.Video.UpdateAndRender(Graphics);
-    }
-}
-
-/// <summary>
-/// Necessary for a <see cref="Video"/> to be updated by the <see cref="VideoSystem"/>
-/// </summary>
-public class VideoComponent : Component, IDisposable
-{
-    public readonly Video Video;
-
-    public VideoComponent(Video video)
-    {
-        Video = video;
-    }
-
-    public void Dispose()
-    {
-        Video.Dispose();
-    }
-}
-
-internal readonly struct FfmpegInitialiser
-{
-    public static bool Initialised = false;
-
-    public static void Initialise()
-    {
-        if (Initialised)
-            return;
-        Initialised = true;
-        FFmpegLoader
-            .SearchApplication()
-            .ThenSearchSystem()
-            .Load("avformat");
-        FFmpegLoader
-            .SearchApplication()
-            .ThenSearchSystem()
-            .Load("swscale");
-
-        //FFmpeg.AutoGen.ffmpeg.swr_alloc_set_opts(_swrCtx,
-        //        AV_CH_LAYOUT_STEREO,
-        //        AV_SAMPLE_FMT_S16,
-        //        48000,
-        //        (long)_audioCtx->channel_layout,
-        //        _audioCtx->sample_fmt,
-        //        _audioCtx->sample_rate,
-        //        0, null);
-
-    }
-}
 
 public class Video : IDisposable
 {
