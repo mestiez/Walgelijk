@@ -269,6 +269,15 @@ public static class Resources
         }
     }
 
+    /// <summary>
+    /// Unloads everything
+    /// </summary>
+    public static void UnloadAll()
+    {
+        foreach (var item in resources)
+            Unload(item.Key);
+    }
+
     private static object CreateNew(string path, Type type)
     {
         if (loadFunctions.TryGetValue(type, out var loadFromFile))

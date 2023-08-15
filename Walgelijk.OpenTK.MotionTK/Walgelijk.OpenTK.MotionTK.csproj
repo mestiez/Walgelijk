@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <Company>Studio Minus</Company>
     <Authors>zooi</Authors>
     <PackageIcon>icon.png</PackageIcon>
@@ -16,10 +16,6 @@
   </Target>
   <ItemGroup>
     <PackageReference Include="FFmpeg.AutoGen" Version="5.1.2.3" />
-    <PackageReference Include="FFmpeg.AutoGen.Bindings.DynamicallyLinked" Version="6.0.0.2" />
-    <PackageReference Include="FFmpeg.AutoGen.Bindings.DynamicallyLoaded" Version="6.0.0.2" />
-    <PackageReference Include="FFmpeg.AutoGen.Bindings.StaticallyLinked" Version="6.0.0.2" />
-    <PackageReference Include="FFmpeg.Loader" Version="3.0.2" />
     <PackageReference Include="OpenTK" Version="4.8.0" />
   </ItemGroup>
   <ItemGroup>

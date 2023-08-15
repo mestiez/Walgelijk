@@ -37,7 +37,7 @@ public struct TestScene2
         });
 
         streamTest = new Sound(Resources.Load<StreamAudioData>("mus_toriel.ogg"), false, false);
-        game.AudioRenderer.Play(streamTest);
+       // game.AudioRenderer.Play(streamTest);
 
         visualiser = new AudioVisualiser(streamTest, 2048, 2048, 128);
 
@@ -158,7 +158,7 @@ public struct TestScene2
             {
                 if (videos == null)
                 {
-                    videos = new Video("resources/video/new york.mp4");
+                    videos = new Video("resources/video/dried up old bones.mp4");
                     Scene.AttachComponent(Scene.CreateEntity(), new VideoComponent(videos));
                     videos.Play();
                 }

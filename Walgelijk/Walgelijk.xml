@@ -5533,6 +5533,11 @@
             Unloads an asset. Removes it from the cache and also disposes of it if it implements <see cref="T:System.IDisposable"/>
             </summary>
         </member>
+        <member name="M:Walgelijk.Resources.UnloadAll">
+            <summary>
+            Unloads everything
+            </summary>
+        </member>
         <member name="T:Walgelijk.Selection.ISelectable">
             <summary>
             Guarantees a selectable object
