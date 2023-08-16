@@ -14,6 +14,8 @@ public class Video : IDisposable
     private PseudoTexture? videoTex;
     private readonly Material blitMat;
 
+    public event Action? OnReady;
+
     public IReadableTexture Texture => target ?? (IReadableTexture)Walgelijk.Texture.ErrorTexture;
 
     public Video(string path)
@@ -35,6 +37,8 @@ public class Video : IDisposable
     public TimeSpan Time => source?.PlayingOffset ?? TimeSpan.Zero;
     public TimeSpan Duration => source?.FileLength ?? TimeSpan.Zero;
 
+    public bool IsReady { get; private set; }
+
     /// <summary>
     /// Update the video source
     /// </summary>
@@ -44,6 +48,12 @@ public class Video : IDisposable
             return;
 
         source.Update();
+        if (!IsReady && source.VideoPlayback.QueuedPackets > 0)
+        {
+            IsReady = true;
+            OnReady?.Invoke();
+        }
+
         {
             blitMat.SetUniform(ShaderDefaults.MainTextureUniform, videoTex);
             target.ModelMatrix = Matrix4x4.CreateTranslation(0, 0, 0) * Matrix4x4.CreateScale(target.Width, target.Height, 1);
