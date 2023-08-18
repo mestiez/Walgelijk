@@ -9,7 +9,7 @@ public readonly struct HeightConstraint : IConstraint
 
     public HeightConstraint(float h)
     {
-        Height = h;
+        Height = h * Onion.GlobalScale;
     }
 
     public void Apply(in ControlParams p)

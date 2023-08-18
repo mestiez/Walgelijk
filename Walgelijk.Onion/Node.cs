@@ -163,6 +163,9 @@ public class Node
             SecondsDead += p.GameState.Time.DeltaTime;
         }
 
+        //p.Instance.Rects.Intermediate.MaxX *= Onion.GlobalScale;
+        //p.Instance.Rects.Intermediate.MaxY *= Onion.GlobalScale;
+
         if (AliveLastFrame || SecondsDead <= p.Instance.AllowedDeadTime)
         {
             p.Instance.Rects.ComputedGlobal = p.Instance.Rects.Intermediate;

@@ -29,7 +29,7 @@ public class OnionSystem : Walgelijk.System
 
         // next frame
         Onion.Layout.Move(0, 0);
-        Onion.Layout.Size(Window.Width, Window.Height);
+        Onion.Layout.Size(Window.Width / Onion.GlobalScale, Window.Height / Onion.GlobalScale);
         Onion.Tree.Start(0, new Dummy()); //Root node
 
         if (Input.IsKeyReleased(Key.F9))

@@ -9,7 +9,7 @@ public readonly struct MoveConstraint : IConstraint
 
     public MoveConstraint(float x, float y)
     {
-        Position = new Vector2(x, y);
+        Position = new Vector2(x, y) * Onion.GlobalScale;
     }
 
     public MoveConstraint(Vector2 position)

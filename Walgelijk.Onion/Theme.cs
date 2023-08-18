@@ -4,9 +4,9 @@ public struct Theme
 {
     public StateDependent<Appearance> Background = new(new Color("#151122"));
     public StateDependent<Appearance> Foreground = new(
-        new Color("#403663"), 
+        new Color("#403663"),
         new Color("#403663").Brightness(1.1f),
-        new Color("#403663").Brightness(0.9f), 
+        new Color("#403663").Brightness(0.9f),
         new Color("#403663").Brightness(0.8f));
 
     public StateDependent<Color> Text = new Color("#f0f0f0");
@@ -34,5 +34,29 @@ public struct Theme
 
     public Theme()
     {
+    }
+
+    public void ApplyScaling(float scale)
+    {
+        ScrollbarWidth *= scale;
+        FocusBoxSize *= scale;
+        FocusBoxWidth *= scale;
+        Padding = (int)(Padding * scale);
+        Rounding *= scale;
+
+        WindowTitleBarHeight.Default *= scale;
+        if (WindowTitleBarHeight.Hover.HasValue) WindowTitleBarHeight.Hover *= scale;
+        if (WindowTitleBarHeight.Triggered.HasValue) WindowTitleBarHeight.Triggered *= scale;
+        if (WindowTitleBarHeight.Active.HasValue) WindowTitleBarHeight.Active *= scale;
+
+        OutlineWidth.Default = (int)(OutlineWidth.Default * scale);
+        if (OutlineWidth.Hover.HasValue) OutlineWidth.Hover = (int)(OutlineWidth.Hover * scale);
+        if (OutlineWidth.Triggered.HasValue) OutlineWidth.Triggered = (int)(OutlineWidth.Triggered * scale);
+        if (OutlineWidth.Active.HasValue) OutlineWidth.Active = (int)(OutlineWidth.Active * scale);
+
+        FontSize.Default = (int)(FontSize.Default * scale);
+        if (FontSize.Hover.HasValue) FontSize.Hover = (int)(FontSize.Hover * scale);
+        if (FontSize.Triggered.HasValue) FontSize.Triggered = (int)(FontSize.Triggered * scale);
+        if (FontSize.Active.HasValue) FontSize.Active = (int)(FontSize.Active * scale);
     }
 }

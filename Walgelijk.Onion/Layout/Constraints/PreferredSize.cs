@@ -7,9 +7,9 @@ public readonly struct PreferredSize : IConstraint
     public void Apply(in ControlParams p)
     {
         if (p.Instance.PreferredWidth.HasValue)
-            p.Instance.Rects.Intermediate.Width = p.Instance.PreferredWidth.Value;
+            p.Instance.Rects.Intermediate.Width = p.Instance.PreferredWidth.Value * Onion.GlobalScale;
 
         if (p.Instance.PreferredHeight.HasValue)
-            p.Instance.Rects.Intermediate.Height = p.Instance.PreferredHeight.Value;
+            p.Instance.Rects.Intermediate.Height = p.Instance.PreferredHeight.Value * Onion.GlobalScale;
     }
 }

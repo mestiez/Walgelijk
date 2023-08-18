@@ -9,8 +9,8 @@ public readonly struct OffsetSize : IConstraint
 
     public OffsetSize(float w, float h)
     {
-        Width = w;
-        Height = h;
+        Width = w * Onion.GlobalScale;
+        Height = h * Onion.GlobalScale;
     }
 
     public void Apply(in ControlParams p)

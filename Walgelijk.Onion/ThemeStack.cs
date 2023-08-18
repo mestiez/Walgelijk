@@ -74,6 +74,7 @@ public class ThemeStack
             stack.Push(Next.Value);
 
         inst.Theme = stack.Count > 0 ? stack.Peek() : Base;
+        inst.Theme.ApplyScaling(Onion.GlobalScale);
 
         if (onlyApplyToNextControl)
             Pop();

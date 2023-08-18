@@ -37,11 +37,10 @@ public readonly struct DragWindow : IControl
         instance.Muted = true;
         instance.RenderFocusBox = false;
 
-        float buttonSize = instance.Theme.WindowTitleBarHeight[instance.State] - instance.Theme.Padding;
-        Onion.Layout.Size(buttonSize, buttonSize)
-            .StickTop()
-            .StickRight()
-            .Move(instance.Theme.Padding, -instance.Theme.Padding - instance.Theme.WindowTitleBarHeight[instance.State]);
+        float buttonSize = (instance.Theme.WindowTitleBarHeight[instance.State] - instance.Theme.Padding) / Onion.GlobalScale;
+        Onion.Layout.Size(buttonSize, buttonSize).
+            StickRight()
+            .Move(instance.Theme.Padding / Onion.GlobalScale, -buttonSize - instance.Theme.Padding / Onion.GlobalScale);
         Ui.Decorators.Tooltip(CloseTooltipText);
         if (ImageButton.Click(BuiltInAssets.Icons.Exit, ImageContainmentMode.Cover, instance.Identity))
             isOpen = !isOpen;

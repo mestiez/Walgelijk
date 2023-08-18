@@ -15,8 +15,8 @@ public readonly struct Resizable : IConstraint
 
     public Resizable(Vector2 minSize, Vector2 maxSize)
     {
-        MinSize = minSize;
-        MaxSize = maxSize;
+        MinSize = minSize * Onion.GlobalScale;
+        MaxSize = maxSize * Onion.GlobalScale;
     }
 
     public struct ResizeState

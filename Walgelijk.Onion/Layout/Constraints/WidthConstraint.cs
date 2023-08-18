@@ -8,7 +8,7 @@ public readonly struct WidthConstraint : IConstraint
 
     public WidthConstraint(float w)
     {
-        Width = w;
+        Width = w * Onion.GlobalScale;
     }
 
     public void Apply(in ControlParams p)

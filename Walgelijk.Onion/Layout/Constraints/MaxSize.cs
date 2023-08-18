@@ -9,8 +9,8 @@ public readonly struct MaxSize : IConstraint
 
     public MaxSize(float? maxWidth, float? maxHeight)
     {
-        MaxWidth = maxWidth;
-        MaxHeight = maxHeight;
+        MaxWidth = maxWidth * Onion.GlobalScale;
+        MaxHeight = maxHeight * Onion.GlobalScale;
     }
 
     public void Apply(in ControlParams p)

@@ -88,6 +88,8 @@ Deserves kindness and love, a smile on their face";
 
         public override void Update()
         {
+            Onion.GlobalScale = Utilities.MapRange(-1, 1, 1, 2, MathF.Sin(Time.SecondsSinceSceneChange));
+
             var layout = Onion.Layout;
 
             Draw.Reset();
@@ -278,7 +280,7 @@ Deserves kindness and love, a smile on their face";
                 Ui.FloatSlider(ref Onion.Animation.DefaultDurationSeconds, Direction.Horizontal, new MinMax<float>(float.Epsilon, 1), 0.01f);
             }
 
-            layout.Size(290, 320).Move(Window.Width - 290, Window.Height - 320).Resizable(new Vector2(148), new Vector2(1024));
+            layout.Size(290, 320).StickRight().StickBottom().Resizable(new Vector2(148), new Vector2(1024));
             Ui.StartDragWindow(nameof(Ui.ColourPicker));
             {
                 layout.FitContainer().StickTop().StickLeft();

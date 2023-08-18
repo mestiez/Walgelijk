@@ -106,20 +106,20 @@ void main()
     public Rect GetSVRect(in ControlParams p)
     {
         var r = p.Instance.Rects.ComputedGlobal.Expand(-p.Theme.Padding);
-        r.MaxY -= BottomBarHeight + p.Theme.Padding;
-        r.MaxX -= HueSliderWidth;
+        r.MaxY -= BottomBarHeight * Onion.GlobalScale + p.Theme.Padding;
+        r.MaxX -= HueSliderWidth * Onion.GlobalScale;
         if (EditableAlpha)
-            r.MaxY -= AlphaSliderHeight;
+            r.MaxY -= AlphaSliderHeight * Onion.GlobalScale;
         return r;
     }
 
     public Rect GetHueRect(in ControlParams p)
     {
         var r = p.Instance.Rects.ComputedGlobal.Expand(-p.Theme.Padding);
-        r.MaxY -= BottomBarHeight + p.Theme.Padding;
-        r.MinX = r.MaxX - HueSliderWidth;
+        r.MaxY -= BottomBarHeight * Onion.GlobalScale + p.Theme.Padding;
+        r.MinX = r.MaxX - HueSliderWidth * Onion.GlobalScale;
         if (EditableAlpha)
-            r.MaxY -= AlphaSliderHeight;
+            r.MaxY -= AlphaSliderHeight * Onion.GlobalScale;
         return r;
     }
 
@@ -158,7 +158,9 @@ void main()
         var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(ColourPicker).GetHashCode(), identity, site), new ColourPicker(editableAlpha));
         instance.RenderFocusBox = false;
 
-        Onion.Layout.Width(100).Height(32).StickRight().StickBottom();
+        float inputWidth = 100;
+
+        Onion.Layout.Width(inputWidth).Height(32).StickRight().StickBottom();
         if (InputBox.String(ref instance.Name, new TextBoxOptions(), instance.Identity))
         {
             try
@@ -170,7 +172,7 @@ void main()
             }
         }
 
-        var sliderWidth = instance.Rects.ComputedGlobal.Width - 100 - instance.Theme.Padding * 3;
+        var sliderWidth = (instance.Rects.ComputedGlobal.Width / Onion.GlobalScale - inputWidth - instance.Theme.Padding * 3 / Onion.GlobalScale) ;
         bool sliderInput = false;
 
         Onion.Layout.Width(sliderWidth).Height(SliderHeight).StickLeft().StickBottom();
@@ -249,6 +251,9 @@ void main()
     {
         (ControlTree tree, Layout.LayoutQueue layout, Input input, GameState state, Node node, ControlInstance instance) = p;
 
+        float inputWidth = 100 * Onion.GlobalScale;
+        float inputHeight = 32 * Onion.GlobalScale;
+
         var t = node.GetAnimationTime();
         var anim = instance.Animations;
         var pickedColour = states.GetValue(p.Identity);
@@ -267,10 +272,10 @@ void main()
 
         Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
 
-        var previewBox = new Rect(0, 0, 100, 32 - p.Theme.Padding).
+        var previewBox = new Rect(0, 0, inputWidth, inputHeight - p.Theme.Padding).
             Translate(p.Theme.Padding, p.Theme.Padding + 2).
             Translate(instance.Rects.Rendered.BottomLeft).
-            Translate(instance.Rects.Rendered.Width - 100 - p.Theme.Padding * 2, instance.Rects.Rendered.Height - 32 * 2 - p.Theme.Padding * 2);
+            Translate(instance.Rects.Rendered.Width - inputWidth - p.Theme.Padding * 2, instance.Rects.Rendered.Height - inputHeight * 2 - p.Theme.Padding * 2);
 
         if (EditableAlpha)
         {
