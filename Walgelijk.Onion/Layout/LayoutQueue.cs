@@ -74,6 +74,16 @@ public class LayoutQueue
     public LayoutQueue Move(float v) => EnqueueConstraint(new MoveConstraint(v,v));
 
     /// <summary>
+    /// Move the control
+    /// </summary>
+    public LayoutQueue MoveAbs(float x, float y) => EnqueueConstraint(new MoveAbsoluteConstraint(x, y));
+
+    /// <summary>
+    /// Move the control in both axes
+    /// </summary>
+    public LayoutQueue MoveAbs(float v) => EnqueueConstraint(new MoveAbsoluteConstraint(v,v));
+
+    /// <summary>
     /// Clamp the control position to fit its parent
     /// </summary>
     public LayoutQueue Clamp() => EnqueueConstraint(new ClampToContainer());
