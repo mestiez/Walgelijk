@@ -58,6 +58,17 @@ public static class Onion
         OnClear.Dispatch();
     }
 
+    [Command(Alias = "OnionScale", HelpString = "Sets or gets the global Onion UI scale")]
+    public static CommandResult SetScale(float scale = float.NaN)
+    {
+        if (float.IsNaN(scale))
+            return $"Global scale is {GlobalScale}";
+        if (scale <= float.Epsilon)
+            return CommandResult.Error("Scale has to be greater than 0");
+        GlobalScale = scale;
+        return $"Global scale set to {GlobalScale}";
+    }
+
     public static void PlaySound(ControlState state)
     {
         switch (state)

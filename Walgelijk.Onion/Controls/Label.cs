@@ -65,8 +65,9 @@ public readonly struct Label : IControl
         }
 
         Draw.Text(instance.Name, pivot, Vector2.One, horizontal, VerticalTextAlign.Middle);
-        instance.PreferredHeight = p.Theme.Font.Size;
+        //instance.PreferredHeight = p.Theme.Font.Size;
         instance.PreferredWidth = Draw.CalculateTextWidth(instance.Name) + p.Theme.Padding * 2;
+        instance.PreferredHeight = Draw.CalculateTextHeight(instance.Name, instance.PreferredWidth ?? float.PositiveInfinity);
     }
 
     public void OnEnd(in ControlParams p)
