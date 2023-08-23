@@ -6,16 +6,18 @@ namespace Walgelijk.Onion.Controls;
 public readonly struct ScrollView : IControl
 {
     public readonly bool BlockHover = true;
+    public readonly bool Background = true;
 
-    public ScrollView(bool blockHover)
+    public ScrollView(bool blockHover, bool background)
     {
         BlockHover = blockHover;
+        Background = background;
     }
 
     [RequiresManualEnd]
-    public static void Start(int identity = 0, [CallerLineNumber] int site = 0)
+    public static void Start(bool background = false, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(ScrollView).GetHashCode(), identity, site), new ScrollView());
+        var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(ScrollView).GetHashCode(), identity, site), new ScrollView(true, background));
     }
 
     public void OnAdd(in ControlParams p) { }
@@ -37,7 +39,30 @@ public readonly struct ScrollView : IControl
 
     public void OnRender(in ControlParams p)
     {
-        //TODO pseudo controls interactivity
+        if (Background)
+        {
+            (ControlTree tree, Layout.LayoutQueue layout, Input input, GameState state, Node node, ControlInstance instance) = p;
+
+            instance.Rects.Rendered = instance.Rects.ComputedGlobal;
+            var t = node.GetAnimationTime();
+
+            if (t > 0)
+            {
+                var anim = instance.Animations;
+
+                var fg = p.Theme.Foreground[ControlState.None];
+                Draw.Colour = fg.Color;
+                Draw.Texture = fg.Texture;
+                Draw.OutlineColour = p.Theme.OutlineColour[ControlState.None];
+                Draw.OutlineWidth = p.Theme.OutlineWidth[ControlState.None];
+
+                anim.AnimateRect(ref instance.Rects.Rendered, t);
+                anim.AnimateColour(ref Draw.Colour, t);
+                Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
+            }
+        }
+
+        //TODO pseudo controls interactivity (scrollbars)
 
         //if (p.Instance.Rects.ChildContent.Height > p.Instance.Rects.Intermediate.Height)
         //{

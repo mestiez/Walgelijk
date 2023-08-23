@@ -215,7 +215,7 @@ Deserves kindness and love, a smile on their face";
                 {
                     layout.FitContainer().StickTop().StickLeft().Scale(0, Onion.Theme.Base.Padding);
                     //Ui.Theme.Padding(0).Once();
-                    Ui.StartScrollView(i);
+                    Ui.StartScrollView(false, i);
                     {
                         layout.Size(128, 32);
                         Ui.Decorators.Add(new HoverCrosshairDecorator());
@@ -225,7 +225,7 @@ Deserves kindness and love, a smile on their face";
 
                         layout.FitContainer(1,1,false).Move(0, 32).Scale(0, -80);
                         Ui.Theme.Padding(0).Once();
-                        Ui.StartScrollView(i);
+                        Ui.StartScrollView(false, i);
                         {
                             layout.Height(32).FitWidth().Move(Onion.Theme.Base.Padding, Onion.Theme.Base.Padding);
                             Ui.Decorators.Tooltip("Onion.Configuration.SoundVolume");

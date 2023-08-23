@@ -66,7 +66,7 @@ public readonly struct Dropdown<T> : IControl
             Onion.Layout.FitContainer(1, null);
             Onion.Layout.Move(instance.Theme.Padding, height + instance.Theme.Padding);
             Onion.Theme.SetAll(instance.Theme).Once(); //TODO global scaling issue
-            Onion.Tree.Start(instance.Identity + 38, new ScrollView(true));
+            Onion.Tree.Start(instance.Identity + 38, new ScrollView(true, true));
 
             for (int i = 0; i < values.Count; i++)
             {

@@ -56,8 +56,8 @@ public readonly struct Group : IControl
         var fg = p.Theme.Foreground[ControlState.None];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
-        Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
-        Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
+        Draw.OutlineColour = p.Theme.OutlineColour[ControlState.None];
+        Draw.OutlineWidth = p.Theme.OutlineWidth[ControlState.None];
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
         anim.AnimateColour(ref Draw.Colour, t);
