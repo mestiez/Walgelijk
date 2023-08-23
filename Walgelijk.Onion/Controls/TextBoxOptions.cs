@@ -10,6 +10,7 @@ public readonly struct TextBoxOptions
     public readonly bool Password;
     public readonly bool ScrollIsValueChange;
 
+    public static readonly TextBoxOptions TextInput = new();
     public static readonly TextBoxOptions PasswordInput = new(password: true);
     public static readonly TextBoxOptions DecimalInput = new(filter: new Regex(@"^\d?(\.\d?)?$"), scrollIsValueChange: true);
 

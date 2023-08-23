@@ -154,7 +154,8 @@ public readonly struct InputBox : IControl
     {
         var hadFocus = p.Instance.HasFocus;
         ControlUtils.ProcessButtonLike(p);
-        p.Instance.CaptureFlags |= CaptureFlags.Scroll;
+        if (p.Input.CtrlHeld)
+            p.Instance.CaptureFlags |= CaptureFlags.Scroll;
 
         if (p.Instance.IsHover)
             IControl.SetCursor(DefaultCursor.Text);
