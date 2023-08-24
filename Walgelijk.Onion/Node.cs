@@ -21,6 +21,16 @@ public class Node
             yield return Onion.Tree.Nodes[item];
     }
 
+    public IEnumerable<Node> GetLivingChildren()
+    {
+        foreach (var item in Children)
+        {
+            var v = Onion.Tree.Nodes[item];
+            if (v.AliveLastFrame)
+                yield return v;
+        }
+    }
+
     public IControl Behaviour;
     public readonly string Name;
 
@@ -48,6 +58,11 @@ public class Node
     public bool AliveLastFrame;
     public float SecondsAlive;
     public float SecondsDead;
+
+    /// <summary>
+    /// Keeps track of how many times this node has been created this frame. This should always be either 0 or 1.
+    /// </summary>
+    internal int CreationCount;
 
     /// <summary>
     /// Actual global order
@@ -146,7 +161,7 @@ public class Node
             foreach (var layout in Parent.ChildrenLayout)
                 layout.Apply(new ControlParams(Parent, p.Tree.EnsureInstance(Parent.Identity)), SiblingIndex, Identity);
 
-        foreach (var child in GetChildren())
+        foreach (var child in GetLivingChildren())
             child.ApplyParentLayout(new ControlParams(child, p.Tree.EnsureInstance(child.Identity)));
     }
 
@@ -277,10 +292,10 @@ public class Node
                 //living child should count towards child content rect
                 if (item.ContributeToParentScrollRect)
                     inst.Rects.ComputedChildContent = inst.Rects.ComputedChildContent.StretchToContain(childInst.Rects.Intermediate);
-                item.SiblingIndex = siblingIndex++;
             }
+            item.SiblingIndex = siblingIndex++;
         }
-        //for (int i = 0; i < length; i++)
+        //for (int i = 0; i < length; i++) // TODO
         //    Children.Remove(toDelete[i]);
         ArrayPool<int>.Shared.Return(toDelete);
 

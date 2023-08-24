@@ -80,6 +80,10 @@ public class ControlTree
         else
             node.Behaviour = behaviour;
 
+        node.CreationCount++;
+        if (node.CreationCount > 1)
+            Logger.Error("An Onion control node has been created multiple times in a single frame!");
+
         if (node.Behaviour is not T)
         {
             node.Behaviour.OnEnd(new ControlParams(node, inst));
@@ -121,12 +125,6 @@ public class ControlTree
 
         lastNode = CurrentNode;
 
-        //if (p.Theme.ShowScrollbars && MathF.Max(p.Instance.Rects.ComputedScrollBounds.Width, p.Instance.Rects.ComputedScrollBounds.Height) > 0)
-        //{
-        //    Onion.Layout.Width(p.Theme.ScrollbarWidth).Height(p.Instance.Rects.Rendered.Height).IgnoreScroll().EnqueueConstraint(new EscapeScroll()) ;
-        //    Slider.Float(ref p.Instance.InnerScrollOffset.Y, Slider.Direction.Vertical, (-100, 100), 1, identity: p.Identity + 1);
-        //}
-
         CurrentNode.Behaviour.OnEnd(p);
         CurrentNode = CurrentNode.Parent;
     }
@@ -146,6 +144,7 @@ public class ControlTree
             node.ChronologicalPositionLastFrame = node.ChronologicalPosition;
             node.AliveLastFrame = node.Alive;
             node.Alive = false;
+            node.CreationCount = 0;
 
             if (!node.AliveLastFrame && node.SecondsDead > CacheTimeToLive)
                 toDelete.Enqueue(node);
@@ -159,14 +158,14 @@ public class ControlTree
         Onion.Decorators.Process(p.Instance);
         Onion.Theme.ApplyTo(p.Instance);
 
-        Root.ApplyParentLayout(p);
         Root.RefreshChildrenList(this, dt);
+        Root.ApplyParentLayout(p);
         Root.Process(p);
 
         incrementor = 0;
 
-        //while (toDelete.TryDequeue(out var node))
-        //    if (!Nodes.Remove(node.Identity))
+        //while (toDelete.TryDequeue(out var node)) // TODO
+       //     if (!Nodes.Remove(node.Identity))
         //        Logger.Warn($"Onion: failed to delete {node}");
 
         focusAnimationProgress = Utilities.Clamp(focusAnimationProgress + dt, 0, 1);

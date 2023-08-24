@@ -117,6 +117,11 @@ public class Game
     /// </summary>
     public int UpdateRate = 0;
 
+    /// <summary>
+    /// The maximum amount of fixed updates per frame
+    /// </summary>
+    public int MaxFixedUpdatesPerFrame = 10;
+
     private readonly Stopwatch clock = new();
 
     /// <summary>
@@ -176,7 +181,6 @@ public class Game
             double fixedUpdateInterval = 1d / FixedUpdateRate;
             if (!Console.IsActive)
             {
-                const int maxPerFrame = 10;
                 fixedUpdateClock += dt * State.Time.TimeScale;
                 accumulator += scaledDt;
                 int iteration = 0;
@@ -186,11 +190,8 @@ public class Game
                     fixedUpdateClock = 0;
                     accumulator -= fixedUpdateInterval;
                     iteration++;
-                    if (iteration >= maxPerFrame)
-                    {
-                        Logger.Warn("Amount of FixedUpdates per frame has reached the limit of 10!");
+                    if (iteration >= MaxFixedUpdatesPerFrame)
                         break;
-                    }
                 }
 
                 State.Time.FixedInterval = (float)fixedUpdateInterval;
@@ -210,10 +211,17 @@ public class Game
             {
                 var expected = TimeSpan.FromSeconds(1d / UpdateRate);
                 var msToSleep = expected.TotalMilliseconds - clock.Elapsed.TotalMilliseconds;
-                if (msToSleep > 1)
-                    Thread.Sleep((int)msToSleep / 2); //Waarom deel ik door twee?
+
+                //if (msToSleep > 1)
+                //    Thread.Sleep((int)msToSleep - 10);
+
                 while (clock.Elapsed < expected)
-                    Thread.Sleep(0); //Dit is niet echt slapen.. het gebruikt alsnog CPU maar het is nodig voor de laatste beetjes om de wachttijd perfect te maken
+                    Thread.Sleep(1);
+
+                //SpinWait.SpinUntil(() => clock.Elapsed >= expected);
+                //while (clock.Elapsed < expected)
+                //    Thread.SpinWait(1);
+                    //Thread.Sleep(0); // Dit is niet echt slapen.. het gebruikt alsnog CPU maar het is nodig voor de laatste beetjes om de wachttijd perfect te maken
             }
 
             dt = clock.Elapsed.TotalSeconds;

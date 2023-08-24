@@ -79,17 +79,54 @@ For every single human being
 Deserves kindness and love, a smile on their face";
 
         private string textBoxContent = "This is the only reliable way to contact us.";
+        private int buttonCount = 20;
+        private bool onlyEverySecond = false;
 
-        public override void Initialise()
-        {
-            //Onion.Theme.FontSize = 12;
-            //Onion.Theme.Font = Resources.Load<Font>("inter-tight.fnt");
-        }
+        public int SelectedDemo = 0;
 
         public override void Update()
         {
-            Onion.GlobalScale = Utilities.MapRange(-1, 1, 1, 2, MathF.Sin(Time.SecondsSinceSceneChange));
+            if (Input.IsKeyReleased(Key.D1))
+                SelectedDemo = 0;
+            if (Input.IsKeyReleased(Key.D2))
+                SelectedDemo = 1;
 
+            switch (SelectedDemo)
+            {
+                case 0:
+                    MainDemo();
+                    break;
+                case 1:
+                    ManyScrolling();
+                    break;
+            }
+        }
+
+        private void ManyScrolling()
+        {
+            Ui.Layout.Width(300).FitHeight(false).CenterHorizontal().VerticalLayout();
+            Ui.StartScrollView(true);
+            {
+                for (int i = 0; i < buttonCount; i++)
+                {
+                    if (!onlyEverySecond || i % 2 != 0)
+                    {
+                        Ui.Layout.FitWidth().CenterVertical().Height(32).StickTop().StickLeft();
+                        Ui.Theme.Foreground((Appearance)Color.FromHsv((i / 10f) % 1, 0.5f, 0.65f)).Once();
+                        Ui.ClickButton("Oma Hondje #" + i, identity: i);
+                        Ui.Label("dit is een label", identity: i);
+                    }
+                }
+            }
+            Ui.End();
+            Ui.Layout.Size(200, 32).StickLeft().StickTop();
+            Ui.IntSlider(ref buttonCount, Direction.Horizontal, (0, 30), 1, "{0} buttons");
+            Ui.Layout.Size(200, 32).StickRight().StickTop();
+            Ui.Checkbox(ref onlyEverySecond, nameof(onlyEverySecond));
+        }
+
+        private void MainDemo()
+        {
             var layout = Onion.Layout;
 
             Draw.Reset();
@@ -223,7 +260,7 @@ Deserves kindness and love, a smile on their face";
                         if (Ui.Dropdown(DropdownOptions, ref DropdownSelectedIndex, identity: i))
                             Logger.Log("Window dropdown selected!");
 
-                        layout.FitContainer(1,1,false).Move(0, 32).Scale(0, -80);
+                        layout.FitContainer(1, 1, false).Move(0, 32).Scale(0, -80);
                         Ui.Theme.Padding(0).Once();
                         Ui.StartScrollView(false, i);
                         {

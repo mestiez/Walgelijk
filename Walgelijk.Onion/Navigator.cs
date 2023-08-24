@@ -311,7 +311,7 @@ public class Navigator
             alwaysOnTopCounter++;
 
         treeDepth++;
-        foreach (var child in node.GetChildren().OrderByDescending(static s => s.RequestedLocalOrder))
+        foreach (var child in node.GetLivingChildren().OrderByDescending(static s => s.RequestedLocalOrder))
             RecurseNodeOrder(child, ref index, ref treeDepth);
         treeDepth--;
 

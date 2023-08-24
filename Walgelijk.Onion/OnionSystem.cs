@@ -167,7 +167,7 @@ public class OnionSystem : Walgelijk.System
         {
             c++;
             var inst = Onion.Tree.EnsureInstance(node.Identity);
-            var t = (node.ToString() ?? "[untitled]") + " Order: " + node.ComputedGlobalOrder;
+            var t = (node.ToString() ?? "[untitled]") + " Sibling Index: " + node.SiblingIndex;
             var deadAnim =
                 Input.IsKeyHeld(Key.F2) ?
                     0 :

@@ -33,4 +33,7 @@ public static class VectorMathExtensions
                 vector.Y - planeNormal.Y * dot / sqrMag);
         }
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 Translate(this Vector2 v, float x, float y) => new Vector2(v.X + x, v.Y + y);
 }
