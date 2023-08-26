@@ -158,8 +158,8 @@ public class ControlTree
         Onion.Decorators.Process(p.Instance);
         Onion.Theme.ApplyTo(p.Instance);
 
-        Root.RefreshChildrenList(this, dt);
         Root.ApplyParentLayout(p);
+        Root.RefreshChildrenList(this, dt);
         Root.Process(p);
 
         incrementor = 0;
