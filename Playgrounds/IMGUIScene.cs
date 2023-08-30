@@ -248,6 +248,7 @@ Deserves kindness and love, a smile on their face";
 
                 layout.Move(i * 64, i * 64).Size(300, 256).Resizable(new Vector2(148), new Vector2(512));
                 Ui.Decorators.Tooltip("DPI is " + Window.DPI);
+                Ui.Theme.Text(Colors.Yellow);
                 Ui.StartDragWindow(textBoxContent, ref WindowsOpen[i], i);
                 {
                     layout.FitContainer().StickTop().StickLeft().Scale(0, Onion.Theme.Base.Padding);
@@ -268,6 +269,7 @@ Deserves kindness and love, a smile on their face";
                             Ui.Decorators.Tooltip("Onion.Configuration.SoundVolume");
                             Ui.FloatSlider(ref Onion.Configuration.SoundVolume, Direction.Horizontal, (0, 1), identity: i);
 
+                            Ui.Theme.Text(Colors.Red).Once();
                             layout.Size(256, 590).FitWidth().Move(Onion.Theme.Base.Padding, Onion.Theme.Base.Padding).Move(0, 32).PreferredSize();
                             Ui.TextRect(textRectContents, HorizontalTextAlign.Left, VerticalTextAlign.Top, identity: i);
                         }
@@ -280,6 +282,7 @@ Deserves kindness and love, a smile on their face";
                     }
                     Ui.End(); //end container child
                 }
+                Ui.Theme.Pop();
 
                 Ui.End();
             }

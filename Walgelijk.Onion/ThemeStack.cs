@@ -71,9 +71,12 @@ public class ThemeStack
     internal void ApplyTo(ControlInstance inst)
     {
         if (Next.HasValue)
+        {
             stack.Push(Next.Value);
+            Next = null;
+        }
 
-        inst.Theme = stack.Count > 0 ? stack.Peek() : Base;
+        inst.Theme = GetChanges();
         inst.Theme.ApplyScaling(Onion.GlobalScale);
 
         if (onlyApplyToNextControl)
