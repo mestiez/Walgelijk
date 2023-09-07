@@ -13,13 +13,12 @@ public readonly struct Label : IControl
         this.horizontal = horizontal;
     }
 
-    public static ControlState Create(string text, HorizontalTextAlign horizontal = HorizontalTextAlign.Left, int identity = 0, [CallerLineNumber] int site = 0)
+    public static void Create(string text, HorizontalTextAlign horizontal = HorizontalTextAlign.Left, int identity = 0, [CallerLineNumber] int site = 0)
     {
         Onion.Layout.PreferredSize();
         var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(Label).GetHashCode(), identity, site), new Label(horizontal));
         instance.Name = text;
         Onion.Tree.End();
-        return instance.State;
     }
 
     public void OnAdd(in ControlParams p) { }

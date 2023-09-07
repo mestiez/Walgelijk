@@ -19,8 +19,8 @@ public static partial class Ui
         const float arrowBoxSize = 16;
         float padding = Ui.Theme.Base.Padding;
         bool r = false;
-        Ui.Decorators.KeepForNextTime();
-        Ui.StartGroup(false, identity + 73, site);
+        Ui.Decorators.KeepForNextTime(); 
+        Ui.StartGroup(false, identity + 73, site); 
         {
             Ui.Layout.FitContainer(1, 1, pad: false).Scale(-arrowBoxSize + 1, 0);
             r |= Ui.IntInputBox(ref value, range, identity: identity + site);
@@ -50,11 +50,11 @@ public static partial class Ui
 
     public static bool FloatStepper(ref float value, MinMax<float> range, float step = 1, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        var imgCol = Ui.Theme.GetChanges().Image;
-
+        var imgCol = Ui.Theme.GetChanges().Image; 
         const float arrowBoxSize = 16;
         float padding = Ui.Theme.Base.Padding;
         bool r = false;
+
         Ui.Decorators.KeepForNextTime();
         Ui.StartGroup(false, identity + 62, site);
         {
@@ -128,6 +128,28 @@ public static partial class Ui
     /// Provides access to the theme stack.
     /// </summary>
     public static ThemeStack Theme => Onion.Theme;
+
+    /// <summary>
+    /// Returns true if any control is being interacted with (even hovereed over); false otherwise.
+    /// See <see cref="Navigator.IsBeingUsed"/>
+    /// </summary>
+    public static bool IsBeingUsed => Onion.Navigator.IsBeingUsed;
+    /// <summary>
+    /// Returns true if any control is hovered over, see <see cref="Navigator.HoverControl"/>
+    /// </summary>
+    public static bool IsAnythingHover => Onion.Navigator.HoverControl.HasValue;
+    /// <summary>
+    /// Returns true if any control is active, see <see cref="Navigator.ActiveControl"/>
+    /// </summary>
+    public static bool IsAnythingActive => Onion.Navigator.ActiveControl.HasValue;
+    /// <summary>
+    /// Returns true if any control has focus, see <see cref="Navigator.FocusedControl"/>
+    /// </summary>
+    public static bool IsAnythingFocused => Onion.Navigator.FocusedControl.HasValue;
+    /// <summary>
+    /// Returns true if any control is triggered, see <see cref="Navigator.TriggeredControl"/>
+    /// </summary>
+    public static bool IsAnythingTriggered => Onion.Navigator.TriggeredControl.HasValue;
 
     /// <summary>
     /// Provides access to the global scale value.

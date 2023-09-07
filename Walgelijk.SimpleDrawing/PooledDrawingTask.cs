@@ -83,11 +83,19 @@ namespace Walgelijk.SimpleDrawing
 
                 if (Drawing.ScreenSpace)
                 {
+                    if (!Drawing.TextDrawing.HasValue)
+                    {
+                        Drawing.Position.X = MathF.Floor(Drawing.Position.X);
+                        Drawing.Position.Y = MathF.Floor(Drawing.Position.Y);
+                        Drawing.Scale.X = MathF.Floor(Drawing.Scale.X);
+                        Drawing.Scale.Y = MathF.Floor(Drawing.Scale.Y);
+                    }
+
                     var target = graphics.CurrentTarget;
 
                     var view = target.ViewMatrix;
                     var proj = target.ProjectionMatrix;
-                    target.ProjectionMatrix = Matrix4x4.CreateOrthographicOffCenter(0, target.Size.X, target.Size.Y, 0, -10, 10);
+                    target.ProjectionMatrix = target.OrthographicMatrix;
                     target.ViewMatrix = Matrix4x4.Identity;
                     Drawing.Scale.Y *= -1;
                     draw(graphics);

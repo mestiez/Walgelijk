@@ -4,7 +4,10 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
+using System.Web;
 
 namespace Walgelijk.Onion.SourceGenerator
 {
@@ -13,6 +16,7 @@ namespace Walgelijk.Onion.SourceGenerator
     {
         public void Initialize(GeneratorInitializationContext context)
         {
+
         }
 
         public void Execute(GeneratorExecutionContext context)
@@ -50,7 +54,7 @@ namespace Walgelijk.Onion.SourceGenerator
                 .SelectMany(tree => tree.GetRoot().DescendantNodes().OfType<StructDeclarationSyntax>())
                 .Select(s => context.Compilation.GetSemanticModel(s.SyntaxTree).GetDeclaredSymbol(s))
                 .FirstOrDefault(s => s?.Name == "Theme");
-            
+
             return themeClass?.GetMembers().OfType<IFieldSymbol>() ?? null;
         }
 
@@ -68,7 +72,7 @@ namespace Walgelijk.Onion.SourceGenerator
                 foreach (var field in fields)
                 {
                     var argumentName = field.Name.ToLower();
-                    
+
                     sourceBuilder.AppendLine($"\tpublic static Theme With{field.Name}(this Theme theme, {field.Type} {argumentName})");
                     sourceBuilder.AppendLine($"\t\t=> theme with {{ {field.Name} = {argumentName} }};");
                     sourceBuilder.AppendLine();
@@ -78,7 +82,7 @@ namespace Walgelijk.Onion.SourceGenerator
 
             context.AddSource("ThemeExtensions.g.cs", sourceBuilder.ToString());
         }
-        
+
         private void GenerateThemeStackExtensions(GeneratorExecutionContext context)
         {
             var sourceBuilder = new StringBuilder();
@@ -93,7 +97,7 @@ namespace Walgelijk.Onion.SourceGenerator
                 foreach (var field in fields)
                 {
                     var argumentName = field.Name.ToLower();
-                    
+
                     sourceBuilder.AppendLine($"\tpublic static ThemeStack {field.Name}(this ThemeStack q, {field.Type} {argumentName})");
                     sourceBuilder.AppendLine($"\t{{");
                     sourceBuilder.AppendLine($"\t\tq.Next = (q.Next ?? q.Peek() ?? q.Base).With{field.Name}({argumentName});");

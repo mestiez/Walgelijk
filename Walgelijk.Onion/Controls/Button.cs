@@ -6,19 +6,19 @@ namespace Walgelijk.Onion.Controls;
 
 public readonly struct Button : IControl
 {
-    public static bool Hold(string label, int identity = 0, [CallerLineNumber] int site = 0) 
-        => CreateButton(label, identity, site).HasFlag(ControlState.Active);
+    public static bool Hold(string label, int identity = 0, [CallerLineNumber] int site = 0)
+        => Start(label, identity, site).Held;
 
-    public static bool Click(string label, int identity = 0, [CallerLineNumber] int site = 0) 
-        => CreateButton(label, identity, site).HasFlag(ControlState.Active) && Onion.Input.MousePrimaryRelease;
+    public static bool Click(string label, int identity = 0, [CallerLineNumber] int site = 0)
+        => Start(label, identity, site).Up;
 
-    private static ControlState CreateButton(string label, int identity = 0, int site = 0)
+    public static InteractionReport Start(string label, int identity = 0, [CallerLineNumber] int site = 0)
     {
         var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(Button).GetHashCode(), identity, site), new Button());
         instance.RenderFocusBox = false;
         instance.Name = label;
         Onion.Tree.End();
-        return instance.State;
+        return new InteractionReport(instance, node, InteractionReport.CastingBehaviour.Up);
     }
 
     public void OnAdd(in ControlParams p) { }

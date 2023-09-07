@@ -121,19 +121,19 @@ public class LayoutQueue
     /// <summary>
     /// Stick to the left of parent
     /// </summary>
-    public LayoutQueue StickLeft() => EnqueueConstraint(new StickLeft());
+    public LayoutQueue StickLeft(bool pad = true) => EnqueueConstraint(new StickLeft(pad));
     /// <summary>
     /// Stick to the right of parent
     /// </summary>
-    public LayoutQueue StickRight() => EnqueueConstraint(new StickRight());
+    public LayoutQueue StickRight(bool pad = true) => EnqueueConstraint(new StickRight(pad));
     /// <summary>
     /// Stick to the top of parent
     /// </summary>
-    public LayoutQueue StickTop() => EnqueueConstraint(new StickTop());
+    public LayoutQueue StickTop(bool pad = true) => EnqueueConstraint(new StickTop(pad));
     /// <summary>
     /// Stick to the bottom of parent
     /// </summary>
-    public LayoutQueue StickBottom() => EnqueueConstraint(new StickBottom());
+    public LayoutQueue StickBottom(bool pad = true) => EnqueueConstraint(new StickBottom(pad));
 
     /// <summary>
     /// Make the control resizable by dragging it at the edges

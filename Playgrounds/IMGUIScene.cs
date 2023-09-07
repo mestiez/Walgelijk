@@ -113,7 +113,9 @@ Deserves kindness and love, a smile on their face";
                     {
                         Ui.Layout.FitWidth().CenterVertical().Height(32).StickTop().StickLeft();
                         Ui.Theme.Foreground((Appearance)Color.FromHsv((i / 10f) % 1, 0.5f, 0.65f)).Once();
-                        Ui.ClickButton("Oma Hondje #" + i, identity: i);
+                        var r = Ui.Button("Oma Hondje #" + i, identity: i);
+                        if (r)
+                            Logger.Debug(i.ToString());
                         Ui.Label("dit is een label", identity: i);
                     }
                 }

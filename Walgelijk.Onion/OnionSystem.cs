@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using Walgelijk.Onion.Animations;
 using Walgelijk.Onion.Controls;
 using Walgelijk.SimpleDrawing;
 
@@ -8,6 +7,7 @@ namespace Walgelijk.Onion;
 public class OnionSystem : Walgelijk.System
 {
     public UiDebugOverlay DebugOverlay = UiDebugOverlay.None;
+    public static Key? DebugSwtichKey = Key.F9;
 
     public OnionSystem()
     {
@@ -32,7 +32,7 @@ public class OnionSystem : Walgelijk.System
         Onion.Layout.Size(Window.Width / Onion.GlobalScale, Window.Height / Onion.GlobalScale);
         Onion.Tree.Start(0, new Dummy()); //Root node
 
-        if (Input.IsKeyReleased(Key.F9))
+        if (DebugSwtichKey.HasValue && Input.IsKeyReleased(DebugSwtichKey.Value))
             DebugOverlay = (UiDebugOverlay)(((int)DebugOverlay + 1) % Enum.GetValues<UiDebugOverlay>().Length);
 
         if (Onion.Configuration.ProcessCursorStack)

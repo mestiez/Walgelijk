@@ -16,20 +16,20 @@ public readonly struct ImageButton : IControl
 
     public static bool Hold(IReadableTexture texture, ImageContainmentMode containmentMode = ImageContainmentMode.Stretch, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        return CreateButton(texture, containmentMode, identity, site).HasFlag(ControlState.Active);
+        return Start(texture, containmentMode, identity, site).Held;
     }
 
     public static bool Click(IReadableTexture texture, ImageContainmentMode containmentMode = ImageContainmentMode.Stretch, int identity = 0, [CallerLineNumber] int site = 0)
     {
-        return CreateButton(texture, containmentMode, identity, site).HasFlag(ControlState.Hover) && Onion.Input.MousePrimaryPressed;
+        return Start(texture, containmentMode, identity, site).Up;
     }
 
-    private static ControlState CreateButton(IReadableTexture texture, ImageContainmentMode containmentMode, int identity = 0, int site = 0)
+    public static InteractionReport Start(IReadableTexture texture, ImageContainmentMode containmentMode, int identity = 0, [CallerLineNumber] int site = 0)
     {
         var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(ImageButton).GetHashCode(), identity, site), new ImageButton(texture, containmentMode));
         instance.RenderFocusBox = false;
         Onion.Tree.End();
-        return instance.State;
+        return new InteractionReport(instance, node, InteractionReport.CastingBehaviour.Up);
     }
 
     public void OnAdd(in ControlParams p) { }
