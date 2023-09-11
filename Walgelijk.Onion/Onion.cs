@@ -30,6 +30,7 @@ public static class Onion
     public static bool Initialised { get; private set; }
 
     public static readonly Hook OnClear = new();
+    internal static bool ForceClearCache = false;
 
     static Onion()
     {

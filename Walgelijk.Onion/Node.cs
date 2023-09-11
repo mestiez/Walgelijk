@@ -123,7 +123,7 @@ public class Node
         if (!AliveLastFrame && p.Node.GetAnimationTime() <= float.Epsilon)
             return;
 
-        var drawBounds = GetFinalDrawBounds(p.Tree);
+        var drawBounds = GetFinalDrawBounds(p.Tree).Quantise();
         p.Tree.DrawboundStack.Push(drawBounds);
 
         Draw.BlendMode = BlendMode.AlphaBlend;
@@ -181,6 +181,8 @@ public class Node
         //p.Instance.Rects.Intermediate.MaxX *= Onion.GlobalScale;
         //p.Instance.Rects.Intermediate.MaxY *= Onion.GlobalScale;
 
+        QuantiseRects(p);
+
         if (AliveLastFrame || SecondsDead <= p.Instance.AllowedDeadTime)
         {
             p.Instance.Rects.ComputedGlobal = p.Instance.Rects.Intermediate;
@@ -188,13 +190,16 @@ public class Node
             if (Parent != null && p.Tree.Instances.TryGetValue(Parent.Identity, out var parentInst))
                 p.Instance.Rects.ComputedGlobal = p.Instance.Rects.ComputedGlobal.Translate(parentInst.Rects.ComputedGlobal.BottomLeft).Translate(parentInst.Rects.InnerContentRectAdjustment.XY());
 
+            //if (p.Instance.Rects.ComputedScrollBounds.Width > 0 || p.Instance.Rects.ComputedScrollBounds.Height > 0)
+            //{
+            //    p.Instance.Rects.InnerContentRectAdjustment.Z -= p.Theme.ScrollbarWidth;
+            //}
+
             Behaviour.OnProcess(p);
 
             AdjustRaycastRect(p);
             EnforceScrollBounds(p);
         }
-
-        QuantiseRects(p);
 
         foreach (var child in GetChildren())
             child.Process(new ControlParams(child, p.Tree.EnsureInstance(child.Identity)));
@@ -274,6 +279,7 @@ public class Node
         ChronologicalPosition = -1;
         var inst = tree.EnsureInstance(Identity);
         inst.Rects.ComputedChildContent = inst.Rects.Local;
+        inst.Rects.ComputedChildContentSize = Vector2.Zero;
 
         // remove dead children from the child list
         var toDelete = ArrayPool<int>.Shared.Rent(Children.Count);
@@ -291,10 +297,14 @@ public class Node
             {
                 //living child should count towards child content rect
                 if (item.ContributeToParentScrollRect)
+                {
                     inst.Rects.ComputedChildContent = inst.Rects.ComputedChildContent.StretchToContain(childInst.Rects.Intermediate);
+                    inst.Rects.ComputedChildContentSize = Vector2.Max(inst.Rects.ComputedChildContentSize, childInst.Rects.ComputedGlobal.TopRight);
+                }
             }
             item.SiblingIndex = siblingIndex++;
         }
+        inst.Rects.ComputedChildContentSize -= inst.Rects.ComputedGlobal.BottomLeft;
         //for (int i = 0; i < length; i++) // TODO
         //    Children.Remove(toDelete[i]);
         ArrayPool<int>.Shared.Return(toDelete);

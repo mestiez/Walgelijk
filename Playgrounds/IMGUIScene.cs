@@ -89,7 +89,9 @@ Deserves kindness and love, a smile on their face";
             if (Input.IsKeyReleased(Key.D1))
                 SelectedDemo = 0;
             if (Input.IsKeyReleased(Key.D2))
-                SelectedDemo = 1;
+                SelectedDemo = 1; 
+            if (Input.IsKeyReleased(Key.D3))
+                SelectedDemo = 2;
 
             switch (SelectedDemo)
             {
@@ -99,9 +101,29 @@ Deserves kindness and love, a smile on their face";
                 case 1:
                     ManyScrolling();
                     break;
+                case 2:
+                    AutoSizeTest();
+                    break;
             }
         }
 
+        private void AutoSizeTest()
+        {
+            Ui.Layout.FitContent();
+            Ui.StartDragWindow("Huh?");
+            {
+                Ui.Layout.Size(300, 32).StickTop().StickLeft();
+                Ui.Button("Button A");      
+                
+                Ui.Layout.Size(300, 32).StickTop().StickLeft().Move(0,32);
+                Ui.Button("Button B");
+
+                Ui.Layout.PreferredSize().Width(300).Move(0,64);
+                Ui.TextRect(textRectContents, HorizontalTextAlign.Left, VerticalTextAlign.Top);
+            }
+            Ui.End();
+        }
+        
         private void ManyScrolling()
         {
             Ui.Layout.Width(300).FitHeight(false).CenterHorizontal().VerticalLayout();
@@ -153,7 +175,7 @@ Deserves kindness and love, a smile on their face";
                     layout.Move(Onion.Theme.Base.Padding, Onion.Theme.Base.Padding);
                     layout.Size(0, 32);
                     layout.FitContainer(1, null);
-
+                     
                     if (Button.Click("Ik besta ook " + i, i))
                         WindowsOpen[i % WindowsOpen.Length] = !WindowsOpen[i % WindowsOpen.Length];
                 }

@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System.ComponentModel;
 using System.Diagnostics;
 using Walgelijk.Onion.Controls;
 
@@ -7,11 +6,6 @@ namespace Walgelijk.Onion;
 
 public static class FrameExporter
 {
-    private struct ControlRep
-    {
-
-    }
-
     [Command(Alias ="OnionSnap")]
     public static void Export(string path = "snapshot.html")
     {

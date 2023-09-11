@@ -22,8 +22,8 @@ void main()
    uv = texcoord;
    vertexColor = color;
    vec4 pixelPerfect = projection * view * model * vec4(position, 1.0);
-   pixelPerfect.x = floor(pixelPerfect.x);
-   pixelPerfect.y = floor(pixelPerfect.y);
+   pixelPerfect.x = round(pixelPerfect.x);
+   pixelPerfect.y = round(pixelPerfect.y);
    gl_Position = pixelPerfect;
 }
 ",

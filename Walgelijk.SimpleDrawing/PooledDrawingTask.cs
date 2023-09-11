@@ -85,10 +85,10 @@ namespace Walgelijk.SimpleDrawing
                 {
                     if (!Drawing.TextDrawing.HasValue)
                     {
-                        Drawing.Position.X = MathF.Floor(Drawing.Position.X);
-                        Drawing.Position.Y = MathF.Floor(Drawing.Position.Y);
-                        Drawing.Scale.X = MathF.Floor(Drawing.Scale.X);
-                        Drawing.Scale.Y = MathF.Floor(Drawing.Scale.Y);
+                        Drawing.Position.X = MathF.Round(Drawing.Position.X);
+                        Drawing.Position.Y = MathF.Round(Drawing.Position.Y);
+                        Drawing.Scale.X = MathF.Round(Drawing.Scale.X);
+                        Drawing.Scale.Y = MathF.Round(Drawing.Scale.Y);
                     }
 
                     var target = graphics.CurrentTarget;

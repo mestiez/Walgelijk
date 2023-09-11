@@ -69,6 +69,13 @@ public struct ControlRects
     public Rect ComputedChildContent;
 
     /// <summary>
+    /// The size that the children of this control take up measured from the 0,0 point. This means that this value ignores all the space beyond the top left of the inner child content rect.
+    /// This is different from <see cref="ComputedChildContent"/> in that it is based on the final global bounds of the child controls. This provides a value that is more reliable when measuring
+    /// content size.
+    /// </summary>
+    public Vector2 ComputedChildContentSize;
+
+    /// <summary>
     /// The rectangle that is determined by the minimum and maximum values of <see cref="ControlInstance.InnerScrollOffset"/>
     /// <br></br>
     /// Defined in local (parent) space

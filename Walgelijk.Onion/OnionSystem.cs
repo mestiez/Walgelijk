@@ -16,6 +16,12 @@ public class OnionSystem : Walgelijk.System
 
     public override void Update()
     {
+        if (Onion.ForceClearCache)
+        {
+            Onion.ForceClearCache = false;
+            Onion.ClearCache();
+        }
+
         if (!Onion.Initialised)
             Onion.Initalise(Game);
 
