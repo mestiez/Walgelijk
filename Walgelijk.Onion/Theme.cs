@@ -30,7 +30,7 @@ public struct Theme
     public float FocusBoxWidth = 4;
 
     public bool ShowScrollbars = true;
-    public float ScrollbarWidth = 24;
+    public float ScrollbarWidth = 16;
 
     public Theme()
     {

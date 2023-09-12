@@ -101,6 +101,8 @@ public class ControlTree
         node.Alive = true;
 
         inst.Rects.InnerContentRectAdjustment = Vector4.Zero;
+        if (inst.Rects.ComputedScrollBounds.Height > 0 && p.Instance.Theme.ShowScrollbars && p.Instance.CaptureFlags.HasFlag(CaptureFlags.Scroll))
+            inst.Rects.InnerContentRectAdjustment.Z -= p.Theme.ScrollbarWidth;
         node.Behaviour.OnStart(p);
         inst.Rects.Intermediate = inst.Rects.Local;
 

@@ -286,7 +286,6 @@ Deserves kindness and love, a smile on their face";
                             Logger.Log("Window dropdown selected!");
 
                         layout.FitContainer(1, 1, false).Move(0, 32).Scale(0, -80);
-                        Ui.Theme.Padding(0).Once();
                         Ui.StartScrollView(false, i);
                         {
                             layout.Height(32).FitWidth().Move(Onion.Theme.Base.Padding, Onion.Theme.Base.Padding);

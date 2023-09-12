@@ -144,12 +144,55 @@ public class Node
             foreach (var child in GetChildren())
                 child.Render(
                     new ControlParams(child, p.Tree.EnsureInstance(child.Identity)));
+
+            ProcessScrollbars(p);
         }
 
         p.Tree.DrawboundStack.Pop();
 
         foreach (var decorator in p.Instance.Decorators)
             decorator.RenderAfter(p);
+    }
+
+    private static void ProcessScrollbars(ControlParams p)
+    {
+        /* TODO
+         * Horizontal scrollbar
+         * Scrollbar proper focus & raycast
+         * Dropdown has issues with it
+         */
+        if (p.Instance.Theme.ShowScrollbars && p.Instance.CaptureFlags.HasFlag(CaptureFlags.Scroll) && p.Instance.Rects.ComputedScrollBounds.Height != 0)
+        {
+            Draw.ResetTexture();
+            Draw.DrawBounds = new DrawBounds(p.Instance.Rects.ComputedDrawBounds, true);
+            Draw.ResetTransformation();
+            Draw.BlendMode = BlendMode.AlphaBlend;
+            Draw.ScreenSpace = true;
+            Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, p.Node.ComputedGlobalOrder);
+            Draw.OutlineWidth = 0;
+
+            var scrollbarRect = p.Instance.Rects.ComputedGlobal with { MinX = p.Instance.Rects.ComputedGlobal.MaxX - p.Instance.Theme.ScrollbarWidth };
+            var padding = p.Instance.Theme.Padding;
+            var trackerRect = scrollbarRect;
+            var ratio = scrollbarRect.Height / (scrollbarRect.Height + p.Instance.Rects.ComputedScrollBounds.Height);
+            trackerRect.MaxY = trackerRect.MinY + scrollbarRect.Height * ratio;
+            trackerRect = trackerRect.Translate(0, -(scrollbarRect.Height - trackerRect.Height) * (p.Instance.InnerScrollOffset.Y / p.Instance.Rects.ComputedScrollBounds.Height));
+            Draw.Colour = p.Instance.Theme.Background.Default.Color;
+
+            if (scrollbarRect.ContainsPoint(Onion.Input.MousePosition))
+            {
+                Game.Main.Window.CursorStack.SetCursor(DefaultCursor.Pointer);
+                Draw.Colour = Utilities.Lerp(Draw.Colour, p.Instance.Theme.Accent.Default, 0.2f);
+            }
+            Draw.Quad(scrollbarRect, 0, p.Instance.Theme.Rounding);
+            Draw.Colour = p.Instance.Theme.Accent.Default;
+            Draw.Quad(trackerRect.Expand(-padding), 0, p.Instance.Theme.Rounding);
+
+            if (Onion.Input.MousePrimaryHeld && scrollbarRect.ContainsPoint(Onion.Input.MousePosition))
+            {
+                p.Instance.InnerScrollOffset.Y -= Onion.Input.MouseDelta.Y / ratio;
+            }
+        }
     }
 
     public void ApplyParentLayout(in ControlParams p)
@@ -189,11 +232,6 @@ public class Node
             ControlUtils.ConsiderParentScroll(p);
             if (Parent != null && p.Tree.Instances.TryGetValue(Parent.Identity, out var parentInst))
                 p.Instance.Rects.ComputedGlobal = p.Instance.Rects.ComputedGlobal.Translate(parentInst.Rects.ComputedGlobal.BottomLeft).Translate(parentInst.Rects.InnerContentRectAdjustment.XY());
-
-            //if (p.Instance.Rects.ComputedScrollBounds.Width > 0 || p.Instance.Rects.ComputedScrollBounds.Height > 0)
-            //{
-            //    p.Instance.Rects.InnerContentRectAdjustment.Z -= p.Theme.ScrollbarWidth;
-            //}
 
             Behaviour.OnProcess(p);
 
