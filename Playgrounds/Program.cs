@@ -37,7 +37,7 @@ public class Program
         Resources.SetBasePathForType<Texture>("textures");
         Resources.SetBasePathForType<Font>("fonts");
 
-        game.Scene = new IMGUIScene().Load(game);
+        game.Scene = new PrismScene().Load(game);
 
 #if DEBUG
         game.DevelopmentMode = true;

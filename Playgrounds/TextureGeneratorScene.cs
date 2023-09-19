@@ -1,5 +1,6 @@
 ﻿using Walgelijk;
 using Walgelijk.SimpleDrawing;
+using static TestWorld.TextureGeneratorScene;
 
 namespace TestWorld;
 
