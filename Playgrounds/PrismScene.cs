@@ -61,8 +61,9 @@ public struct PrismScene : ISceneCreator
             }
 
         {
-            var cube = scene.CreateEntity();
-            scene.AttachComponent(cube, new PrismTransformComponent
+            var cat = scene.CreateEntity();
+            scene.AttachComponent(cat, new SpinnyComponent());
+            scene.AttachComponent(cat, new PrismTransformComponent
             {
                 Scale = new Vector3(1),
                 Rotation = Quaternion.Identity,
@@ -70,7 +71,7 @@ public struct PrismScene : ISceneCreator
             });
 
             MeshLoader.Load("resources/meshes/rusty.obj", out var bunnyVerts, out var bunnyIndices);
-            scene.AttachComponent(cube, new PrismMeshComponent(bunnyVerts, bunnyIndices)
+            scene.AttachComponent(cat, new PrismMeshComponent(bunnyVerts, bunnyIndices)
             {
                 Material = new Material(Material.DefaultTextured)
             }).Material.SetUniform("mainTex", Resources.Load<Texture>("qoitest.png"));
