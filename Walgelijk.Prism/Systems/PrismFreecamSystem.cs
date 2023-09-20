@@ -15,8 +15,11 @@ public class PrismFreecamSystem : Walgelijk.System
             var transform = Scene.GetComponentFrom<PrismTransformComponent>(camera.Entity);
             const float sensitivity = 0.01f;
 
-            x += Input.WindowMouseDelta.X * -sensitivity;
-            y += Input.WindowMouseDelta.Y * -sensitivity;
+            if (Window.HasFocus)
+            {
+                x += Input.WindowMouseDelta.X * -sensitivity;
+                y += Input.WindowMouseDelta.Y * -sensitivity;
+            }
 
             var rot1 = Matrix4x4.Identity;
 
@@ -44,6 +47,11 @@ public class PrismFreecamSystem : Walgelijk.System
 
             if (Input.IsKeyHeld(Key.LeftControl))
                 transform.Position += transform.Down * speed;
+
+            if (Input.IsKeyHeld(Key.Space))
+                camera.FieldOfView = Utilities.SmoothApproach(camera.FieldOfView, 10, 25, Time.DeltaTime);
+            else
+                camera.FieldOfView = Utilities.SmoothApproach(camera.FieldOfView, 80, 25, Time.DeltaTime);
         }
     }
 }

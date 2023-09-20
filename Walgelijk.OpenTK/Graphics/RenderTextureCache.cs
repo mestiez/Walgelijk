@@ -1,41 +1,61 @@
 ﻿using OpenTK.Graphics.OpenGL;
+using System;
 
-namespace Walgelijk.OpenTK
+namespace Walgelijk.OpenTK;
+
+internal class RenderTextureCache : Cache<RenderTexture, RenderTextureHandles>
 {
-    internal class RenderTextureCache : Cache<RenderTexture, RenderTextureHandles>
+    protected override RenderTextureHandles CreateNew(RenderTexture raw)
     {
-        protected override RenderTextureHandles CreateNew(RenderTexture raw)
+        var framebufferID = GL.GenFramebuffer();
+        GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebufferID);
+
+        int[] ids = new int[1];
+
+        // generate framebuffertexture 
         {
-            int framebufferID = GL.GenFramebuffer();
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebufferID);
-
-            var loadedTexture = GPUObjects.TextureCache.Load(raw);
-
+            ids[0] = GPUObjects.TextureCache.Load(raw).Handle;
             GL.FramebufferTexture2D(
                 FramebufferTarget.Framebuffer,
                 FramebufferAttachment.ColorAttachment0,
                 TextureTarget.Texture2D,
-                loadedTexture.Index,
+                ids[0],
                 0);
-
-            var result = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
-            if (result != FramebufferErrorCode.FramebufferComplete)
-            {
-                Logger.Error($"Could not create RenderTexture: {result}");
-                return default;
-            }
-
-            return new RenderTextureHandles(framebufferID, loadedTexture.Index, raw);
         }
 
-        protected override void DisposeOf(RenderTextureHandles loaded)
+        if (raw.Flags.HasFlag(RenderTextureFlags.Depth))
         {
-            if (loaded.Raw != null)
-            {
-                GL.DeleteFramebuffer(loaded.FramebufferID);
-                GPUObjects.TextureCache.Unload(loaded.Raw);
-                GPUObjects.RenderTargetDictionary.Delete(loaded.Raw);
-            }
+            Array.Resize(ref ids, 2);
+            ids[1] = GL.GenTexture(); // we will bypass the texture cache because it is completely unnecessary here
+            GL.BindTexture(TextureTarget.Texture2D, ids[1]);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, raw.Width, raw.Height, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+
+            GL.FramebufferTexture2D(
+                FramebufferTarget.Framebuffer,
+                FramebufferAttachment.DepthAttachment,
+                TextureTarget.Texture2D,
+                ids[1],
+                0);
+        }
+
+        var result = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
+        if (result != FramebufferErrorCode.FramebufferComplete)
+        {
+            Logger.Error($"Could not create RenderTexture: {result}");
+            return new RenderTextureHandles(-1, null!, raw);
+        }
+
+        return new RenderTextureHandles(framebufferID, ids, raw);
+    }
+
+    protected override void DisposeOf(RenderTextureHandles loaded)
+    {
+        GL.DeleteFramebuffer(loaded.FramebufferID);
+        GPUObjects.TextureCache.Unload(loaded.RenderTexture);
+        GPUObjects.RenderTargetDictionary.Delete(loaded.RenderTexture);
+        for (int i = 0; i < loaded.TextureIds.Length; i++)
+        {
+            GL.DeleteTexture(loaded.TextureIds[i]);
         }
     }
 }

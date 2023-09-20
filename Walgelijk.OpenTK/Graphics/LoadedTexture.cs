@@ -9,31 +9,31 @@ namespace Walgelijk.OpenTK
         {
             Width = width;
             Height = height;
-            Index = handle;
+            Handle = handle;
         }
 
         public int Width { get; }
         public int Height { get; }
-        public int Index { get; }
+        public int Handle { get; }
 
         public override bool Equals(object obj)
         {
             return obj is LoadedTexture texture &&
                    Width == texture.Width &&
                    Height == texture.Height &&
-                   Index == texture.Index;
+                   Handle == texture.Handle;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Width, Height, Index);
+            return HashCode.Combine(Width, Height, Handle);
         }
 
         public static bool operator ==(LoadedTexture left, LoadedTexture right)
         {
             return left.Width == right.Width &&
                    left.Height == right.Height &&
-                   left.Index == right.Index;
+                   left.Handle == right.Handle;
         }
 
         public static bool operator !=(LoadedTexture left, LoadedTexture right)
@@ -62,13 +62,13 @@ namespace Walgelijk.OpenTK
         public void Bind()
         {
             GL.ActiveTexture(Unit);
-            GL.BindTexture(TextureTarget.Texture2D, Texture.Index);
+            GL.BindTexture(TextureTarget.Texture2D, Texture.Handle);
         }
 
         public override bool Equals(object obj)
         {
             return obj is TextureUnitLink other &&
-                   Texture.Index == other.Texture.Index &&
+                   Texture.Handle == other.Texture.Handle &&
                    Unit == other.Unit;
         }
 
@@ -79,7 +79,7 @@ namespace Walgelijk.OpenTK
 
         public static bool operator ==(TextureUnitLink left, TextureUnitLink right)
         {
-            return left.Texture.Index == right.Texture.Index &&
+            return left.Texture.Handle == right.Texture.Handle &&
                    left.Unit == right.Unit;
         }
 

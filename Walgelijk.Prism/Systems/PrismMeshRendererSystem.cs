@@ -4,6 +4,9 @@ public class PrismMeshRendererSystem : Walgelijk.System
 {
     public override void Render()
     {
+        if (!Game.Compositor.Flags.HasFlag(RenderTextureFlags.Depth))
+            Game.Compositor.Flags |= RenderTextureFlags.Depth;
+
         foreach (var item in Scene.GetAllComponentsOfType<PrismMeshComponent>())
         {
             var transform = Scene.GetComponentFrom<PrismTransformComponent>(item.Entity);

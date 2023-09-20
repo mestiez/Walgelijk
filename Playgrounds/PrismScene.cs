@@ -24,6 +24,9 @@ public struct PrismScene : ISceneCreator
             ClearColour = new Color("#152123")
         });
 
+        PrismPrimitives.GenerateCuboid(new Vector3(1), out var verts, out var indices);
+        var vxb = new VertexBuffer(verts, indices) { PrimitiveType = Primitive.Triangles };
+
         for (int i = 0; i < 15; i++)
         {
             var cube = scene.CreateEntity();
@@ -33,10 +36,12 @@ public struct PrismScene : ISceneCreator
                 Rotation = Quaternion.CreateFromYawPitchRoll(Utilities.RandomFloat(), Utilities.RandomFloat(), Utilities.RandomFloat()),
                 Position = new Vector3(Utilities.RandomFloat(-20, 20), Utilities.RandomFloat(0, 20), Utilities.RandomFloat(-20, 20))
             });
-            scene.AttachComponent(cube, new PrismMeshComponent());
+            scene.AttachComponent(cube, new PrismMeshComponent(vxb));
             scene.AttachComponent(cube, new SpinnyComponent());
         }
 
+        PrismPrimitives.GenerateQuad(new Vector2(1), out verts, out indices);
+        vxb = new VertexBuffer(verts, indices) { PrimitiveType = Primitive.Triangles };
 
         for (int x = -5; x < 10; x++)
             for (int y = -5; y < 10; y++)
@@ -44,18 +49,15 @@ public struct PrismScene : ISceneCreator
                 var cube = scene.CreateEntity();
                 scene.AttachComponent(cube, new PrismTransformComponent
                 {
-                    Scale = new Vector3(0.5f),
+                    Scale = new Vector3(0.5f), 
                     Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitX, MathF.PI / 2),
                     Position = new Vector3(x, -0.5f, y)
                 });
 
-                PrismPrimitives.GenerateQuad(new Vector2(1), out var verts, out var indices);
-                var vxb = new VertexBuffer(verts, indices) { PrimitiveType = Primitive.Triangles };
-
                 scene.AttachComponent(cube, new PrismMeshComponent(vxb)
                 {
                     Material = new Material(Material.DefaultTextured)
-                }).Material.SetUniform("mainTex", TexGen.Checkerboard(8,8, 2, Colors.Red, Utilities.RandomColour()));
+                }).Material.SetUniform("mainTex", TexGen.Colour(1,1,Utilities.RandomColour()));
             }
         return scene;
     }

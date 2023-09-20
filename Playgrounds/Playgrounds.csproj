@@ -21,7 +21,7 @@
     <None Include="$(ProjectDir)resources\**" CopyToOutputDirectory="Always" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NAudio" Version="2.1.0" />
+    <PackageReference Include="NAudio" Version="2.2.1" />
   </ItemGroup>
   <ItemGroup>
     <None Update="resources\fonts\roboto mono.fnt">

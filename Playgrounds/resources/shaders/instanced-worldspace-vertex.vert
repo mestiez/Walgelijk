@@ -2,10 +2,11 @@
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 texcoord;
-layout(location = 2) in vec4 color;
+layout(location = 2) in vec3 normal;
+layout(location = 3) in vec4 color;
 
-layout(location = 3) in vec2 particlePosition;
-layout(location = 4) in vec4 particleColor;
+layout(location = 4) in vec2 particlePosition;
+layout(location = 5) in vec4 particleColor;
 
 out vec2 uv;
 out vec4 vertexColor;

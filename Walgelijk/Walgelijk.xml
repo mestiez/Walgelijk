@@ -2255,7 +2255,7 @@
             Save a texture to disk as a PNG
             </summary>
         </member>
-        <member name="M:Walgelijk.IGraphics.TryGetId(Walgelijk.RenderTexture,System.Int32@,System.Int32@)">
+        <member name="M:Walgelijk.IGraphics.TryGetId(Walgelijk.RenderTexture,System.Int32@,System.Int32[]@)">
             <summary>
             Try to get the ID of the given graphics object. 
             Returns false if the given object could not be found, true otherwise.
@@ -2941,6 +2941,31 @@
             You can't get pixels from a RenderTexture. This will return a region of zero length.
             </summary>
         </member>
+        <member name="T:Walgelijk.RenderTextureFlags">
+            <summary>
+            Render texture features
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderTextureFlags.None">
+            <summary>
+            Nothing special
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderTextureFlags.Depth">
+            <summary>
+            Has a depth buffer
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderTextureFlags.HDR">
+            <summary>
+            Allows HDR values
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderTextureFlags.Mipmaps">
+            <summary>
+            Generates mipmaps
+            </summary>
+        </member>
         <member name="T:Walgelijk.Shader">
             <summary>
             Structure that holds the code for a full shader program
@@ -3312,6 +3337,11 @@
             Vertex UV coordinates
             </summary>
         </member>
+        <member name="F:Walgelijk.Vertex.Normal">
+            <summary>
+            Normal vector
+            </summary>
+        </member>
         <member name="F:Walgelijk.Vertex.Color">
             <summary>
             Vertex colour
@@ -3321,19 +3351,26 @@
             <summary>
             Create a vertex with a position, UV, and colour
             </summary>
-            <param name="position"></param>
-            <param name="texCoords"></param>
-            <param name="color"></param>
+        </member>
+        <member name="M:Walgelijk.Vertex.#ctor(System.Numerics.Vector3,System.Numerics.Vector2,Walgelijk.Color,System.Numerics.Vector3)">
+            <summary>
+            Create a vertex with a position, UV, colour, and normal
+            </summary>
         </member>
         <member name="M:Walgelijk.Vertex.#ctor(System.Numerics.Vector3)">
             <summary>
-            Create a vertex with a position. White and zero UV by default;
+            Create a vertex with a position. White and zero UV by default
             </summary>
             <param name="position"></param>
         </member>
         <member name="M:Walgelijk.Vertex.#ctor(System.Single,System.Single,System.Single)">
             <summary>
-            Create a vertex with a position.  White and zero UV by default;
+            Create a vertex with a position.  White and zero UV by default
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Vertex.#ctor(System.Single,System.Single,System.Single,System.Numerics.Vector3)">
+            <summary>
+            Create a vertex with a position and a normal.  White and zero UV by default
             </summary>
         </member>
         <member name="T:Walgelijk.VertexAttributeArray">

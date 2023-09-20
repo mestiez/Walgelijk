@@ -16,7 +16,7 @@ public class TextureCache : Cache<IReadableTexture, LoadedTexture>
         var loaded = base.Load(raw);
 
         if (raw.NeedsUpdate)
-            UploadTexture(raw, loaded.Index);
+            UploadTexture(raw, loaded.Handle);
 
         return loaded;
     }
@@ -131,7 +131,7 @@ public class TextureCache : Cache<IReadableTexture, LoadedTexture>
 
     protected override void DisposeOf(LoadedTexture loaded)
     {
-        GL.DeleteTexture(loaded.Index);
-        Logger.Log($"Deleted texture {loaded.Index}");
+        GL.DeleteTexture(loaded.Handle);
+        Logger.Log($"Deleted texture {loaded.Handle}");
     }
 }

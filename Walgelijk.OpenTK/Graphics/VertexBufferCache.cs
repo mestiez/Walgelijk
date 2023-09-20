@@ -92,13 +92,15 @@ namespace Walgelijk.OpenTK
 
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, Vertex.Stride, sizeof(float) * 0); //position
             GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, Vertex.Stride, sizeof(float) * 3); //texcoords
-            GL.VertexAttribPointer(2, 4, VertexAttribPointerType.Float, false, Vertex.Stride, sizeof(float) * 5); //color
+            GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, Vertex.Stride, sizeof(float) * 5); //normal
+            GL.VertexAttribPointer(3, 4, VertexAttribPointerType.Float, false, Vertex.Stride, sizeof(float) * 8); //color
 
             GL.EnableVertexAttribArray(0);
             GL.EnableVertexAttribArray(1);
             GL.EnableVertexAttribArray(2);
+            GL.EnableVertexAttribArray(3);
 
-            int location = 3;
+            int location = 4;
             for (int i = 0; i < buffer.ExtraAttributeCount; i++)
             {
                 var array = buffer.GetAttribute(i);

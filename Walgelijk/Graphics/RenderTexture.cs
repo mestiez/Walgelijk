@@ -15,13 +15,24 @@ namespace Walgelijk
         /// <summary>
         /// Construct a <see cref="RenderTexture"/>
         /// </summary>
+        [Obsolete("Use the constructor that takes RenderTextureFlags")]
         public RenderTexture(int width, int height, WrapMode wrapMode = WrapMode.Clamp, FilterMode filterMode = FilterMode.Linear, bool generateMipmaps = false, bool hdr = false)
         {
             this.size = new Vector2(width, height);
             this.wrapMode = wrapMode;
             this.filterMode = filterMode;
-            GenerateMipmaps = generateMipmaps;
-            HDR = hdr;
+            if (generateMipmaps)
+                Flags |= RenderTextureFlags.Mipmaps;
+            if (hdr)
+                Flags |= RenderTextureFlags.HDR;
+        }      
+        
+        public RenderTexture(int width, int height, WrapMode wrapMode = WrapMode.Clamp, FilterMode filterMode = FilterMode.Linear, RenderTextureFlags flags = RenderTextureFlags.None)
+        {
+            this.size = new Vector2(width, height);
+            this.wrapMode = wrapMode;
+            this.filterMode = filterMode;
+            Flags = flags;
         }
 
         public override Vector2 Size
@@ -37,8 +48,8 @@ namespace Walgelijk
         }
 
         public int Width => (int)Size.X;
-
         public int Height => (int)Size.Y;
+        public readonly RenderTextureFlags Flags;
 
         public WrapMode WrapMode
         {
@@ -64,9 +75,10 @@ namespace Walgelijk
 
         public bool NeedsUpdate { get; set; }
 
-        public bool GenerateMipmaps { get; }
-
-        public bool HDR { get; }
+        [Obsolete("Use Flags")]
+        public bool GenerateMipmaps => Flags.HasFlag(RenderTextureFlags.Mipmaps);
+        [Obsolete("Use Flags")]
+        public bool HDR => Flags.HasFlag(RenderTextureFlags.HDR);
 
         /// <summary>
         /// There is no local copy so this will do nothing.

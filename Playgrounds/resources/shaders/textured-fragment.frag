@@ -2,6 +2,7 @@
 
 in vec2 uv;
 in vec4 vertexColor;
+in vec3 normal;
 
 out vec4 color;
 

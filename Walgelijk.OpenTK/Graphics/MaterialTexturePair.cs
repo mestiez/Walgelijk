@@ -20,14 +20,14 @@ namespace Walgelijk.OpenTK
             return obj is MaterialTexturePair pair &&
                    pair.Material.ProgramHandle == Material.ProgramHandle &&
                    pair.UniformLocation == UniformLocation &&
-                   pair.Texture.Index == Texture.Index;
+                   pair.Texture.Handle == Texture.Handle;
         }
 
         public bool Equals(MaterialTexturePair other)
         {
             return other.Material.ProgramHandle == Material.ProgramHandle &&
                    other.UniformLocation == UniformLocation &&
-                   other.Texture.Index == Texture.Index;
+                   other.Texture.Handle == Texture.Handle;
         }
 
         public override int GetHashCode()
@@ -39,7 +39,7 @@ namespace Walgelijk.OpenTK
         {
             return left.Material.ProgramHandle == right.Material.ProgramHandle &&
                    left.UniformLocation == right.UniformLocation &&
-                   left.Texture.Index == right.Texture.Index;
+                   left.Texture.Handle == right.Texture.Handle;
         }
 
         public static bool operator !=(MaterialTexturePair left, MaterialTexturePair right)

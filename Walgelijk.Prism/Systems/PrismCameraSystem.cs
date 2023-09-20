@@ -23,7 +23,7 @@ public class PrismCameraSystem : Walgelijk.System
 
         if (Matrix4x4.Invert(transform.Transformation, out var i))
             renderTask.View = i;
-        renderTask.Projection = Matrix4x4.CreatePerspectiveFieldOfView(cam.FieldOfView * Utilities.DegToRad, (float)Window.Width / Window.Height, cam.NearClip, cam.FarClip);
+        renderTask.Projection = Matrix4x4.CreatePerspectiveFieldOfView(MathF.Max(cam.FieldOfView, 1) * Utilities.DegToRad, (float)Window.Width / Window.Height, cam.NearClip, cam.FarClip);
 
         if (cam.Clear)
         {

@@ -59,7 +59,7 @@
         /// Try to get the ID of the given graphics object. 
         /// Returns false if the given object could not be found, true otherwise.
         /// </summary>
-        public bool TryGetId(RenderTexture graphicsObject, out int frameBufferId, out int textureId);
+        public bool TryGetId(RenderTexture graphicsObject, out int frameBufferId, out int[] textureId);
 
         /// <summary>
         /// Try to get the ID of the given graphics object. 
@@ -84,7 +84,5 @@
         /// Blit a <see cref="RenderTexture"/> onto another
         /// </summary>
         public void Blit(RenderTexture source, RenderTexture destination);
-
-        //TODO position en alles
     }
 }

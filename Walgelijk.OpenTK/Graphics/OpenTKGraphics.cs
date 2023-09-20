@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Walgelijk.OpenTK
@@ -39,7 +40,14 @@ namespace Walgelijk.OpenTK
                 {
                     var handles = GPUObjects.RenderTextureCache.Load(rt);
                     GPUObjects.RenderTargetDictionary.Set(rt, handles.FramebufferID);
+
+                    if (rt.Flags.HasFlag(RenderTextureFlags.Depth))
+                        GL.Enable(EnableCap.DepthTest);
+                    else
+                        GL.Disable(EnableCap.DepthTest);
                 }
+                else
+                    GL.Disable(EnableCap.DepthTest);
 
                 var id = GPUObjects.RenderTargetDictionary.Get(currentTarget);
                 if (id == -1)
@@ -57,6 +65,8 @@ namespace Walgelijk.OpenTK
         {
             GL.ClearColor(color.R, color.G, color.B, color.A);
             GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.ClearDepth(1);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
         }
 
         public void Draw(VertexBuffer vertexBuffer, Material material = null)
@@ -197,14 +207,15 @@ namespace Walgelijk.OpenTK
                 );
         }
 
-        public bool TryGetId(RenderTexture rt, out int frameBufferId, out int textureId)
+        public bool TryGetId(RenderTexture rt, out int frameBufferId, out int[] textureId)
         {
-            textureId = frameBufferId = -1;
+            textureId = new int[] { -1 };
+            frameBufferId = -1;
             if (GPUObjects.RenderTextureCache.Has(rt))
             {
                 var l = GPUObjects.RenderTextureCache.Load(rt);
                 frameBufferId = l.FramebufferID;
-                textureId = l.TextureID;
+                textureId = l.TextureIds;
                 return true;
             }
             return false;
@@ -215,7 +226,7 @@ namespace Walgelijk.OpenTK
             textureId = -1;
             if (GPUObjects.TextureCache.Has(texture))
             {
-                textureId = GPUObjects.TextureCache.Load(texture).Index;
+                textureId = GPUObjects.TextureCache.Load(texture).Handle;
                 return true;
             }
             return false;
