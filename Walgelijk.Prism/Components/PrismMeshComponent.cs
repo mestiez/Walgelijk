@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace Walgelijk.Prism;
+﻿namespace Walgelijk.Prism;
 
 [RequiresComponents(typeof(PrismTransformComponent))]
 public class PrismMeshComponent : Component

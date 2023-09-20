@@ -59,6 +59,23 @@ public struct PrismScene : ISceneCreator
                     Material = new Material(Material.DefaultTextured)
                 }).Material.SetUniform("mainTex", TexGen.Colour(1,1,Utilities.RandomColour()));
             }
+
+        {
+            var cube = scene.CreateEntity();
+            scene.AttachComponent(cube, new PrismTransformComponent
+            {
+                Scale = new Vector3(1),
+                Rotation = Quaternion.Identity,
+                Position = new Vector3(0, 5, 0)
+            });
+
+            MeshLoader.Load("resources/meshes/rusty.obj", out var bunnyVerts, out var bunnyIndices);
+            scene.AttachComponent(cube, new PrismMeshComponent(bunnyVerts, bunnyIndices)
+            {
+                Material = new Material(Material.DefaultTextured)
+            }).Material.SetUniform("mainTex", Resources.Load<Texture>("qoitest.png"));
+        }
+
         return scene;
     }
 
