@@ -55,7 +55,7 @@ public struct PrismScene : ISceneCreator
                 scene.AttachComponent(cube, new PrismMeshComponent(vxb)
                 {
                     Material = new Material(Material.DefaultTextured)
-                }).Material.SetUniform("mainTex", TexGen.Colour(1,1, Utilities.RandomColour()));
+                }).Material.SetUniform("mainTex", TexGen.Checkerboard(8,8, 2, Colors.Red, Utilities.RandomColour()));
             }
         return scene;
     }
