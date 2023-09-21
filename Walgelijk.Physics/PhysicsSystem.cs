@@ -182,8 +182,7 @@ public class PhysicsSystem : Walgelijk.System
                 float minDistance = float.MaxValue;
                 foreach (var entity in GetBodiesNear(currentChunk, world))
                 {
-                    var bodyComponent = Scene.GetComponentFrom<PhysicsBodyComponent>(entity);
-                    if (!bodyComponent.PassesFilter(filter))
+                    if (!Scene.TryGetComponentFrom<PhysicsBodyComponent>(entity, out var bodyComponent) || !bodyComponent.PassesFilter(filter))
                         continue;
 
                     foreach (var intersection in bodyComponent.Collider.GetLineIntersections(ray))//TODO meerdere colliders per object??
