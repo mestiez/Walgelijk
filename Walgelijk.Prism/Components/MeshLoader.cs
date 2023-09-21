@@ -10,7 +10,7 @@ public static class MeshLoader
     {
         vertices = Array.Empty<Vertex>();
         indices = Array.Empty<uint>();
-        var scene = ctx.ImportFile(path);
+        var scene = ctx.ImportFile(path, Assimp.PostProcessSteps.JoinIdenticalVertices);
         if (scene.HasMeshes)
         {
             foreach (var mesh in scene.Meshes)

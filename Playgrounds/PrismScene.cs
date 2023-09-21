@@ -70,11 +70,11 @@ public struct PrismScene : ISceneCreator
                 Position = new Vector3(0, 5, 0)
             });
 
-            MeshLoader.Load("resources/meshes/rusty.obj", out var bunnyVerts, out var bunnyIndices);
-            scene.AttachComponent(cat, new PrismMeshComponent(bunnyVerts, bunnyIndices)
+            MeshLoader.Load("resources/meshes/bee.dae", out var vv, out var ii);
+            scene.AttachComponent(cat, new PrismMeshComponent(vv, ii)
             {
                 Material = new Material(Material.DefaultTextured)
-            }).Material.SetUniform("mainTex", Resources.Load<Texture>("qoitest.png"));
+            }).Material.SetUniform("mainTex", Resources.Load<Texture>("bee.png"));
         }
 
         return scene;
