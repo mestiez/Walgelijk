@@ -250,8 +250,8 @@ public class PhysicsSystem : Walgelijk.System
         int i = 0;
         foreach (var entity in GetBodiesNear(chunkpos, world))
         {
-            var bodyComponent = Scene.GetComponentFrom<PhysicsBodyComponent>(entity);
-            if (bodyComponent.Collider == null || !bodyComponent.PassesFilter(filter))
+            if (!Scene.TryGetComponentFrom<PhysicsBodyComponent>(entity, out var bodyComponent) ||
+                bodyComponent.Collider == null || !bodyComponent.PassesFilter(filter))
                 continue;
 
             if (bodyComponent.Collider.IsPointInside(point))
@@ -293,8 +293,8 @@ public class PhysicsSystem : Walgelijk.System
 
                 foreach (var entity in GetBodiesNear(pos.X, pos.Y, world))
                 {
-                    var bodyComponent = Scene.GetComponentFrom<PhysicsBodyComponent>(entity);
-                    if (bodyComponent.Collider == null || !bodyComponent.PassesFilter(filter))
+                    if (!Scene.TryGetComponentFrom<PhysicsBodyComponent>(entity, out var bodyComponent) ||
+                        bodyComponent.Collider == null || !bodyComponent.PassesFilter(filter))
                         continue;
 
                     var nearest = bodyComponent.Collider.GetNearestPoint(center);
@@ -349,8 +349,8 @@ public class PhysicsSystem : Walgelijk.System
 
                 foreach (var entity in GetBodiesNear(pos.X, pos.Y, world))
                 {
-                    var bodyComponent = Scene.GetComponentFrom<PhysicsBodyComponent>(entity);
-                    if (bodyComponent.Collider == null || !bodyComponent.PassesFilter(filter))
+                    if (!Scene.TryGetComponentFrom<PhysicsBodyComponent>(entity, out var bodyComponent) || 
+                        bodyComponent.Collider == null || !bodyComponent.PassesFilter(filter))
                         continue;
 
                     var nearest = bodyComponent.Collider.GetNearestPoint(center);
