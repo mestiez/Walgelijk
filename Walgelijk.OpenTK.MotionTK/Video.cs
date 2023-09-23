@@ -81,7 +81,7 @@ public class Video : IDisposable
         source = new DataSource(SourcePath, true, true);
         video = source.VideoPlayback;
         audio = source.AudioPlayback;
-        target = new RenderTexture(video.Size.Width, video.Size.Height, TextureLoader.Settings.WrapMode, TextureLoader.Settings.FilterMode, false, false);
+        target = new RenderTexture(video.Size.Width, video.Size.Height, TextureLoader.Settings.WrapMode, TextureLoader.Settings.FilterMode, RenderTextureFlags.None);
         videoTex = new PseudoTexture(video.TextureHandle, video.Size.Width, video.Size.Height);
     }
 

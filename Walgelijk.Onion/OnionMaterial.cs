@@ -8,7 +8,8 @@ public readonly struct OnionMaterial
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 texcoord;
-layout(location = 2) in vec4 color;
+layout(location = 2) in vec3 in_normal;
+layout(location = 3) in vec4 color;
 
 out vec2 uv;
 out vec4 vertexColor;
