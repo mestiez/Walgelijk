@@ -36,7 +36,9 @@ public struct PrismScene : ISceneCreator
                 Rotation = Quaternion.CreateFromYawPitchRoll(Utilities.RandomFloat(), Utilities.RandomFloat(), Utilities.RandomFloat()),
                 Position = new Vector3(Utilities.RandomFloat(-20, 20), Utilities.RandomFloat(0, 20), Utilities.RandomFloat(-20, 20))
             });
-            scene.AttachComponent(cube, new PrismMeshComponent(vxb));
+            var vv = scene.AttachComponent(cube, new PrismMeshComponent(vxb));
+            vv.Material = new Material(Material.DefaultTextured);
+            vv.Material.SetUniform("mainTex", TexGen.Colour(1, 1, Utilities.RandomColour()));
             scene.AttachComponent(cube, new SpinnyComponent());
         }
 
@@ -49,7 +51,7 @@ public struct PrismScene : ISceneCreator
                 var cube = scene.CreateEntity();
                 scene.AttachComponent(cube, new PrismTransformComponent
                 {
-                    Scale = new Vector3(0.5f), 
+                    Scale = new Vector3(0.5f),
                     Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitX, MathF.PI / 2),
                     Position = new Vector3(x, -0.5f, y)
                 });
@@ -57,7 +59,7 @@ public struct PrismScene : ISceneCreator
                 scene.AttachComponent(cube, new PrismMeshComponent(vxb)
                 {
                     Material = new Material(Material.DefaultTextured)
-                }).Material.SetUniform("mainTex", TexGen.Colour(1,1,Utilities.RandomColour()));
+                }).Material.SetUniform("mainTex", TexGen.Colour(1, 1, Utilities.RandomColour()));
             }
 
         {
@@ -66,7 +68,7 @@ public struct PrismScene : ISceneCreator
             scene.AttachComponent(cat, new PrismTransformComponent
             {
                 Scale = new Vector3(1),
-                Rotation = Quaternion.Identity,
+                Rotation = Quaternion.CreateFromYawPitchRoll(0, MathF.PI / 2, 0),
                 Position = new Vector3(0, 5, 0)
             });
 

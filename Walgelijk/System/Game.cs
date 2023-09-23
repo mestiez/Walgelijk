@@ -49,6 +49,7 @@ public class Game
                 scene.Dispose();
 
             State.Time.SecondsSinceSceneChange = 0;
+            var previous = scene;
             scene = value;
             if (scene != null)
             {
@@ -56,9 +57,10 @@ public class Game
                 scene.Game = this;
                 scene.HasBeenLoadedAlready = true;
                 Logger.Log("Scene changed", nameof(Game));
-                OnSceneChange?.Dispatch(scene);
             }
             else Logger.Log("Scene set to null", nameof(Game));
+
+            OnSceneChange?.Dispatch((previous, scene));
         }
     }
 
@@ -101,7 +103,7 @@ public class Game
     /// <summary>
     /// Event dispatched when the scene is changed. The new scene is passed to the receivers
     /// </summary>
-    public readonly Hook<Scene> OnSceneChange = new();
+    public readonly Hook<(Scene? Old, Scene? New)> OnSceneChange = new();
 
     /// <summary>
     /// Event dispatched when the game is about to close but hasn't yet done any cleanup
@@ -221,7 +223,7 @@ public class Game
                 //SpinWait.SpinUntil(() => clock.Elapsed >= expected);
                 //while (clock.Elapsed < expected)
                 //    Thread.SpinWait(1);
-                    //Thread.Sleep(0); // Dit is niet echt slapen.. het gebruikt alsnog CPU maar het is nodig voor de laatste beetjes om de wachttijd perfect te maken
+                //Thread.Sleep(0); // Dit is niet echt slapen.. het gebruikt alsnog CPU maar het is nodig voor de laatste beetjes om de wachttijd perfect te maken
             }
 
             dt = clock.Elapsed.TotalSeconds;

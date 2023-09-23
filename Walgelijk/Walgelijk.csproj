@@ -7,7 +7,7 @@
     <RepositoryUrl>https://github.com/mestiez/Walgelijk</RepositoryUrl>
     <Company>Studio Minus</Company>
     <Authors>mestiez</Authors>
-    <Version>0.14.0</Version>
+    <Version>0.14.1</Version>
     <Description>2D game engine</Description>
     <PackageIcon>icon.png</PackageIcon>
     <Nullable>enable</Nullable>
