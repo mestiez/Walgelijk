@@ -292,7 +292,7 @@ public class DebugConsole : IDisposable
 
     public void Render()
     {
-        Game.RenderQueue.Add(UI.RenderTask, RenderOrder.Top);
+        UI.RenderTask.Execute(Game.Window.Graphics);
     }
 
     public bool PassesFilter(ConsoleMessageType t)

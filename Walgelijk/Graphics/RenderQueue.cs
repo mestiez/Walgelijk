@@ -7,7 +7,7 @@ namespace Walgelijk
     /// </summary>
     public sealed class RenderQueue
     {
-        private readonly List<Command> commands = new List<Command>();
+        private readonly List<Command> commands = new();
 
         /// <summary>
         /// Render the queue by dequeuing and executing each entry
@@ -15,9 +15,7 @@ namespace Walgelijk
         public void RenderAndReset(IGraphics graphics)
         {
             for (int i = 0; i < commands.Count; i++)
-            {
                 commands[i].RenderTask.Execute(graphics);
-            }
             commands.Clear();
         }
 
@@ -26,10 +24,9 @@ namespace Walgelijk
         /// </summary>
         public void Add(IRenderTask task, RenderOrder order = default)
         {
-            var command = new Command { RenderTask = task, Order = order };
-            command.Order = order;
+            var command = new Command(task, order);
 
-            if (commands.Count == 0 || commands[commands.Count - 1].Order <= order)
+            if (commands.Count == 0 || commands[^1].Order <= order)
             {
                 commands.Add(command);
                 return;
@@ -58,10 +55,16 @@ namespace Walgelijk
         /// </summary>
         public int Length => commands.Count;
 
-        private struct Command
+        private readonly struct Command
         {
-            public IRenderTask RenderTask;
-            public RenderOrder Order;
+            public readonly IRenderTask RenderTask;
+            public readonly RenderOrder Order;
+
+            public Command(IRenderTask renderTask, RenderOrder order)
+            {
+                RenderTask = renderTask;
+                Order = order;
+            }
         }
     }
 }

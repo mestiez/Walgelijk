@@ -16,6 +16,7 @@ public struct IMGUIScene : ISceneCreator
     {
         var scene = new Scene(game);
         Gui.SetCursorStack = false;
+        game.Compositor.Flags = RenderTextureFlags.HDR;
         scene.AddSystem(new TransformSystem());
         scene.AddSystem(new GuiSystem());
         scene.AddSystem(new OnionSystem());

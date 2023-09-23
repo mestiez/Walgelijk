@@ -22,8 +22,10 @@ namespace Walgelijk
             dst.ProjectionMatrix = dst.OrthographicMatrix;
             dst.ViewMatrix = Matrix4x4.Identity;
 
+            var old = graphics.CurrentTarget;
             graphics.CurrentTarget = dst;
             graphics.Draw(PrimitiveMeshes.Quad, material);
+            graphics.CurrentTarget = old;
 
             dst.ViewMatrix = view;
             dst.ProjectionMatrix = proj;
