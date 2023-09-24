@@ -21,7 +21,8 @@ Resources.SetBasePathForType<StreamAudioData>("audio");
 Resources.SetBasePathForType<Texture>("textures");
 Resources.SetBasePathForType<Font>("fonts");
 
-var scene = game.Scene = new Scene(game);
+var scene = new Scene(game);
+game.Scene = scene;
 scene.AddSystem(new CameraSystem());
 scene.AddSystem(new TransformSystem());
 		
