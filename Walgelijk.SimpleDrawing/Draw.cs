@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 using static Walgelijk.TextMeshGenerator;
 #pragma warning disable CA2211 // Non-constant fields should not be visible
@@ -114,6 +115,21 @@ namespace Walgelijk.SimpleDrawing
         internal static DrawingTaskPool TaskPool = new(65536);
         internal static PolygonPool PolygonPool = new(65536);
         internal static TextMeshCache TextMeshCache = new();
+
+        /// <summary>
+        /// Clear all task pools
+        /// </summary>
+        [Command(Alias = "ClearDrawPools")]
+        public static void ClearPools()
+        {
+            foreach (var item in TaskPool.GetAllInUse().ToArray())
+                TaskPool.ReturnToPool(item);    
+            foreach (var item in PolygonPool.GetAllInUse().ToArray())
+                PolygonPool.ReturnToPool(item);
+
+            TaskPool = new(65536);
+            PolygonPool = new(65536);
+        }
 
         /// <summary>
         /// Dispose of all cached text meshes. This frees a bit of memory (both GPU and CPU), but may briefly slow down the application 
