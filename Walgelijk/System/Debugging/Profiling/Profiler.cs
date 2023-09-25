@@ -26,6 +26,7 @@ public sealed class Profiler
 
     private readonly Stack<ProfiledTask> profiledTaskStack = new();
     private readonly List<ProfiledTask> profiledTasks = new();
+    private int drawTaskCount;
 
     /// <summary>
     /// Create a profiler for the given game
@@ -41,16 +42,22 @@ public sealed class Profiler
     }
 
     /// <summary>
-    /// Force the profiler to calculate render information. Should be handled by the window.
+    /// Force the profiler to calculate render information.
     /// </summary>
     public void Tick()
     {
         CalculateFPS();
-
-        if (DrawQuickProfiler)
-            quickProfiler.Render(game.RenderQueue);
-
         profiledTasks.Clear();
+        drawTaskCount = game.RenderQueue.Length;
+    }
+
+    /// <summary>
+    /// Render the quick profiler
+    /// </summary>
+    public void Render()
+    {
+        if (DrawQuickProfiler)
+            quickProfiler.Render(drawTaskCount, game.Window.Graphics);
     }
 
     /// <summary>

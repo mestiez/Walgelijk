@@ -540,81 +540,6 @@
             Interpolate everything
             </summary>
         </member>
-        <member name="T:Walgelijk.IPostProcessingEffect">
-            <summary>
-            A post processing effect
-            </summary>
-        </member>
-        <member name="M:Walgelijk.IPostProcessingEffect.Process(Walgelijk.RenderTexture,Walgelijk.RenderTexture,Walgelijk.IGraphics,Walgelijk.Scene)">
-            <summary>
-            Process the current graphics state
-            </summary>
-        </member>
-        <member name="T:Walgelijk.PostProcessingComponent">
-            <summary>
-            A post processing effect container
-            </summary>
-        </member>
-        <member name="P:Walgelijk.PostProcessingComponent.Enabled">
-            <summary>
-            Should this post processing component be processed at all?
-            </summary>
-        </member>
-        <member name="P:Walgelijk.PostProcessingComponent.Begin">
-            <summary>
-            The render order at which to start applying effects
-            </summary>
-        </member>
-        <member name="P:Walgelijk.PostProcessingComponent.End">
-            <summary>
-            The render order at which to stop applying effects
-            </summary>
-        </member>
-        <member name="P:Walgelijk.PostProcessingComponent.Effects">
-            <summary>
-            Ordered collection of effects
-            </summary>
-        </member>
-        <member name="P:Walgelijk.PostProcessingComponent.EffectTask">
-            <summary>
-            The task that applies the effects
-            </summary>
-        </member>
-        <member name="T:Walgelijk.PostProcessingSystem">
-            <summary>
-            System that handles post processing effects with <see cref="T:Walgelijk.PostProcessingComponent"/> and <see cref="T:Walgelijk.IPostProcessingEffect"/>
-            </summary>
-        </member>
-        <member name="T:Walgelijk.ShaderPostProcessor">
-            <summary>
-            A basic shader post processor. It applies a material to the entire image
-            </summary>
-        </member>
-        <member name="P:Walgelijk.ShaderPostProcessor.Material">
-            <summary>
-            The material to apply
-            </summary>
-        </member>
-        <member name="P:Walgelijk.ShaderPostProcessor.TextureUniform">
-            <summary>
-            Name of the main texture uniform
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ShaderPostProcessor.#ctor(Walgelijk.Material)">
-            <summary>
-            Construct a post processor with the given material
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ShaderPostProcessor.#ctor(System.String)">
-            <summary>
-            Construct a post processor with a new material and shader, generated from the given fragment shader code
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ShaderPostProcessor.Process(Walgelijk.RenderTexture,Walgelijk.RenderTexture,Walgelijk.IGraphics,Walgelijk.Scene)">
-            <summary>
-            Blits the source texture to the destination texture using <see cref="P:Walgelijk.ShaderPostProcessor.Material"/>
-            </summary>
-        </member>
         <member name="T:Walgelijk.QuadShapeComponent">
             <summary>
             Primitive quad component. Vertices can't be altered.
@@ -5187,7 +5112,12 @@
         </member>
         <member name="M:Walgelijk.Profiler.Tick">
             <summary>
-            Force the profiler to calculate render information. Should be handled by the window.
+            Force the profiler to calculate render information.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Profiler.Render">
+            <summary>
+            Render the quick profiler
             </summary>
         </member>
         <member name="M:Walgelijk.Profiler.StartTask(System.String)">

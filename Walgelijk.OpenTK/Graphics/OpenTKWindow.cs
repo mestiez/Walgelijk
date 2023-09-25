@@ -255,18 +255,7 @@ public class OpenTKWindow : Window
         NativeWindow.ProcessWindowEvents(window.IsEventDriven);
 
         Game.State.Input = inputHandler.InputState;
-
-        //render
-        {
-            GLUtilities.PrintGLErrors(Game.Main.DevelopmentMode);
-            Game.Scene?.RenderSystems();
-            if (Game.DevelopmentMode)
-                Game.DebugDraw.Render();
-            Graphics.CurrentTarget = RenderTarget;
-            Game.Console.Render();
-            Game.Profiling.Tick();
-            RenderQueue.RenderAndReset(internalGraphics);
-        }
+        GLUtilities.PrintGLErrors(Game.Main.DevelopmentMode);
     }
 
     public override void Deinitialise()

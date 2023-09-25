@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 
@@ -49,6 +52,7 @@ public class Game
                 scene.Dispose();
 
             State.Time.SecondsSinceSceneChange = 0;
+            var previous = scene;
             scene = value;
             if (scene != null)
             {
@@ -56,9 +60,10 @@ public class Game
                 scene.Game = this;
                 scene.HasBeenLoadedAlready = true;
                 Logger.Log("Scene changed", nameof(Game));
-                OnSceneChange?.Dispatch(scene);
             }
             else Logger.Log("Scene set to null", nameof(Game));
+
+            OnSceneChange?.Dispatch((previous, scene));
         }
     }
 
@@ -101,7 +106,7 @@ public class Game
     /// <summary>
     /// Event dispatched when the scene is changed. The new scene is passed to the receivers
     /// </summary>
-    public readonly Hook<Scene> OnSceneChange = new();
+    public readonly Hook<(Scene? Old, Scene? New)> OnSceneChange = new();
 
     /// <summary>
     /// Event dispatched when the game is about to close but hasn't yet done any cleanup
@@ -200,9 +205,20 @@ public class Game
                 Scene?.UpdateSystems();
             }
 
-            Compositor.Render(Window.RenderQueue);
             SetWindowWorldBounds();
             Window.LoopCycle();
+
+            Scene?.RenderSystems();
+            if (DevelopmentMode)
+                DebugDraw.Render();
+
+            Compositor.Prepare();
+            Profiling.Tick();
+            RenderQueue.RenderAndReset(Window.Graphics);
+            Compositor.Render(Window.Graphics);
+            Window.Graphics.CurrentTarget = Window.RenderTarget;
+            Console.Render();
+            Profiling.Render();
 
             if (!Window.IsOpen)
                 break;
@@ -210,18 +226,17 @@ public class Game
             if (UpdateRate != 0)
             {
                 var expected = TimeSpan.FromSeconds(1d / UpdateRate);
-                var msToSleep = expected.TotalMilliseconds - clock.Elapsed.TotalMilliseconds;
+                //var msToSleep = expected.TotalMilliseconds - clock.Elapsed.TotalMilliseconds;
 
                 //if (msToSleep > 1)
                 //    Thread.Sleep((int)msToSleep - 10);
 
-                while (clock.Elapsed < expected)
-                    Thread.Sleep(1);
+                while (clock.Elapsed < expected) { }
 
                 //SpinWait.SpinUntil(() => clock.Elapsed >= expected);
                 //while (clock.Elapsed < expected)
                 //    Thread.SpinWait(1);
-                    //Thread.Sleep(0); // Dit is niet echt slapen.. het gebruikt alsnog CPU maar het is nodig voor de laatste beetjes om de wachttijd perfect te maken
+                //Thread.Sleep(0); // Dit is niet echt slapen.. het gebruikt alsnog CPU maar het is nodig voor de laatste beetjes om de wachttijd perfect te maken
             }
 
             dt = clock.Elapsed.TotalSeconds;
@@ -229,6 +244,7 @@ public class Game
         }
         Stop();
 
+        Compositor.Dispose();
         clock.Stop();
         Window.Deinitialise();
         Scene?.Dispose();
@@ -254,6 +270,21 @@ public class Game
         AudioRenderer?.Release();
         Window.Close();
         Logger.Dispose();
+    }
+
+    [Command(HelpString = "Provides some control over the compositor at runtime", Alias = "Compositor")]
+    private static CommandResult CompositorCmd(string cmd)
+    {
+        var dict = new Dictionary<string, Func<string>>()
+        {
+            { "enable", () => { Main.Compositor.Enabled = true; return "Compositor enabled"; } },
+            { "disable", () => { Main.Compositor.Enabled = false; return "Compositor disabled"; } },
+        };
+
+        if (dict.TryGetValue(cmd, out var action))
+            return action();
+
+        return CommandResult.Error("Invalid compositor action. The following are available: " + string.Join(", ", dict.Keys));
     }
 
     [Command(HelpString = "Prints the game and engine versions")]

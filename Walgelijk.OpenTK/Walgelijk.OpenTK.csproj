@@ -7,7 +7,7 @@
     <Authors>mestiez</Authors>
     <Company>Studio Minus</Company>
     <RepositoryType></RepositoryType>
-    <Version>0.12.0</Version>
+    <Version>0.13.1</Version>
     <PackageIcon>icon.png</PackageIcon>
     <Description>Windowing, input, video, and audio interface for Walgelijk using OpenTK</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

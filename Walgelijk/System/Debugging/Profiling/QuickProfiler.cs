@@ -25,9 +25,9 @@ namespace Walgelijk
             this.profiler = profiler;
         }
 
-        public void Render(RenderQueue queue)
+        public void Render(int queueLength, IGraphics graphics)
         {
-            string t = ConstructDisplayText(queue.Length);
+            string t = ConstructDisplayText(queueLength);
 
             text.String = t;
             text.RenderTask.ModelMatrix = textModel;
@@ -35,8 +35,8 @@ namespace Walgelijk
             Rect textBounds = text.LocalBoundingBox;
             background.RenderTask.ModelMatrix = Matrix3x2.CreateScale(textBounds.Width + (2 * Padding), -textBounds.Height - (2 * Padding));
 
-            queue.Add(background.RenderTask, RenderOrder.DebugUI);
-            queue.Add(text.RenderTask, RenderOrder.DebugUI);
+            background.RenderTask.Execute(graphics);
+            text.RenderTask.Execute(graphics);
         }
 
         private string ConstructDisplayText(int queuelength)

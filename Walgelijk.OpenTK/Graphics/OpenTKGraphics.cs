@@ -11,7 +11,6 @@ namespace Walgelijk.OpenTK
         private RenderTarget currentTarget;
         private DrawBounds drawBounds;
         private bool drawBoundEnabledCache;
-        private Material currentMaterial;
         private BlendMode currentBlendMode;
 
         public DrawBounds DrawBounds
@@ -126,10 +125,6 @@ namespace Walgelijk.OpenTK
                 GLUtilities.SetBlendMode(material.BlendMode);
             }
 
-            //if (currentMaterial == material)
-            //    return;
-
-            currentMaterial = material;
             var loadedShader = GPUObjects.MaterialCache.Load(material);
             int prog = loadedShader.ProgramHandle;
 

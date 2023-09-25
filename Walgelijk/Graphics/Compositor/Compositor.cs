@@ -1,12 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace Walgelijk;
 
-public class Compositor
+public class Compositor : IDisposable
 {
-    public IReadOnlyList<CompositorPass> Passes => passes.AsReadOnly();
+    public CompositorNode RootNode => rootNode;
+    public CompositorNode OutputNode => outputNode;
+    public bool ForceUpdateTargets = true;
+
+    public bool Enabled = true;
+
     public RenderTextureFlags Flags
     {
         get => flags;
@@ -17,20 +23,18 @@ public class Compositor
             ForceUpdateTargets = true;
         }
     }
-    public bool ForceUpdateTargets = true;
 
+    private RootCompositorNode rootNode = new();
+    private OutputCompositorNode outputNode = new();
     private RenderTextureFlags flags = RenderTextureFlags.HDR;
-
-    private readonly List<CompositorPass> passes = new();
-    private Game game;
-
-    private ulong framesRendered = 0;
-    private CompositorPass basePass = new CompositorPass("Base", default, RenderOrder.UI);
+    private readonly Game game;
+    private readonly Material blitMat = new Material(Material.DefaultTextured);
 
     public Compositor(Game game)
     {
         this.game = game;
         game.Window.OnResize += OnWindowResize;
+        Clear();
     }
 
     private void OnWindowResize(object? sender, global::System.Numerics.Vector2 e)
@@ -38,238 +42,126 @@ public class Compositor
         ForceUpdateTargets = true;
     }
 
-    public void Reset()
-    {
-        passes.Clear();
-        ForceUpdateTargets = true;
-    }
-
-    public void AddPass(CompositorPass pass)
-    {
-        if (passes.Contains(pass))
-            throw new Exception("This pass is already present in the pass list");
-
-        passes.Add(pass);
-        ForceUpdateTargets = true;
-    }
-
-    public bool RemovePass(CompositorPass pass)
+    public void Clear()
     {
         ForceUpdateTargets = true;
-        return passes.Remove(pass);
+        rootNode.Output.ConnectTo(outputNode.Inputs[0]);
     }
 
-    public void Render(RenderQueue queue)
+    public void Prepare()
     {
-        foreach (var pass in passes.Append(basePass))
+        if (!Enabled)
+            return;
+
+        if (ForceUpdateTargets || rootNode.Source == null)
         {
-            if (pass.Enabled)
-            {
-                if (ForceUpdateTargets)
-                    pass.RegenerateRenderTextures(game.Window.Width, game.Window.Height, Flags);
-                queue.Add(pass.PushTask, pass.InclusiveStart);
-                queue.Add(pass.PopTask, pass.ExclusiveEnd);
-            }
+            rootNode.Source?.Dispose();
+            rootNode.Source = new RenderTexture(game.Window.Width, game.Window.Height, WrapMode.Clamp, FilterMode.Nearest, Flags);
         }
 
         ForceUpdateTargets = false;
-        framesRendered++;
-    }
-}
-
-public class CompositorPass : IDisposable
-{
-    public readonly string Name;
-    public bool Enabled = true;
-    public readonly RenderOrder InclusiveStart = new RenderOrder(0, 0);
-    public readonly RenderOrder ExclusiveEnd = RenderOrder.UI;
-    public readonly List<CompositorStep> Steps = new();
-
-    private Material blitMat = new Material();
-
-    private RenderTarget? targetBeforePush;
-
-    private RenderTexture? rtSrc;
-    private RenderTexture? rtDst;
-    private bool pushed;
-
-    public readonly IRenderTask PushTask;
-    public readonly IRenderTask PopTask; 
-
-    public CompositorPass(in string name, RenderOrder inclusiveStart, RenderOrder exclusiveEnd, params CompositorStep[] steps)
-    {
-        if (inclusiveStart >= exclusiveEnd)
-            throw new Exception("Start layer cannot be more than or equal to end layer");
-
-        Name = name;
-        InclusiveStart = inclusiveStart;
-        ExclusiveEnd = exclusiveEnd;
-        Steps.AddRange(steps);
-
-        PushTask = new ActionRenderTask(Push);
-        PopTask = new ActionRenderTask(Pop);
+        game.Window.Graphics.CurrentTarget = rootNode.Source;
     }
 
-    public void RegenerateRenderTextures(int width, int height, RenderTextureFlags flags)
+    public void Render(IGraphics graphics)
     {
-        rtSrc?.Dispose();
-        rtSrc = new RenderTexture(width, height, flags: flags);
+        if (!Enabled)
+            return;
 
-        rtDst?.Dispose();
-        rtDst = new RenderTexture(width, height, flags: flags);
-    }
-
-    private void Push(IGraphics graphics)
-    {
-        pushed = rtSrc != null && rtDst != null && graphics.CurrentTarget != null;
-        if (rtSrc != null && rtDst != null)
-        {
-            // TODO je neemt aan dat graphics.CurrentTarget 1 pass is of de window. elke pass moet zn eigen target hebben :) en maak steps disposable
-            targetBeforePush = graphics.CurrentTarget;
-            if (targetBeforePush != null)
-            {
-                rtDst.ViewMatrix = rtSrc.ViewMatrix = targetBeforePush.ViewMatrix;
-                rtDst.ProjectionMatrix = rtSrc.ProjectionMatrix = targetBeforePush.ProjectionMatrix;
-            }
-            graphics.CurrentTarget = rtSrc;
-            graphics.Clear(Colors.Transparent);
-        }
-    }
-
-    private void Pop(IGraphics graphics)
-    {
-        var state = Game.Main.State; //TODO dit is niet al te best
-        if (pushed && rtSrc != null && rtDst != null && targetBeforePush != null)
-        {
-            graphics.CurrentTarget = rtDst;
-            graphics.Clear(Colors.Transparent);
-
-            if (Steps == null || !Steps.Any())
-                graphics.Blit(rtSrc, rtDst);
-            else
-                foreach (var step in Steps)
-                {
-                    step.Process(graphics, rtSrc, rtDst, state);
-                    graphics.Blit(rtDst, rtSrc);
-                }
-
-            graphics.CurrentTarget = targetBeforePush;
-            graphics.BlitFullscreenQuad(rtDst, targetBeforePush, rtDst.Width, rtDst.Height, blitMat, ShaderDefaults.MainTextureUniform);
-            targetBeforePush = null;
-            pushed = false;
-        }
+        graphics.CurrentTarget = game.Window.RenderTarget;
+        graphics.BlitFullscreenQuad(
+            outputNode.Output.Read(game)!,
+            graphics.CurrentTarget,
+            (int)graphics.CurrentTarget.Size.X,
+            (int)graphics.CurrentTarget.Size.Y,
+            blitMat,
+            "mainTex");
     }
 
     public void Dispose()
     {
-        targetBeforePush = null;
         blitMat.Dispose();
-        rtSrc?.Dispose();
-        rtDst?.Dispose();
+    }
+
+    private class OutputCompositorNode : CompositorNode
+    {
+        public OutputCompositorNode() : base(1) { }
+
+        public override RenderTexture? Read(Game game) => Inputs[0].Read(game);
+
+        public override void Dispose() { }
+    }
+
+    private class RootCompositorNode : CompositorNode
+    {
+        public RootCompositorNode() : base(0) { }
+
+        public RenderTexture? Source;
+
+        public override RenderTexture? Read(Game game) => Source;
+
+        public override void Dispose()
+        {
+            Source?.Dispose();
+        }
     }
 }
 
-public abstract class CompositorStep : IDisposable
+public abstract class CompositorNode : IDisposable
 {
-    public readonly string Name;
+    public readonly CompositorSocket[] Inputs;
+    public readonly CompositorSocket Output;
 
-    protected CompositorStep(string name)
+    protected CompositorNode(int inputCount)
     {
-        Name = name;
+        Inputs = new CompositorSocket[inputCount];
+        Output = new(CompositorSocketType.Output, this);
+
+        for (int i = 0; i < inputCount; i++)
+            Inputs[i] = new CompositorSocket(CompositorSocketType.Input, this);
     }
 
     public abstract void Dispose();
-
-    public abstract void Process(IGraphics graphics, RenderTexture src, RenderTexture dst, GameState state);
+    public abstract RenderTexture? Read(Game game);
 }
 
-public abstract class ShaderProcess : CompositorStep
+public enum CompositorSocketType
 {
-
-    protected ShaderProcess(string name) : base(name)
-    {
-    }
-
-    public override void Process(IGraphics graphics, RenderTexture src, RenderTexture dst, GameState state)
-    {
-        if (!string.IsNullOrEmpty(TimeFloatUniform))
-            Material.SetUniform(TimeFloatUniform, state.Time.SecondsSinceLoad);
-
-        graphics.BlitFullscreenQuad(src, dst, src.Width, src.Height, Material, MainTextureUniform);
-    }
-
-    protected abstract string MainTextureUniform { get; }
-    protected abstract string? TimeFloatUniform { get; }
-    protected abstract Material Material { get; }
+    Input,
+    Output
 }
 
-public class InvertProcess : ShaderProcess
+public class CompositorSocket
 {
-    private Material mat;
+    public readonly CompositorSocketType SocketType;
+    public readonly CompositorNode Node;
+    public CompositorSocket? Connected { get; private set; }
 
-    public InvertProcess(string name = nameof(InvertProcess)) : base(name)
+    public CompositorSocket(CompositorSocketType socketType, CompositorNode node)
     {
-        mat = new Material(new Shader(Shader.Default.VertexShader,
-@"#version 460
-
-in vec2 uv;
-in vec4 vertexColor;
-
-out vec4 color;
-
-uniform sampler2D mainTex;
-
-void main()
-{
-    vec4 c = texture(mainTex, uv);
-    c.rgb = 1 - c.rgb;
-    color = vertexColor * c;
-}"
-));
+        SocketType = socketType;
+        Node = node;
     }
 
-    protected override Material Material => mat;
-    protected override string MainTextureUniform => "mainTex";
-    protected override string? TimeFloatUniform => null;
-
-    public override void Dispose()
+    public void ConnectTo(CompositorSocket other)
     {
-        mat.Dispose();
-    }
-}
+        if (other.SocketType == SocketType)
+            throw new InvalidOperationException(
+                $"Attempt to connect {SocketType} {nameof(CompositorSocket)} to {other.SocketType} {nameof(CompositorSocket)}, which is invalid");
 
-public class BlinkProcess : ShaderProcess
-{
-    private Material mat;
-
-    public BlinkProcess(string name = nameof(BlinkProcess)) : base(name)
-    {
-        mat = new Material(new Shader(Shader.Default.VertexShader,
-@"#version 460
-
-in vec2 uv;
-in vec4 vertexColor;
-
-out vec4 color;
-
-uniform sampler2D mainTex;
-uniform float time;
-
-void main()
-{
-    vec4 c = texture(mainTex, uv);
-    c *= mod(time + uv.x, 1) > 0.5 ? 0 : 1;
-    color = vertexColor * c;
-}"
-));
+        other.Connected = this;
+        Connected = other;
     }
 
-    protected override Material Material => mat;
-    protected override string MainTextureUniform => "mainTex";
-    protected override string? TimeFloatUniform => "time";
-
-    public override void Dispose()
+    public RenderTexture? Read(Game game)
     {
-        mat.Dispose();
+        switch (SocketType)
+        {
+            case CompositorSocketType.Input:
+                return Connected?.Read(game) ?? throw new Exception("Input socket has null connection but Read was called");
+            default:
+            case CompositorSocketType.Output:
+                return Node.Read(game);
+        }
     }
 }
