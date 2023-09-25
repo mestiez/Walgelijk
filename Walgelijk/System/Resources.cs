@@ -65,7 +65,11 @@ public static class Resources
             else
                 throw new Exception($"The object at \"{id}\" is not of type {typeof(T).Name}. It is {obj.GetType().Name}");
         }
-        throw new Exception($"Resource with ID {id} coul not be found");
+        else
+        {
+            var file = GetFileFromID(id);
+            return Load<T>(file.FullName, true);
+        }
     }
 
     /// <summary>
