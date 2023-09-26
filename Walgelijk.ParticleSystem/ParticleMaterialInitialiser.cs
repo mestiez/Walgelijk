@@ -20,7 +20,7 @@ layout(location = 9) in vec4 particleUvOffset;
 out vec2 uv;
 out vec4 vertexColor;
 
-uniform mat4 model;d
+uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
