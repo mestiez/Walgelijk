@@ -17,10 +17,20 @@
   <ItemGroup>
     <ProjectReference Include="..\Walgelijk.Imgui\Walgelijk.Imgui.csproj" />
     <ProjectReference Include="..\Walgelijk.Localisation\Walgelijk.Localisation.csproj" />
+    <ProjectReference Include="..\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />
     <ProjectReference Include="..\Walgelijk.ParticleSystem\Walgelijk.ParticleSystem.csproj" />
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="mono_junk_chunk.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="mono_microsoft.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="stereo_microsoft.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="test.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

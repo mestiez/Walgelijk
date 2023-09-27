@@ -38,7 +38,7 @@ public class ComponentCollectionTests
         Assert.AreEqual(1, coll.Count);
 
         coll.Remove<TransformComponent>(ent1);
-        Assert.IsTrue(coll.Has<TransformComponent>(ent2)); //dingen verwijderen is instant
+        Assert.IsTrue(coll.Has<TransformComponent>(ent2)); // removing stuff is instant
         coll.SyncBuffers();
         Assert.AreEqual(0, coll.Count);
 
