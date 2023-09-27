@@ -125,7 +125,7 @@ public readonly struct Dropdown<T> : IControl
         if (instance.IsTriggered != old)
             currentState.TimeSinceTriggered = 0;
         else
-            currentState.TimeSinceTriggered += p.GameState.Time.DeltaTime;
+            currentState.TimeSinceTriggered += p.GameState.Time.DeltaTimeUnscaled;
 
         var computedGlobal = instance.Rects.ComputedGlobal;
 

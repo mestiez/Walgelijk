@@ -13,6 +13,7 @@ internal sealed class EmptyAudioRenderer : AudioRenderer
     public override float Volume { get; set; }
     public override bool Muted { get; set; }
     public override Vector3 ListenerPosition { get; set; }
+    public override AudioDistanceModel DistanceModel { get; set; }
 
     public override void Pause(Sound sound) { }
 

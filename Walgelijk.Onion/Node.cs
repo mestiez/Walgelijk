@@ -212,13 +212,13 @@ public class Node
     {
         if (AliveLastFrame)
         {
-            SecondsAlive += p.GameState.Time.DeltaTime;
+            SecondsAlive += p.GameState.Time.DeltaTimeUnscaled;
             SecondsDead = 0;
         }
         else
         {
             SecondsAlive = 0;
-            SecondsDead += p.GameState.Time.DeltaTime;
+            SecondsDead += p.GameState.Time.DeltaTimeUnscaled;
         }
 
         //p.Instance.Rects.Intermediate.MaxX *= Onion.GlobalScale;

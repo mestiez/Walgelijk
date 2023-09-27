@@ -40,6 +40,17 @@ public abstract class AudioRenderer
     public abstract Vector3 ListenerPosition { get; set; }
 
     /// <summary>
+    /// Global multiplier for any spatial input. E.g any <c>worldPosition</c> parameter, or the listener position. This is used to align the audio world with your scene scale.
+    /// 1 by default.
+    /// </summary>
+    public float SpatialMultiplier = 1;
+
+    /// <summary>
+    /// The distance model used for audio falloff
+    /// </summary>
+    public abstract AudioDistanceModel DistanceModel { get; set; }
+
+    /// <summary>
     /// Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="PlayOnce(Sound, float, float, AudioTrack?)"/> or <see cref="PlayOnce(Sound, Vector2, float, float, AudioTrack?)"/>
     /// </summary>
     public abstract bool IsPlaying(Sound sound);

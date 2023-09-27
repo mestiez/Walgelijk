@@ -36,7 +36,7 @@ public struct TestScene2
             ClearColour = new Color("#a8a3c1")
         });
 
-        streamTest = new Sound(Resources.Load<StreamAudioData>("mus_toriel.ogg"), false, false);
+        streamTest = new Sound(Resources.Load<StreamAudioData>("mus_toriel.ogg"), false, null);
        // game.AudioRenderer.Play(streamTest);
 
         visualiser = new AudioVisualiser(streamTest, 2048, 2048, 128);

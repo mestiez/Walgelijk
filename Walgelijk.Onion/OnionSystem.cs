@@ -29,9 +29,9 @@ public class OnionSystem : Walgelijk.System
         Onion.Tree.End();
 
         // process
-        Onion.Tree.Process(Time.DeltaTime);
-        Onion.Input.Update(Input, Time.DeltaTime, Time.SecondsSinceLoad);
-        Onion.Navigator.Process(Onion.Input, Time.DeltaTime);
+        Onion.Tree.Process(Time.DeltaTimeUnscaled);
+        Onion.Input.Update(Input, Time.DeltaTime, Time.SecondsSinceLoadUnscaled);
+        Onion.Navigator.Process(Onion.Input, Time.DeltaTimeUnscaled);
 
         // next frame
         Onion.Layout.Move(0, 0);

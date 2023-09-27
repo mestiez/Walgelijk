@@ -172,7 +172,7 @@ public readonly struct InputBox : IControl
             SelectWordAt(p, cursorIndex);
         else if (p.Instance.IsActive)
         {
-            slowTimer += p.GameState.Time.DeltaTime;
+            slowTimer += p.GameState.Time.DeltaTimeUnscaled;
             cursorBlinkTimer = 0;
 
             var local = p.Input.MousePosition - p.Instance.Rects.ComputedGlobal.BottomLeft;
@@ -202,7 +202,7 @@ public readonly struct InputBox : IControl
 
         if (p.Instance.HasFocus)
         {
-            cursorBlinkTimer += p.GameState.Time.DeltaTime;
+            cursorBlinkTimer += p.GameState.Time.DeltaTimeUnscaled;
             p.Instance.CaptureFlags |= CaptureFlags.Key;
 
             if (p.Instance.HasKeyboard)

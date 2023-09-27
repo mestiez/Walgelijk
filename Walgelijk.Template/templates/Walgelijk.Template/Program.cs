@@ -71,6 +71,9 @@ public class Program
         // The quick profiler shows some performance stats :)
         Game.Profiling.DrawQuickProfiler = false;
 
+        // The compositor is broken lmfao
+        Game.Compositor.Enabled = false;
+
         Game.Start();
     }
 }

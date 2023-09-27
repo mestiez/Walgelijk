@@ -8,12 +8,12 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Authors>mestiez</Authors>
     <Company>Studio Minus</Company>
-    <Version>0.12.3</Version>
+    <Version>0.12.4</Version>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <DebugType>embedded</DebugType>
     <PackageIcon>icon.png</PackageIcon>
-    <Description>Provides full immediate-mode GUI</Description>
+    <Description>Unsupported. Please use Walgelijk.Onion instead</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
   <Target Name="PostBuild" Condition="'$(Configuration)'=='Release'" AfterTargets="PostBuildEvent">

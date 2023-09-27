@@ -44,6 +44,11 @@
             Get a readonly collection of the raw audio data. This can be null if it has been disposed.
             </summary>
         </member>
+        <member name="T:Walgelijk.AudioDistanceModel">
+            <summary>
+            Available distance models for rolloff calculations
+            </summary>
+        </member>
         <member name="T:Walgelijk.AudioGen">
             <summary>
             Audio generation and manipulation functions. These only work on 16 bit audio.
@@ -82,6 +87,17 @@
         <member name="P:Walgelijk.AudioRenderer.ListenerPosition">
             <summary>
             Position of the listener in world space
+            </summary>
+        </member>
+        <member name="F:Walgelijk.AudioRenderer.SpatialMultiplier">
+            <summary>
+            Global multiplier for any spatial input. E.g any <c>worldPosition</c> parameter, or the listener position. This is used to align the audio world with your scene scale.
+            1 by default.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.AudioRenderer.DistanceModel">
+            <summary>
+            The distance model used for audio falloff
             </summary>
         </member>
         <member name="M:Walgelijk.AudioRenderer.IsPlaying(Walgelijk.Sound)">
@@ -250,31 +266,6 @@
             Beep audio data
             </summary>
         </member>
-        <member name="T:Walgelijk.SoundState">
-            <summary>
-            States that a sound can be in
-            </summary>
-        </member>
-        <member name="F:Walgelijk.SoundState.Idle">
-            <summary>
-            Untouched by audio engine.
-            </summary>
-        </member>
-        <member name="F:Walgelijk.SoundState.Playing">
-            <summary>
-            Currently playing.
-            </summary>
-        </member>
-        <member name="F:Walgelijk.SoundState.Paused">
-            <summary>
-            Not playing but not stopped either. This sound can be resumed.
-            </summary>
-        </member>
-        <member name="F:Walgelijk.SoundState.Stopped">
-            <summary>
-            
-            </summary>
-        </member>
         <member name="T:Walgelijk.Sound">
             <summary>
             A sound that can be played. It does not contain audio data, but is instead linked to an <see cref="T:Walgelijk.AudioData"/>
@@ -290,9 +281,9 @@
             Determines if the sound should loop
             </summary>
         </member>
-        <member name="F:Walgelijk.Sound.RolloffFactor">
+        <member name="F:Walgelijk.Sound.SpatialParams">
             <summary>
-            Rolloff factor if this sound is played in space
+            Spatial settings for this sound. If null, the sound won't be spatial (used for e.g user interface sounds).
             </summary>
         </member>
         <member name="F:Walgelijk.Sound.Pitch">
@@ -303,11 +294,6 @@
         <member name="F:Walgelijk.Sound.Volume">
             <summary>
             Volume adjustment
-            </summary>
-        </member>
-        <member name="F:Walgelijk.Sound.Spatial">
-            <summary>
-            Is the sound affected by the listener position? True by default. Set to false for things like UI SFX.
             </summary>
         </member>
         <member name="F:Walgelijk.Sound.State">
@@ -333,6 +319,62 @@
         <member name="F:Walgelijk.Sound.Beep">
             <summary>
             Beep sound
+            </summary>
+        </member>
+        <member name="T:Walgelijk.SoundState">
+            <summary>
+            States that a sound can be in
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SoundState.Idle">
+            <summary>
+            Untouched by audio engine.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SoundState.Playing">
+            <summary>
+            Currently playing.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SoundState.Paused">
+            <summary>
+            Not playing but not stopped either. This sound can be resumed.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SoundState.Stopped">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Walgelijk.SpatialParams">
+            <summary>
+            Options for spatial sounds
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SpatialParams.ReferenceDistance">
+            <summary>
+            The midpoint of the rolloff curve. In other words, the distance at which the sound will be at half volume according to the distance model used.
+            If this is 0, no attenuation will occur at all.
+            Note how this value is ultimately transformed by <see cref="F:Walgelijk.AudioRenderer.SpatialMultiplier"/>
+            <br></br>
+            Default is <c>1</c>
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SpatialParams.MaxDistance">
+            <summary>
+            The distance at which the sound will no longer get any quieter. 
+            If this is 0, no attenuation will occur at all.
+            Note how this value is ultimately transformed by <see cref="F:Walgelijk.AudioRenderer.SpatialMultiplier"/>
+            <br></br>
+            Default is <c>float.PositiveInfinity</c>
+            </summary>
+        </member>
+        <member name="F:Walgelijk.SpatialParams.RolloffFactor">
+            <summary>
+            A higher rolloff factor will make the sound reduce in volume more quickly as the listener moves away from the source, while a lower rolloff factor makes the sound reduce in volume more slowly.
+            If this is 0, no attenuation will occur at all.
+            <br></br>
+            Default is <c>1</c>
             </summary>
         </member>
         <member name="M:Walgelijk.StreamAudioData.DisposeLocalCopy">

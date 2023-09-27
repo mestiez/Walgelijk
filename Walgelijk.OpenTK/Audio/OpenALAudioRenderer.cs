@@ -6,44 +6,6 @@ using System.Numerics;
 
 namespace Walgelijk.OpenTK;
 
-internal readonly struct TemporarySourceArgs
-{
-    public readonly int Source;
-    public readonly Sound Sound;
-    public readonly float Duration;
-    public readonly float Volume;
-    public readonly AudioTrack? Track;
-
-    public TemporarySourceArgs(int source, Sound sound, float duration, float volume, AudioTrack track)
-    {
-        Source = source;
-        Sound = sound;
-        Duration = duration;
-        Volume = volume;
-        Track = track;
-    }
-}
-
-internal class TemporarySourcePool : Pool<TemporarySource?, TemporarySourceArgs>
-{
-    public TemporarySourcePool(int maxCapacity) : base(maxCapacity)
-    {
-    }
-
-    protected override TemporarySource? CreateFresh() => new();
-
-    protected override TemporarySource? GetOverCapacityFallback() => null;
-
-    protected override void ResetObjectForNextUse(TemporarySource? obj, TemporarySourceArgs initialiser)
-    {
-        obj.Sound = initialiser.Sound;
-        obj.Source = initialiser.Source;
-        obj.Duration = initialiser.Duration;
-        obj.Volume = initialiser.Volume;
-        obj.CurrentLifetime = 0;
-    }
-}
-
 public class OpenALAudioRenderer : AudioRenderer
 {
     public readonly int MaxTempSourceCount = 256;
@@ -68,16 +30,34 @@ public class OpenALAudioRenderer : AudioRenderer
 
         set => AL.Listener(ALListenerf.Gain, value);
     }
+
     public override bool Muted { get => Volume <= float.Epsilon; set => Volume = 0; }
+
     public override Vector3 ListenerPosition
     {
         get
         {
+            // note: Y is up in OpenAL, but Walgelijk is 2D so Y and Z are swapped for convenience.
             AL.GetListener(ALListener3f.Position, out float x, out float depth, out float z);
             return new Vector3(x, z, depth);
         }
 
         set => AL.Listener(ALListener3f.Position, value.X, value.Z, value.Y);
+    }
+
+    public override AudioDistanceModel DistanceModel
+    {
+        get => AL.GetDistanceModel() switch
+        {
+            ALDistanceModel.LinearDistance => AudioDistanceModel.Linear,
+            _ => AudioDistanceModel.InverseSquare,
+        };
+
+        set => AL.DistanceModel(value switch
+            {
+                AudioDistanceModel.Linear => ALDistanceModel.LinearDistance,
+                _ => ALDistanceModel.InverseDistance,
+            });
     }
 
     public OpenALAudioRenderer(int maxTempSourceCount = 256)
@@ -91,7 +71,11 @@ public class OpenALAudioRenderer : AudioRenderer
         {
             var s = new FileInfo(d);
             if (s.Length >= 1_000_000) //this is fucked but if the file is more than or equal to 1 MB it should probably be streamed. or be explicit and do not use the AudioData base class
+            {
+                Logger.Warn($"Audio \"{s.Name}\" loaded using base class {nameof(AudioData)} will be streamed because it exceeds 1 megabyte. Consider using the actual implementations {nameof(FixedAudioData)} and {nameof(StreamAudioData)}.");
                 return LoadStream(d);
+            }
+            Logger.Warn($"Audio \"{s.Name}\" loaded using base class {nameof(AudioData)} will be read in its entirety because it is smaller than 1 megabyte. Consider using the actual implementations {nameof(FixedAudioData)} and {nameof(StreamAudioData)}.");
             return LoadSound(d);
         });
         canEnumerateDevices = AL.IsExtensionPresent("ALC_ENUMERATION_EXT");
@@ -101,7 +85,6 @@ public class OpenALAudioRenderer : AudioRenderer
     private void Initialise(string? deviceName = null)
     {
         canPlayAudio = false;
-
         device = ALC.OpenDevice(deviceName);
 
         if (device == ALDevice.Null)
@@ -130,11 +113,28 @@ public class OpenALAudioRenderer : AudioRenderer
 
         sound.RequiresUpdate = false;
 
-        AL.Source(source, ALSourceb.SourceRelative, !sound.Spatial);
         AL.Source(source, ALSourceb.Looping, sound.Looping);
-        AL.Source(source, ALSourcef.RolloffFactor, sound.RolloffFactor);
         AL.Source(source, ALSourcef.Pitch, sound.Pitch * (sound.Track?.Pitch ?? 1));
         AL.Source(source, ALSourcef.Gain, (sound.Track?.Muted ?? false) ? 0 : (sound.Volume * (sound.Track?.Volume ?? 1)));
+
+        ApplySpatialParams(source, sound);
+    }
+
+    private void ApplySpatialParams(int source, Sound sound)
+    {
+        AL.Source(source, ALSourceb.SourceRelative, !sound.SpatialParams.HasValue);
+        if (sound.SpatialParams.HasValue)
+        {
+            AL.Source(source, ALSourcef.MaxDistance, sound.SpatialParams.Value.MaxDistance);
+            AL.Source(source, ALSourcef.ReferenceDistance, sound.SpatialParams.Value.ReferenceDistance);
+            AL.Source(source, ALSourcef.RolloffFactor, sound.SpatialParams.Value.RolloffFactor);
+        }
+        else
+        {
+            AL.Source(source, ALSourcef.MaxDistance, 0);
+            AL.Source(source, ALSourcef.ReferenceDistance, 0);
+            AL.Source(source, ALSourcef.RolloffFactor, 0);
+        }
     }
 
     public override FixedAudioData LoadSound(string path)
@@ -204,11 +204,13 @@ public class OpenALAudioRenderer : AudioRenderer
         if (!canPlayAudio || sound.Data == null)
             return;
 
+        worldPosition *= SpatialMultiplier;
+
         sound.Volume = volume;
         sound.ForceUpdate();
         EnforceCorrectTrack(sound);
         UpdateIfRequired(sound, out int s);
-        if (sound.Spatial)
+        if (sound.SpatialParams.HasValue)
             AL.Source(s, ALSource3f.Position, worldPosition.X, 0, worldPosition.Y);
         else
             Logger.Warn("Attempt to play a non-spatial sound in space!");
@@ -219,14 +221,19 @@ public class OpenALAudioRenderer : AudioRenderer
 
     private int CreateTempSource(Sound sound, float volume, Vector2 worldPosition, float pitch, AudioTrack? track = null)
     {
+        worldPosition *= SpatialMultiplier;
+
         var source = SourceCache.CreateSourceFor(sound);
-        AL.Source(source, ALSourceb.SourceRelative, !sound.Spatial);
+
         AL.Source(source, ALSourceb.Looping, false);
         AL.Source(source, ALSourcef.Gain, (sound.Track?.Muted ?? false) ? 0 : (volume * (sound.Track?.Volume ?? 1)));
         AL.Source(source, ALSourcef.Pitch, pitch * (sound.Track?.Pitch ?? 1));
-        if (sound.Spatial)
+        if (sound.SpatialParams.HasValue)
             AL.Source(source, ALSource3f.Position, worldPosition.X, 0, worldPosition.Y);
         AL.SourcePlay(source);
+
+        ApplySpatialParams(source, sound);
+
         temporarySources.RequestObject(new TemporarySourceArgs(
             source,
             sound,
@@ -256,8 +263,10 @@ public class OpenALAudioRenderer : AudioRenderer
         if (!canPlayAudio || sound.Data == null || (track?.Muted ?? false))
             return;
 
+        worldPosition *= SpatialMultiplier;
+
         UpdateIfRequired(sound, out _);
-        if (!sound.Spatial)
+        if (!sound.SpatialParams.HasValue)
             Logger.Warn("Attempt to play a non-spatial sound in space!");
         CreateTempSource(sound, volume, worldPosition, pitch, track ?? sound.Track);
     }
@@ -526,7 +535,7 @@ public class OpenALAudioRenderer : AudioRenderer
 
         switch (sound.Data)
         {
-            case StreamAudioData stream:
+            case StreamAudioData:
                 var streamer = AudioObjects.OggStreamers.Load((source, sound));
                 streamer.CurrentTime = TimeSpan.FromSeconds(seconds);
                 break;
@@ -541,7 +550,7 @@ public class OpenALAudioRenderer : AudioRenderer
         UpdateIfRequired(sound, out var source);
         switch (sound.Data)
         {
-            case StreamAudioData stream:
+            case StreamAudioData:
                 var streamer = AudioObjects.OggStreamers.Load((source, sound));
                 return (float)streamer.CurrentTime.TotalSeconds;
             default:
@@ -552,8 +561,10 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public override void SetPosition(Sound sound, Vector2 worldPosition)
     {
+        worldPosition *= SpatialMultiplier;
+
         UpdateIfRequired(sound, out var source);
-        if (sound.Spatial)
+        if (sound.SpatialParams.HasValue)
             AL.Source(source, ALSource3f.Position, worldPosition.X, 0, worldPosition.Y);
         else
             Logger.Error("Attempt to set position for non-spatial sound");

@@ -19,7 +19,7 @@ public static class Onion
     public static readonly ThemeStack Theme = new();
 
     public static Sound? HoverSound;
-    public static Sound? ActiveSound = new(BuiltInAssets.Click, false, false);
+    public static Sound? ActiveSound = new(BuiltInAssets.Click, false, null);
     public static Sound? ScrollSound;
     public static Sound? TriggerSound;
     public static Sound? FocusSound;

@@ -1,29 +1,6 @@
 ﻿namespace Walgelijk;
 
 /// <summary>
-/// States that a sound can be in
-/// </summary>
-public enum SoundState
-{
-    /// <summary>
-    /// Untouched by audio engine.
-    /// </summary>
-    Idle,
-    /// <summary>
-    /// Currently playing.
-    /// </summary>
-    Playing,
-    /// <summary>
-    /// Not playing but not stopped either. This sound can be resumed.
-    /// </summary>
-    Paused,
-    /// <summary>
-    /// 
-    /// </summary>
-    Stopped
-}
-
-/// <summary>
 /// A sound that can be played. It does not contain audio data, but is instead linked to an <see cref="AudioData"/>
 /// </summary>
 public class Sound
@@ -39,9 +16,9 @@ public class Sound
     public bool Looping;
 
     /// <summary>
-    /// Rolloff factor if this sound is played in space
+    /// Spatial settings for this sound. If null, the sound won't be spatial (used for e.g user interface sounds).
     /// </summary>
-    public float RolloffFactor = 1;
+    public SpatialParams? SpatialParams = new(1, float.PositiveInfinity, 1);
 
     /// <summary>
     /// Pitch adjustment
@@ -54,11 +31,6 @@ public class Sound
     public float Volume = 1;
 
     /// <summary>
-    /// Is the sound affected by the listener position? True by default. Set to false for things like UI SFX.
-    /// </summary>
-    public bool Spatial = true;
-
-    /// <summary>
     /// Currrent sound state
     /// </summary>
     public SoundState State = SoundState.Idle;
@@ -68,11 +40,11 @@ public class Sound
     /// </summary>
     public AudioTrack? Track;
 
-    public Sound(AudioData data, bool loops = false, bool spatial = true, AudioTrack? track = null)
+    public Sound(AudioData data, bool loops = false, SpatialParams? spatialParams = null, AudioTrack? track = null)
     {
         Data = data;
         Looping = loops;
-        Spatial = spatial;
+        SpatialParams = spatialParams;
         Track = track;
     }
 
@@ -92,5 +64,5 @@ public class Sound
     /// <summary>
     /// Beep sound
     /// </summary>
-    public static readonly Sound Beep = new Sound(FixedAudioData.Beep, false, false);
+    public static readonly Sound Beep = new Sound(FixedAudioData.Beep, false, null);
 }
