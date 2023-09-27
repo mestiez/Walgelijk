@@ -67,28 +67,23 @@ public class TransformSystem : System
             var f = transform.InterpolationFlags;
             var t = Time.Interpolation;
 
-            var pos =
-                f.HasFlag(InterpolationFlags.Position) ?
+            var pos = (f & InterpolationFlags.Position) == InterpolationFlags.Position ?
                 Utilities.Lerp(transform.PreviousPosition, transform.Position, t) :
                 transform.Position;
 
-            var rotation =
-                f.HasFlag(InterpolationFlags.Rotation) ?
+            var rotation = (f & InterpolationFlags.Rotation) == InterpolationFlags.Rotation ?
                 Utilities.LerpAngle(transform.PreviousRotation, transform.Rotation, t) :
                 transform.Rotation;
 
-            var scale =
-                f.HasFlag(InterpolationFlags.Scale) ?
+            var scale = (f & InterpolationFlags.Scale) == InterpolationFlags.Scale ?
                 Utilities.Lerp(transform.PreviousScale, transform.Scale, t) :
                 transform.Scale;
 
-            var localPivot =
-                f.HasFlag(InterpolationFlags.LocalPivot) ?
+            var localPivot = (f & InterpolationFlags.LocalPivot) == InterpolationFlags.LocalPivot ?
                 Utilities.Lerp(transform.PreviousLocalPivot, transform.LocalPivot, t) :
                 transform.LocalPivot;
 
-            var localRotationPivot =
-                f.HasFlag(InterpolationFlags.LocalRotationPivot) ?
+            var localRotationPivot = (f & InterpolationFlags.LocalRotationPivot) == InterpolationFlags.LocalRotationPivot ?
                 Utilities.Lerp(transform.PreviousLocalRotationPivot, transform.LocalRotationPivot, t) :
                 transform.LocalRotationPivot;
 

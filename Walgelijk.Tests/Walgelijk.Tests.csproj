@@ -22,6 +22,9 @@
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="24bitwave.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="mono_junk_chunk.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

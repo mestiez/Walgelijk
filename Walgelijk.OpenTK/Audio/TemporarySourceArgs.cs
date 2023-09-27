@@ -8,7 +8,7 @@ internal readonly struct TemporarySourceArgs
     public readonly float Volume;
     public readonly AudioTrack? Track;
 
-    public TemporarySourceArgs(int source, Sound sound, float duration, float volume, AudioTrack track)
+    public TemporarySourceArgs(int source, Sound sound, float duration, float volume, AudioTrack? track)
     {
         Source = source;
         Sound = sound;
