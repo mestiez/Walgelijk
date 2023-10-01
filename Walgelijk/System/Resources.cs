@@ -40,7 +40,7 @@ public static class Resources
             return;
         initialised = true;
 
-        RegisterType(typeof(Texture), static (string path) => TextureLoader.FromFile(path));
+        RegisterType(typeof(Texture), path => TextureLoader.FromFile(path));
         RegisterType(typeof(Font), FontLoader.Load);
         RegisterType(typeof(string), File.ReadAllText);
         RegisterType(typeof(string[]), File.ReadAllLines);

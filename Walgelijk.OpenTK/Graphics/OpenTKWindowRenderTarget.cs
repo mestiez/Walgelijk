@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Graphics.OpenGL4;
 using Vector2 = System.Numerics.Vector2;
 
 namespace Walgelijk.OpenTK

@@ -1,4 +1,5 @@
 ﻿using OpenTK.Audio.OpenAL;
+using System;
 
 namespace Walgelijk.OpenTK;
 
@@ -6,7 +7,16 @@ public class SourceCache : Cache<Sound, SourceHandle>
 {
     protected override SourceHandle CreateNew(Sound raw) => CreateSourceFor(raw);
 
-    protected override void DisposeOf(SourceHandle loaded) => AL.DeleteSource(loaded);
+    protected override void DisposeOf(SourceHandle loaded)
+    {
+        var buffer = AL.GetSource(loaded, ALGetSourcei.Buffer);
+        if (AudioObjects.SourceByBuffer.TryGetValue(buffer, out var sourceList))
+            sourceList.Remove(loaded);
+
+        AL.SourceStop(loaded);
+        AL.Source(loaded, ALSourcei.Buffer, 0);
+        AL.DeleteSource(loaded);
+    }
 
     public Sound GetSoundFor(SourceHandle handle)
     {
@@ -23,12 +33,27 @@ public class SourceCache : Cache<Sound, SourceHandle>
             case FixedAudioData fixedData:
                 {
                     var buffer = AudioObjects.FixedBuffers.Load(fixedData);
+                    if (!AL.IsBuffer(buffer))
+                        throw new Exception("Failed to create fixed audio buffer");
                     var source = AL.GenSource();
+
+                    if (!AL.IsSource(source))
+                        throw new Exception("Failed to create fixed audio source");
                     AL.Source(source, ALSourcei.Buffer, buffer);
+                    if (AudioObjects.SourceByBuffer.TryGetValue(buffer, out var sourceList))
+                        sourceList.Add(source);
+                    else
+                        Logger.Error("Failed to register source to buffer: the buffer has no entry in the SourceByBuffer dictionary");
+
                     return source;
                 }
             case StreamAudioData streamData:
+
                 var s = AL.GenSource();
+
+                if (!AL.IsSource(s))
+                    throw new Exception("Failed to create streaming audio source");
+
                 AudioObjects.OggStreamers.Load((s, sound));
                 return s;
         }

@@ -20,6 +20,7 @@ public class AudioBuffer : IDisposable
         Id = byHandle.Count;
         Handle = AL.GenBuffer();
 
+
         Init(size, format, sampleRate);
         UploadData();
 

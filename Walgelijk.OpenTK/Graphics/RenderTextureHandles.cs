@@ -1,6 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL;
-
-namespace Walgelijk.OpenTK;
+﻿namespace Walgelijk.OpenTK;
 
 internal struct RenderTextureHandles
 {

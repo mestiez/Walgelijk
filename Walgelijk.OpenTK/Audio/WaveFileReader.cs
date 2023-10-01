@@ -11,7 +11,7 @@ public static class WaveFileReader
         var result = new AudioFileData();
         using var file = File.OpenRead(path);
         var buffer = new byte[4];
-        
+
         if (!ReadUntil(buffer, file, "RIFF"))
             throw new Exception("Input file is not a WAVE file: no RIFF header");
 
@@ -86,8 +86,8 @@ public static class WaveFileReader
             if (b.SequenceEqual(data)) // found it!!
                 return true;
         }
-    }    
-    
+    }
+
     private static bool ReadUntil(byte[] buffer, FileStream file, ReadOnlySpan<char> data)
     {
         while (true)

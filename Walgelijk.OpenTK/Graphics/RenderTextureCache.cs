@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Graphics.OpenGL4;
 using System;
 
 namespace Walgelijk.OpenTK;
@@ -29,6 +29,13 @@ internal class RenderTextureCache : Cache<RenderTexture, RenderTextureHandles>
             ids[1] = GL.GenTexture(); // we will bypass the texture cache because it is completely unnecessary here
             GL.BindTexture(TextureTarget.Texture2D, ids[1]);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, raw.Width, raw.Height, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+
+            var wrap = (int)TypeConverter.Convert(raw.WrapMode);
+            var maxFilter = (int)TypeConverter.Convert(raw.FilterMode);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, wrap);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, wrap);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, maxFilter);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, maxFilter);
 
             GL.FramebufferTexture2D(
                 FramebufferTarget.Framebuffer,

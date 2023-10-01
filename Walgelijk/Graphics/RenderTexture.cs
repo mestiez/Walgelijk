@@ -11,6 +11,7 @@ namespace Walgelijk
         private Vector2 size;
         private WrapMode wrapMode;
         private FilterMode filterMode;
+        private bool disposed = false;
 
         /// <summary>
         /// Construct a <see cref="RenderTexture"/>
@@ -25,8 +26,8 @@ namespace Walgelijk
                 Flags |= RenderTextureFlags.Mipmaps;
             if (hdr)
                 Flags |= RenderTextureFlags.HDR;
-        }      
-        
+        }
+
         public RenderTexture(int width, int height, WrapMode wrapMode = WrapMode.Clamp, FilterMode filterMode = FilterMode.Linear, RenderTextureFlags flags = RenderTextureFlags.None)
         {
             this.size = new Vector2(width, height);
@@ -108,8 +109,12 @@ namespace Walgelijk
         /// </summary>
         public void Dispose()
         {
-            Game.Main.Window.Graphics.Delete(this);
-            GC.SuppressFinalize(this);
+            if (!disposed)
+            {
+                Game.Main?.Window?.Graphics?.Delete(this);
+                GC.SuppressFinalize(this);
+            }
+            disposed = true;
         }
 
         /// <summary>

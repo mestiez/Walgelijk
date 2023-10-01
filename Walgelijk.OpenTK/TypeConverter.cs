@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Graphics.OpenGL4;
 
 namespace Walgelijk.OpenTK
 {
@@ -39,7 +39,7 @@ namespace Walgelijk.OpenTK
         public static WrapMode Convert(TextureWrapMode mode) => mode switch
         {
             TextureWrapMode.Repeat => WrapMode.Repeat,
-            TextureWrapMode.Clamp or TextureWrapMode.ClampToBorder or TextureWrapMode.ClampToEdge => WrapMode.Clamp,
+            TextureWrapMode.ClampToBorder or TextureWrapMode.ClampToEdge => WrapMode.Clamp,
             TextureWrapMode.MirroredRepeat => WrapMode.Mirror,
             _ => default,
         };

@@ -84,6 +84,7 @@ public class OggStreamer : IDisposable
     public void Reset()
     {
         AL.GetSource(SourceHandle, ALGetSourcei.BuffersProcessed, out int processed);
+
         for (int p = 0; p < processed; p++)
             AL.SourceUnqueueBuffer(SourceHandle);
 
@@ -104,6 +105,7 @@ public class OggStreamer : IDisposable
         CurrentPlayingBuffer = null;
 
         AL.SourceRewind(SourceHandle);
+
         PreFill();
     }
 
@@ -191,18 +193,8 @@ public class OggStreamer : IDisposable
             processedSamples = lastProcessedSampleCount + samplesPlayedInThisBuffer;
         }
 
-        //// set last sample buffer
-        //AL.GetSource(SourceHandle, ALGetSourcei.Buffer, out int currentBufferID);
-        //if (currentBufferID != CurrentPlayingBuffer)
-        //{
-        //    CurrentPlayingBuffer = currentBufferID;
-        //    for (int i = 0; i < Buffers.Length; i++)
-        //        if (Buffers[i].Handle == currentBufferID)
-        //        {
-        //            Array.Copy(Buffers[i].Data, LastSamples, BufferSize);
-        //            break;
-        //        }
-        //}
+        // read processed buffer count again in case any of them were discarded
+        AL.GetSource(SourceHandle, ALGetSourcei.BuffersProcessed, out processed);
 
         // unqueue processed buffers
         if (processed > 0)
@@ -210,18 +202,17 @@ public class OggStreamer : IDisposable
             for (int p = 0; p < processed; p++)
             {
                 var bufferHandle = AL.SourceUnqueueBuffer(SourceHandle);
+
                 for (int i = 0; i < Buffers.Length; i++)
                     if (Buffers[i].Handle == bufferHandle)
-                    {
                         Buffers[i].Free = true;
-
-                    }
             }
 
             // check if end of file was reached right after all buffers are completely processed
             if (endReached)
             {
                 AL.SourceStop(SourceHandle);
+
                 var sound = AudioObjects.Sources.GetSoundFor(SourceHandle);
                 Reset();
                 if (!sound.Looping)
@@ -278,12 +269,7 @@ public class OggStreamer : IDisposable
         stream.Dispose();
 
         AL.SourceStop(SourceHandle);
-        AL.GetSource(SourceHandle, ALGetSourcei.BuffersQueued, out int queued);
-        if (queued > 0)
-        {
-            var buffers = new int[queued];
-            AL.SourceUnqueueBuffers(SourceHandle, queued, buffers);
-        }
+        AL.Source(SourceHandle, ALSourcei.Buffer, 0);
 
         foreach (var b in Buffers)
             AL.DeleteBuffer(b.Handle);

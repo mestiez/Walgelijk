@@ -8,6 +8,8 @@ namespace Walgelijk
     /// </summary>
     public class Shader : IDisposable
     {
+        private bool disposed = false;
+
         /// <summary>
         /// Create a shader from vertex and fragment shader code
         /// </summary>
@@ -39,7 +41,12 @@ namespace Walgelijk
 
         public void Dispose()
         {
-            Game.Main?.Window?.Graphics?.Delete(this);
+            if (!disposed)
+            {
+                Game.Main?.Window?.Graphics?.Delete(this);
+                GC.SuppressFinalize(this);
+            }
+            disposed = true;
         }
 
         /// <summary>

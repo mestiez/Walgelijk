@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
@@ -176,7 +176,10 @@ public class OpenTKWindow : Window
             Title = title,
             StartVisible = false,
             NumberOfSamples = 2,
+            API = ContextAPI.OpenGL
         });
+
+        // window.MakeCurrent();
 
         if (position.X >= 0 && position.Y >= 0)
             Position = position;
@@ -221,13 +224,12 @@ public class OpenTKWindow : Window
             y = (int)MathF.Floor(index / res);
         }
 
-        window.Icon = new WindowIcon(new global::OpenTK.Windowing.Common.Input.Image(res, res, icon));
+        window.Icon = new WindowIcon(new Image(res, res, icon));
     }
 
     public override void Initialise()
     {
         //window.Run();
-        window.MakeCurrent();
         window.IsVisible = true;
         OnWindowLoad();
         OnWindowResize(new ResizeEventArgs(window.ClientSize));
@@ -251,8 +253,8 @@ public class OpenTKWindow : Window
         inputHandler.Reset();
 
         window.Context.SwapBuffers();
-        //window.ProcessEvents();
-        NativeWindow.ProcessWindowEvents(window.IsEventDriven);
+        window.ProcessEvents(0);
+        //NativeWindow.ProcessWindowEvents(window.IsEventDriven);
 
         Game.State.Input = inputHandler.InputState;
         GLUtilities.PrintGLErrors(Game.Main.DevelopmentMode);

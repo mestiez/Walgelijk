@@ -71,6 +71,7 @@ public class Texture : IReadableTexture, IDisposable
 
     private FilterMode filterMode = FilterMode.Nearest;
     private WrapMode wrapMode = WrapMode.Clamp;
+    private bool disposed = false;
 
     /// <summary>
     /// Create a texture from a series of pixels
@@ -175,8 +176,12 @@ public class Texture : IReadableTexture, IDisposable
     /// </summary>
     public void Dispose()
     {
-        Game.Main.Window.Graphics.Delete(this);
-        GC.SuppressFinalize(this);
+        if (!disposed)
+        {
+            Game.Main?.Window?.Graphics?.Delete(this);
+            GC.SuppressFinalize(this);
+        }
+        disposed = true;
     }
 
     /// <summary>

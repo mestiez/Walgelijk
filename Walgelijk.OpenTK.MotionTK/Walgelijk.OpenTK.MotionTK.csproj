@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <Version>1.1.6</Version>
+    <Version>1.1.7</Version>
     <Company>Studio Minus</Company>
     <Authors>zooi</Authors>
     <PackageIcon>icon.png</PackageIcon>
@@ -16,7 +16,7 @@
   </Target>
   <ItemGroup>
     <PackageReference Include="FFmpeg.AutoGen" Version="5.1.2.3" />
-    <PackageReference Include="OpenTK" Version="4.8.0" />
+    <PackageReference Include="OpenTK" Version="4.8.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />

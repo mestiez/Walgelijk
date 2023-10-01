@@ -9,6 +9,7 @@ namespace Walgelijk
     {
         private Vertex[] vertices = Array.Empty<Vertex>();
         private uint[] indices = Array.Empty<uint>();
+        private bool disposed = false;
 
         private readonly VertexAttributeArray[]? extraAttributes = null;
 
@@ -169,7 +170,12 @@ namespace Walgelijk
 
         public void Dispose()
         {
-            Game.Main?.Window?.Graphics?.Delete(this);
+            if (!disposed)
+            {
+                Game.Main?.Window?.Graphics?.Delete(this);
+                GC.SuppressFinalize(this);
+            }
+            disposed = true;
         }
 
         /// <summary>

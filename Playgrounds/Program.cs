@@ -34,10 +34,12 @@ public class Program
         TextureLoader.Settings.FilterMode = FilterMode.Linear;
 
         Resources.SetBasePathForType<AudioData>("audio");
+        Resources.SetBasePathForType<FixedAudioData>("audio");
+        Resources.SetBasePathForType<StreamAudioData>("audio");
         Resources.SetBasePathForType<Texture>("textures");
         Resources.SetBasePathForType<Font>("fonts");
 
-        game.Scene = new IMGUIScene().Load(game);
+        game.Scene = new AudioVisScene().Load(game);
 
 #if DEBUG
         game.DevelopmentMode = true;

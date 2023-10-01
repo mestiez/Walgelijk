@@ -9,7 +9,7 @@
 
         protected override void DisposeOf(Material loaded)
         {
-            Game.Main.Window.Graphics.Delete(loaded);
+            loaded.Dispose();
         }
     }
 }

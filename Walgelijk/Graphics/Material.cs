@@ -10,6 +10,7 @@ namespace Walgelijk;
 public sealed class Material : IDisposable
 {
     private const string NoGameExceptionText = "There is no main instance of Game. Setting uniforms can only be done once a game is running";
+    private bool disposed = false;
 
     /// <summary>
     /// The shader this material uses
@@ -295,7 +296,12 @@ public sealed class Material : IDisposable
 
     public void Dispose()
     {
-        Game.Main?.Window?.Graphics?.Delete(this);
+        if (!disposed)
+        {
+            Game.Main?.Window?.Graphics?.Delete(this);
+            GC.SuppressFinalize(this);
+        }
+        disposed = true;
     }
 
     /// <summary>
