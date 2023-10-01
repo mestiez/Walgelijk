@@ -23,6 +23,28 @@ public struct AudioAnalysis
         ArrayPool<float>.Shared.Return(s);
     }
 
+    public static void Convolve(Span<float> values, ReadOnlySpan<float> kernel)
+    {
+        if (kernel.Length % 2 == 0)
+            throw new ArgumentException("Kernel must have an odd size");
+
+        int kernelRadius = kernel.Length / 2;
+        var s = ArrayPool<float>.Shared.Rent(values.Length);
+        var scrap = s.AsSpan(0, values.Length);
+        values.CopyTo(scrap);
+
+        for (int i = kernelRadius; i < values.Length - kernelRadius; i++)
+        {
+            float sum = 0;
+            for (int j = -kernelRadius; j <= kernelRadius; j++)
+                sum += scrap[i + j] * kernel[kernelRadius + j];
+
+            values[i] = sum;
+        }
+
+        ArrayPool<float>.Shared.Return(s);
+    }
+
     public static float Rectangular(float v, int n, int N)
     {
         return v;

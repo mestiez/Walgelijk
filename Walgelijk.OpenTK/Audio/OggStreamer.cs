@@ -3,6 +3,7 @@ using OpenTK.Audio.OpenAL;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace Walgelijk.OpenTK;
@@ -12,7 +13,7 @@ public class OggStreamer : IDisposable
     public const int BufferSize = 1024;
     public const int MaxBufferCount = 16;
 
-    public ALFormat Format => Raw.ChannelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16;
+    public FloatBufferFormat Format => Raw.ChannelCount == 1 ? FloatBufferFormat.Mono : FloatBufferFormat.Stereo;
     public readonly SourceHandle SourceHandle;
     public readonly Sound Sound;
     public readonly StreamAudioData Raw;
@@ -34,7 +35,6 @@ public class OggStreamer : IDisposable
     private FileStream stream;
     private VorbisReader reader;
     private bool endReached;
-    private readonly short[] readBuffer = new short[BufferSize]; //16 bits per sample
     private readonly float[] rawOggBuffer = new float[BufferSize];
     private readonly Thread monitorThread;
     private volatile bool monitorFlag = true;
@@ -79,6 +79,7 @@ public class OggStreamer : IDisposable
 
         monitorThread = new Thread(MonitorLoop);
         monitorThread.Start();
+        
     }
 
     public void Reset()
@@ -98,8 +99,7 @@ public class OggStreamer : IDisposable
         stream = new FileStream(Raw.File.FullName, FileMode.Open, FileAccess.Read);
         reader = new VorbisReader(stream, true);
         playedSamplesBacklog.Clear();
-        //Array.Clear(LastSamples);
-
+         
         lastProcessedSampleCount = 0;
         processedSamples = 0;
         CurrentPlayingBuffer = null;
@@ -113,8 +113,9 @@ public class OggStreamer : IDisposable
     {
         buffer.Free = false;
         Array.Copy(rawOggBuffer, buffer.Data, BufferSize);
-        CastBuffer(rawOggBuffer, readBuffer, readAmount);
-        AL.BufferData<short>(buffer.Handle, Format, readBuffer.AsSpan(0, readAmount), Raw.SampleRate);
+        AL.EXTFloat32.BufferData(buffer.Handle, Format, buffer.Data.AsSpan(0, readAmount), Raw.SampleRate);
+        if (!AL.EXTFloat32.IsExtensionPresent())
+            throw new Exception($"The provided OpenAL distribution is missing the \"{AL.EXTFloat32.ExtensionName}\" extension");
         AL.SourceQueueBuffer(SourceHandle, buffer.Handle);
 
         for (int i = 0; i < readAmount; i++)
@@ -235,21 +236,6 @@ public class OggStreamer : IDisposable
                 if (TryGetFreeBuffer(out var buffer))
                     FillBuffer(buffer, readAmount);
             }
-        }
-    }
-
-    private static void CastBuffer(float[] inBuffer, short[] outBuffer, int length)
-    {
-        for (int i = 0; i < length; i++)
-        {
-            var temp = (int)(short.MaxValue * inBuffer[i]);
-
-            if (temp > short.MaxValue)
-                temp = short.MaxValue;
-            else if (temp < short.MinValue)
-                temp = short.MinValue;
-
-            outBuffer[i] = (short)temp;
         }
     }
 

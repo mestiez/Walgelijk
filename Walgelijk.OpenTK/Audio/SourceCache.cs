@@ -54,6 +54,12 @@ public class SourceCache : Cache<Sound, SourceHandle>
                 if (!AL.IsSource(s))
                     throw new Exception("Failed to create streaming audio source");
 
+                //var effect = ALC.EFX.GenEffect();
+                //var slot = ALC.EFX.GenAuxiliaryEffectSlot();
+                //ALC.EFX.Effect(effect, EffectInteger.EffectType, (int)EffectType.Flanger);
+                //ALC.EFX.AuxiliaryEffectSlot(slot, EffectSlotInteger.Effect, effect);
+                //ALC.EFX.Source(s, EFXSourceInteger3.AuxiliarySendFilter, new int[] { slot, 0, 0});
+
                 AudioObjects.OggStreamers.Load((s, sound));
                 return s;
         }

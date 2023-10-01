@@ -372,15 +372,11 @@ public class OpenALAudioRenderer : AudioRenderer
             {
                 var src = v.Source;
                 var buffer = AL.GetSource(src, ALGetSourcei.Buffer);
-                ALUtils.CheckError("Delete temporary source");
                 if (AudioObjects.SourceByBuffer.TryGetValue(buffer, out var sourceList))
                     sourceList.Remove(src);
                 AL.SourceStop(src);
-                ALUtils.CheckError("Delete temporary source");
                 AL.Source(src, ALSourcei.Buffer, 0);
-                ALUtils.CheckError("Delete temporary source");
                 AL.DeleteSource(src);
-                ALUtils.CheckError("Delete temporary source");
                 temporarySources.ReturnToPool(v);
             }
             else
