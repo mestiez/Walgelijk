@@ -56,7 +56,7 @@ public class SourceCache : Cache<Sound, SourceHandle>
 
                 //var effect = ALC.EFX.GenEffect();
                 //var slot = ALC.EFX.GenAuxiliaryEffectSlot();
-                //ALC.EFX.Effect(effect, EffectInteger.EffectType, (int)EffectType.Flanger);
+                //ALC.EFX.Effect(effect, EffectInteger.EffectType, (int)EffectType.FrequencyShifter);
                 //ALC.EFX.AuxiliaryEffectSlot(slot, EffectSlotInteger.Effect, effect);
                 //ALC.EFX.Source(s, EFXSourceInteger3.AuxiliarySendFilter, new int[] { slot, 0, 0});
 

@@ -1,16 +1,5 @@
 ﻿namespace Walgelijk;
 
-///// <summary>
-///// Utility class for loading and caching <see cref="Sound"/>s directly, as opposed to loading <see cref="AudioData"/> all over the place.
-///// </summary>
-//public static class SoundCache
-//{
-//    public static Sound LoadSfx(string path)
-//    {
-
-//    }
-//}
-
 /// <summary>
 /// A sound that can be played. It does not contain audio data, but is instead linked to an <see cref="AudioData"/>
 /// </summary>

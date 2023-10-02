@@ -79,7 +79,7 @@ public class OggStreamer : IDisposable
 
         monitorThread = new Thread(MonitorLoop);
         monitorThread.Start();
-        
+
     }
 
     public void Reset()
@@ -99,7 +99,7 @@ public class OggStreamer : IDisposable
         stream = new FileStream(Raw.File.FullName, FileMode.Open, FileAccess.Read);
         reader = new VorbisReader(stream, true);
         playedSamplesBacklog.Clear();
-         
+
         lastProcessedSampleCount = 0;
         processedSamples = 0;
         CurrentPlayingBuffer = null;
