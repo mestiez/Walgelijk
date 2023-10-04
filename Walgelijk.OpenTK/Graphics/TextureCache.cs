@@ -126,7 +126,7 @@ public class TextureCache : Cache<IReadableTexture, LoadedTexture>
 
     private static void SetTextureData(float[] data, IReadableTexture raw)
     {
-        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba32f, raw.Width, raw.Height, 0, PixelFormat.Rgba, PixelType.Float, data);
+        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, raw.Width, raw.Height, 0, PixelFormat.Rgba, PixelType.Float, data);
     }
 
     protected override void DisposeOf(LoadedTexture loaded)

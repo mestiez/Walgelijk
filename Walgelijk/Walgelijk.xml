@@ -2162,9 +2162,19 @@
             Just draw a screen space quad
             </summary>
         </member>
+        <member name="M:Walgelijk.GraphicsExtensions.DrawQuad(Walgelijk.IGraphics,Walgelijk.Rect,Walgelijk.Material)">
+            <summary>
+            Just draw a quad
+            </summary>
+        </member>
         <member name="M:Walgelijk.GraphicsExtensions.DrawTextScreenspace(Walgelijk.IGraphics,System.ReadOnlySpan{System.Char},System.Numerics.Vector2,Walgelijk.TextMeshGenerator,Walgelijk.VertexBuffer,Walgelijk.Material)">
             <summary>
             Just draw screen space text
+            </summary>
+        </member>
+        <member name="M:Walgelijk.GraphicsExtensions.ActOnTarget(Walgelijk.IGraphics,Walgelijk.RenderTarget,System.Action{Walgelijk.IGraphics})">
+            <summary>
+            Perform some actions on a render target without having to set <see cref="P:Walgelijk.IGraphics.CurrentTarget"/> manually
             </summary>
         </member>
         <member name="T:Walgelijk.IGraphics">

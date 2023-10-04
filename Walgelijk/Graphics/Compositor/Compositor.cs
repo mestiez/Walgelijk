@@ -7,8 +7,8 @@ namespace Walgelijk;
 
 public class Compositor : IDisposable
 {
-    public CompositorNode RootNode => rootNode;
-    public CompositorNode OutputNode => outputNode;
+    public CompositorNode SourceNode => sourceNode;
+    public CompositorNode DestinationNode => destinationNode;
     public bool ForceUpdateTargets = true;
 
     public bool Enabled = true;
@@ -24,11 +24,11 @@ public class Compositor : IDisposable
         }
     }
 
-    private RootCompositorNode rootNode = new();
-    private OutputCompositorNode outputNode = new();
+    private RootCompositorNode sourceNode = new();
+    private OutputCompositorNode destinationNode = new();
     private RenderTextureFlags flags = RenderTextureFlags.HDR;
-    private readonly Game game;
     private readonly Material blitMat = new Material(Material.DefaultTextured);
+    private readonly Game game;
 
     public Compositor(Game game)
     {
@@ -45,7 +45,7 @@ public class Compositor : IDisposable
     public void Clear()
     {
         ForceUpdateTargets = true;
-        rootNode.Output.ConnectTo(outputNode.Inputs[0]);
+        sourceNode.Output.ConnectTo(destinationNode.Inputs[0]);
     }
 
     public void Prepare()
@@ -53,14 +53,14 @@ public class Compositor : IDisposable
         if (!Enabled)
             return;
 
-        if (ForceUpdateTargets || rootNode.Source == null)
+        if (ForceUpdateTargets || sourceNode.Source == null)
         {
-            rootNode.Source?.Dispose();
-            rootNode.Source = new RenderTexture(game.Window.Width, game.Window.Height, WrapMode.Clamp, FilterMode.Nearest, Flags);
+            sourceNode.Source?.Dispose();
+            sourceNode.Source = new RenderTexture(game.Window.Width, game.Window.Height, WrapMode.Clamp, FilterMode.Nearest, Flags);
         }
 
         ForceUpdateTargets = false;
-        game.Window.Graphics.CurrentTarget = rootNode.Source;
+        game.Window.Graphics.CurrentTarget = sourceNode.Source;
     }
 
     public void Render(IGraphics graphics)
@@ -68,12 +68,13 @@ public class Compositor : IDisposable
         if (!Enabled)
             return;
 
+        int w = (int)graphics.CurrentTarget.Size.X;
+        int h = (int)graphics.CurrentTarget.Size.Y;
         graphics.CurrentTarget = game.Window.RenderTarget;
         graphics.BlitFullscreenQuad(
-            outputNode.Output.Read(game)!,
+            destinationNode.Output.Read(game, w, h)!,
             graphics.CurrentTarget,
-            (int)graphics.CurrentTarget.Size.X,
-            (int)graphics.CurrentTarget.Size.Y,
+            w, h,
             blitMat,
             "mainTex");
     }
@@ -86,82 +87,16 @@ public class Compositor : IDisposable
     private class OutputCompositorNode : CompositorNode
     {
         public OutputCompositorNode() : base(1) { }
-
-        public override RenderTexture? Read(Game game) => Inputs[0].Read(game);
-
+        public override RenderTexture? Read(Game game, in int width, in int height) => Inputs[0].Read(game, width, height);
         public override void Dispose() { }
     }
 
     private class RootCompositorNode : CompositorNode
     {
         public RootCompositorNode() : base(0) { }
-
         public RenderTexture? Source;
+        public override RenderTexture? Read(Game game, in int width, in int height) => Source;
 
-        public override RenderTexture? Read(Game game) => Source;
-
-        public override void Dispose()
-        {
-            Source?.Dispose();
-        }
-    }
-}
-
-public abstract class CompositorNode : IDisposable
-{
-    public readonly CompositorSocket[] Inputs;
-    public readonly CompositorSocket Output;
-
-    protected CompositorNode(int inputCount)
-    {
-        Inputs = new CompositorSocket[inputCount];
-        Output = new(CompositorSocketType.Output, this);
-
-        for (int i = 0; i < inputCount; i++)
-            Inputs[i] = new CompositorSocket(CompositorSocketType.Input, this);
-    }
-
-    public abstract void Dispose();
-    public abstract RenderTexture? Read(Game game);
-}
-
-public enum CompositorSocketType
-{
-    Input,
-    Output
-}
-
-public class CompositorSocket
-{
-    public readonly CompositorSocketType SocketType;
-    public readonly CompositorNode Node;
-    public CompositorSocket? Connected { get; private set; }
-
-    public CompositorSocket(CompositorSocketType socketType, CompositorNode node)
-    {
-        SocketType = socketType;
-        Node = node;
-    }
-
-    public void ConnectTo(CompositorSocket other)
-    {
-        if (other.SocketType == SocketType)
-            throw new InvalidOperationException(
-                $"Attempt to connect {SocketType} {nameof(CompositorSocket)} to {other.SocketType} {nameof(CompositorSocket)}, which is invalid");
-
-        other.Connected = this;
-        Connected = other;
-    }
-
-    public RenderTexture? Read(Game game)
-    {
-        switch (SocketType)
-        {
-            case CompositorSocketType.Input:
-                return Connected?.Read(game) ?? throw new Exception("Input socket has null connection but Read was called");
-            default:
-            case CompositorSocketType.Output:
-                return Node.Read(game);
-        }
+        public override void Dispose() => Source?.Dispose();
     }
 }

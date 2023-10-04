@@ -62,9 +62,8 @@ namespace Walgelijk.OpenTK
         public void Clear(Color color)
         {
             GL.ClearColor(color.R, color.G, color.B, color.A);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.ClearDepth(1);
-            GL.Clear(ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         }
 
         public void Draw(VertexBuffer vertexBuffer, Material material = null)

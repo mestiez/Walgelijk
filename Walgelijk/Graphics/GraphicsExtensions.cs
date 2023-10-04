@@ -42,7 +42,20 @@ namespace Walgelijk
                     Matrix3x2.CreateTranslation(rect.BottomLeft)
                 );
             graphics.Draw(PrimitiveMeshes.Quad, mat);
-        }
+        }     
+        
+        /// <summary>
+        /// Just draw a quad
+        /// </summary>
+        public static void DrawQuad(this IGraphics graphics, Rect rect, Material mat)
+        {
+            graphics.CurrentTarget.ModelMatrix =
+                new Matrix4x4(
+                    Matrix3x2.CreateScale(rect.Width, -rect.Height ) *
+                    Matrix3x2.CreateTranslation(rect.TopLeft)
+                );
+            graphics.Draw(PrimitiveMeshes.Quad, mat);
+        }     
 
         /// <summary>
         /// Just draw screen space text
@@ -65,6 +78,17 @@ namespace Walgelijk
             graphics.Draw(mesh, mat);
 
             return result;
+        }
+
+        /// <summary>
+        /// Perform some actions on a render target without having to set <see cref="IGraphics.CurrentTarget"/> manually
+        /// </summary>
+        public static void ActOnTarget(this IGraphics graphics, RenderTarget renderTarget, Action<IGraphics> action)
+        {
+            var p = graphics.CurrentTarget;
+            graphics.CurrentTarget = renderTarget;
+            action(graphics);
+            graphics.CurrentTarget = p;
         }
     }
 }
