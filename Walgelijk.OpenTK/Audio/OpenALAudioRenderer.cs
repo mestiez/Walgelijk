@@ -277,11 +277,6 @@ public class OpenALAudioRenderer : AudioRenderer
         sound.State = SoundState.Stopped;
         UpdateIfRequired(sound, out int s);
         AL.SourceRewind(s);
-        if (sound.Data is StreamAudioData)
-        {
-            var streamer = AudioObjects.OggStreamers.Load((s, sound));
-            streamer.CurrentTime = TimeSpan.Zero;
-        }
     }
 
     public override void StopAll()
@@ -322,7 +317,7 @@ public class OpenALAudioRenderer : AudioRenderer
         }
     }
 
-    public override void Process(Game game)
+    public override void Process(float dt)
     {
         if (!canPlayAudio)
             return;
@@ -346,10 +341,13 @@ public class OpenALAudioRenderer : AudioRenderer
                 case SoundState.Playing:
                     if (sourceState != ALSourceState.Playing && sound.Looping)
                         AL.SourcePlay(source);
+                    else if (sourceState == ALSourceState.Stopped)
+                        sound.State = SoundState.Stopped;
                     break;
                 case SoundState.Paused:
                     if (sourceState == ALSourceState.Playing)
                         AL.SourcePause(source);
+                    sound.State = SoundState.Paused;
                     break;
                 case SoundState.Stopped:
                     if (sourceState is ALSourceState.Playing or ALSourceState.Paused)
@@ -368,7 +366,9 @@ public class OpenALAudioRenderer : AudioRenderer
         for (int j = 0; j < i; j++)
         {
             var v = temporySourceBuffer[j];
-            if (v.CurrentLifetime > v.Duration)
+            var pitch = AL.GetSource(v.Source, ALSourcef.Pitch);
+            var transformedDuration = v.Duration / pitch;
+            if (v.CurrentLifetime > transformedDuration)
             {
                 var src = v.Source;
                 var buffer = AL.GetSource(src, ALGetSourcei.Buffer);
@@ -380,7 +380,7 @@ public class OpenALAudioRenderer : AudioRenderer
                 temporarySources.ReturnToPool(v);
             }
             else
-                v.CurrentLifetime += game.State.Time.DeltaTime;
+                v.CurrentLifetime += dt;
         }
 
         Array.Clear(temporySourceBuffer);

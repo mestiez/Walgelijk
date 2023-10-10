@@ -13,8 +13,8 @@ public class WaveReaderTests
         var file = WaveFileReader.Read("mono_microsoft.wav");
         Assert.AreEqual(1, file.NumChannels);
         Assert.AreEqual(48_000, file.SampleRate);
-        Assert.AreEqual(57_374, file.SampleCount);
-        Assert.AreEqual(file.SampleCount, file.Data.Length);
+        Assert.AreEqual(28_687, file.SampleCount);
+        Assert.AreEqual(file.SampleCount, file.Data.Length / 2);
     }    
     
     [TestMethod]
@@ -23,8 +23,8 @@ public class WaveReaderTests
         var file = WaveFileReader.Read("stereo_microsoft.wav");
         Assert.AreEqual(2, file.NumChannels);
         Assert.AreEqual(44_100, file.SampleRate);
-        Assert.AreEqual(456_704, file.SampleCount);
-        Assert.AreEqual(file.SampleCount, file.Data.Length);
+        Assert.AreEqual(228_352, file.SampleCount);
+        Assert.AreEqual(file.SampleCount, file.Data.Length / 2);
     }  
     
     [TestMethod]
@@ -33,8 +33,8 @@ public class WaveReaderTests
         var file = WaveFileReader.Read("mono_junk_chunk.wav");
         Assert.AreEqual(1, file.NumChannels);
         Assert.AreEqual(44_100, file.SampleRate);
-        Assert.AreEqual(67_836, file.SampleCount);
-        Assert.AreEqual(file.SampleCount, file.Data.Length);
+        Assert.AreEqual(33_918, file.SampleCount);
+        Assert.AreEqual(file.SampleCount, file.Data.Length / 2);
     }    
 
     [TestMethod]

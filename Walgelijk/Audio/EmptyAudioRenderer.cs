@@ -23,7 +23,7 @@ internal sealed class EmptyAudioRenderer : AudioRenderer
 
     public override void Release() { }
 
-    public override void Process(Game game) { }
+    public override void Process(float dt) { }
 
     public override bool IsPlaying(Sound sound) => false;
 

@@ -23,7 +23,7 @@ public class FixedAudioData : AudioData
         if (data?.Length == 0 || sampleRate == 0 || channelCount == 0 || sampleCount == 0)
             Duration = TimeSpan.Zero;
         else
-            Duration = TimeSpan.FromSeconds(sampleCount /*/ ChannelCount*/ / (double)sampleRate);
+            Duration = TimeSpan.FromSeconds(sampleCount / ChannelCount / (double)sampleRate);
     }
 
     public override void DisposeLocalCopy()

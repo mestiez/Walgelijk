@@ -18,23 +18,8 @@ public class StreamAudioData : AudioData
         if (SampleRate == 0 || ChannelCount == 0 || SampleCount == 0)
             Duration = TimeSpan.Zero;
         else
-            Duration = TimeSpan.FromSeconds(SampleCount /*/ ChannelCount*/ / (double)sampleRate);
+            Duration = TimeSpan.FromSeconds(SampleCount / ChannelCount / (double)sampleRate);
     }
-
-    public FileStream CreateStream() => new FileStream(File.FullName, FileMode.Open, FileAccess.Read);
-
-    ///// <summary>
-    ///// Returns a span with samples. The returned span could be smaller than the requested amount. 
-    ///// If the span is empty (length 0), the stream has ended.
-    ///// </summary>
-    //public ReadOnlySpan<byte> Read(int amount)
-    //{
-    //    var c = stream.Read(buffer, 0, amount);
-    //    if (c == 0)
-    //        return ReadOnlySpan<byte>.Empty;
-    //    Cursor += c;
-    //    return buffer.AsSpan(0, c);
-    //}
 
     /// <summary>
     /// This does nothing because the stream is managed by the audio renderer

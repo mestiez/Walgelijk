@@ -67,25 +67,10 @@ public static class WaveFileReader
             throw new Exception("Input file is not a valid WAVE file: the reported data chunk size does not match the actually read data size");
 
         result.Data = data;
-        result.SampleCount = data.Length;
+        result.SampleCount = data.Length / 2; // 2 bytes per sample
         file.Dispose();
 
         return result;
-    }
-
-    private static bool ReadUntil(byte[] buffer, FileStream file, ReadOnlySpan<byte> data)
-    {
-        var b = buffer.AsSpan();
-        while (true)
-        {
-            var read = file.Read(buffer);
-            if (read == 0) // eof
-                return false;
-            if (read != data.Length) // mustve hit the wall
-                continue;
-            if (b.SequenceEqual(data)) // found it!!
-                return true;
-        }
     }
 
     private static bool ReadUntil(byte[] buffer, FileStream file, ReadOnlySpan<char> data)

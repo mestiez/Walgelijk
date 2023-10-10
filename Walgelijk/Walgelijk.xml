@@ -201,7 +201,7 @@
             Release all resources used by the audio engine
             </summary>
         </member>
-        <member name="M:Walgelijk.AudioRenderer.Process(Walgelijk.Game)">
+        <member name="M:Walgelijk.AudioRenderer.Process(System.Single)">
             <summary>
             This is called every frame by the main loop and allows the renderer to process things that it needs to process
             </summary>
@@ -5967,7 +5967,7 @@
             Get kerning for two characters
             </summary>
         </member>
-        <member name="F:Walgelijk.Font.Default">
+        <member name="P:Walgelijk.Font.Default">
             <summary>
             The default font
             </summary>
@@ -6456,6 +6456,21 @@
         <member name="M:Walgelijk.InputState.Reset(Walgelijk.InputState@)">
             <summary>
             Reset the given <see cref="T:Walgelijk.InputState"/>
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Mock.MockGraphics">
+            <summary>
+            Empty graphics implementation for testing purposes
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Mock.MockRenderTarget">
+            <summary>
+            Empty render target implementation for testing purposes
+            </summary>
+        </member>
+        <member name="T:Walgelijk.Mock.MockWindow">
+            <summary>
+            Empty window implementation for testing purposes
             </summary>
         </member>
         <member name="T:Walgelijk.Window">

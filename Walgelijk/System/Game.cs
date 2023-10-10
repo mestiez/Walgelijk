@@ -181,7 +181,7 @@ public class Game
 
             AudioRenderer.UpdateTracks();
             Console.Update();
-            AudioRenderer.Process(this);
+            AudioRenderer.Process(unscaledDt);
 
             double fixedUpdateInterval = 1d / FixedUpdateRate;
             if (!Console.IsActive)
@@ -226,17 +226,7 @@ public class Game
             if (UpdateRate != 0)
             {
                 var expected = TimeSpan.FromSeconds(1d / UpdateRate);
-                //var msToSleep = expected.TotalMilliseconds - clock.Elapsed.TotalMilliseconds;
-
-                //if (msToSleep > 1)
-                //    Thread.Sleep((int)msToSleep - 10);
-
                 while (clock.Elapsed < expected) { }
-
-                //SpinWait.SpinUntil(() => clock.Elapsed >= expected);
-                //while (clock.Elapsed < expected)
-                //    Thread.SpinWait(1);
-                //Thread.Sleep(0); // Dit is niet echt slapen.. het gebruikt alsnog CPU maar het is nodig voor de laatste beetjes om de wachttijd perfect te maken
             }
 
             dt = clock.Elapsed.TotalSeconds;

@@ -21,7 +21,7 @@ public struct Tag
     /// Generate new Tag with a unique value that probably doesn't matter
     /// </summary>
     /// <returns></returns>
-    public static Tag CreateUnique() => new Tag(Guid.NewGuid().GetHashCode()); //TODO verzin iets beters lol
+    public static Tag CreateUnique() => new Tag(Guid.NewGuid().GetHashCode()); //TODO think of something better lol
 
     public override bool Equals(object? obj)
     {

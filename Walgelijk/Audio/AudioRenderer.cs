@@ -154,7 +154,7 @@ public abstract class AudioRenderer
     /// <summary>
     /// This is called every frame by the main loop and allows the renderer to process things that it needs to process
     /// </summary>
-    public abstract void Process(Game game);
+    public abstract void Process(float dt);
 
     /// <summary>
     /// Release memory used by the given <see cref="AudioData"/>. <see cref="Sound"/>s using this data will become unusable.
