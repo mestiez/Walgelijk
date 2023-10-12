@@ -7,6 +7,8 @@ namespace Walgelijk
     /// </summary>
     public struct Entity : IEquatable<Entity>
     {
+        // TODO reserve entity 0 for invalid entities
+
         /// <summary>
         /// The identity of the entity
         /// </summary>
