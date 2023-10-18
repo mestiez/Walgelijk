@@ -125,10 +125,7 @@ namespace Walgelijk
 
                 indices[n] = 0;
                 indices[n + 1] = i + 1;
-                indices[n + 2] =
-                    i + 2 > edges ?
-                    1 :
-                    i + 2;
+                indices[n + 2] = i + 2 > edges ? 1 : i + 2;
                 n += 3;
             }
 

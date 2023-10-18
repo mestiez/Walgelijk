@@ -80,7 +80,7 @@ public class Font
     /// <summary>
     /// The default font
     /// </summary>
-    public static Font Default => Resources.Load<Font>("resources/fonts/roboto mono.fnt", true);
+    public static Font Default = Resources.Load<Font>("resources/fonts/roboto mono.fnt", true);
 
     public override string ToString() => Name;
 }
