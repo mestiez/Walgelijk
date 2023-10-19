@@ -39,7 +39,7 @@ public class Program
         Resources.SetBasePathForType<Texture>("textures");
         Resources.SetBasePathForType<Font>("fonts");
 
-        game.Scene = new CompositorScene().Load(game);
+        game.Scene = new BatchRendererScene().Load(game);
 
 #if DEBUG
         game.DevelopmentMode = true;

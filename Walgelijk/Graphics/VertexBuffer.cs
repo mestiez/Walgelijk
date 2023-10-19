@@ -139,6 +139,24 @@ namespace Walgelijk
         //}
 
         /// <summary>
+        /// Find the location of a vertex attribute array with the given type. Returns -1 if nothing is found.
+        /// </summary>
+        public int FindAttribute(AttributeType t)
+        {
+            if (extraAttributes == null)
+                return -1;
+
+            for (int i = 0; i < extraAttributes.Length; i++)
+            {
+                var item = extraAttributes[i];
+                if (item.AttributeType == t)
+                    return i;
+            }
+
+            return -1;
+        }
+
+        /// <summary>
         /// Get a vertex attribute array. Returns null if nothing is found. This is a reference value.
         /// </summary>
         public VertexAttributeArray? GetAttribute(int location)

@@ -3485,6 +3485,11 @@
             Generates indices that simply walk the vertex array from beginning to end
             </summary>
         </member>
+        <member name="M:Walgelijk.VertexBuffer.FindAttribute(Walgelijk.AttributeType)">
+            <summary>
+            Find the location of a vertex attribute array with the given type. Returns -1 if nothing is found.
+            </summary>
+        </member>
         <member name="M:Walgelijk.VertexBuffer.GetAttribute(System.Int32)">
             <summary>
             Get a vertex attribute array. Returns null if nothing is found. This is a reference value.
