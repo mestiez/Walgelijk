@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using NAudio.Wave;
+using System.Numerics;
 using Walgelijk;
 using Walgelijk.Prism;
 
@@ -48,15 +49,15 @@ public struct PrismScene : ISceneCreator
         for (int x = -5; x < 10; x++)
             for (int y = -5; y < 10; y++)
             {
-                var cube = scene.CreateEntity();
-                scene.AttachComponent(cube, new PrismTransformComponent
+                var quad = scene.CreateEntity();
+                scene.AttachComponent(quad, new PrismTransformComponent
                 {
                     Scale = new Vector3(0.5f),
                     Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitX, MathF.PI / 2),
                     Position = new Vector3(x, -0.5f, y)
                 });
 
-                scene.AttachComponent(cube, new PrismMeshComponent(vxb)
+                scene.AttachComponent(quad, new PrismMeshComponent(vxb)
                 {
                     Material = new Material(Material.DefaultTextured)
                 }).Material.SetUniform("mainTex", TexGen.Colour(1, 1, Utilities.RandomColour()));

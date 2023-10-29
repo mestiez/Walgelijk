@@ -1,9 +1,9 @@
 ﻿#version 460
 
-layout(location = 0) in vec3 position;
-layout(location = 1) in vec2 texcoord;
+layout(location = 0) in vec3 in_position;
+layout(location = 1) in vec2 in_texcoord;
 layout(location = 2) in vec3 in_normal;
-layout(location = 3) in vec4 color;
+layout(location = 3) in vec4 in_color;
 
 out vec2 uv;
 out vec4 vertexColor;
@@ -14,7 +14,7 @@ uniform mat4 projection;
 
 void main()
 {
-   uv = texcoord;
-   vertexColor = color;
-   gl_Position = projection * view * model * vec4(position, 1.0);
+   uv = in_texcoord;
+   vertexColor = in_color;
+   gl_Position = projection * view * model * vec4(in_position, 1.0);
 }

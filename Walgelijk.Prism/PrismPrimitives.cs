@@ -10,10 +10,10 @@ public static class PrismPrimitives
 
         vertices = new Vertex[]
         {
-            new Vertex(-halfSize.X, -halfSize.Y, 0, new Vector3(0, 0, 1)){ TexCoords = new Vector2(-1, -1) },
-            new Vertex(halfSize.X, -halfSize.Y, 0, new Vector3(0, 0, 1)){ TexCoords = new Vector2(1, -1) },
-            new Vertex(-halfSize.X, halfSize.Y, 0, new Vector3(0, 0, 1)){ TexCoords = new Vector2(-1, 1) },
-            new Vertex(halfSize.X, halfSize.Y, 0, new Vector3(0, 0, 1)){ TexCoords = new Vector2(1, 1) },
+            new Vertex(-halfSize.X, -halfSize.Y, 0, new Vector3(0, 0, 1)){ TexCoords = new Vector2(-0.5f, 0.5f) },
+            new Vertex(halfSize.X, -halfSize.Y, 0, new Vector3(0, 0, 1)){ TexCoords = new Vector2(0.5f, -0.5f) },
+            new Vertex(-halfSize.X, halfSize.Y, 0, new Vector3(0, 0, 1)){ TexCoords = new Vector2(-0.5f, 0.5f) },
+            new Vertex(halfSize.X, halfSize.Y, 0, new Vector3(0, 0, 1)){ TexCoords = new Vector2(0.5f, 0.5f) },
         };
 
         indices = new uint[]
