@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Walgelijk;
@@ -177,10 +178,16 @@ public class FilterComponentCollection : IComponentCollection
 
     public bool Has<T>(Entity entity) where T : Component
     {
-        foreach (var item in toAdd)
-            if (item is T && item.Entity == entity)
+        var list = components.Ensure(new Filter(entity, typeof(T)));
+        foreach (var item in list)
+            if (item is T)
                 return true;
-        return components.ContainsKey(new Filter(entity, typeof(T)));
+
+        foreach (var item in toAdd)
+            if (item.Entity == entity && item is T)
+                return true;
+
+        return false;
     }
 
     public bool HasEntity(Entity entity)
