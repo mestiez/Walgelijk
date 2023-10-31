@@ -19,16 +19,4 @@ public static class DictionaryExtension
         if (!dict.TryAdd(key, set))
             dict[key] = set;
     }
-
-    public static TValue Ensure<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, out bool isNew) where TValue : new()
-    {
-        isNew = true;
-        if (!dict.TryGetValue(key, out var value))
-        {
-            value = new();
-            dict.Add(key, value);
-            isNew = false;
-        }
-        return value;
-    }
 }

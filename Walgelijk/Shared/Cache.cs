@@ -44,14 +44,13 @@ namespace Walgelijk
         /// </summary>
         public void Unload(UnloadedType obj)
         {
-            if (!Loaded.TryGetValue(obj, out var loadedObj))
+            if (!Loaded.Remove(obj, out var loadedObj))
             {
                 Logger.Error($"Attempt to unload a(n) {typeof(UnloadedType).Name} that isn't loaded");
                 return;
             }
 
             DisposeOf(loadedObj);
-            Loaded.Remove(obj);
         }
 
         /// <summary>

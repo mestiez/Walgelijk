@@ -165,7 +165,7 @@ public class FilterComponentCollection : IComponentCollection
 
     public T GetFrom<T>(Entity entity) where T : Component
     {
-        var list = components.Ensure(new Filter(entity, typeof(T)), out var isnew);
+        var list = components.Ensure(new Filter(entity, typeof(T)));
         foreach (var item in list)
             return item as T ?? throw new Exception("The component that was found in the typed component list was of the incorrect type and this error is so severe that you should probably use a different game engine");
 

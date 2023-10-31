@@ -50,7 +50,7 @@ public class Compositor : IDisposable
 
     public void Prepare()
     {
-        if (!Enabled)
+        if (!Enabled || game.Window.Width == 0 || game.Window.Height == 0)
             return;
 
         if (ForceUpdateTargets || sourceNode.Source == null)
