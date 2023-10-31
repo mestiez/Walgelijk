@@ -31,7 +31,14 @@ public abstract class RenderTarget
     public float AspectRatio => Size.Y / Size.X;
 
     /// <summary>
-    /// An orthographic projection matrix matrix where the top left is 0,0 and the bottom right is <see cref="Size"/>
+    /// An orthographic projection matrix where the top left is 0,0 and the bottom right is <see cref="Size"/>
     /// </summary>
     public Matrix4x4 OrthographicMatrix => Matrix4x4.CreateOrthographicOffCenter(0, Size.X, Size.Y, 0, 0, 100);
+
+    /// <summary>
+    /// An orthographic projection matrix where the top left is 0,0 and the bottom right is 1, 1
+    /// </summary>
+    public Matrix4x4 UvMatrix = uvMatrix;
+
+    private static Matrix4x4 uvMatrix = Matrix4x4.CreateOrthographicOffCenter(0, 1, 1, 0, 0, 100);
 }

@@ -3455,6 +3455,11 @@
             Does the vertex data change often?
             </summary>
         </member>
+        <member name="P:Walgelijk.VertexBuffer.DisposeLocalCopy">
+            <summary>
+            The local arrays will be cleared and made unusable after upload to the GPU
+            </summary>
+        </member>
         <member name="P:Walgelijk.VertexBuffer.Vertices">
             <summary>
             Vertices to draw. <b>Do not forget to set the corresponding indices, or use <see cref="M:Walgelijk.VertexBuffer.GenerateIndices"/></b>

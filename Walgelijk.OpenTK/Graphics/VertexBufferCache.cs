@@ -22,6 +22,11 @@ namespace Walgelijk.OpenTK
             UpdateExtraData(buffer, handles);
 
             buffer.HasChanged = false;
+            if (buffer.DisposeLocalCopy)
+            {
+                buffer.Vertices = null;
+                buffer.Indices = null;
+            }
 
             return handles;
         }

@@ -11,6 +11,8 @@ namespace Walgelijk
         private uint[] indices = Array.Empty<uint>();
         private bool disposed = false;
 
+        public bool Disposed => disposed;
+
         private readonly VertexAttributeArray[]? extraAttributes = null;
 
         /// <summary>
@@ -65,6 +67,11 @@ namespace Walgelijk
         /// Does the vertex data change often?
         /// </summary>
         public bool Dynamic { get; set; }
+
+        /// <summary>
+        /// The local arrays will be cleared and made unusable after upload to the GPU
+        /// </summary>
+        public bool DisposeLocalCopy { get; set; } = false;
 
         /// <summary>
         /// Vertices to draw. <b>Do not forget to set the corresponding indices, or use <see cref="GenerateIndices"/></b>

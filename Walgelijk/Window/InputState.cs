@@ -78,7 +78,7 @@ public struct InputState
     /// </summary>
     public bool IsKeyHeld(Key key) => KeysHeld?.Contains(key) ?? false;
     /// <summary>
-    /// Retusn if the key was pressed
+    /// Returns if the key was pressed
     /// </summary>
     public bool IsKeyPressed(Key key) => KeysDown?.Contains(key) ?? false;
     /// <summary>
@@ -90,7 +90,7 @@ public struct InputState
     /// </summary>
     public bool IsButtonHeld(MouseButton button) => MouseButtonsHeld?.Contains(button) ?? false;
     /// <summary>
-    /// Retusn if the key was pressed
+    /// Returns if the key was pressed
     /// </summary>
     public bool IsButtonPressed(MouseButton button) => MouseButtonsDown?.Contains(button) ?? false;
     /// <summary>
