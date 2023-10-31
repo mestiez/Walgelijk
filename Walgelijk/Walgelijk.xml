@@ -2870,7 +2870,12 @@
         </member>
         <member name="P:Walgelijk.RenderTarget.OrthographicMatrix">
             <summary>
-            An orthographic projection matrix matrix where the top left is 0,0 and the bottom right is <see cref="P:Walgelijk.RenderTarget.Size"/>
+            An orthographic projection matrix where the top left is 0,0 and the bottom right is <see cref="P:Walgelijk.RenderTarget.Size"/>
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderTarget.UvMatrix">
+            <summary>
+            An orthographic projection matrix where the top left is 0,0 and the bottom right is 1, 1
             </summary>
         </member>
         <member name="T:Walgelijk.RenderTexture">
@@ -6440,7 +6445,7 @@
         </member>
         <member name="M:Walgelijk.InputState.IsKeyPressed(Walgelijk.Key)">
             <summary>
-            Retusn if the key was pressed
+            Returns if the key was pressed
             </summary>
         </member>
         <member name="M:Walgelijk.InputState.IsKeyReleased(Walgelijk.Key)">
@@ -6455,7 +6460,7 @@
         </member>
         <member name="M:Walgelijk.InputState.IsButtonPressed(Walgelijk.MouseButton)">
             <summary>
-            Retusn if the key was pressed
+            Returns if the key was pressed
             </summary>
         </member>
         <member name="M:Walgelijk.InputState.IsButtonReleased(Walgelijk.MouseButton)">
