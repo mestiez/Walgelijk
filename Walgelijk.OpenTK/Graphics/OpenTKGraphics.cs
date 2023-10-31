@@ -128,6 +128,16 @@ namespace Walgelijk.OpenTK
 
             GPUObjects.MaterialTextureCache.ActivateTexturesFor(loadedShader);
             GL.UseProgram(prog);
+
+            if (material.BackfaceCulling)
+            {
+                GL.Enable(EnableCap.CullFace);
+                GL.CullFace(CullFaceMode.Back);
+            }
+            else
+            {
+                GL.Disable(EnableCap.CullFace);
+            }
         }
 
         private void SetDrawbounds(DrawBounds bounds)

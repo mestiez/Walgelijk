@@ -23,6 +23,11 @@ public sealed class Material : IDisposable
     public BlendMode BlendMode { get; set; } = BlendMode.AlphaBlend;
 
     /// <summary>
+    /// The back-facing faces will be culled if this is true
+    /// </summary>
+    public bool BackfaceCulling { get; set; } = false;
+
+    /// <summary>
     /// Access the CPU side copy of the uniforms. Only use if you know what you're doing
     /// </summary>
     public readonly UniformDictionary InternalUniforms = new();

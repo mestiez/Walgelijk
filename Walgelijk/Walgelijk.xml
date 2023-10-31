@@ -2334,6 +2334,11 @@
             Blend mode to use for this material
             </summary>
         </member>
+        <member name="P:Walgelijk.Material.BackfaceCulling">
+            <summary>
+            The back-facing faces will be culled if this is true
+            </summary>
+        </member>
         <member name="F:Walgelijk.Material.InternalUniforms">
             <summary>
             Access the CPU side copy of the uniforms. Only use if you know what you're doing
