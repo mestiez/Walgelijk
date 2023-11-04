@@ -3,16 +3,19 @@
 namespace Walgelijk
 {
     /// <summary>
-    /// An entity. Does nothing, simply holds an identity. Implicitly an integer.
+    /// An entity. Does nothing, simply holds an identity. Implicitly an integer. Entity 0 is reserved for "non existent"
     /// </summary>
     public struct Entity : IEquatable<Entity>
     {
-        // TODO reserve entity 0 for invalid entities
-
         /// <summary>
         /// The identity of the entity
         /// </summary>
         public int Identity;
+
+        /// <summary>
+        /// The "non existent" entity
+        /// </summary>
+        public static Entity None { get; } = 0;
 
         public Entity(int id)
         {
@@ -50,7 +53,7 @@ namespace Walgelijk
             return new Entity { Identity = identity };
         }
 
-        public override string ToString() => $"Entity {Identity}";
+        public override string ToString() => Identity == 0 ? "No entity" :  $"Entity {Identity}";
 
         public bool Equals(Entity other) => other.Identity == Identity;
     }

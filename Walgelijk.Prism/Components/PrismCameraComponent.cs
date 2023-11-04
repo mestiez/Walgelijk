@@ -8,6 +8,7 @@ public class PrismCameraComponent : Component
     public float FarClip = 1000;
     public Color ClearColour;
     public bool Clear = true;
+    public Frustum Frustum;
 
     public bool Active = true;
 

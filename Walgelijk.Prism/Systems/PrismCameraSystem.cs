@@ -25,6 +25,8 @@ public class PrismCameraSystem : Walgelijk.System
             renderTask.View = i;
         renderTask.Projection = Matrix4x4.CreatePerspectiveFieldOfView(MathF.Max(cam.FieldOfView, 1) * Utilities.DegToRad, (float)Window.Width / Window.Height, cam.NearClip, cam.FarClip);
 
+        cam.Frustum = new Frustum(i * renderTask.Projection);
+
         if (cam.Clear)
         {
             clearTask.ClearColor = cam.ClearColour;

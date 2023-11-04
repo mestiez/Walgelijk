@@ -4,13 +4,30 @@ namespace Walgelijk.Prism;
 
 public class PrismFreecamSystem : Walgelijk.System
 {
-    float x = 0;
-    float y = 0;
+    private float x = 0;
+    private float y = 0;
+    private float currentSpeed = 4;
+    private bool locked = false;
+
+    public float BaseSpeed = 4;
+    public float TopSpeed = 64;
 
     public override void Update()
     {
+        if (Window.HasFocus && !locked && Input.AnyMouseButton)
+        {
+            Window.IsCursorLocked = true;
+            locked = true;
+        }
+
+        if (!Window.HasFocus || Input.IsKeyPressed(Key.Escape))
+        {
+            Window.IsCursorLocked = false;
+            locked = false;
+        }
+
         var camera = Scene.GetAllComponentsOfType<PrismCameraComponent>().FirstOrDefault(static c => c.Active);
-        if (camera != null)
+        if (camera != null && locked)
         {
             var transform = Scene.GetComponentFrom<PrismTransformComponent>(camera.Entity);
             const float sensitivity = 0.01f;
@@ -23,12 +40,14 @@ public class PrismFreecamSystem : Walgelijk.System
 
             var rot1 = Matrix4x4.Identity;
 
+            y = Math.Clamp(y, -MathF.PI / 2, MathF.PI / 2);
+
             rot1 *= Matrix4x4.CreateRotationX(y);
             rot1 *= Matrix4x4.CreateRotationY(x);
 
             transform.Rotation = Quaternion.CreateFromRotationMatrix(rot1);
 
-            float speed = Time.DeltaTime * 4;
+            float speed = Time.DeltaTime * currentSpeed;
 
             if (Input.IsKeyHeld(Key.W))
                 transform.Position += transform.Forwards * speed;
@@ -49,9 +68,9 @@ public class PrismFreecamSystem : Walgelijk.System
                 transform.Position += transform.Down * speed;
 
             if (Input.IsKeyHeld(Key.Space))
-                camera.FieldOfView = Utilities.SmoothApproach(camera.FieldOfView, 10, 25, Time.DeltaTime);
+                currentSpeed = Utilities.SmoothApproach(currentSpeed, TopSpeed, 2, Time.DeltaTime);
             else
-                camera.FieldOfView = Utilities.SmoothApproach(camera.FieldOfView, 80, 25, Time.DeltaTime);
+                currentSpeed = Utilities.SmoothApproach(currentSpeed, BaseSpeed, 2, Time.DeltaTime);
         }
     }
 }

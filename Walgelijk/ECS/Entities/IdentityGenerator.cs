@@ -5,7 +5,7 @@
     /// </summary>
     public struct IdentityGenerator
     {
-        private static int i = 0;
+        private static int i = 1;
 
         /// <summary>
         /// Generate a new identity value

@@ -30,10 +30,9 @@ internal class RenderTextureCache : Cache<RenderTexture, RenderTextureHandles>
             GL.BindTexture(TextureTarget.Texture2D, ids[1]);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, raw.Width, raw.Height, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
 
-            var wrap = (int)TypeConverter.Convert(raw.WrapMode);
             var maxFilter = (int)TypeConverter.Convert(raw.FilterMode);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, wrap);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, wrap);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, maxFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, maxFilter);
 
@@ -43,6 +42,8 @@ internal class RenderTextureCache : Cache<RenderTexture, RenderTextureHandles>
                 TextureTarget.Texture2D,
                 ids[1],
                 0);
+
+            raw.DepthBuffer = new PseudoTexture(ids[1], raw.Width, raw.Height);
         }
 
         var result = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
@@ -57,6 +58,7 @@ internal class RenderTextureCache : Cache<RenderTexture, RenderTextureHandles>
 
     protected override void DisposeOf(RenderTextureHandles loaded)
     {
+        loaded.RenderTexture.DepthBuffer = null;
         GL.DeleteFramebuffer(loaded.FramebufferID);
         GPUObjects.TextureCache.Unload(loaded.RenderTexture);
         GPUObjects.RenderTargetDictionary.Delete(loaded.RenderTexture);

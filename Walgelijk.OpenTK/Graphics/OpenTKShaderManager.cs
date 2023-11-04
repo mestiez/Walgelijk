@@ -120,15 +120,6 @@ namespace Walgelijk.OpenTK
                     Logger.Error("Invalid uniform datatype!");
                     break;
             }
-
-            GLUtilities.PrintGLErrors(Game.Main.DevelopmentMode);
-
-            //switch (GL.GetError())
-            //{
-            //    case not ErrorCode.NoError:
-            //        Logger.Error("Failed to set uniform...");
-            //        break;
-            //}
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

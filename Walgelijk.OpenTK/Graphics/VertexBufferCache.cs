@@ -8,25 +8,20 @@ namespace Walgelijk.OpenTK
     {
         protected override VertexBufferCacheHandles CreateNew(VertexBuffer buffer)
         {
-            int vao = CreateVertexArrayObject(buffer);
+            var vao = CreateVertexArrayObject(buffer);
 
-            int vbo = CreateVertexBufferObject(buffer);
-            int ibo = CreateIndexBufferObject(buffer);
-            int[] extraVbos = CreateExtraVBO(buffer);
+            var vbo = CreateVertexBufferObject(buffer);
+            var ibo = CreateIndexBufferObject(buffer);
+            var extraVbos = CreateExtraVBO(buffer);
 
             ConfigureAttributes(buffer, vbo, extraVbos);
 
-            VertexBufferCacheHandles handles = new VertexBufferCacheHandles(vbo, vao, ibo, extraVbos);
+            var handles = new VertexBufferCacheHandles(vbo, vao, ibo, extraVbos);
 
             UpdateBuffer(buffer, handles);
             UpdateExtraData(buffer, handles);
 
             buffer.HasChanged = false;
-            if (buffer.DisposeLocalCopy)
-            {
-                buffer.Vertices = null;
-                buffer.Indices = null;
-            }
 
             return handles;
         }
@@ -171,6 +166,12 @@ namespace Walgelijk.OpenTK
             //upload indices
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, handles.IBO);
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(buffer.IndexCount * sizeof(uint)), buffer.Indices, hint);
+
+            if (buffer.DisposeLocalCopy)
+            {
+                buffer.Vertices = null;
+                buffer.Indices = null;
+            }
 
             buffer.HasChanged = false;
         }

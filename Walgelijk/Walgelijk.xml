@@ -1162,12 +1162,17 @@
         </member>
         <member name="T:Walgelijk.Entity">
             <summary>
-            An entity. Does nothing, simply holds an identity. Implicitly an integer.
+            An entity. Does nothing, simply holds an identity. Implicitly an integer. Entity 0 is reserved for "non existent"
             </summary>
         </member>
         <member name="F:Walgelijk.Entity.Identity">
             <summary>
             The identity of the entity
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Entity.None">
+            <summary>
+            The "non existent" entity
             </summary>
         </member>
         <member name="T:Walgelijk.IdentityGenerator">
@@ -2893,6 +2898,12 @@
             Construct a <see cref="T:Walgelijk.RenderTexture"/>
             </summary>
         </member>
+        <member name="F:Walgelijk.RenderTexture.DepthBuffer">
+            <summary>
+            Access to the depth buffer. This is null if <see cref="F:Walgelijk.RenderTexture.Flags"/> does not contain <see cref="F:Walgelijk.RenderTextureFlags.Depth"/>.
+            <b>Note that this buffer may be being written to as you're reading from it, which will cause unsightly graphical artifacts. To be safe, blit the texture to somewhere else to read from!</b>
+            </summary>
+        </member>
         <member name="P:Walgelijk.RenderTexture.DisposeLocalCopyAfterUpload">
             <summary>
             There is no local copy so this will do nothing.
@@ -2915,7 +2926,7 @@
         </member>
         <member name="M:Walgelijk.RenderTexture.Dispose">
             <summary>
-            Delete the texture and framebuffer from the GPU
+            Delete this object from the GPU. This also makes it unusable on the CPU.
             </summary>
         </member>
         <member name="M:Walgelijk.RenderTexture.DisposeLocalCopy">

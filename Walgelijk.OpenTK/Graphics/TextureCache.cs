@@ -117,15 +117,20 @@ public class TextureCache : Cache<IReadableTexture, LoadedTexture>
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, wrap);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, raw.GenerateMipmaps ? mipmapFilter : maxFilter);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, maxFilter); ;
+
     }
 
     private static void SetTextureData(byte[] data, IReadableTexture raw)
     {
+        // GL.TexStorage2D(TextureTarget2d.Texture2D, 0, SizedInternalFormat.Rgba8, raw.Width, raw.Height);
+        // GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, raw.Width, raw.Height, PixelFormat.Rgba, PixelType.UnsignedByte, data);
         GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, raw.Width, raw.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
     }
 
     private static void SetTextureData(float[] data, IReadableTexture raw)
     {
+        // GL.TexStorage2D(TextureTarget2d.Texture2D, 0, SizedInternalFormat.Rgba16f, raw.Width, raw.Height);
+        // GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, raw.Width, raw.Height, PixelFormat.Rgba, PixelType.Float, data);
         GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, raw.Width, raw.Height, 0, PixelFormat.Rgba, PixelType.Float, data);
     }
 

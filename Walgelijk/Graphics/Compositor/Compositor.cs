@@ -7,8 +7,8 @@ namespace Walgelijk;
 
 public class Compositor : IDisposable
 {
-    public CompositorNode SourceNode => sourceNode;
-    public CompositorNode DestinationNode => destinationNode;
+    public RootCompositorNode SourceNode => sourceNode;
+    public OutputCompositorNode DestinationNode => destinationNode;
     public bool ForceUpdateTargets = true;
 
     public bool Enabled = true;
@@ -84,14 +84,14 @@ public class Compositor : IDisposable
         blitMat.Dispose();
     }
 
-    private class OutputCompositorNode : CompositorNode
+    public class OutputCompositorNode : CompositorNode
     {
         public OutputCompositorNode() : base(1) { }
         public override RenderTexture? Read(Game game, in int width, in int height) => Inputs[0].Read(game, width, height);
         public override void Dispose() { }
     }
 
-    private class RootCompositorNode : CompositorNode
+    public class RootCompositorNode : CompositorNode
     {
         public RootCompositorNode() : base(0) { }
         public RenderTexture? Source;

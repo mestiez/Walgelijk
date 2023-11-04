@@ -75,6 +75,6 @@ public readonly struct ComponentRef<T> : IEquatable<ComponentRef<T>> where T : C
 
     public static implicit operator ComponentRef<T>(T value)
     {
-        return new ComponentRef<T>(value.Entity);
+        return new ComponentRef<T>(value?.Entity ?? Entity.None);
     }
 }

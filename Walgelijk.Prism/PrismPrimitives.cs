@@ -18,8 +18,8 @@ public static class PrismPrimitives
 
         indices = new uint[]
         {
-            0, 1, 2,
-            1, 3, 2
+            0, 2, 1,
+            1, 2, 3
         };
     }
 
@@ -62,12 +62,12 @@ public static class PrismPrimitives
 
         indices = new uint[]
         {
-            0, 1, 2, 1, 3, 2, // Front face
-            4, 5, 6, 5, 7, 6, // Right face
-            8, 9, 10, 9, 11, 10, // Back face
-            12, 13, 14, 13, 15, 14, // Leftface
-            16, 17, 18, 17, 19, 18, // Top face
-            20, 21, 22, 21, 23, 22  // Bottom face
+            0, 2, 1, 1, 2, 3,       // Front face
+            4, 6, 5, 5, 6, 7,       // Right face
+            8, 10, 9, 9, 10, 11,    // Back face
+            12, 14, 13, 13, 14, 15, // Left face
+            16, 18, 17, 17, 18, 19, // Top face
+            20, 22, 21, 21, 22, 23  // Bottom face
         };
     }
 }

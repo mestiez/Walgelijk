@@ -167,6 +167,7 @@ public class OpenTKWindow : Window
     private readonly Stopwatch clock = new();
     private DefaultCursor cursorAppearance;
     private IReadableTexture customCursor;
+    private bool debugOutputFlag = false;
 
     public OpenTKWindow(string title, Vector2 position, Vector2 size)
     {
@@ -257,7 +258,20 @@ public class OpenTKWindow : Window
         //NativeWindow.ProcessWindowEvents(window.IsEventDriven);
 
         Game.State.Input = inputHandler.InputState;
-        GLUtilities.PrintGLErrors(Game.Main.DevelopmentMode);
+
+        if (Game.Main.DevelopmentMode)
+        {
+            if (!debugOutputFlag)
+            {
+                debugOutputFlag = true;
+                //GL.Enable(EnableCap.DebugOutput);
+            }
+        }
+        else if (debugOutputFlag)
+        {
+            debugOutputFlag = false;
+            //GL.Disable(EnableCap.DebugOutput);
+        }
     }
 
     public override void Deinitialise()
@@ -314,7 +328,8 @@ public class OpenTKWindow : Window
         RenderTarget.Size = Size;
         renderTarget.Initialise();
 
-        GL.DebugMessageCallback(OnGLDebugMessage, IntPtr.Zero);
+        //GL.DebugMessageCallback(OnGLDebugMessage, IntPtr.Zero);
+        //GL.Enable(EnableCap.DebugOutput);
     }
 
     internal void OnWindowClose() => InvokeCloseEvent();
@@ -331,7 +346,7 @@ public class OpenTKWindow : Window
 
     private void OnGLDebugMessage(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
     {
-        var str = Marshal.PtrToStringAuto(message, length);
+        var str = Marshal.PtrToStringAnsi(message, length);
         switch (severity)
         {
             case DebugSeverity.DebugSeverityHigh:
