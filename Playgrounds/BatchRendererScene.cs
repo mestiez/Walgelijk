@@ -35,12 +35,12 @@ public struct BatchRendererScene : ISceneCreator
         int x = 0;
         int y = 0;
 
-        for (int i = 0; i < 2048; i++)
+        for (int i = 0; i < 64; i++)
         {
             var e = scene.CreateEntity();
             scene.AttachComponent(e, new TransformComponent()
             {
-                Scale = new Vector2(16)
+                Scale = new Vector2(64)
             });
             scene.AttachComponent(e, new BatchedSpriteComponent(Resources.Load<Texture>("icon.png"))
             {
@@ -82,7 +82,7 @@ public struct BatchRendererScene : ISceneCreator
             Draw.Reset();
             Draw.Order = new RenderOrder(0, 1);
 
-            var t = Time.SecondsSinceLoad * 0.05f;
+            var t = Time.SecondsSinceLoad * 0.005f;
             Vector2 center = default;
 
             var bee = Resources.Load<Texture>("bee.png");
@@ -115,9 +115,11 @@ public struct BatchRendererScene : ISceneCreator
                 item.Position += mouseRepulseOffset;
 
                 item.Rotation += Noise.GetValue(30, -t * 7, seed * 2) * Time.DeltaTime * 500;
-                item.Scale = Vector2.One * Utilities.MapRange(-1, 1, 4, 32, Noise.GetValue(-30, seed * 2, 5 * t));
+                item.Scale = Vector2.One * Utilities.MapRange(-1, 1, 4, 128, Noise.GetValue(-30, seed * 2, 5 * t));
 
                 sprite.Color = Utilities.Lerp(Colors.White, Colors.Purple, 1 - Utilities.Clamp(dist - 1));
+
+                sprite.VerticalFlip = Time.SecondsSinceLoad % 2 > 1;
 
                 lock (l)
                     center += item.Position;

@@ -1,4 +1,6 @@
-﻿namespace Walgelijk;
+﻿using System.Numerics;
+
+namespace Walgelijk;
 
 public class BatchRendererSystem : Walgelijk.System
 {
@@ -31,7 +33,16 @@ public class BatchRendererSystem : Walgelijk.System
                 storage.Batches.Add(profile, batch);
             }
 
-            batch.Add(item.Transform, item.Color);
+            var t = Matrix3x2.Identity;
+
+            if (item.HorizontalFlip)
+                t *= Matrix3x2.CreateScale(1, -1);
+
+            if (item.VerticalFlip)
+                t *= Matrix3x2.CreateScale(-1, 1);
+
+            t *= item.Transform;
+            batch.Add(t, item.Color);
         }
 
         foreach (var batch in storage.Batches.Values)

@@ -14,6 +14,7 @@ public class BatchedSpriteComponent : Component
 
     public Matrix3x2 Transform;
     public Color Color = Colors.White;
+    public bool HorizontalFlip = false, VerticalFlip = false;
 
     public BatchedSpriteComponent(Material material, VertexBuffer vertexBuffer, IReadableTexture texture)
     {
