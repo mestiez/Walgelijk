@@ -35,7 +35,7 @@ namespace Walgelijk
 
             fontMaterial = new Material(Font.Default.Material ?? throw new Exception("Font.Default.Material is null somehow"));
             debugMaterial = new Material(new Shader(
-                @"#version 460
+                @"#version 330 core
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 texcoord;
@@ -55,7 +55,7 @@ void main()
    vertexColor = color;
    gl_Position = projection * view * model * vec4(position, 1.0);
 }",
-                @"#version 460
+                @"#version 330 core
 
 in vec2 uv;
 in vec4 vertexColor;

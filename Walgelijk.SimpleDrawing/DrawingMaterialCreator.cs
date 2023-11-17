@@ -41,7 +41,7 @@
         public static Material BasicMaterial => Cache.Load(Texture.White);
 
         public const string FragmentShader =
-            @$"#version 460
+            @$"#version 330 core
 
 in vec2 uv;
 in vec4 vertexColor;

@@ -71,7 +71,7 @@ public static class FontMaterialCreator
     }
 
     public const string BitmapFragmentShader =
-@"#version 460
+@"#version 330 core
 
 in vec2 uv;
 in vec4 vertexColor;
@@ -90,7 +90,7 @@ void main()
 ";
 
     public const string SdfFragmentShader =
-@"#version 460
+@"#version 330 core
 
 in vec2 uv;
 in vec4 vertexColor;
@@ -114,7 +114,7 @@ void main()
 ";
 
     public const string MsdfFragmentShader =
-@"#version 460
+@"#version 330 core
 
 in vec2 uv;
 in vec4 vertexColor;

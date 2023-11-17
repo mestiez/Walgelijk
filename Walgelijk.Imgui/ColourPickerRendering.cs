@@ -23,7 +23,7 @@ namespace Walgelijk.Imgui
         {
             public const string HueUniform = "hue";
             public const string FragmentShader =
-    @$"#version 460
+    @$"#version 330 core
 
 in vec2 uv;
 in vec4 vertexColor;

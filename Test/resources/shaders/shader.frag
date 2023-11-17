@@ -1,4 +1,4 @@
-﻿#version 460
+﻿#version 330 core
 
 in vec2 uv;
 in vec2 worldPos;

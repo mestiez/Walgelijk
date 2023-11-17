@@ -84,7 +84,15 @@ public readonly struct ControlUtils
     public static void Scrollable(in ControlParams p)
     {
         if (p.Instance.HasScroll)
-            p.Instance.InnerScrollOffset += p.Input.ScrollDelta;
+        {
+            var scrollBounds = p.Instance.Rects.ComputedScrollBounds;
+            if (scrollBounds.Width > scrollBounds.Height)
+                // we should prioritise scrolling horizontally
+                p.Instance.InnerScrollOffset += p.Input.ScrollDelta.YX();
+            else
+                // we should prioritise scrolling vertically
+                p.Instance.InnerScrollOffset += p.Input.ScrollDelta;
+        }
     }
 
     public static void ConsiderParentScroll(in ControlParams p)

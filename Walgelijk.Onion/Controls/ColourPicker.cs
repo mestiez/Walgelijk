@@ -23,7 +23,7 @@ public readonly struct ColourPicker : IControl
     private static readonly OptionalControlState<ColourPickerState> states = new();
 
     private static readonly Material hsBox = new Material(new Shader(Shader.Default.VertexShader,
-@"#version 460
+@"#version 330 core
 
 in vec2 uv;
 in vec4 vertexColor;

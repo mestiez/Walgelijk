@@ -10,7 +10,7 @@ public class MixNode : CompositorNode
     private readonly Material mat;
 
     private const string fragment =
-@"#version 460
+@"#version 330 core
 
 in vec2 uv;
 in vec4 vertexColor;
