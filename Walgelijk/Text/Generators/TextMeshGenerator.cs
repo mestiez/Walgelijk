@@ -274,9 +274,9 @@ public class TextMeshGenerator
                     0);
 
                 textBounds = textBounds.StretchToContain(new Vector2(rawCursor.X, rawCursor.Y));
-                textBounds = textBounds.StretchToContain(new Vector2(rawCursor.X, rawCursor.Y - Font.XHeight));
+                textBounds = textBounds.StretchToContain(new Vector2(rawCursor.X, rawCursor.Y - Font.CapHeight));
                 textBounds = textBounds.StretchToContain(new Vector2(rawCursor.X + glyph.Advance, rawCursor.Y));
-                textBounds = textBounds.StretchToContain(new Vector2(rawCursor.X + glyph.Advance, rawCursor.Y - Font.XHeight));
+                textBounds = textBounds.StretchToContain(new Vector2(rawCursor.X + glyph.Advance, rawCursor.Y - Font.CapHeight));
 
                 vertices[vertexIndex + 0] = appendVertex(pos, glyph, colorToSet, 0, 0);
                 vertices[vertexIndex + 1] = appendVertex(pos, glyph, colorToSet, 1, 0);

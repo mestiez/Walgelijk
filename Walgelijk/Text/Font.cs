@@ -36,6 +36,10 @@ public class Font
     /// </summary>
     public int XHeight { get; internal set; }
     /// <summary>
+    /// The distance from the baseline to the top of uppercase characters
+    /// </summary>
+    public int CapHeight { get; internal set; }
+    /// <summary>
     /// The texture containing all glyphs
     /// </summary>
     public IReadableTexture Page { get; internal set; } = Texture.ErrorTexture;

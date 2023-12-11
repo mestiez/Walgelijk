@@ -48,6 +48,7 @@ public class Generator
         using var archive = new ZipArchive(archiveStream, ZipArchiveMode.Create, false);
 
         var xheight = FontSize * (metadata.Glyphs!.Where(g => char.IsLower(g.Unicode)).Max(g => MathF.Abs(g.PlaneBounds.Top - MathF.Abs(metadata.Metrics.Descender))));
+        var capheight = FontSize * (metadata.Glyphs!.Where(g => char.IsUpper(g.Unicode)).Max(g => MathF.Abs(g.PlaneBounds.Top - MathF.Abs(metadata.Metrics.Descender))));
 
         var final = new FontFormat(
             name: FontName,
@@ -55,6 +56,7 @@ public class Generator
             size: FontSize,
             xheight: xheight,
             atlas: null!, // will be loaded by game engine or whatever software interprets this file
+            capHeight: capheight,
             lineHeight: metadata.Metrics.LineHeight * FontSize,
             kernings: (metadata.Kerning?.Select(a => new Kerning { Amount = a.Advance, FirstChar = a.Unicode1, SecondChar = a.Unicode2 }).ToArray())!,
             glyphs: (metadata.Glyphs?.Select(g => new Glyph(

@@ -28,16 +28,30 @@ internal static class BmFontReader
         ParseKernings(text, font, info);
 
         var xheight = 0f;
-        int c = 0;
+        var capheight = 0f;
+        int c1 = 0,c2 = 0;
         foreach (var item in font.Glyphs)
         {
-            if (!char.IsLower(item.Key) || !char.IsLetter(item.Key))
+            if (!char.IsLetter(item.Key))
                 continue;
-            xheight += item.Value.GeometryRect.Height;
-            c++;
+
+            if (char.IsLower(item.Key))
+            {
+                xheight += item.Value.GeometryRect.Height;
+                c1++;
+            }
+            else
+            {
+                capheight += item.Value.GeometryRect.Height;
+                c2++;
+            }
         }
-        xheight /= c;
+
+        xheight /= c1;
         font.XHeight = (int)xheight;
+
+        capheight /= c2;
+        font.CapHeight = (int)capheight;
 
         foreach (var key in font.Glyphs.Keys)
         {
@@ -66,7 +80,7 @@ internal static class BmFontReader
 
     private static void ParsePages(string metadataPath, in Font font, BmFontInfo info)
     {
-        var filterMode = info.Smooth ? FilterMode.Linear : FilterMode.Nearest; 
+        var filterMode = info.Smooth ? FilterMode.Linear : FilterMode.Nearest;
 
         // we don't support multiple plages
         if (info.PageCount != 1)
@@ -118,9 +132,9 @@ internal static class BmFontReader
 
             Rect geometryRect = new(glyph.XOffset, glyph.YOffset, glyph.XOffset + glyph.Width, glyph.YOffset + glyph.Height);
             Rect textureRect = new(
-                (glyph.X) / atlasSize.X, 
+                (glyph.X) / atlasSize.X,
                 (glyph.Y + glyph.Height) / atlasSize.Y,
-                (glyph.X + glyph.Width) / atlasSize.X, 
+                (glyph.X + glyph.Width) / atlasSize.X,
                 (glyph.Y) / atlasSize.Y
                 );
 

@@ -31,6 +31,7 @@ public static class FontLoader
                         Glyphs = format.Glyphs.Distinct().ToDictionary(static g => g.Character),
                         Rendering = FontRendering.MSDF,
                         XHeight = (int)format.XHeight,
+                        CapHeight = (int)format.CapHeight,
                         LineHeight = (int)format.LineHeight,
                         Size = format.Size,
                         Material = FontMaterialCreator.CreateMSDFMaterial(format.Atlas)

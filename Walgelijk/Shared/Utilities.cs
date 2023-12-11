@@ -23,7 +23,9 @@ public struct Utilities
     public const float DegToRad = MathF.PI / 180f;
 
     /// <summary>
-    /// Shader-style deterministic random value (0 - 1)
+    /// Shader-style deterministic* random value (0 - 1)
+    /// <br></br>
+    /// <i>* Not strictly deterministic. Different hardware will give different results.</i>
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Hash(float p)

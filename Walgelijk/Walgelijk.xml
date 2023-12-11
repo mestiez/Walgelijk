@@ -5968,6 +5968,11 @@
             The distance from the baseline to the top of lowercase characters (a.k.a the mean line)
             </summary>
         </member>
+        <member name="P:Walgelijk.Font.CapHeight">
+            <summary>
+            The distance from the baseline to the top of uppercase characters
+            </summary>
+        </member>
         <member name="P:Walgelijk.Font.Page">
             <summary>
             The texture containing all glyphs
@@ -6036,6 +6041,11 @@
         <member name="F:Walgelijk.FontFormat.XHeight">
             <summary>
             The distance from the baseline to the mean line
+            </summary>
+        </member>
+        <member name="F:Walgelijk.FontFormat.CapHeight">
+            <summary>
+            The maximum height of uppercase character
             </summary>
         </member>
         <member name="F:Walgelijk.FontFormat.Style">
@@ -6187,11 +6197,6 @@
         <member name="F:Walgelijk.TextMeshGenerator.ColourInstruction.Colour">
             <summary>
             Colour to set when we reach <see cref="F:Walgelijk.TextMeshGenerator.ColourInstruction.CharIndex"/>
-            </summary>
-        </member>
-        <member name="T:Walgelijk.Typesetter">
-            <summary>
-            Generates text meshes
             </summary>
         </member>
         <member name="T:Walgelijk.HorizontalTextAlign">

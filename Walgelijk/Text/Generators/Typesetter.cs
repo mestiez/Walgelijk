@@ -1,7 +1,7 @@
-﻿using System;
+﻿#if FALSE // this was an attempt to rework the text mesh generator but I gave up
+using System;
 
 namespace Walgelijk;
-
 /// <summary>
 /// Generates text meshes
 /// </summary>
@@ -44,3 +44,4 @@ public class Typesetter
         return 0;
     }
 }
+#endif

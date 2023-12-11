@@ -28,7 +28,7 @@ public class Program
 
     private static void ConvertDir(DirectoryInfo dir)
     {
-        Console.WriteLine($"Converting all valid files in {dir}...");
+        Console.WriteLine($"Converting all valid files (otf, ttf) in {dir}...");
         var files = dir.GetFiles("*.ttf").Concat(dir.GetFiles("*.otf"));
 
         foreach (var item in files)

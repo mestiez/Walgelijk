@@ -38,7 +38,11 @@ public class FontFormat
     /// <summary>
     /// The distance from the baseline to the mean line
     /// </summary>
-    public readonly float XHeight;
+    public readonly float XHeight; 
+    /// <summary>
+    /// The maximum height of uppercase character
+    /// </summary>
+    public readonly float CapHeight;
     /// <summary>
     /// The style this font represents
     /// </summary>
@@ -48,6 +52,7 @@ public class FontFormat
         string name,
         int size,
         float xheight,
+        float capHeight,
         float lineHeight,
         Texture atlas,
         Kerning[] kernings,
@@ -58,6 +63,7 @@ public class FontFormat
         Atlas = atlas;
         Kernings = kernings;
         Glyphs = glyphs;
+        CapHeight = capHeight;
         LineHeight = lineHeight;
         Style = style;
         Size = size;
@@ -101,6 +107,7 @@ public class FontFormat
                 metadata.Name,
                 metadata.Size,
                 metadata.XHeight,
+                metadata.CapHeight,
                 metadata.LineHeight,
                 texture,
                 metadata.Kernings,

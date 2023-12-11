@@ -47,6 +47,8 @@ public readonly struct TextTestScene : ISceneCreator
         return scene;
     }
 
+    public class Typesetter { };
+
     public class TextTestSystem : Walgelijk.System, IDisposable
     {
         public bool RenderUi = true;
@@ -116,13 +118,13 @@ public readonly struct TextTestScene : ISceneCreator
             LegacyGenerator.VerticalAlign = VerticalAlign;
             LegacyGenerator.Color = Ui.Theme.Base.Text.Default;
 
-            ModernGenerator.Font = Font;
-            ModernGenerator.FontSize = FontSize;
-            ModernGenerator.TrackingMultiplier = Tracking;
-            ModernGenerator.KerningMultiplier = Kerning;
-            ModernGenerator.HorizontalAlign = HorizontalAlign;
-            ModernGenerator.VerticalAlign = VerticalAlign;
-            ModernGenerator.Color = Ui.Theme.Base.Text.Default;
+            //ModernGenerator.Font = Font;
+            //ModernGenerator.FontSize = FontSize;
+            //ModernGenerator.TrackingMultiplier = Tracking;
+            //ModernGenerator.KerningMultiplier = Kerning;
+            //ModernGenerator.HorizontalAlign = HorizontalAlign;
+            //ModernGenerator.VerticalAlign = VerticalAlign;
+            //ModernGenerator.Color = Ui.Theme.Base.Text.Default;
 
             LegacyPosition = Window.Height * (1 / 3f);
             ModernPosition = Window.Height * (2 / 3f);
@@ -231,8 +233,8 @@ public readonly struct TextTestScene : ISceneCreator
             var r = LegacyGenerator.Generate(Text, vtx.Vertices, vtx.Indices);
             DrawResult(g, ratio, legacyPos, r);
 
-            r = ModernGenerator.Generate(Text, vtx.Vertices, vtx.Indices);
-            DrawResult(g, ratio, modernPos, r);
+            //r = ModernGenerator.Generate(Text, vtx.Vertices, vtx.Indices);
+            //DrawResult(g, ratio, modernPos, r);
 
             target.ViewMatrix = view;
             target.ProjectionMatrix = proj;
