@@ -63,7 +63,7 @@ uniform vec4 {TintUniform} = vec4(1, 1, 1, 1);
 // https://www.youtube.com/c/InigoQuilez
 // https://iquilezles.org
 
-float sdRoundBox( in vec2 p, in vec2 b, in float r ) 
+float sdRoundBox(in vec2 p, in vec2 b, in float r ) 
 {{
     vec2 q = abs(p - 0.5) * 2.0 * b -b + r;
     return min(max(q.x,q.y),0.0) + length(max(q,0.0)) - r;

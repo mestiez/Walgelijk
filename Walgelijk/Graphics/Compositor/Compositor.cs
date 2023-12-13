@@ -26,7 +26,7 @@ public class Compositor : IDisposable
 
     private RootCompositorNode sourceNode = new();
     private OutputCompositorNode destinationNode = new();
-    private RenderTextureFlags flags = RenderTextureFlags.HDR;
+    private RenderTextureFlags flags = RenderTextureFlags.HDR | RenderTextureFlags.Multisampling;
     private readonly Material blitMat = new Material(Material.DefaultTextured);
     private readonly Game game;
 

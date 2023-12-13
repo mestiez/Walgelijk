@@ -176,7 +176,7 @@ public class OpenTKWindow : Window
             Size = new global::OpenTK.Mathematics.Vector2i((int)size.X, (int)size.Y),
             Title = title,
             StartVisible = false,
-            NumberOfSamples = 2,
+            NumberOfSamples = 4,
             API = ContextAPI.OpenGL
         });
 
@@ -330,6 +330,7 @@ public class OpenTKWindow : Window
 
         //GL.DebugMessageCallback(OnGLDebugMessage, IntPtr.Zero);
         //GL.Enable(EnableCap.DebugOutput);
+        GL.Enable(EnableCap.Multisample);
     }
 
     internal void OnWindowClose() => InvokeCloseEvent();

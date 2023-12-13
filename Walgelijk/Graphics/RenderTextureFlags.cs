@@ -23,5 +23,9 @@ public enum RenderTextureFlags
     /// <summary>
     /// Generates mipmaps
     /// </summary>
-    Mipmaps = 4
+    Mipmaps = 4,
+    /// <summary>
+    /// Multiple samples per pixel (MSAA)
+    /// </summary>
+    Multisampling = 8
 }

@@ -2964,6 +2964,11 @@
             Generates mipmaps
             </summary>
         </member>
+        <member name="F:Walgelijk.RenderTextureFlags.Multisampling">
+            <summary>
+            Multiple samples per pixel (MSAA)
+            </summary>
+        </member>
         <member name="T:Walgelijk.Shader">
             <summary>
             Structure that holds the code for a full shader program

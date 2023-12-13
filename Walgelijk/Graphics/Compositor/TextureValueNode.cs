@@ -20,6 +20,7 @@ public class TextureValueNode : CompositorNode
         {
             rt?.Dispose();
             var flags = (Texture?.HDR ?? false) ? RenderTextureFlags.HDR : RenderTextureFlags.None;
+            flags |= RenderTextureFlags.Multisampling;
             rt = new RenderTexture(w, h, flags: flags);
             rt.ProjectionMatrix = rt.OrthographicMatrix;
         }
