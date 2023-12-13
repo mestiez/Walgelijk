@@ -23,6 +23,13 @@ public static class FontLoader
             case ".wf":
                 {
                     var format = FontFormat.Load(path);
+
+                    if (format.CapHeight <= float.Epsilon)
+                        format.CapHeight = format.Glyphs.Where(static g => char.IsUpper(g.Character)).Average(static g => g.GeometryRect.Height);  
+
+                    if (format.XHeight <= float.Epsilon)
+                        format.XHeight = format.Glyphs.Where(static g => char.IsLower(g.Character)).Average(static g => g.GeometryRect.Height);
+
                     return new Font
                     {
                         Name = format.Name,

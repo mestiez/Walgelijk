@@ -4451,7 +4451,9 @@
         </member>
         <member name="M:Walgelijk.Utilities.Hash(System.Single)">
             <summary>
-            Shader-style deterministic random value (0 - 1)
+            Shader-style deterministic* random value (0 - 1)
+            <br></br>
+            <i>* Not strictly deterministic. Different hardware will give different results.</i>
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.Fract(System.Single)">

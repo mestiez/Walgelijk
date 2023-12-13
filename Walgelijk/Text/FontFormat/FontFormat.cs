@@ -14,39 +14,39 @@ public class FontFormat
     /// <summary>
     /// Name of the font
     /// </summary>
-    public readonly string Name;
+    public string Name;
     /// <summary>
     /// Reference to the atlas texture
     /// </summary>
-    public readonly Texture Atlas;
+    public Texture Atlas;
     /// <summary>
     /// Kernings between different characters
     /// </summary>
-    public readonly Kerning[] Kernings;
+    public Kerning[] Kernings;
     /// <summary>
     /// Set of glyphs in the font
     /// </summary>
-    public readonly Glyph[] Glyphs;
+    public Glyph[] Glyphs;
     /// <summary>
     /// Height of a line of text in pixels
     /// </summary>
-    public readonly float LineHeight;
+    public float LineHeight;
     /// <summary>
     /// Font size in points
     /// </summary>
-    public readonly int Size;
+    public int Size;
     /// <summary>
     /// The distance from the baseline to the mean line
     /// </summary>
-    public readonly float XHeight; 
+    public float XHeight; 
     /// <summary>
     /// The maximum height of uppercase character
     /// </summary>
-    public readonly float CapHeight;
+    public float CapHeight;
     /// <summary>
     /// The style this font represents
     /// </summary>
-    public readonly FontStyle Style;
+    public FontStyle Style;
 
     public FontFormat(
         string name,

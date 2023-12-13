@@ -202,7 +202,7 @@ Deserves kindness and love, a smile on their face";
                     layout.Move(Onion.Theme.Base.Padding + i * (hotbarHeight - Onion.Theme.Base.Padding), 0);
                     if (Ui.ClickImageButton(Texture.ErrorTexture, ImageContainmentMode.Cover, i))
                     {
-                        var a = Resources.Load<Font>("inter-tight.fnt");
+                        var a = Resources.Load<Font>("RobotoMono-Regular.wf");
                         var b = Resources.Load<Font>("roboto mono.fnt");
                         if (Onion.Theme.Base.Font == b)
                             Onion.Theme.Base.Font = a;
