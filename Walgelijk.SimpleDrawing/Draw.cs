@@ -57,6 +57,11 @@ namespace Walgelijk.SimpleDrawing
         public static BlendMode? BlendMode;
 
         /// <summary>
+        /// The current image mode. Determines how textures are positioned within the mesh.
+        /// </summary>
+        public static ImageMode ImageMode;
+
+        /// <summary>
         /// The current outline colour. No outline will be drawn if transparent
         /// </summary>
         public static Color OutlineColour = Colors.Black;
@@ -154,7 +159,7 @@ namespace Walgelijk.SimpleDrawing
         private static Drawing DrawingFor(VertexBuffer vtx, Vector2 position, Vector2 scale, float degrees)
             => new(vtx, position, scale, degrees * Utilities.DegToRad, Colour,
                 Material ?? DrawingMaterialCreator.Cache.Load(Texture ?? Walgelijk.Texture.White),
-                Texture ?? Walgelijk.Texture.White, ScreenSpace, DrawBounds, OutlineWidth, OutlineColour)
+                Texture ?? Walgelijk.Texture.White, ScreenSpace, DrawBounds, OutlineWidth, OutlineColour, ImageMode)
             {
                 Transformation = TransformMatrix,
                 BlendMode = BlendMode

@@ -1,47 +1,58 @@
-﻿namespace Walgelijk.SimpleDrawing
+﻿namespace Walgelijk.SimpleDrawing;
+
+public enum ImageMode
+{
+    Stretch,
+    Slice,
+    Tile
+}
+
+/// <summary>
+/// Responsible for creating materials that support textures, outline, and roundness
+/// </summary>
+public static class DrawingMaterialCreator
 {
     /// <summary>
-    /// Responsible for creating materials that support textures, outline, and roundness
+    /// Reference to the material cache
     /// </summary>
-    public static class DrawingMaterialCreator
-    {
-        /// <summary>
-        /// Reference to the material cache
-        /// </summary>
-        public static readonly DrawingMaterialCache Cache = new();
+    public static readonly DrawingMaterialCache Cache = new();
 
-        /// <summary>
-        /// Main texture uniform
-        /// </summary>
-        public const string MainTexUniform = "mainTex";
-        /// <summary>
-        /// Actual transformation scale uniform
-        /// </summary>
-        public const string ScaleUniform = "scale";
-        /// <summary>
-        /// The roundness uniform
-        /// </summary>
-        public const string RoundednessUniform = "roundedness";
-        /// <summary>
-        /// Outline width uniform
-        /// </summary>
-        public const string OutlineWidthUniform = "outlineWidth";
-        /// <summary>
-        /// Outline colour uniform
-        /// </summary>
-        public const string OutlineColourUniform = "outlineColour";
-        /// <summary>
-        /// Colour uniform
-        /// </summary>
-        public const string TintUniform = "tint";
+    /// <summary>
+    /// Main texture uniform
+    /// </summary>
+    public const string MainTexUniform = "mainTex";
+    /// <summary>
+    /// Actual transformation scale uniform
+    /// </summary>
+    public const string ScaleUniform = "scale";
+    /// <summary>
+    /// The roundness uniform
+    /// </summary>
+    public const string RoundednessUniform = "roundedness";
+    /// <summary>
+    /// Outline width uniform
+    /// </summary>
+    public const string OutlineWidthUniform = "outlineWidth";
+    /// <summary>
+    /// Outline colour uniform
+    /// </summary>
+    public const string OutlineColourUniform = "outlineColour";
+    /// <summary>
+    /// Colour uniform
+    /// </summary>
+    public const string TintUniform = "tint";
+    /// <summary>
+    /// Image mode uniform
+    /// </summary>
+    public const string ImageModeUniform = "imageMode";
 
-        /// <summary>
-        /// Gets the default material with a white texture
-        /// </summary>
-        public static Material BasicMaterial => Cache.Load(Texture.White);
+    /// <summary>
+    /// Gets the default material with a white texture
+    /// </summary>
+    public static Material BasicMaterial => Cache.Load(Texture.White);
 
-        public const string FragmentShader =
-            @$"#version 330 core
+    public const string FragmentShader =
+        @$"#version 330 core
 
 in vec2 uv;
 in vec4 vertexColor;
@@ -56,6 +67,7 @@ uniform vec4 {OutlineColourUniform} = vec4(0,0,0,0);
 
 uniform sampler2D {MainTexUniform};
 uniform vec4 {TintUniform} = vec4(1, 1, 1, 1);
+uniform int {ImageModeUniform} = 0;
 
 // The MIT License
 // Copyright (C) 2015 Inigo Quilez
@@ -80,20 +92,21 @@ void main()
     corner = d < 0 ? 1 : 0;
     outline = d < -{OutlineWidthUniform} ? 0 : 1;
 
+    uv.x = {ImageModeUniform};
+
     color = vertexColor * texture({MainTexUniform}, uv) * mix({TintUniform}, {OutlineColourUniform}, outline * {OutlineColourUniform}.a);
     color.a *= corner;
 }}";
 
-        public static readonly Shader DefaultShader = new(ShaderDefaults.WorldSpaceVertex, FragmentShader);
+    public static readonly Shader DefaultShader = new(ShaderDefaults.WorldSpaceVertex, FragmentShader);
 
-        /// <summary>
-        /// Create a material for a texture
-        /// </summary>
-        public static Material Create(IReadableTexture tex)
-        {
-            var m = new Material(DefaultShader);
-            m.SetUniform(MainTexUniform, tex);
-            return m;
-        }
+    /// <summary>
+    /// Create a material for a texture
+    /// </summary>
+    public static Material Create(IReadableTexture tex)
+    {
+        var m = new Material(DefaultShader);
+        m.SetUniform(MainTexUniform, tex);
+        return m;
     }
 }

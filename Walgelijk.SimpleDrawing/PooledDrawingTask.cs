@@ -79,6 +79,7 @@ namespace Walgelijk.SimpleDrawing
                     material.SetUniform(DrawingMaterialCreator.OutlineWidthUniform, Drawing.OutlineWidth);
                     material.SetUniform(DrawingMaterialCreator.OutlineColourUniform, Drawing.OutlineColour);
                     material.SetUniform(DrawingMaterialCreator.TintUniform, Drawing.Color);
+                    material.SetUniform(DrawingMaterialCreator.ImageModeUniform, (int)Drawing.ImageMode);
                 }
 
                 if (Drawing.ScreenSpace)
