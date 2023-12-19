@@ -8,7 +8,7 @@ using Walgelijk.Localisation;
 using Walgelijk.OpenTK.MotionTK;
 using Walgelijk.SimpleDrawing;
 
-namespace TestWorld;
+namespace Playgrounds;
 
 public struct TestScene2
 {

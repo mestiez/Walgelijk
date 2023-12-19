@@ -5,7 +5,7 @@ using System.Numerics;
 using Walgelijk;
 using Walgelijk.SimpleDrawing;
 
-namespace TestWorld;
+namespace Playgrounds;
 
 public struct BatchRendererScene : ISceneCreator
 {

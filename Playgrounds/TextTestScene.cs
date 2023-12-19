@@ -7,7 +7,7 @@ using Walgelijk.Onion.Assets;
 using Walgelijk.Onion.Controls;
 using Walgelijk.SimpleDrawing;
 
-namespace TestWorld;
+namespace Playgrounds;
 
 public readonly struct TextTestScene : ISceneCreator
 {

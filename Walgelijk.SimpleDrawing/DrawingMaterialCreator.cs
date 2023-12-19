@@ -1,12 +1,5 @@
 ﻿namespace Walgelijk.SimpleDrawing;
 
-public enum ImageMode
-{
-    Stretch,
-    Slice,
-    Tile
-}
-
 /// <summary>
 /// Responsible for creating materials that support textures, outline, and roundness
 /// </summary>
@@ -81,6 +74,20 @@ float sdRoundBox(in vec2 p, in vec2 b, in float r )
     return min(max(q.x,q.y),0.0) + length(max(q,0.0)) - r;
 }}
 
+vec2 getTiledUv(in vec2 p)
+{{
+    vec2 size = textureSize({MainTexUniform}, 0);
+    vec2 ratio = {ScaleUniform} / size;
+    vec2 edge = min(vec2(0.5, 0.5), 0.5 / ratio);
+    vec2 min = p * ratio;
+    vec2 max = (p - 1) * ratio + 1;
+    vec2 maxEdge = 1.0 - edge;
+    return vec2(
+        p.x > edge.x ? (p.x < maxEdge.x ? 0.5 : max.x) : min.x,
+        p.y > edge.y ? (p.y < maxEdge.y ? 0.5 : max.y) : min.y
+    );
+}}
+
 void main()
 {{
     float corner = 1;
@@ -90,11 +97,14 @@ void main()
     float d = sdRoundBox(uv, {ScaleUniform}, clampedRoundness * 2.0);
 
     corner = d < 0 ? 1 : 0;
-    outline = d < -{OutlineWidthUniform} ? 0 : 1;
+    outline = d + 0.05 < -{OutlineWidthUniform} ? 0 : 1;
 
-    uv.x = {ImageModeUniform};
+    vec2 wUv = getTiledUv(uv);
+    
+    wUv.x = {ImageModeUniform} == 0 ? uv.x : wUv.x;
+    wUv.y = {ImageModeUniform} == 0 ? uv.y : wUv.y;
 
-    color = vertexColor * texture({MainTexUniform}, uv) * mix({TintUniform}, {OutlineColourUniform}, outline * {OutlineColourUniform}.a);
+    color = vertexColor * texture({MainTexUniform}, wUv) * mix({TintUniform}, {OutlineColourUniform}, outline * {OutlineColourUniform}.a);
     color.a *= corner;
 }}";
 

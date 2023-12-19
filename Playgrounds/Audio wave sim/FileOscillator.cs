@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using Walgelijk;
 
-namespace TestWorld;
+namespace Playgrounds;
 
 public class PointFileOscillator : IOscillator
 {

@@ -195,6 +195,7 @@ namespace Walgelijk.SimpleDrawing
             OutlineColour = default;
             TextDrawRatio = 1;
             TransformMatrix = Matrix3x2.Identity;
+            ImageMode = default;
         }
 
         /// <summary>

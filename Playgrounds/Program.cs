@@ -4,7 +4,7 @@ using Walgelijk;
 using Walgelijk.Onion.Controls;
 using Walgelijk.OpenTK;
 
-namespace TestWorld;
+namespace Playgrounds;
 
 public class Program
 {
@@ -32,6 +32,7 @@ public class Program
         game.Window.VSync = false;
 
         TextureLoader.Settings.FilterMode = FilterMode.Linear;
+        TextureLoader.Settings.WrapMode = WrapMode.Repeat;
 
         Resources.SetBasePathForType<AudioData>("audio");
         Resources.SetBasePathForType<FixedAudioData>("audio");
@@ -39,7 +40,7 @@ public class Program
         Resources.SetBasePathForType<Texture>("textures");
         Resources.SetBasePathForType<Font>("fonts");
 
-        game.Scene = new IMGUIScene().Load(game);
+        game.Scene = new ImgModeScene().Load(game);
 
 #if DEBUG
         game.DevelopmentMode = true;

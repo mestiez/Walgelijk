@@ -4,10 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace Walgelijk.Onion.SourceGenerator
 {
@@ -37,14 +34,14 @@ namespace Walgelijk.Onion.SourceGenerator
             var sourceBuilder = new StringBuilder();
 
             WriteUsingsAndNamespace(sourceBuilder);
-            sourceBuilder.AppendLine();
+            sourceBuilder.AppendLine("#nullable enable");
             sourceBuilder.AppendLine("public static partial class Ui");
             sourceBuilder.AppendLine("{");
 
             GenerateControlFunctions(classesImplementingControlInterface, sourceBuilder);
 
             sourceBuilder.AppendLine("}");
-            sourceBuilder.AppendLine();
+            sourceBuilder.AppendLine("#nullable restore");
             context.AddSource("Ui.g.cs", sourceBuilder.ToString());
         }
 

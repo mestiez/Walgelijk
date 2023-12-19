@@ -1,4 +1,4 @@
-﻿namespace TestWorld;
+﻿namespace Playgrounds;
 
 public interface IOscillator
 {

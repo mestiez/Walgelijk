@@ -3,7 +3,7 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
-namespace TestWorld;
+namespace Playgrounds;
 
 public class Grid<T> : IEnumerable<(int X, int Y, T Value)> where T : notnull
 {

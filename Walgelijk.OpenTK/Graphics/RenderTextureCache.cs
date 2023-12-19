@@ -7,9 +7,9 @@ internal class RenderTextureCache : Cache<RenderTexture, RenderTextureHandles>
 {
     protected override RenderTextureHandles CreateNew(RenderTexture raw)
     {
-        var framebufferID = GL.GenFramebuffer();
-        GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebufferID);
-        int[] ids = new int[1];
+        var framebufferId = GL.GenFramebuffer();
+        GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebufferId);
+        var ids = new int[1];
 
         var textureTarget = TextureTarget.Texture2D;
         if (raw.Flags.HasFlag(RenderTextureFlags.Multisampling))
@@ -58,7 +58,7 @@ internal class RenderTextureCache : Cache<RenderTexture, RenderTextureHandles>
             return new RenderTextureHandles(-1, null!, raw);
         }
 
-        return new RenderTextureHandles(framebufferID, ids, raw);
+        return new RenderTextureHandles(framebufferId, ids, raw);
     }
 
     protected override void DisposeOf(RenderTextureHandles loaded)

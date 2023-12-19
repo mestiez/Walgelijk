@@ -2,7 +2,7 @@
 using Walgelijk;
 using Walgelijk.SimpleDrawing;
 
-namespace TestWorld;
+namespace Playgrounds;
 
 public struct TransformTestScene : ISceneCreator
 {

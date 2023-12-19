@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace TestWorld;
+namespace Playgrounds;
 
 public class SineOscillator : IOscillator
 {

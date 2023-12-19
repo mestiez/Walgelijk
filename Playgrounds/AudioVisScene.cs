@@ -3,7 +3,7 @@ using Walgelijk;
 using Walgelijk.Onion;
 using Walgelijk.SimpleDrawing;
 
-namespace TestWorld;
+namespace Playgrounds;
 
 public struct AudioVisScene : ISceneCreator
 {

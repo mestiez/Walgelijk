@@ -4,7 +4,7 @@ using Walgelijk;
 using Walgelijk.Prism;
 using Walgelijk.SimpleDrawing;
 
-namespace TestWorld;
+namespace Playgrounds;
 
 public struct PrismScene : ISceneCreator
 {

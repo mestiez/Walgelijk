@@ -4,7 +4,7 @@ using Walgelijk.Imgui;
 using Walgelijk.Physics;
 using Walgelijk.SimpleDrawing;
 
-namespace TestWorld;
+namespace Playgrounds;
 
 public struct PhysicsTestScene : ISceneCreator
 {

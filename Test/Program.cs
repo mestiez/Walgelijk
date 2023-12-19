@@ -3,7 +3,7 @@ using Walgelijk;
 using Walgelijk.Localisation;
 using Walgelijk.OpenTK;
 
-namespace TestWorld;
+namespace Playgrounds;
 
 public readonly struct Languages
 {

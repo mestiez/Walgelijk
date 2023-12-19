@@ -1,7 +1,7 @@
 ﻿using Walgelijk;
 using Walgelijk.Onion;
 
-namespace TestWorld;
+namespace Playgrounds;
 
 public struct CompositorScene : ISceneCreator
 {

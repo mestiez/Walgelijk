@@ -8,7 +8,7 @@ using Walgelijk.Onion.Decorators;
 using Walgelijk.SimpleDrawing;
 using Button = Walgelijk.Onion.Controls.Button;
 
-namespace TestWorld;
+namespace Playgrounds;
 
 public struct IMGUIScene : ISceneCreator
 {

@@ -1,8 +1,8 @@
 ﻿using Walgelijk;
 using Walgelijk.SimpleDrawing;
-using static TestWorld.TextureGeneratorScene;
+using static Playgrounds.TextureGeneratorScene;
 
-namespace TestWorld;
+namespace Playgrounds;
 
 public struct TextureGeneratorScene : ISceneCreator
 {
