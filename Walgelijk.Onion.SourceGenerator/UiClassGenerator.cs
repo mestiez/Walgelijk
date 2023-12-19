@@ -282,19 +282,65 @@ namespace Walgelijk.Onion.SourceGenerator
                     defaultValueStr = $" = {p.ExplicitDefaultValue ?? ("default")}".ToLower();
                 }
 
+                var refKind = string.Empty;
+                switch (p.RefKind)
+                {
+                    case RefKind.Ref:
+                        refKind = "ref ";
+                        break;
+                    case RefKind.In:
+                        refKind = "in ";
+                        break;
+                    case RefKind.RefReadOnlyParameter:
+                        refKind = "ref readonly ";
+                        break;
+                    case RefKind.Out:
+                        refKind = "out ";
+                        break;
+                }
+
                 return
-                    $"{attrStr}{(p.RefKind == RefKind.None ? string.Empty : $"{p.RefKind.ToString().ToLower()} ")}{p.Type.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat)} {p.Name}{defaultValueStr}";
+                    $"{attrStr}{refKind}{p.Type.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat)} {p.Name}{defaultValueStr}";
             });
 
             return string.Join(", ", parameterStrings);
+        }
+
+        public static string RefKindToString(RefKind k)
+        {
+            switch (k)
+            {
+                case RefKind.Ref:
+                    return "ref " ;
+                //case RefKind.In:
+                //    return "in ";
+                //case RefKind.RefReadOnlyParameter:
+                //    return "ref readonly ";
+                case RefKind.Out:
+                    return "out ";
+                default:
+                    return string.Empty;
+            }
         }
 
         public static string GetParameterNamesString(IMethodSymbol methodSymbol)
         {
             var parameterStrings = methodSymbol.Parameters.Select(p =>
             {
-                return
-                    $"{(p.RefKind == RefKind.None ? string.Empty : $"{p.RefKind.ToString().ToLower()} ")}{p.Name}";
+                switch (p.RefKind)
+                {
+                    case RefKind.Ref:
+                        return "ref " + p.Name;   
+                    case RefKind.In:
+                        return "in " + p.Name;      
+                    case RefKind.RefReadOnlyParameter:
+                        return "ref readonly " + p.Name;
+                    case RefKind.Out:
+                        return "out " + p.Name;      
+                    default:
+                        return p.Name;
+                }
+                    //$"{(p.RefKind == RefKind.None ? string.Empty : $"{p.RefKind.ToString().ToLower()} ")}{p.Name}";
             });
             return string.Join(", ", parameterStrings);
         }
