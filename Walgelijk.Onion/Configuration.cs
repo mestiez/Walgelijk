@@ -11,5 +11,4 @@ public class Configuration
 
     public float SoundVolume = 0.5f;
     public AudioTrack? AudioTrack;
-    public readonly Material ControlMaterial = OnionMaterial.CreateNew();
 }
