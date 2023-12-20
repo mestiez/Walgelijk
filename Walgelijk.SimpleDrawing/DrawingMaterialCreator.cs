@@ -97,7 +97,7 @@ void main()
     float d = sdRoundBox(uv, {ScaleUniform}, clampedRoundness * 2.0);
 
     corner = d < 0 ? 1 : 0;
-    outline = d + 0.05 < -{OutlineWidthUniform} ? 0 : 1;
+    outline = {OutlineWidthUniform} < 1 ? 0 : (ceil(d + fwidth(uv.x) + 0.05) < -{OutlineWidthUniform} ? 0 : 1);
 
     vec2 wUv = getTiledUv(uv);
     
