@@ -52,26 +52,29 @@ namespace Walgelijk.Onion.SourceGenerator
                 .Select(s => context.Compilation.GetSemanticModel(s.SyntaxTree).GetDeclaredSymbol(s))
                 .FirstOrDefault(s => s?.Name == "Theme");
 
-            return themeClass?.GetMembers().OfType<IFieldSymbol>() ?? null;
+            if (themeClass == null)
+                return null;
+
+            var members = themeClass.GetMembers();
+
+            return members.OfType<IFieldSymbol>();
         }
 
         private void GenerateThemeExtensionClass(GeneratorExecutionContext context)
         {
             var sourceBuilder = new StringBuilder();
-            var fields = GetThemeFields(context);
+            var fieldsAndProps = GetThemeFields(context);
 
             WriteUsingsAndNamespace(sourceBuilder);
             sourceBuilder.AppendLine();
             sourceBuilder.AppendLine("public static class ThemeExtensions");
             sourceBuilder.AppendLine("{");
 
-            if (fields != null)
-                foreach (var field in fields)
+            if (fieldsAndProps != null)
+                foreach (var member in fieldsAndProps)
                 {
-                    var argumentName = field.Name.ToLower();
-
-                    sourceBuilder.AppendLine($"\tpublic static Theme With{field.Name}(this Theme theme, {field.Type} {argumentName})");
-                    sourceBuilder.AppendLine($"\t\t=> theme with {{ {field.Name} = {argumentName} }};");
+                    sourceBuilder.AppendLine($"\tpublic static Theme With{member.Name}(this Theme theme, {member.Type} x)");
+                    sourceBuilder.AppendLine($"\t\t=> theme with {{ {member.Name} = x }};");
                     sourceBuilder.AppendLine();
                 }
 
@@ -83,21 +86,21 @@ namespace Walgelijk.Onion.SourceGenerator
         private void GenerateThemeStackExtensions(GeneratorExecutionContext context)
         {
             var sourceBuilder = new StringBuilder();
-            var fields = GetThemeFields(context);
+            var fieldsAndProps = GetThemeFields(context);
 
             WriteUsingsAndNamespace(sourceBuilder);
             sourceBuilder.AppendLine();
             sourceBuilder.AppendLine("public static class ThemeStackExtensions");
             sourceBuilder.AppendLine("{");
 
-            if (fields != null)
-                foreach (var field in fields)
+            if (fieldsAndProps != null)
+                foreach (var member in fieldsAndProps)
                 {
-                    var argumentName = field.Name.ToLower();
+                    var argumentName = member.Name.ToLower();
 
-                    sourceBuilder.AppendLine($"\tpublic static ThemeStack {field.Name}(this ThemeStack q, {field.Type} {argumentName})");
+                    sourceBuilder.AppendLine($"\tpublic static ThemeStack {member.Name}(this ThemeStack q, {member.Type} {argumentName})");
                     sourceBuilder.AppendLine($"\t{{");
-                    sourceBuilder.AppendLine($"\t\tq.Next = (q.Next ?? q.Peek() ?? q.Base).With{field.Name}({argumentName});");
+                    sourceBuilder.AppendLine($"\t\tq.Next = (q.Next ?? q.Peek() ?? q.Base).With{member.Name}({argumentName});");
                     sourceBuilder.AppendLine($"\t\treturn q;");
                     sourceBuilder.AppendLine($"\t}}");
                     sourceBuilder.AppendLine();
@@ -311,7 +314,7 @@ namespace Walgelijk.Onion.SourceGenerator
             switch (k)
             {
                 case RefKind.Ref:
-                    return "ref " ;
+                    return "ref ";
                 //case RefKind.In:
                 //    return "in ";
                 //case RefKind.RefReadOnlyParameter:
@@ -330,17 +333,17 @@ namespace Walgelijk.Onion.SourceGenerator
                 switch (p.RefKind)
                 {
                     case RefKind.Ref:
-                        return "ref " + p.Name;   
+                        return "ref " + p.Name;
                     case RefKind.In:
-                        return "in " + p.Name;      
+                        return "in " + p.Name;
                     case RefKind.RefReadOnlyParameter:
                         return "ref readonly " + p.Name;
                     case RefKind.Out:
-                        return "out " + p.Name;      
+                        return "out " + p.Name;
                     default:
                         return p.Name;
                 }
-                    //$"{(p.RefKind == RefKind.None ? string.Empty : $"{p.RefKind.ToString().ToLower()} ")}{p.Name}";
+                //$"{(p.RefKind == RefKind.None ? string.Empty : $"{p.RefKind.ToString().ToLower()} ")}{p.Name}";
             });
             return string.Join(", ", parameterStrings);
         }

@@ -11,15 +11,15 @@ public enum CaptureFlags : byte
     /// <summary>
     /// Will capture hover events
     /// </summary>
-    Hover = 0b001,
+    Hover = 1,
     /// <summary>
     /// Will capture scroll events
     /// </summary>
-    Scroll = 0b010,
+    Scroll = 2,
     /// <summary>
     /// Will capture key events
     /// </summary>
-    Key = 0b100,
+    Key = 4,
 
     /// <summary>
     /// Will capture all events

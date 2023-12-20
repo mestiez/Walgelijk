@@ -84,4 +84,28 @@ public class ThemeStack
 
         onlyApplyToNextControl = false;
     }
+
+    public ThemeStack BackgroundColor(StateDependent<Color> color)
+    {
+        Next = (Next ?? Peek() ?? Base).WithBackgroundColor(color);
+        return this;
+    }
+
+    public ThemeStack ForegroundColor(StateDependent<Color> color)
+    {
+        Next = (Next ?? Peek() ?? Base).WithForegroundColor(color);
+        return this;
+    }
+
+    public ThemeStack BackgroundTexture(IReadableTexture tex, ImageMode mode = default)
+    {
+        Next = (Next ?? Peek() ?? Base).WithBackgroundTexture(tex, mode);
+        return this;
+    }
+
+    public ThemeStack ForegroundTexture(IReadableTexture tex, ImageMode mode = default)
+    {
+        Next = (Next ?? Peek() ?? Base).WithForegroundTexture(tex, mode);
+        return this;
+    }
 }

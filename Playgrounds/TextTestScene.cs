@@ -95,6 +95,7 @@ public readonly struct TextTestScene : ISceneCreator
             Resources.Load<Font>("Rye-Regular.wf"),
             Resources.Load<Font>("Amarante-Regular.wf"),
             Resources.Load<Font>("pt-serif-regular.wf"),
+            Resources.Load<Font>("Cookie-Regular.wf"),
         };
 
         private int selectedFontIndex = 0;

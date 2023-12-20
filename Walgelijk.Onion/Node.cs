@@ -128,6 +128,7 @@ public class Node
 
         Draw.BlendMode = BlendMode.AlphaBlend;
         Draw.ScreenSpace = true;
+        Draw.ImageMode = default;
         Draw.Font = p.Theme.Font;
         Draw.FontSize = p.Theme.FontSize[p.Instance.State];
         Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, p.Node.ComputedGlobalOrder);

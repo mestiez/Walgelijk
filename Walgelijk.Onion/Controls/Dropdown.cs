@@ -187,6 +187,7 @@ public readonly struct Dropdown<T> : IControl
 
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
+        Draw.ImageMode = fg.ImageMode;
         Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
         Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
 
@@ -198,6 +199,7 @@ public readonly struct Dropdown<T> : IControl
             .Translate(instance.Rects.Rendered.Width - instance.Rects.Rendered.Height, 0);
         var textRect = instance.Rects.Rendered with { Width = instance.Rects.Rendered.Width - instance.Rects.Rendered.Height + 1 };
 
+        Draw.ImageMode = default;
         Draw.Quad(arrowRect, 0, p.Theme.Rounding);
         Draw.Quad(textRect, 0, p.Theme.Rounding);
 
@@ -205,6 +207,7 @@ public readonly struct Dropdown<T> : IControl
         {
             Draw.Colour = fg.Color.Brightness(0.8f);
             Draw.Texture = fg.Texture;
+            Draw.ImageMode = fg.ImageMode;
             Draw.Quad(currentState.DropdownRect, 0, p.Theme.Rounding);
 
             var inner = currentState.DropdownRect;
@@ -223,6 +226,7 @@ public readonly struct Dropdown<T> : IControl
                 const float arrowSize = 16;
                 var arrowPos = arrowRect.GetCenter().Quantise();
                 Draw.Colour = p.Theme.Accent[instance.State];
+                Draw.ImageMode = default;
                 anim.AnimateColour(ref Draw.Colour, t);
                 Draw.Image(instance.IsTriggered ? BuiltInAssets.Icons.ChevronUp : BuiltInAssets.Icons.ChevronDown, new Rect(arrowPos, new Vector2(arrowSize)), ImageContainmentMode.Contain);
                 //Draw.TriangleIscoCentered(arrowPos, new Vector2(arrowSize), instance.IsTriggered ? 0 : 180);

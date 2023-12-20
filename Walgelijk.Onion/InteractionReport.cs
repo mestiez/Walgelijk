@@ -33,7 +33,7 @@ public readonly struct InteractionReport
     {
         Identity = node.Identity;
         Down = Onion.Input.MousePrimaryPressed && inst.IsActive;
-        Held = Onion.Input.MousePrimaryHeld && inst.IsActive;
+        Held = Onion.Input.MousePrimaryHeld && inst.IsHover;
         Up = Onion.Input.MousePrimaryRelease && inst.IsActive;
         State = inst.State;
         MousePosition = Onion.Input.MousePosition;

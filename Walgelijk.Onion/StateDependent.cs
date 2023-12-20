@@ -41,7 +41,6 @@ public struct StateDependent<T> where T : struct
         Default = value;
     }
 
-    //public static implicit operator T(ThemeProperty<T> theme) => theme.Get(ControlState.None);
     public static implicit operator StateDependent<T>(T val) => new(val);
 
     public T this[ControlState state]

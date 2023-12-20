@@ -2,17 +2,17 @@
 
 public struct Theme
 {
-    public StateDependent<Appearance> Background = new(new Color("#151122"));
+    public StateDependent<Appearance> Background = new(new Color(0x151122));
     public StateDependent<Appearance> Foreground = new(
-        new Color("#403663"),
-        new Color("#403663").Brightness(1.1f),
-        new Color("#403663").Brightness(0.9f),
-        new Color("#403663").Brightness(0.8f));
+        new Color(0x403663),
+        new Color(0x403663).Brightness(1.1f),
+        new Color(0x403663).Brightness(0.9f),
+        new Color(0x403663).Brightness(0.8f));
 
-    public StateDependent<Color> Text = new Color("#f0f0f0");
-    public StateDependent<Color> Accent = new Color("#cc820a");
+    public StateDependent<Color> Text = new Color(0xf0f0f0);
+    public StateDependent<Color> Accent = new Color(0xcc820a);
     public StateDependent<Color> Image = Colors.White;
-    public Color Highlight = new Color("#ffffff");
+    public Color Highlight = new Color(0xffffff);
 
     public Font Font = Font.Default;
     public StateDependent<int> FontSize = 12;
@@ -25,7 +25,7 @@ public struct Theme
 
     public StateDependent<float> WindowTitleBarHeight = 24;
 
-    public Color FocusBoxColour = new Color("#FFA500");
+    public Color FocusBoxColour = new Color(0xFFA500);
     public float FocusBoxSize = 5;
     public float FocusBoxWidth = 4;
 
@@ -34,6 +34,34 @@ public struct Theme
 
     public Theme()
     {
+    }
+
+    public Theme WithBackgroundColor(StateDependent<Color> color)
+    {
+        var copy = this;
+        copy.Background.SetColor(color);
+        return copy;
+    }
+
+    public Theme WithForegroundColor(StateDependent<Color> color)
+    {
+        var copy = this;
+        copy.Foreground.SetColor(color);
+        return copy;
+    }
+
+    public Theme WithBackgroundTexture(IReadableTexture tex, ImageMode mode)
+    {
+        var copy = this;
+        copy.Background.SetTexture(tex, mode);
+        return copy;
+    }
+
+    public Theme WithForegroundTexture(IReadableTexture tex, ImageMode mode)
+    {
+        var copy = this;
+        copy.Foreground.SetTexture(tex, mode);
+        return copy;
     }
 
     public void ApplyScaling(float scale)

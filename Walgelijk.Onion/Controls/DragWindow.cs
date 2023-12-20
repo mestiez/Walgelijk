@@ -95,6 +95,7 @@ public readonly struct DragWindow : IControl
         var fg = p.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
+        Draw.ImageMode = fg.ImageMode;
         Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
         Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
 
@@ -116,6 +117,7 @@ public readonly struct DragWindow : IControl
         var bg = p.Theme.Background[instance.State];
         Draw.Colour = bg.Color;
         Draw.Texture = bg.Texture;
+        Draw.ImageMode = bg.ImageMode;
         anim.AnimateColour(ref Draw.Colour, t);
 
         var container = instance.Rects.Rendered.Expand(-p.Theme.Padding);

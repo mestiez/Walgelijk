@@ -15,7 +15,7 @@ public class HoldTicker
     public bool IsTicked(ControlInstance inst)
     {
         timer += Game.Main.State.Time.DeltaTimeUnscaled;
-        if (Onion.Input.MousePrimaryRelease || (inst.TimeSinceStateChange > MinHoldDuration && timer > RepeatInterval))
+        if (Onion.Input.MousePrimaryPressed || (inst.TimeSinceStateChange > MinHoldDuration && timer > RepeatInterval))
         {
             timer = 0;
             return true;

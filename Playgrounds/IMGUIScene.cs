@@ -274,6 +274,10 @@ Deserves kindness and love, a smile on their face";
                 layout.Move(i * 64, i * 64).Size(300, 256).Resizable(new Vector2(148), new Vector2(512));
                 Ui.Decorators.Tooltip("DPI is " + Window.DPI);
                 Ui.Theme.Text(Colors.Yellow);
+                if (i == 0)
+                {
+                    Ui.Theme.Background(default).ForegroundTexture(Resources.Load<Texture>("window.png"), ImageMode.Slice).Once();
+                }
                 Ui.StartDragWindow(textBoxContent, ref WindowsOpen[i], i);
                 {
                     layout.FitContainer().StickTop().StickLeft().Scale(0, Onion.Theme.Base.Padding);

@@ -39,6 +39,7 @@ public readonly struct Button : IControl
         var fg = p.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
+        Draw.ImageMode = fg.ImageMode;
         Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
         Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
 

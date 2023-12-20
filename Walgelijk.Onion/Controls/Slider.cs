@@ -113,12 +113,14 @@ public readonly struct Slider : IControl
         var fg = p.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
+        Draw.ImageMode = fg.ImageMode;
         Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
         Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
         anim.AnimateColour(ref Draw.Colour, t);
         Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
+        Draw.ImageMode = default;
 
         var sliderRect = instance.Rects.Rendered;
         float animatedMin = Utilities.Lerp(range.Max, range.Min, Utilities.Clamp(p.Node.AliveLastFrame ? t - 0.2f : t));

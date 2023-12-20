@@ -4,17 +4,20 @@ public struct Appearance : IEquatable<Appearance>
 {
     public Color Color;
     public IReadableTexture Texture;
+    public ImageMode ImageMode;
 
-    public Appearance(Color color, IReadableTexture? texture = null)
+    public Appearance(Color color, IReadableTexture? texture = null, ImageMode imageMode = default)
     {
         Color = color;
         Texture = texture ?? Walgelijk.Texture.White;
+        ImageMode = imageMode;
     }
 
-    public Appearance(IReadableTexture texture)
+    public Appearance(IReadableTexture texture, ImageMode imageMode = default)
     {
         Color = Colors.White;
         Texture = texture;
+        ImageMode = imageMode;
     }
 
     public static implicit operator Appearance(Color color) => new(color);
@@ -39,11 +42,12 @@ public struct Appearance : IEquatable<Appearance>
     public bool Equals(Appearance other)
     {
         return Color.Equals(other.Color) &&
+               ImageMode.Equals(other.ImageMode) &&
                EqualityComparer<IReadableTexture>.Default.Equals(Texture, other.Texture);
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Color, Texture);
+        return HashCode.Combine(Color, Texture, ImageMode);
     }
 }

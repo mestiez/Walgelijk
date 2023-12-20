@@ -171,6 +171,21 @@ public class LayoutQueue
     public LayoutQueue MaxSize(float maxWidth, float maxHeight) => EnqueueConstraint(new MaxSize(maxWidth, maxHeight));
 
     /// <summary>
+    /// Set the maximum width
+    /// </summary>
+    public LayoutQueue MinWidth(float minWidth) => EnqueueConstraint(new MinSize(minWidth, null));
+
+    /// <summary>
+    /// Set the maximum height
+    /// </summary>
+    public LayoutQueue MinHeight(float minHeight) => EnqueueConstraint(new MinSize(null, minHeight));
+
+    /// <summary>
+    /// Set the maximum size
+    /// </summary>
+    public LayoutQueue MinSize(float minWidth, float minHeight) => EnqueueConstraint(new MinSize(minWidth, minHeight));
+
+    /// <summary>
     /// Set the size to fit the size of its children
     /// </summary>
     public LayoutQueue FitContent() => EnqueueConstraint(new FitContent(true, true));

@@ -1847,6 +1847,16 @@
             Create a colour based on a hexadecimal representation, such as "#d42c5e"
             </summary>
         </member>
+        <member name="M:Walgelijk.Color.#ctor(System.Int32)">
+            <summary>
+            Create a colour based on a hexadecimal representation as an integer, such as "0xd42c"
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Color.#ctor(System.UInt32)">
+            <summary>
+            Create a colour based on a hexadecimal representation as an unsigned integer, such as "0xd42c5e"
+            </summary>
+        </member>
         <member name="P:Walgelijk.Color.Red">
             <summary>
             Bright vermilion

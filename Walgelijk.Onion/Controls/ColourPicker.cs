@@ -172,7 +172,7 @@ void main()
             }
         }
 
-        var sliderWidth = (instance.Rects.ComputedGlobal.Width / Onion.GlobalScale - inputWidth - instance.Theme.Padding * 3 / Onion.GlobalScale) ;
+        var sliderWidth = (instance.Rects.ComputedGlobal.Width / Onion.GlobalScale - inputWidth - instance.Theme.Padding * 3 / Onion.GlobalScale);
         bool sliderInput = false;
 
         Onion.Layout.Width(sliderWidth).Height(SliderHeight).StickLeft().StickBottom();
@@ -264,6 +264,7 @@ void main()
         var fg = p.Theme.Foreground[ControlState.None];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
+        Draw.ImageMode = fg.ImageMode;
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
         anim.AnimateRect(ref svRect, t);
@@ -286,6 +287,7 @@ void main()
         }
 
         Draw.ResetTexture();
+        Draw.ImageMode = default;
         Draw.Colour = value.Color;
         if (!EditableAlpha)
             Draw.Colour.A = 1;

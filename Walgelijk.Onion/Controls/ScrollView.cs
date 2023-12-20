@@ -53,6 +53,7 @@ public readonly struct ScrollView : IControl
                 var fg = p.Theme.Foreground[ControlState.None];
                 Draw.Colour = fg.Color;
                 Draw.Texture = fg.Texture;
+                Draw.ImageMode = fg.ImageMode;
                 Draw.OutlineColour = p.Theme.OutlineColour[ControlState.None];
                 Draw.OutlineWidth = p.Theme.OutlineWidth[ControlState.None];
 

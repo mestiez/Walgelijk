@@ -491,13 +491,16 @@ public readonly struct InputBox : IControl
         anim.AnimateColour(ref Draw.Colour, t);
         Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
 
-        Draw.Colour = p.Theme.Background[instance.State].Color;
-        Draw.Texture = p.Theme.Background[instance.State].Texture;
+        var bg = p.Theme.Background[instance.State];
+        Draw.Colour = bg.Color;
+        Draw.Texture = bg.Texture;
+        Draw.ImageMode = bg.ImageMode;
         anim.AnimateColour(ref Draw.Colour, t);
         Draw.OutlineWidth = 0;
         Draw.Quad(instance.Rects.Rendered.Expand(-2), 0, p.Theme.Rounding);
 
         Draw.ResetTexture();
+        Draw.ImageMode = default;
 
         Draw.Font = p.Theme.Font;
         Draw.Colour = p.Theme.Text[instance.State];

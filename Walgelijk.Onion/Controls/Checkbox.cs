@@ -53,6 +53,7 @@ public readonly struct Checkbox : IControl
         var fg = p.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
+        Draw.ImageMode = fg.ImageMode;
         Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
         Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
 
@@ -69,6 +70,7 @@ public readonly struct Checkbox : IControl
 
         if (states[p.Identity].Value)
         {
+            Draw.ImageMode = default;
             Draw.OutlineWidth = 0;
             Draw.Colour = p.Theme.Accent[p.Instance.State];
             anim.AnimateColour(ref Draw.Colour, t);

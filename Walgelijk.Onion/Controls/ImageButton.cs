@@ -58,6 +58,7 @@ public readonly struct ImageButton : IControl
         var fg = p.Theme.Foreground[instance.State];
         Draw.Colour = fg.Color;
         Draw.Texture = fg.Texture;
+        Draw.ImageMode = fg.ImageMode;
         Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
         Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
 
@@ -67,6 +68,7 @@ public readonly struct ImageButton : IControl
         Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
 
         Draw.ResetMaterial();
+        Draw.ImageMode = default;
         Draw.Colour = p.Theme.Image[instance.State].WithAlpha(Draw.Colour.A);
         Draw.Image(Texture, instance.Rects.Rendered, ContainmentMode, 0, p.Theme.Rounding);
         Draw.ResetTexture();

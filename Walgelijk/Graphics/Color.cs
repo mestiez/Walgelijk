@@ -75,12 +75,43 @@ public struct Color : IEquatable<Color>
             A = byte.Parse(hex[6..8], global::System.Globalization.NumberStyles.HexNumber) / 255f;
         else
             A = 1;
+    } 
+    
+    /// <summary>
+    /// Create a colour based on a hexadecimal representation as an integer, such as "0xd42c"
+    /// </summary>
+    public Color(int hex)
+    {
+        byte r = (byte)(hex >> 16);
+        byte g = (byte)((hex & 0x00FF00) >> 8);
+        byte b = (byte)(hex & 0x0000FF);
+
+        R = r / 255f;
+        G = g / 255f;
+        B = b / 255f;
+        A = 1;
+    }   
+    
+    /// <summary>
+    /// Create a colour based on a hexadecimal representation as an unsigned integer, such as "0xd42c5e"
+    /// </summary>
+    public Color(uint hex)
+    {
+        byte r = (byte)(hex >> 24);
+        byte g = (byte)((hex & 0x00FF0000) >> 16);
+        byte b = (byte)((hex & 0x0000FF00) >> 8);
+        byte a = (byte)(hex & 0x000000FF);
+
+        R = r / 255f;
+        G = g / 255f;
+        B = b / 255f;
+        A = a / 255f;
     }
 
     /// <summary>
     /// Bright vermilion
     /// </summary>
-    public static Color Red => new Color("#AE1C28");
+    public static Color Red => new Color(0xAE1C28);
     /// <summary>
     /// White
     /// </summary>
@@ -88,11 +119,11 @@ public struct Color : IEquatable<Color>
     /// <summary>
     /// Cobalt blue
     /// </summary>
-    public static Color Blue => new Color("#21468B");
+    public static Color Blue => new Color(0x21468B);
     /// <summary>
     /// Orange
     /// </summary>
-    public static Color Orange => new Color("#FF4F00");
+    public static Color Orange => new Color(0xFF4F00);
 
     /// <summary>
     /// Returns a copy of this colour with each value clamped between 0 and 1 
