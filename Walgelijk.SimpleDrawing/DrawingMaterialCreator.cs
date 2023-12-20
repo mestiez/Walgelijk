@@ -70,7 +70,7 @@ uniform int {ImageModeUniform} = 0;
 
 float sdRoundBox(in vec2 p, in vec2 b, in float r ) 
 {{
-    vec2 q = abs(p - 0.5) * 2.0 * b -b + r;
+    vec2 q = abs(p - 0.5) * 2.0 * b - b + r;
     return min(max(q.x,q.y),0.0) + length(max(q,0.0)) - r;
 }}
 
@@ -78,9 +78,9 @@ vec2 getTiledUv(in vec2 p)
 {{
     vec2 size = textureSize({MainTexUniform}, 0);
     vec2 ratio = {ScaleUniform} / size;
-    vec2 edge = min(vec2(0.5, 0.5), 0.5 / ratio);
+    vec2 edge = min(vec2(0.5), 0.5 / ratio);
     vec2 min = p * ratio;
-    vec2 max = (p - 1) * ratio + 1;
+    vec2 max = (p - 1.0) * ratio + 1.0;
     vec2 maxEdge = 1.0 - edge;
     return vec2(
         p.x > edge.x ? (p.x < maxEdge.x ? 0.5 : max.x) : min.x,
@@ -90,21 +90,16 @@ vec2 getTiledUv(in vec2 p)
 
 void main()
 {{
-    float corner = 1;
-    float outline = 0;
-
-    float clampedRoundness = clamp({RoundednessUniform}, 0, min({ScaleUniform}.x / 2, {ScaleUniform}.y / 2));
+    float clampedRoundness = clamp({RoundednessUniform}, 0, min({ScaleUniform}.x, {ScaleUniform}.y) / 2);
     float d = sdRoundBox(uv, {ScaleUniform}, clampedRoundness * 2.0);
 
-    corner = d < 0 ? 1 : 0;
-    outline = {OutlineWidthUniform} < 1 ? 0 : (ceil(d + fwidth(uv.x) + 0.05) < -{OutlineWidthUniform} ? 0 : 1);
+    float corner = step(0.0, -d);
+    float outline = {OutlineWidthUniform} < 1 ? 0 : (ceil(d + fwidth(uv.x) + 0.05) < -{OutlineWidthUniform} ? 0 : 1);
 
-    vec2 wUv = getTiledUv(uv);
-    
-    wUv.x = {ImageModeUniform} == 0 ? uv.x : wUv.x;
-    wUv.y = {ImageModeUniform} == 0 ? uv.y : wUv.y;
+    vec2 wUv = ({ImageModeUniform} == 0) ? uv : getTiledUv(uv);
 
-    color = vertexColor * texture({MainTexUniform}, wUv) * mix({TintUniform}, {OutlineColourUniform}, outline * {OutlineColourUniform}.a);
+    vec4 baseColor = texture({MainTexUniform}, wUv) * {TintUniform};
+    color = vertexColor * mix(baseColor, {OutlineColourUniform}, outline * {OutlineColourUniform}.a);
     color.a *= corner;
 }}";
 
