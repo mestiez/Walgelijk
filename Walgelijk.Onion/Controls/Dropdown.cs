@@ -64,13 +64,13 @@ public readonly struct Dropdown<T> : IControl
 
             Onion.Layout.Height(dropdownRect.Height).FitContainer(1, null).Move(instance.Theme.Padding, height + instance.Theme.Padding);
             Onion.Theme.SetAll(instance.Theme).ShowScrollbars(false).Once(); //TODO global scaling issue
-            Onion.Tree.Start(instance.Identity + 38, new ScrollView(true, true));
+            Onion.Tree.Start(instance.Identity + 38, new ScrollView(true, false));
 
             for (int i = 0; i < values.Count; i++)
             {
                 Onion.Layout.Move(0, i * height);
                 Onion.Layout.Height(height);
-                Onion.Layout.Width(instance.Rects.ComputedGlobal.Width - instance.Theme.Padding * 2);
+                Onion.Layout.FitWidth(false);
                 Onion.Layout.CenterHorizontal();
                 Onion.Theme.SetAll(instance.Theme).OutlineWidth(0).Once();
                 Onion.Animation.Add(new MoveInAnimation(instance.Rects.ComputedGlobal.GetCenter()));
@@ -209,14 +209,6 @@ public readonly struct Dropdown<T> : IControl
             Draw.Texture = fg.Texture;
             Draw.ImageMode = fg.ImageMode;
             Draw.Quad(currentState.DropdownRect, 0, p.Theme.Rounding);
-
-            var inner = currentState.DropdownRect;
-            inner.MinX += p.Theme.Padding - 1;
-            inner.MaxX -= p.Theme.Padding - 1;
-            inner.MinY += p.Theme.Padding + p.Theme.Rounding / 2;
-            inner.MaxY -= p.Theme.Padding + p.Theme.Rounding / 2;
-            Draw.Colour = fg.Color;
-            Draw.Quad(inner, 0, 0);
         }
 
         if (anim.ShouldRenderText(t))
