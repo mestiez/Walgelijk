@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
+using SixLabors.Fonts;
 using System.Diagnostics;
 using System.IO.Compression;
+using System.Linq;
 using System.Numerics;
 using System.Reflection;
 
@@ -18,7 +20,9 @@ public class Generator
     private readonly string intermediateMetadataOut;
     private readonly string finalOut;
 
-    public Generator(FileInfo fontFile, int fontSize = 72)
+    private static readonly char[] vowels = "aeiou".ToCharArray();
+
+    public Generator(FileInfo fontFile, int fontSize = 48)
     {
         FontName = Path.GetFileNameWithoutExtension(fontFile.FullName).Replace(' ', '_');
         foreach (var invalid in Path.GetInvalidFileNameChars().Append('_'))
@@ -38,17 +42,18 @@ public class Generator
         var packageMetadataName = "meta.json";
 
         RunMsdfGen();
-        var metadata = 
-            JsonConvert.DeserializeObject<MsdfDataStructs.MsdfGenFont>(File.ReadAllText(intermediateMetadataOut)) 
+        var metadata =
+            JsonConvert.DeserializeObject<MsdfDataStructs.MsdfGenFont>(File.ReadAllText(intermediateMetadataOut))
             ?? throw new Exception("Exported metadata does not exist...");
 
-        RunConvertGpos(metadata);
+        GetExtraData(metadata);
 
         using var archiveStream = new FileStream(finalOut, FileMode.Create, FileAccess.Write);
         using var archive = new ZipArchive(archiveStream, ZipArchiveMode.Create, false);
 
-        var xheight = FontSize * (metadata.Glyphs!.Where(g => char.IsLower(g.Unicode)).Max(g => MathF.Abs(g.PlaneBounds.Top - MathF.Abs(metadata.Metrics.Descender))));
-        var capheight = FontSize * (metadata.Glyphs!.Where(g => char.IsUpper(g.Unicode)).Max(g => MathF.Abs(g.PlaneBounds.Top - MathF.Abs(metadata.Metrics.Descender))));
+        var vowelGlyphs = metadata.Glyphs!.Where(c => vowels.Contains(char.ToLower(c.Unicode)));
+        var xheight = FontSize * (vowelGlyphs.Where(g => char.IsLower(g.Unicode)).Average(g => MathF.Abs(g.PlaneBounds.Top - g.PlaneBounds.Bottom)));
+        var capheight = FontSize * (vowelGlyphs.Where(g => char.IsUpper(g.Unicode)).Average(g => MathF.Abs(g.PlaneBounds.Top - g.PlaneBounds.Bottom)));
 
         var final = new FontFormat(
             name: FontName,
@@ -63,7 +68,7 @@ public class Generator
                 character: g.Unicode,
                 advance: g.Advance * FontSize,
                 textureRect: AbsoluteToTexcoords(g.AtlasBounds.GetRect(), new Vector2(metadata.Atlas.Width, metadata.Atlas.Height)),
-                geometryRect: TransformGeometryRect(g.PlaneBounds.GetRect()).Translate(0, xheight)
+                geometryRect: TransformGeometryRect(g.PlaneBounds.GetRect()).Translate(0, capheight)
             )).ToArray())!);
 
         using var metadataEntry = new StreamWriter(archive.CreateEntry(packageMetadataName, CompressionLevel.Fastest).Open());
@@ -120,43 +125,40 @@ public class Generator
         Console.WriteLine("msdf-atlas-gen complete");
     }
 
-    private void RunConvertGpos(MsdfDataStructs.MsdfGenFont msdfGenFont)
+    private void GetExtraData(MsdfDataStructs.MsdfGenFont msdfGenFont)
     {
-        using var process = new Process();
-        var execDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!;
-        var processPath = Path.Combine(execDir, "ConvertGpos/");
-        var intermediatePath = Path.GetFullPath("kerning_intermediate.json");
-        process.StartInfo = new ProcessStartInfo("cmd")
+        var gatheredKernings = new List<MsdfDataStructs.MsdfKerning>();
         {
-            RedirectStandardError = true,
-            RedirectStandardInput = true,
-            WorkingDirectory = processPath
-        };
-        Console.WriteLine("Starting ConvertGpos...");
-        process.ErrorDataReceived += (o, e) =>
-        {
-            throw new Exception(e.Data);
-        };
-        process.Start();
-        process.StandardInput.WriteLine($"npm run getKerning \"{FontFile.FullName}\" \"{intermediatePath}\" & exit");
-        process.WaitForExit();
-
-        Console.WriteLine(process.StandardError.ReadToEnd());
-
-        var json = File.ReadAllText(intermediatePath);
-        var arr = JsonConvert.DeserializeObject<MsdfDataStructs.MsdfKerning[]>(json);
-        if (arr == null)
-            return;
-
-        for (int i = 0; i < arr.Length; i++)
-            arr[i].Advance *= FontSize;
+            var execDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!;
+            var charsetPath = Path.Combine(execDir, "charset.txt");
+            var charset = File.ReadAllText(charsetPath).Distinct().ToArray();
+            var coll = new SixLabors.Fonts.FontCollection();
+            var family = coll.Add(FontFile.FullName);
+            var font = family.CreateFont(FontSize);
+            var t = new TextOptions(font);
+            for (int o = 0; o < charset.Length; o++)
+                for (int p = 0; p < charset.Length; p++)
+                {
+                    if (font.TryGetGlyphs(new(charset[o]), out var glyphsA)  
+                        && font.TryGetGlyphs(new(charset[p]), out var glyphsB) 
+                        && font.TryGetKerningOffset(glyphsA[0], glyphsB[0], t.Dpi, out var kerning))
+                    {
+                        gatheredKernings.Add(new MsdfDataStructs.MsdfKerning
+                        {
+                            Unicode1 = charset[o],
+                            Unicode2 = charset[p],
+                            Advance = kerning.X
+                        });
+                    }
+                }
+        }
+        var arr = gatheredKernings.ToArray();
 
         if (msdfGenFont.Kerning == null)
             msdfGenFont.Kerning = arr.Distinct().ToArray();
         else
             msdfGenFont.Kerning = arr.Concat(msdfGenFont.Kerning).Distinct().ToArray();
 
-        Console.WriteLine($"ConvertGpos complete ({msdfGenFont.Kerning.Length} kerning pairs generated)");
-        File.Delete(intermediatePath);
+        Console.WriteLine($"Kerning read complete ({msdfGenFont.Kerning.Length} kerning pairs generated)");
     }
 }
