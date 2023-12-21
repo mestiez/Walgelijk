@@ -220,6 +220,7 @@ public readonly struct Dropdown<T> : IControl
                 Draw.Colour = p.Theme.Accent[instance.State];
                 Draw.ImageMode = default;
                 anim.AnimateColour(ref Draw.Colour, t);
+                Draw.OutlineWidth = 0;
                 Draw.Image(instance.IsTriggered ? BuiltInAssets.Icons.ChevronUp : BuiltInAssets.Icons.ChevronDown, new Rect(arrowPos, new Vector2(arrowSize)), ImageContainmentMode.Contain);
                 //Draw.TriangleIscoCentered(arrowPos, new Vector2(arrowSize), instance.IsTriggered ? 0 : 180);
             }
