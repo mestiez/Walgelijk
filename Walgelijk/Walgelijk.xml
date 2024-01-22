@@ -2277,6 +2277,11 @@
             Blit a <see cref="T:Walgelijk.RenderTexture"/> onto another
             </summary>
         </member>
+        <member name="P:Walgelijk.IGraphics.Stencil">
+            <summary>
+            Access the stencil buffer state
+            </summary>
+        </member>
         <member name="T:Walgelijk.IReadableTexture">
             <summary>
             A texture that can be written to

@@ -10,6 +10,7 @@ public class MockGraphics : IGraphics
 {
     public DrawBounds DrawBounds { get; set; }
     public RenderTarget CurrentTarget { get; set; } = new MockRenderTarget();
+    public StencilState Stencil { get; set; }
 
     public void Blit(RenderTexture source, RenderTexture destination) { }
 

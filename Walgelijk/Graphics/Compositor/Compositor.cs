@@ -10,8 +10,9 @@ public class Compositor : IDisposable
     public RootCompositorNode SourceNode => sourceNode;
     public OutputCompositorNode DestinationNode => destinationNode;
     public bool ForceUpdateTargets = true;
-
     public bool Enabled = true;
+
+    // TODO provide access to depth buffer
 
     public RenderTextureFlags Flags
     {

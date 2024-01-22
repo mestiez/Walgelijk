@@ -86,4 +86,32 @@ public interface IGraphics
     /// Blit a <see cref="RenderTexture"/> onto another
     /// </summary>
     public void Blit(RenderTexture source, RenderTexture destination);
+
+    /// <summary>
+    /// Access the stencil buffer state
+    /// </summary>
+    public StencilState Stencil { get; set; }
+}
+
+public struct StencilState
+{
+    public bool Enabled;
+    public StencilAccessMode AccessMode;
+    public StencilTestMode TestMode;
+}
+
+public enum StencilAccessMode
+{
+    // glStencilMask(0x00);
+    NoWrite,
+    // glStencilMask(0xFF);
+    Write,
+}
+
+public enum StencilTestMode
+{
+    // glStencilFunc(GL_EQUAL, 1, 0xFF)
+    Inside,
+    // glStencilFunc(GL_NOTEQUAL, 1, 0xFF)
+    Outside
 }

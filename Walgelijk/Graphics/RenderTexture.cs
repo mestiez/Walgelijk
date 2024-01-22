@@ -85,7 +85,7 @@ public class RenderTexture : RenderTarget, IReadableTexture, IDisposable
     /// Access to the depth buffer. This is null if <see cref="Flags"/> does not contain <see cref="RenderTextureFlags.Depth"/>.
     /// <b>Note that this buffer may be being written to as you're reading from it, which will cause unsightly graphical artifacts. To be safe, blit the texture to somewhere else to read from!</b>
     /// </summary>
-    public IReadableTexture? DepthBuffer ;
+    public IReadableTexture? DepthBuffer;
 
     /// <summary>
     /// There is no local copy so this will do nothing.
