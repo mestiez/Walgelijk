@@ -98,6 +98,8 @@ public struct StencilState
     public bool Enabled;
     public StencilAccessMode AccessMode;
     public StencilTestMode TestMode;
+
+    public static StencilState Disabled => new() { Enabled = false };
 }
 
 public enum StencilAccessMode

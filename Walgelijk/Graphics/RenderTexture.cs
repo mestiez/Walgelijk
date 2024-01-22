@@ -82,7 +82,7 @@ public class RenderTexture : RenderTarget, IReadableTexture, IDisposable
     public bool HDR => Flags.HasFlag(RenderTextureFlags.HDR);
 
     /// <summary>
-    /// Access to the depth buffer. This is null if <see cref="Flags"/> does not contain <see cref="RenderTextureFlags.Depth"/>.
+    /// Access to the depth (and stencil) buffer. This is null if <see cref="Flags"/> does not contain <see cref="RenderTextureFlags.DepthStencil"/>.
     /// <b>Note that this buffer may be being written to as you're reading from it, which will cause unsightly graphical artifacts. To be safe, blit the texture to somewhere else to read from!</b>
     /// </summary>
     public IReadableTexture? DepthBuffer;
@@ -93,9 +93,9 @@ public class RenderTexture : RenderTarget, IReadableTexture, IDisposable
     public bool DisposeLocalCopyAfterUpload => false;
 
     /// <summary>
-    /// You can't get pixels from a RenderTexture
+    /// You can't get pixels from a RenderTexture. This will return (0,0,0,0)
     /// </summary>
-    public Color GetPixel(int x, int y) => throw new global::System.Exception("You can't get pixels from a RenderTexture");
+    public Color GetPixel(int x, int y) => default;
 
     /// <summary>
     /// You can't get pixels from a RenderTexture. This will return an empty span.

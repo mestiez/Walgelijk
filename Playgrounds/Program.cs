@@ -40,7 +40,7 @@ public class Program
         Resources.SetBasePathForType<Texture>("textures");
         Resources.SetBasePathForType<Font>("fonts");
 
-        game.Scene = new IMGUIScene().Load(game);
+        game.Scene = new StencilScene().Load(game);
 
 #if DEBUG
         game.DevelopmentMode = true;
@@ -65,7 +65,7 @@ public class Program
             default:
                 {
                     foreach (var type in scenes)
-                        if (type.Name.Equals(name.Trim(), StringComparison.InvariantCultureIgnoreCase))
+                        if (type.Name.StartsWith(name.Trim(), StringComparison.InvariantCultureIgnoreCase))
                         {
                             var act = Activator.CreateInstance(type) as ISceneCreator ?? throw new Exception("Invalid scene: not an ISceneCreator");
                             Game.Main.Scene = act.Load(Game.Main);

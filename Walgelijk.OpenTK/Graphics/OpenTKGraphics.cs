@@ -44,7 +44,7 @@ public class OpenTKGraphics : IGraphics
                 var handles = GPUObjects.RenderTextureCache.Load(rt);
                 GPUObjects.RenderTargetDictionary.Set(rt, handles.FramebufferID);
 
-                if (rt.Flags.HasFlag(RenderTextureFlags.Depth))
+                if (rt.Flags.HasFlag(RenderTextureFlags.DepthStencil))
                     GL.Enable(EnableCap.DepthTest);
                 else
                     GL.Disable(EnableCap.DepthTest);
@@ -78,7 +78,9 @@ public class OpenTKGraphics : IGraphics
     {
         GL.ClearColor(color.R, color.G, color.B, color.A);
         GL.ClearDepth(1);
-        GL.ClearStencil(1);
+        GL.ClearStencil(0);
+        GL.StencilMask(0xFF);
+
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
     }
 
@@ -99,28 +101,40 @@ public class OpenTKGraphics : IGraphics
         if (StencilUpdated)
         {
             StencilUpdated = false;
+            GL.ColorMask(true, true, true, true);
 
             if (Stencil.Enabled)
             {
                 GL.Enable(EnableCap.StencilTest);
                 switch (Stencil.AccessMode)
                 {
-                    case StencilAccessMode.NoWrite:
-                        GL.StencilMask(0x00);
-                        break;
                     case StencilAccessMode.Write:
+                    {
+                        GL.Disable(EnableCap.DepthTest);
                         GL.StencilMask(0xFF);
-                        break;
-                }
 
-                switch (stencil.TestMode)
-                {
-                    case StencilTestMode.Inside:
-                        GL.StencilFunc(StencilFunction.Equal, 1, 0xFF);
-                        break;
-                    case StencilTestMode.Outside:
-                        GL.StencilFunc(StencilFunction.Notequal, 1, 0xFF);
-                        break;
+                        GL.ColorMask(false, false, false, false);
+                        GL.StencilOp(StencilOp.Replace, StencilOp.Replace, StencilOp.Replace);
+                        GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
+                    }
+                    break;
+
+                    case StencilAccessMode.NoWrite:
+                    {
+                        GL.StencilMask(0x00);
+
+                        GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Keep);
+                        switch (stencil.TestMode)
+                        {
+                            case StencilTestMode.Inside:
+                                GL.StencilFunc(StencilFunction.Equal, 1, 0xFF);
+                                break;
+                            case StencilTestMode.Outside:
+                                GL.StencilFunc(StencilFunction.Notequal, 1, 0xFF);
+                                break;
+                        }
+                    }
+                    break;
                 }
             }
             else

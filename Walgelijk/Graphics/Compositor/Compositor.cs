@@ -20,8 +20,9 @@ public class Compositor : IDisposable
 
         set
         {
+            if (flags != value)
+                ForceUpdateTargets = true;
             flags = value;
-            ForceUpdateTargets = true;
         }
     }
 

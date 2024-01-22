@@ -2915,7 +2915,7 @@
         </member>
         <member name="F:Walgelijk.RenderTexture.DepthBuffer">
             <summary>
-            Access to the depth buffer. This is null if <see cref="F:Walgelijk.RenderTexture.Flags"/> does not contain <see cref="F:Walgelijk.RenderTextureFlags.Depth"/>.
+            Access to the depth (and stencil) buffer. This is null if <see cref="F:Walgelijk.RenderTexture.Flags"/> does not contain <see cref="F:Walgelijk.RenderTextureFlags.DepthStencil"/>.
             <b>Note that this buffer may be being written to as you're reading from it, which will cause unsightly graphical artifacts. To be safe, blit the texture to somewhere else to read from!</b>
             </summary>
         </member>
@@ -2926,7 +2926,7 @@
         </member>
         <member name="M:Walgelijk.RenderTexture.GetPixel(System.Int32,System.Int32)">
             <summary>
-            You can't get pixels from a RenderTexture
+            You can't get pixels from a RenderTexture. This will return (0,0,0,0)
             </summary>
         </member>
         <member name="M:Walgelijk.RenderTexture.ReadPixels">
@@ -2966,7 +2966,12 @@
         </member>
         <member name="F:Walgelijk.RenderTextureFlags.Depth">
             <summary>
-            Has a depth buffer
+            Has a depth and stencil buffer
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderTextureFlags.DepthStencil">
+            <summary>
+            Has a depth and stencil buffer
             </summary>
         </member>
         <member name="F:Walgelijk.RenderTextureFlags.HDR">
@@ -2982,6 +2987,7 @@
         <member name="F:Walgelijk.RenderTextureFlags.Multisampling">
             <summary>
             Multiple samples per pixel (MSAA)
+            <b>This flag may cause issues when combined with other flags!</b>
             </summary>
         </member>
         <member name="T:Walgelijk.Shader">
