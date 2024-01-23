@@ -69,7 +69,7 @@ public class OpenTKGraphics : IGraphics
         get => stencil;
         set
         {
-            StencilUpdated = true;
+            StencilUpdated = stencil != Stencil;
             stencil = value;
         }
     }
@@ -80,7 +80,6 @@ public class OpenTKGraphics : IGraphics
         GL.ClearDepth(1);
         GL.ClearStencil(0);
         GL.StencilMask(0xFF);
-
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
     }
 
@@ -105,6 +104,13 @@ public class OpenTKGraphics : IGraphics
 
             if (Stencil.Enabled)
             {
+                if (Stencil.ShouldClear)
+                {
+                    GL.ClearStencil(0);
+                    GL.StencilMask(0xFF);
+                    GL.Clear(ClearBufferMask.StencilBufferBit);
+                }
+
                 GL.Enable(EnableCap.StencilTest);
                 switch (Stencil.AccessMode)
                 {
@@ -188,6 +194,9 @@ public class OpenTKGraphics : IGraphics
             currentBlendMode = material.BlendMode;
             GLUtilities.SetBlendMode(material.BlendMode);
         }
+
+        if (material.StencilState.HasValue)
+            Stencil = material.StencilState.Value;
 
         var loadedShader = GPUObjects.MaterialCache.Load(material);
         int prog = loadedShader.ProgramHandle;

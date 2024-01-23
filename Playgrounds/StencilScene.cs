@@ -21,10 +21,30 @@ public struct StencilScene : ISceneCreator
     {
         StencilTestTask task = new();
 
+        public override void Update()
+        {
+            Draw.Reset();
+            Draw.ScreenSpace = true;
+
+            Draw.ClearMask();
+            Draw.WriteMask();
+            Draw.Circle(Input.WindowMousePosition, new Vector2(64));
+
+            Draw.OutsideMask();
+            Draw.Image(Resources.Load<Texture>("opening_bg.png"), new Rect(Window.Size / 2, new Vector2(512)), ImageContainmentMode.Contain);
+
+            Draw.InsideMask();
+            Draw.Image(Resources.Load<Texture>("qoitest.qoi"), new Rect(Window.Size / 2, new Vector2(512)), ImageContainmentMode.Contain); 
+           
+
+            Draw.DisableMask();
+        }
+
         public override void Render()
         {
             Game.Compositor.Flags = RenderTextureFlags.DepthStencil;
-            RenderQueue.Add(task);
+            RenderQueue.Add(new ClearRenderTask(), RenderOrder.Bottom) ;
+              //RenderQueue.Add(task);
         }
     }
 
@@ -52,7 +72,7 @@ public struct StencilScene : ISceneCreator
                 TestMode = StencilTestMode.Inside
             };
 
-            g.DrawQuad(new Rect(25,25,300,150), Material.DefaultTextured);
+            g.DrawQuad(new Rect(25, 25, 300, 150), Material.DefaultTextured);
 
             g.Stencil = StencilState.Disabled;
 

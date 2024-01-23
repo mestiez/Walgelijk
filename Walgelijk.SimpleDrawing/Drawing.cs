@@ -53,6 +53,10 @@ public struct Drawing : IEquatable<Drawing>
     /// Current image mode
     /// </summary>
     public ImageMode ImageMode;
+    /// <summary>
+    /// Current stencil state
+    /// </summary>
+    public StencilState Stencil;
 
     /// <summary>
     /// Roundness, if applicable
@@ -103,6 +107,7 @@ public struct Drawing : IEquatable<Drawing>
         OutlineColour = outlineColour;
         ReturnVertexBufferToPool = false;
         ImageMode = imageMode;
+        Stencil = StencilState.Disabled;
     }
 
     /// <summary>
@@ -125,6 +130,7 @@ public struct Drawing : IEquatable<Drawing>
         OutlineColour = default;
         ReturnVertexBufferToPool = false;
         ImageMode = default;
+        Stencil = StencilState.Disabled;
     }
 
     [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
@@ -165,6 +171,7 @@ public struct Drawing : IEquatable<Drawing>
         hashCode.Add(OutlineColour);
         hashCode.Add(TextDrawing);
         hashCode.Add(ImageMode);
+        hashCode.Add(Stencil);
         return hashCode.ToHashCode();
     }
 
@@ -198,6 +205,7 @@ public struct Drawing : IEquatable<Drawing>
                Color.Equals(other.Color) &&
                OutlineColour.Equals(other.OutlineColour) &&
                ImageMode.Equals(other.ImageMode) &&
+               Stencil.Equals(other.Stencil) &&
                Nullable.Equals(TextDrawing,
                    other.TextDrawing);
     }

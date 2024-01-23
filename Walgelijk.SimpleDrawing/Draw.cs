@@ -62,6 +62,11 @@ namespace Walgelijk.SimpleDrawing
         public static ImageMode ImageMode;
 
         /// <summary>
+        /// The current stencil state. 
+        /// </summary>
+        public static StencilState Stencil;
+
+        /// <summary>
         /// The current outline colour. No outline will be drawn if transparent
         /// </summary>
         public static Color OutlineColour = Colors.Black;
@@ -157,13 +162,18 @@ namespace Walgelijk.SimpleDrawing
 
         [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         private static Drawing DrawingFor(VertexBuffer vtx, Vector2 position, Vector2 scale, float degrees)
-            => new(vtx, position, scale, degrees * Utilities.DegToRad, Colour,
+            => new(
+                vtx,
+                position, 
+                scale,
+                degrees * Utilities.DegToRad, Colour,
                 Material ?? DrawingMaterialCreator.Cache.Load(Texture ?? Walgelijk.Texture.White),
                 Texture ?? Walgelijk.Texture.White, ScreenSpace, DrawBounds, OutlineWidth, OutlineColour, ImageMode)
-            {
-                Transformation = TransformMatrix,
-                BlendMode = BlendMode
-            };
+                {
+                    Stencil = Stencil,
+                    Transformation = TransformMatrix,
+                    BlendMode = BlendMode
+                };
 
         /// <summary>
         /// Reset the drawing state: <br></br><br></br>
@@ -178,7 +188,8 @@ namespace Walgelijk.SimpleDrawing
         /// outline width = 0,<br></br>
         /// outline colour = white,<br></br>
         /// textdrawratio = 1,<br></br>
-        /// transform matrix = identity
+        /// transform matrix = identity,<br></br>
+        /// stencil = disabled
         /// </summary>
         public static void Reset()
         {
@@ -196,6 +207,7 @@ namespace Walgelijk.SimpleDrawing
             TextDrawRatio = 1;
             TransformMatrix = Matrix3x2.Identity;
             ImageMode = default;
+            Stencil = StencilState.Disabled;
         }
 
         /// <summary>
@@ -217,6 +229,31 @@ namespace Walgelijk.SimpleDrawing
         /// Reset the material for shapes to white.
         /// </summary>
         public static void ResetMaterial() => Material = null;
+
+        /// <summary>
+        /// Disable interaction with the stencil buffer entirely
+        /// </summary>
+        public static void DisableMask() => Stencil = StencilState.Disabled;
+
+        /// <summary>
+        /// Set the stencil state to "write" mode, meaning everything drawn will determine the mask
+        /// </summary>
+        public static void WriteMask() => Stencil = StencilState.WriteMask;
+
+        /// <summary>
+        /// Only allow drawing inside the mask
+        /// </summary>
+        public static void InsideMask() => Stencil = StencilState.InsideMask;
+
+        /// <summary>
+        /// Only allow drawing outside the mask
+        /// </summary>
+        public static void OutsideMask() => Stencil = StencilState.OutsideMask;
+
+        /// <summary>
+        /// Clear the mask to black
+        /// </summary>
+        public static void ClearMask() => Stencil = StencilState.Clear;
 
         /// <summary>
         /// Draw a <see cref="DrawingPrimitives.Quad"/>
@@ -292,6 +329,7 @@ namespace Walgelijk.SimpleDrawing
             };
             Enqueue(new Drawing(textMesh, pivot, calculatedScale, degrees * Utilities.DegToRad, Colour, ScreenSpace, textDrawing, DrawBounds)
             {
+                Stencil = Stencil,
                 Transformation = TransformMatrix,
                 BlendMode = BlendMode
             });

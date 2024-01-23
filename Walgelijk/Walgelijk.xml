@@ -2282,6 +2282,71 @@
             Access the stencil buffer state
             </summary>
         </member>
+        <member name="F:Walgelijk.StencilState.Enabled">
+            <summary>
+            Is stencil writing/reading enabled at all? If false, the rest of the fields won't do anything.
+            </summary>
+        </member>
+        <member name="F:Walgelijk.StencilState.ShouldClear">
+            <summary>
+            If true, the stencil buffer will be cleared to all zeroes
+            </summary>
+        </member>
+        <member name="F:Walgelijk.StencilState.AccessMode">
+            <summary>
+            The current stencil access mode, see <see cref="T:Walgelijk.StencilAccessMode"/>
+            </summary>
+        </member>
+        <member name="P:Walgelijk.StencilState.Disabled">
+            <summary>
+            Disable stencil testing and writing
+            </summary>
+        </member>
+        <member name="P:Walgelijk.StencilState.Clear">
+            <summary>
+            Clear the stencil buffer to all zeroes
+            </summary>
+        </member>
+        <member name="P:Walgelijk.StencilState.WriteMask">
+            <summary>
+            Any geometry drawn will result in 1s on the stencil buffer, i.e determines the mask
+            </summary>
+        </member>
+        <member name="P:Walgelijk.StencilState.InsideMask">
+            <summary>
+            Fragments will only be drawn if the stencil buffer at that point is 1, i.e inside the mask
+            </summary>
+        </member>
+        <member name="P:Walgelijk.StencilState.OutsideMask">
+            <summary>
+            Fragments will only be drawn if the stencil buffer at that point is 0, i.e outside the mask
+            </summary>
+        </member>
+        <member name="T:Walgelijk.StencilAccessMode">
+            <summary>
+            Stencil access mode. Defines ways for drawn geometry to interact with the stencil buffer
+            </summary>
+        </member>
+        <member name="F:Walgelijk.StencilAccessMode.NoWrite">
+            <summary>
+            Only read from the stencil buffer
+            </summary>
+        </member>
+        <member name="F:Walgelijk.StencilAccessMode.Write">
+            <summary>
+            Write 1 to the stencil buffer
+            </summary>
+        </member>
+        <member name="F:Walgelijk.StencilTestMode.Inside">
+            <summary>
+            Only draw inside the mask, i.e where the stencil buffer is set to 1
+            </summary>
+        </member>
+        <member name="F:Walgelijk.StencilTestMode.Outside">
+            <summary>
+            Only draw outside the mask, i.e where the stencil buffer is set to 0
+            </summary>
+        </member>
         <member name="T:Walgelijk.IReadableTexture">
             <summary>
             A texture that can be written to
@@ -2352,6 +2417,11 @@
         <member name="P:Walgelijk.Material.BlendMode">
             <summary>
             Blend mode to use for this material
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Material.StencilState">
+            <summary>
+            Optional stencil state to set before drawing this material. If null, it will retain the previous stencil state.
             </summary>
         </member>
         <member name="P:Walgelijk.Material.BackfaceCulling">
@@ -2531,6 +2601,11 @@
         <member name="P:Walgelijk.Material.DefaultTextured">
             <summary>
             The default material with the default shader. This material is shared.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Material.CreateSingleColour(Walgelijk.Color)">
+            <summary>
+            Creates a new material that just renders the single colour
             </summary>
         </member>
         <member name="T:Walgelijk.Primitive">

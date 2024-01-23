@@ -23,6 +23,11 @@ public sealed class Material : IDisposable
     public BlendMode BlendMode { get; set; } = BlendMode.AlphaBlend;
 
     /// <summary>
+    /// Optional stencil state to set before drawing this material. If null, it will retain the previous stencil state.
+    /// </summary>
+    public StencilState? StencilState { get; set; }
+
+    /// <summary>
     /// The back-facing faces will be culled if this is true
     /// </summary>
     public bool BackfaceCulling { get; set; } = false;
@@ -313,4 +318,9 @@ public sealed class Material : IDisposable
     /// The default material with the default shader. This material is shared.
     /// </summary>
     public static Material DefaultTextured => DefaultMaterialInitialiser.GetMaterial();
+
+    /// <summary>
+    /// Creates a new material that just renders the single colour
+    /// </summary>
+    public static Material CreateSingleColour(Color col) => DefaultMaterialInitialiser.GetSingleColour(col);
 }
