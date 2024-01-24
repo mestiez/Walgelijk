@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Version>0.2.23</Version>
+    <Version>0.2.24</Version>
     <DebugType>embedded</DebugType>
     <Authors>mestiez</Authors>
     <Company>Studio Minus</Company>

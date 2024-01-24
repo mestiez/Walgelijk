@@ -8,7 +8,7 @@
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
     <PackAsTool>True</PackAsTool>
     <ToolCommandName>wfont</ToolCommandName>
-    <Version>1.2.2</Version>
+    <Version>1.2.3</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageIcon>icon.png</PackageIcon>
     <Description>Tool to turn font files into archives that can be read by Walgelijk</Description>

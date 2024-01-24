@@ -200,7 +200,7 @@ public class DebugConsoleUi : IDisposable
             var line = lines[lineIndex];
             bool shouldEndLine = false;
 
-            if (line.Buffer.Count >= line.Buffer.Capacity)
+            if (line.Buffer.Count + 1 >= line.Buffer.Capacity)
                 break;
 
             switch (c)
