@@ -19,7 +19,10 @@ public class OpenALAudioRenderer : AudioRenderer
 
     private readonly Dictionary<AudioTrack, HashSet<Sound>> tracks = new();
     private readonly Dictionary<Sound, AudioTrack?> trackBySound = new();
-    private readonly TemporarySource[] temporySourceBuffer;
+    private readonly TemporarySource[] temporarySourceBuffer;
+
+    public IEnumerable<TemporarySource> TemporarySourceBuffer => temporarySources.GetAllInUse();
+    public int CreatedTemporarySourceCount => temporarySources.CreatedAmount;
 
     public override float Volume
     {
@@ -61,7 +64,7 @@ public class OpenALAudioRenderer : AudioRenderer
     {
         MaxTempSourceCount = maxTempSourceCount;
         temporarySources = new(MaxTempSourceCount);
-        temporySourceBuffer = new TemporarySource[MaxTempSourceCount];
+        temporarySourceBuffer = new TemporarySource[MaxTempSourceCount];
         Resources.RegisterType(typeof(FixedAudioData), d => LoadSound(d));
         Resources.RegisterType(typeof(StreamAudioData), d => LoadStream(d));
         Resources.RegisterType(typeof(AudioData), d =>
@@ -361,11 +364,11 @@ public class OpenALAudioRenderer : AudioRenderer
 
         int i = 0;
         foreach (var v in temporarySources.GetAllInUse())
-            temporySourceBuffer[i++] = v;
+            temporarySourceBuffer[i++] = v;
 
         for (int j = 0; j < i; j++)
         {
-            var v = temporySourceBuffer[j];
+            var v = temporarySourceBuffer[j];
             var pitch = AL.GetSource(v.Source, ALSourcef.Pitch);
             var transformedDuration = v.Duration / pitch;
             if (v.CurrentLifetime > transformedDuration)
@@ -383,7 +386,7 @@ public class OpenALAudioRenderer : AudioRenderer
                 v.CurrentLifetime += dt;
         }
 
-        Array.Clear(temporySourceBuffer);
+        Array.Clear(temporarySourceBuffer);
 
     }
 

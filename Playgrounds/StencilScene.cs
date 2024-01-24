@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.ExceptionServices;
 using Walgelijk;
 using Walgelijk.SimpleDrawing;
 
@@ -34,8 +35,8 @@ public struct StencilScene : ISceneCreator
             Draw.Image(Resources.Load<Texture>("opening_bg.png"), new Rect(Window.Size / 2, new Vector2(512)), ImageContainmentMode.Contain);
 
             Draw.InsideMask();
-            Draw.Image(Resources.Load<Texture>("qoitest.qoi"), new Rect(Window.Size / 2, new Vector2(512)), ImageContainmentMode.Contain); 
-           
+            Draw.Image(Resources.Load<Texture>("qoitest.qoi"), new Rect(Window.Size / 2, new Vector2(512)), ImageContainmentMode.Contain);
+
 
             Draw.DisableMask();
         }
@@ -43,8 +44,8 @@ public struct StencilScene : ISceneCreator
         public override void Render()
         {
             Game.Compositor.Flags = RenderTextureFlags.DepthStencil;
-            RenderQueue.Add(new ClearRenderTask(), RenderOrder.Bottom) ;
-              //RenderQueue.Add(task);
+            RenderQueue.Add(new ClearRenderTask(), RenderOrder.Bottom);
+            //RenderQueue.Add(task);
         }
     }
 
@@ -77,6 +78,52 @@ public struct StencilScene : ISceneCreator
             g.Stencil = StencilState.Disabled;
 
             g.DrawQuad(new Rect(new Vector2(512), new Vector2(64)), Material.DefaultTextured);
+        }
+    }
+}
+
+public struct AudioTestScene : ISceneCreator
+{
+    public Scene Load(Game game)
+    {
+        var scene = new Scene(game);
+        scene.AddSystem(new AudioTestSystem());
+
+        game.UpdateRate = 120;
+        game.FixedUpdateRate = 50;
+
+        return scene;
+    }
+
+    public class AudioTestSystem : Walgelijk.System
+    {
+        private Sound OneShot = new Sound(Resources.Load<FixedAudioData>("cannot-build.wav"));
+        private Sound Streaming = new Sound(Resources.Load<StreamAudioData>("warning_party_imminent.ogg"));
+
+        public override void FixedUpdate()
+        {
+            if (Input.IsKeyHeld(Key.Space))
+                Audio.PlayOnce(OneShot);
+
+            if (Input.IsKeyPressed(Key.Enter))
+            {
+                Audio.Play(Streaming);
+            }
+        }
+
+        public override void Update()
+        {
+            Draw.Reset();
+            Draw.ScreenSpace = true;
+            Draw.Colour = Colors.Black;
+            Draw.Quad(new Rect(0, 0, Window.Width, Window.Height));
+
+            Draw.Colour = Colors.White;
+            if (Audio is Walgelijk.OpenTK.OpenALAudioRenderer audio)
+            {
+                Draw.Text("Sources in use: " + audio.TemporarySourceBuffer.Count(), new Vector2(30, 30), Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Top);
+                Draw.Text("Sources created: " + audio.CreatedTemporarySourceCount, new Vector2(30, 40), Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Top);
+            }
         }
     }
 }

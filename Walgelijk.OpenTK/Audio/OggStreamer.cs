@@ -1,9 +1,11 @@
-﻿using NVorbis;
+﻿//#define USE_FLOAT_EXT
+
+using NVorbis;
 using OpenTK.Audio.OpenAL;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 
 namespace Walgelijk.OpenTK;
@@ -13,7 +15,13 @@ public class OggStreamer : IDisposable
     public const int BufferSize = 1024;
     public const int MaxBufferCount = 16;
 
+#if USE_FLOAT_EXT
     public FloatBufferFormat Format => Raw.ChannelCount == 1 ? FloatBufferFormat.Mono : FloatBufferFormat.Stereo;
+#else
+    public ALFormat Format => Raw.ChannelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16;
+    private readonly short[] shortDataBuffer = new short[BufferSize];
+#endif
+
     public readonly SourceHandle SourceHandle;
     public readonly Sound Sound;
     public readonly StreamAudioData Raw;
@@ -41,8 +49,7 @@ public class OggStreamer : IDisposable
 
     public BufferHandle? CurrentPlayingBuffer;
 
-    //public float[] LastSamples = new float[BufferSize];
-    private Stack<float> playedSamplesBacklog = new();
+    private readonly ConcurrentStack<float> playedSamplesBacklog = new();
 
     public IEnumerable<float> TakeLastPlayed(int count = 1024)
     {
@@ -113,9 +120,20 @@ public class OggStreamer : IDisposable
     {
         buffer.Free = false;
         Array.Copy(rawOggBuffer, buffer.Data, BufferSize);
+
+#if USE_FLOAT_EXT
         AL.EXTFloat32.BufferData(buffer.Handle, Format, buffer.Data.AsSpan(0, readAmount), Raw.SampleRate);
         if (!AL.EXTFloat32.IsExtensionPresent())
             throw new Exception($"The provided OpenAL distribution is missing the \"{AL.EXTFloat32.ExtensionName}\" extension");
+#else
+        for (int i = 0; i < readAmount; i++)
+        {
+            var v = (short)Utilities.MapRange(-1, 1, short.MinValue, short.MaxValue, buffer.Data[i]);
+            shortDataBuffer[i] = v;
+        }
+        AL.BufferData<short>(buffer.Handle, Format, shortDataBuffer.AsSpan(0, readAmount), Raw.SampleRate);
+#endif
+
         AL.SourceQueueBuffer(SourceHandle, buffer.Handle);
 
         for (int i = 0; i < readAmount; i++)
