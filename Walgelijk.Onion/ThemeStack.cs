@@ -1,4 +1,6 @@
-﻿namespace Walgelijk.Onion;
+﻿using Walgelijk.SimpleDrawing;
+
+namespace Walgelijk.Onion;
 
 /// <summary>
 /// The theme stack allows global and individual themes

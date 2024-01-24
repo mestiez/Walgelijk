@@ -1,4 +1,6 @@
-﻿namespace Walgelijk.Onion;
+﻿using Walgelijk.SimpleDrawing;
+
+namespace Walgelijk.Onion;
 
 public struct Appearance : IEquatable<Appearance>
 {

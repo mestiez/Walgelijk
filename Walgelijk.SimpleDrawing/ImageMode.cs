@@ -1,4 +1,4 @@
-﻿namespace Walgelijk;
+﻿namespace Walgelijk.SimpleDrawing;
 
 public enum ImageMode : int
 {
