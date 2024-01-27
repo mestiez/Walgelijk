@@ -70,7 +70,7 @@ public class Texture : IReadableTexture, IDisposable
     public Color[]? RawData;
 
     private FilterMode filterMode = FilterMode.Nearest;
-    private WrapMode wrapMode = WrapMode.Clamp;
+    private WrapMode wrapMode = WrapMode.Repeat;
     private bool disposed = false;
 
     /// <summary>

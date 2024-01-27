@@ -43,14 +43,7 @@ public class OpenTKGraphics : IGraphics
             {
                 var handles = GPUObjects.RenderTextureCache.Load(rt);
                 GPUObjects.RenderTargetDictionary.Set(rt, handles.FramebufferID);
-
-                if (rt.Flags.HasFlag(RenderTextureFlags.DepthStencil))
-                    GL.Enable(EnableCap.DepthTest);
-                else
-                    GL.Disable(EnableCap.DepthTest);
             }
-            else
-                GL.Disable(EnableCap.DepthTest);
 
             var id = GPUObjects.RenderTargetDictionary.Get(currentTarget);
             if (id == -1)
@@ -211,6 +204,11 @@ public class OpenTKGraphics : IGraphics
         }
         else
             GL.Disable(EnableCap.CullFace);
+
+        if (CurrentTarget.Flags.HasFlag(RenderTargetFlags.DepthStencil) && material.DepthTested)
+            GL.Enable(EnableCap.DepthTest);
+        else
+            GL.Disable(EnableCap.DepthTest);
     }
 
     private void SetDrawbounds(DrawBounds bounds)
@@ -346,7 +344,7 @@ public class OpenTKGraphics : IGraphics
 
                         int s = rt.Width * rt.Height * 4;
 
-                        if ((rt.Flags & RenderTextureFlags.HDR) != RenderTextureFlags.None)
+                        if ((rt.Flags & RenderTargetFlags.HDR) != RenderTargetFlags.None)
                         {
                             var data = new float[s];
                             GL.BindFramebuffer(FramebufferTarget.Framebuffer, frameBufferId);

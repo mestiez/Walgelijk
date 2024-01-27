@@ -23,12 +23,12 @@ public class RenderTexture : RenderTarget, IReadableTexture, IDisposable
         this.wrapMode = wrapMode;
         this.filterMode = filterMode;
         if (generateMipmaps)
-            Flags |= RenderTextureFlags.Mipmaps;
+            Flags |= RenderTargetFlags.Mipmaps;
         if (hdr)
-            Flags |= RenderTextureFlags.HDR;
+            Flags |= RenderTargetFlags.HDR;
     }
 
-    public RenderTexture(int width, int height, WrapMode wrapMode = WrapMode.Clamp, FilterMode filterMode = FilterMode.Linear, RenderTextureFlags flags = RenderTextureFlags.None)
+    public RenderTexture(int width, int height, WrapMode wrapMode = WrapMode.Clamp, FilterMode filterMode = FilterMode.Linear, RenderTargetFlags flags = RenderTargetFlags.None)
     {
         this.size = new Vector2(width, height);
         this.wrapMode = wrapMode;
@@ -50,7 +50,6 @@ public class RenderTexture : RenderTarget, IReadableTexture, IDisposable
 
     public int Width => (int)Size.X;
     public int Height => (int)Size.Y;
-    public readonly RenderTextureFlags Flags;
 
     public WrapMode WrapMode
     {
@@ -77,12 +76,12 @@ public class RenderTexture : RenderTarget, IReadableTexture, IDisposable
     public bool NeedsUpdate { get; set; }
 
     [Obsolete("Use Flags")]
-    public bool GenerateMipmaps => Flags.HasFlag(RenderTextureFlags.Mipmaps);
+    public bool GenerateMipmaps => Flags.HasFlag(RenderTargetFlags.Mipmaps);
     [Obsolete("Use Flags")]
-    public bool HDR => Flags.HasFlag(RenderTextureFlags.HDR);
+    public bool HDR => Flags.HasFlag(RenderTargetFlags.HDR);
 
     /// <summary>
-    /// Access to the depth (and stencil) buffer. This is null if <see cref="Flags"/> does not contain <see cref="RenderTextureFlags.DepthStencil"/>.
+    /// Access to the depth (and stencil) buffer. This is null if <see cref="Flags"/> does not contain <see cref="RenderTargetFlags.DepthStencil"/>.
     /// <b>Note that this buffer may be being written to as you're reading from it, which will cause unsightly graphical artifacts. To be safe, blit the texture to somewhere else to read from!</b>
     /// </summary>
     public IReadableTexture? DepthBuffer;

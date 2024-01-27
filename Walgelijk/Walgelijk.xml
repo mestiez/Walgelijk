@@ -2429,6 +2429,11 @@
             Optional stencil state to set before drawing this material. If null, it will retain the previous stencil state.
             </summary>
         </member>
+        <member name="P:Walgelijk.Material.DepthTested">
+            <summary>
+            Depth testing mode. If true, the fragments will undergo depth testing. If false, they will ignore the depth buffer. If the target does not have a depth buffer, this value will have no effect.
+            </summary>
+        </member>
         <member name="P:Walgelijk.Material.BackfaceCulling">
             <summary>
             The back-facing faces will be culled if this is true
@@ -2983,6 +2988,47 @@
             An orthographic projection matrix where the top left is 0,0 and the bottom right is 1, 1
             </summary>
         </member>
+        <member name="P:Walgelijk.RenderTarget.Flags">
+            <summary>
+            This target's enabled features
+            </summary>
+        </member>
+        <member name="T:Walgelijk.RenderTargetFlags">
+            <summary>
+            Render target features
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderTargetFlags.None">
+            <summary>
+            Nothing special
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderTargetFlags.Depth">
+            <summary>
+            Has a depth and stencil buffer
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderTargetFlags.DepthStencil">
+            <summary>
+            Has a depth and stencil buffer
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderTargetFlags.HDR">
+            <summary>
+            Allows HDR values
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderTargetFlags.Mipmaps">
+            <summary>
+            Generates mipmaps
+            </summary>
+        </member>
+        <member name="F:Walgelijk.RenderTargetFlags.Multisampling">
+            <summary>
+            Multiple samples per pixel (MSAA)
+            <b>This flag may cause issues when combined with other flags!</b>
+            </summary>
+        </member>
         <member name="T:Walgelijk.RenderTexture">
             <summary>
             A render target of an arbitrary size that can be used as a texture
@@ -2995,7 +3041,7 @@
         </member>
         <member name="F:Walgelijk.RenderTexture.DepthBuffer">
             <summary>
-            Access to the depth (and stencil) buffer. This is null if <see cref="F:Walgelijk.RenderTexture.Flags"/> does not contain <see cref="F:Walgelijk.RenderTextureFlags.DepthStencil"/>.
+            Access to the depth (and stencil) buffer. This is null if <see cref="!:Flags"/> does not contain <see cref="F:Walgelijk.RenderTargetFlags.DepthStencil"/>.
             <b>Note that this buffer may be being written to as you're reading from it, which will cause unsightly graphical artifacts. To be safe, blit the texture to somewhere else to read from!</b>
             </summary>
         </member>
@@ -3032,42 +3078,6 @@
         <member name="M:Walgelijk.RenderTexture.GetData">
             <summary>
             You can't get pixels from a RenderTexture. This will return a region of zero length.
-            </summary>
-        </member>
-        <member name="T:Walgelijk.RenderTextureFlags">
-            <summary>
-            Render texture features
-            </summary>
-        </member>
-        <member name="F:Walgelijk.RenderTextureFlags.None">
-            <summary>
-            Nothing special
-            </summary>
-        </member>
-        <member name="F:Walgelijk.RenderTextureFlags.Depth">
-            <summary>
-            Has a depth and stencil buffer
-            </summary>
-        </member>
-        <member name="F:Walgelijk.RenderTextureFlags.DepthStencil">
-            <summary>
-            Has a depth and stencil buffer
-            </summary>
-        </member>
-        <member name="F:Walgelijk.RenderTextureFlags.HDR">
-            <summary>
-            Allows HDR values
-            </summary>
-        </member>
-        <member name="F:Walgelijk.RenderTextureFlags.Mipmaps">
-            <summary>
-            Generates mipmaps
-            </summary>
-        </member>
-        <member name="F:Walgelijk.RenderTextureFlags.Multisampling">
-            <summary>
-            Multiple samples per pixel (MSAA)
-            <b>This flag may cause issues when combined with other flags!</b>
             </summary>
         </member>
         <member name="T:Walgelijk.Shader">

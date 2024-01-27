@@ -3,10 +3,10 @@
 namespace Walgelijk;
 
 /// <summary>
-/// Render texture features
+/// Render target features
 /// </summary>
 [Flags]
-public enum RenderTextureFlags
+public enum RenderTargetFlags
 {
     /// <summary>
     /// Nothing special

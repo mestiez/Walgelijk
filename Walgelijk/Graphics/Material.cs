@@ -28,6 +28,11 @@ public sealed class Material : IDisposable
     public StencilState? StencilState { get; set; }
 
     /// <summary>
+    /// Depth testing mode. If true, the fragments will undergo depth testing. If false, they will ignore the depth buffer. If the target does not have a depth buffer, this value will have no effect.
+    /// </summary>
+    public bool DepthTested { get; set; } = false;
+
+    /// <summary>
     /// The back-facing faces will be culled if this is true
     /// </summary>
     public bool BackfaceCulling { get; set; } = false;

@@ -13,7 +13,7 @@ internal class RenderTextureCache : Cache<RenderTexture, RenderTextureHandles>
         var ids = new List<int>();
 
         var textureTarget = TextureTarget.Texture2D;
-        if (raw.Flags.HasFlag(RenderTextureFlags.Multisampling))
+        if (raw.Flags.HasFlag(RenderTargetFlags.Multisampling))
             textureTarget = TextureTarget.Texture2DMultisample;
 
         // generate color buffer
@@ -29,7 +29,7 @@ internal class RenderTextureCache : Cache<RenderTexture, RenderTextureHandles>
         }
 
         // generate depth buffer and stencil buffer
-        if (raw.Flags.HasFlag(RenderTextureFlags.DepthStencil))
+        if (raw.Flags.HasFlag(RenderTargetFlags.DepthStencil))
         {
             var id = GL.GenTexture(); // we will bypass the texture cache because it is completely unnecessary here
             ids.Add(id);

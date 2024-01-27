@@ -40,5 +40,10 @@ public abstract class RenderTarget
     /// </summary>
     public Matrix4x4 UvMatrix = uvMatrix;
 
+    /// <summary>
+    /// This target's enabled features
+    /// </summary>
+    public RenderTargetFlags Flags { get; init; }
+
     private static Matrix4x4 uvMatrix = Matrix4x4.CreateOrthographicOffCenter(0, 1, 1, 0, 0, 100);
 }

@@ -14,7 +14,7 @@ public class Compositor : IDisposable
 
     // TODO provide access to depth buffer
 
-    public RenderTextureFlags Flags
+    public RenderTargetFlags Flags
     {
         get => flags;
 
@@ -28,7 +28,7 @@ public class Compositor : IDisposable
 
     private RootCompositorNode sourceNode = new();
     private OutputCompositorNode destinationNode = new();
-    private RenderTextureFlags flags = RenderTextureFlags.HDR;
+    private RenderTargetFlags flags = RenderTargetFlags.HDR;
     private readonly Material blitMat = new Material(Material.DefaultTextured);
     private readonly Game game;
 

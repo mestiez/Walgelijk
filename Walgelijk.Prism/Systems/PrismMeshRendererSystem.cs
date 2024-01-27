@@ -4,8 +4,8 @@ public class PrismMeshRendererSystem : Walgelijk.System
 {
     public override void Render()
     {
-        if (!Game.Compositor.Flags.HasFlag(RenderTextureFlags.DepthStencil))
-            Game.Compositor.Flags |= RenderTextureFlags.DepthStencil;
+        if (!Game.Compositor.Flags.HasFlag(RenderTargetFlags.DepthStencil))
+            Game.Compositor.Flags |= RenderTargetFlags.DepthStencil;
 
         foreach (var item in Scene.GetAllComponentsOfType<PrismMeshComponent>())
         {

@@ -176,7 +176,8 @@ public class OpenTKWindow : Window
             Size = new global::OpenTK.Mathematics.Vector2i((int)size.X, (int)size.Y),
             Title = title,
             StartVisible = false,
-            NumberOfSamples = 4,
+            NumberOfSamples = 0,
+            DepthBits = 16,
             API = ContextAPI.OpenGL
         });
 
@@ -187,7 +188,10 @@ public class OpenTKWindow : Window
         else
             window.CenterWindow();
 
-        renderTarget = new OpenTKWindowRenderTarget();
+        renderTarget = new OpenTKWindowRenderTarget()
+        {
+            Flags = RenderTargetFlags.HDR | RenderTargetFlags.DepthStencil
+        };
         renderTarget.Window = this;
 
         inputHandler = new InputHandler(this);

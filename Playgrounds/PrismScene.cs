@@ -38,8 +38,7 @@ public struct PrismScene : ISceneCreator
                 Rotation = Quaternion.CreateFromYawPitchRoll(Utilities.RandomFloat(), Utilities.RandomFloat(), Utilities.RandomFloat()),
                 Position = new Vector3(Utilities.RandomFloat(-20, 20), Utilities.RandomFloat(0, 20), Utilities.RandomFloat(-20, 20))
             });
-            var vv = scene.AttachComponent(cube, new PrismMeshComponent(vxb));
-            vv.Material = new Material(Material.DefaultTextured);
+            var vv = scene.AttachComponent(cube, new PrismMeshComponent(vxb, new Material(Material.DefaultTextured) { DepthTested = true }));
             vv.Material.SetUniform("mainTex", TexGen.Colour(1, 1, Utilities.RandomColour()));
             scene.AttachComponent(cube, new SpinnyComponent());
         }
@@ -58,10 +57,7 @@ public struct PrismScene : ISceneCreator
                     Position = new Vector3(x, -0.5f, y)
                 });
 
-                scene.AttachComponent(quad, new PrismMeshComponent(vxb)
-                {
-                    Material = new Material(Material.DefaultTextured)
-                }).Material.SetUniform("mainTex", TexGen.Colour(1, 1, Utilities.RandomColour()));
+                scene.AttachComponent(quad, new PrismMeshComponent(vxb, new Material(Material.DefaultTextured) { DepthTested = true })).Material.SetUniform("mainTex", TexGen.Colour(1, 1, Utilities.RandomColour()));
             }
 
         {
@@ -70,15 +66,12 @@ public struct PrismScene : ISceneCreator
             scene.AttachComponent(cat, new PrismTransformComponent
             {
                 Scale = new Vector3(1),
-                Rotation = Quaternion.CreateFromYawPitchRoll(0, MathF.PI / 2, 0),
+                Rotation = Quaternion.CreateFromYawPitchRoll(0, MathF.PI / -2, 0),
                 Position = new Vector3(0, 5, 0)
             });
 
             var m = MeshLoader.Load("resources/meshes/vase.dae")[0];
-            scene.AttachComponent(cat, new PrismMeshComponent(m.Vertices, m.Indices)
-            {
-                Material = m.Material ?? Material.DefaultTextured
-            });
+            scene.AttachComponent(cat, new PrismMeshComponent(m.Vertices, m.Indices, m.Material ?? new Material(Material.DefaultTextured) { DepthTested = true }));
         }
 
         return scene;
@@ -93,7 +86,7 @@ public struct PrismScene : ISceneCreator
             foreach (var item in Scene.GetAllComponentsOfType<SpinnyComponent>())
             {
                 var transform = Scene.GetComponentFrom<PrismTransformComponent>(item.Entity);
-                transform.Rotation *= Quaternion.CreateFromAxisAngle(Vector3.UnitY, Time.DeltaTime);
+                transform.Rotation *= Quaternion.CreateFromAxisAngle(Vector3.UnitZ, Time.DeltaTime);
             }
         }
     }

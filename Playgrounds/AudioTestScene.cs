@@ -19,7 +19,7 @@ public struct AudioTestScene : ISceneCreator
 
     public class AudioTestSystem : Walgelijk.System
     {
-        private Sound OneShot = new Sound(Resources.Load<FixedAudioData>("walgelijk.wav"), false, new SpatialParams(1, float.PositiveInfinity, 1));
+        private Sound OneShot = new Sound(Resources.Load<FixedAudioData>("mono_hit.wav"), false, new SpatialParams(1, float.PositiveInfinity, 1));
         private Sound Streaming = new Sound(Resources.Load<StreamAudioData>("perfect-loop.ogg"), true, new SpatialParams(1, float.PositiveInfinity, 1));
 
         public override void FixedUpdate()

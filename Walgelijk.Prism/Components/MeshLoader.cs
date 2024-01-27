@@ -16,11 +16,12 @@ public static class MeshLoader
             for (int p = 0; p < scene.Meshes.Count; p++)
             {
                 var readMesh = scene.Meshes[p];
-                var mat = Material.DefaultTextured;
+                var mat = new Material(Material.DefaultTextured);
 
                 if (readMesh.MaterialIndex != -1)
                 {
                     var readMat = scene.Materials[readMesh.MaterialIndex];
+                    mat.DepthTested = true;
                     mat.BlendMode = readMat.BlendMode switch
                     {
                         Assimp.BlendMode.Additive => BlendMode.Addition,

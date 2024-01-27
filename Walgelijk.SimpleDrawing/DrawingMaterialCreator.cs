@@ -118,6 +118,7 @@ void main()
     public static Material Create(IReadableTexture tex)
     {
         var m = new Material(DefaultShader);
+        m.DepthTested = false;
         m.SetUniform(MainTexUniform, tex);
         return m;
     }

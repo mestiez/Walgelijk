@@ -7,7 +7,7 @@ public class PrismRenderTask : IRenderTask
     public PrismRenderTask(VertexBuffer vertexBuffer, Matrix4x4 modelMatrix = default, Material? material = null)
     {
         VertexBuffer = vertexBuffer;
-        Material = material ?? Material.DefaultTextured;
+        Material = material ?? new Material(Material.DefaultTextured) { DepthTested = true };
         ModelMatrix = modelMatrix;
         ScreenSpace = false;
     }
