@@ -161,6 +161,8 @@ public class DebugConsoleUi : IDisposable
         var ov = target.ViewMatrix;
         target.ProjectionMatrix = target.OrthographicMatrix;
         target.ViewMatrix = Matrix4x4.Identity;
+        graphics.Stencil = default;
+        graphics.DrawBounds = DrawBounds.DisabledBounds;
         {
             graphics.DrawBounds = new DrawBounds(new Vector2(target.Size.X, Height), Vector2.Zero);
 

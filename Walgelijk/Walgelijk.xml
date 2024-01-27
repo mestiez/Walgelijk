@@ -2610,7 +2610,7 @@
         </member>
         <member name="T:Walgelijk.Primitive">
             <summary>
-            Way to draw vertices
+            Ways to deal with vertices
             </summary>
         </member>
         <member name="T:Walgelijk.PrimitiveMeshes">

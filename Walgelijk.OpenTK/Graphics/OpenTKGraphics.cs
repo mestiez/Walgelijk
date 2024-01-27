@@ -210,9 +210,7 @@ public class OpenTKGraphics : IGraphics
             GL.CullFace(CullFaceMode.Back);
         }
         else
-        {
             GL.Disable(EnableCap.CullFace);
-        }
     }
 
     private void SetDrawbounds(DrawBounds bounds)

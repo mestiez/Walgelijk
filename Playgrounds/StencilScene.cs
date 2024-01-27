@@ -43,7 +43,7 @@ public struct StencilScene : ISceneCreator
 
         public override void Render()
         {
-            Game.Compositor.Flags = RenderTextureFlags.DepthStencil;
+            Game.Compositor.Enabled = false;
             RenderQueue.Add(new ClearRenderTask(), RenderOrder.Bottom);
             //RenderQueue.Add(task);
         }
