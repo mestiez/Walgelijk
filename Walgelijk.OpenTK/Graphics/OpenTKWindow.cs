@@ -177,7 +177,8 @@ public class OpenTKWindow : Window
             Title = title,
             StartVisible = false,
             NumberOfSamples = 0,
-            DepthBits = 16,
+            StencilBits = 8,
+            DepthBits = 24,
             API = ContextAPI.OpenGL
         });
 
