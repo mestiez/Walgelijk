@@ -37,9 +37,8 @@ public class OpenALAudioRenderer : AudioRenderer
     {
         get
         {
-            // note: Y is up in OpenAL, but Walgelijk is 2D so Y and Z are swapped for convenience.
-            AL.GetListener(ALListener3f.Position, out float x, out float depth, out float z);
-            return new Vector3(x, z, depth);
+            AL.GetListener(ALListener3f.Position, out float x, out float y, out float z);
+            return new Vector3(x, y, z);
         }
 
         set => AL.Listener(ALListener3f.Position, value.X, value.Z, value.Y);
@@ -58,6 +57,22 @@ public class OpenALAudioRenderer : AudioRenderer
             AudioDistanceModel.Linear => ALDistanceModel.LinearDistance,
             _ => ALDistanceModel.InverseDistance,
         });
+    }
+
+    public override (Vector3 Forward, Vector3 Up) ListenerOrientation
+    {
+        get
+        {
+            AL.GetListener(ALListenerfv.Orientation, out var at, out var up);
+            return (new Vector3(at.X, at.Y, at.Z), new Vector3(up.X, up.Y, up.Z));
+        }
+
+        set
+        {
+            var at = new global::OpenTK.Mathematics.Vector3(value.Forward.X, value.Forward.Y, value.Forward.Z);
+            var up = new global::OpenTK.Mathematics.Vector3(value.Up.X, value.Up.Y, value.Up.Z);
+            AL.Listener(ALListenerfv.Orientation, ref at, ref up);
+        }
     }
 
     public OpenALAudioRenderer(int maxTempSourceCount = 256)
@@ -201,7 +216,7 @@ public class OpenALAudioRenderer : AudioRenderer
             AL.SourcePlay(s);
     }
 
-    public override void Play(Sound sound, Vector2 worldPosition, float volume = 1)
+    public override void Play(Sound sound, Vector3 worldPosition, float volume = 1)
     {
         if (!canPlayAudio || sound.Data == null)
             return;
@@ -213,7 +228,7 @@ public class OpenALAudioRenderer : AudioRenderer
         EnforceCorrectTrack(sound);
         UpdateIfRequired(sound, out int s);
         if (sound.SpatialParams.HasValue)
-            AL.Source(s, ALSource3f.Position, worldPosition.X, 0, worldPosition.Y);
+            AL.Source(s, ALSource3f.Position, worldPosition.X, worldPosition.Y, worldPosition.Z);
         else
             Logger.Warn("Attempt to play a non-spatial sound in space!");
         sound.State = SoundState.Playing;
@@ -221,7 +236,7 @@ public class OpenALAudioRenderer : AudioRenderer
             AL.SourcePlay(s);
     }
 
-    private int CreateTempSource(Sound sound, float volume, Vector2 worldPosition, float pitch, AudioTrack? track = null)
+    private int CreateTempSource(Sound sound, float volume, Vector3 worldPosition, float pitch, AudioTrack? track = null)
     {
         worldPosition *= SpatialMultiplier;
         var source = SourceCache.CreateSourceFor(sound);
@@ -231,7 +246,7 @@ public class OpenALAudioRenderer : AudioRenderer
         AL.Source(source, ALSourcef.Pitch, pitch * (sound.Track?.Pitch ?? 1));
 
         if (sound.SpatialParams.HasValue)
-            AL.Source(source, ALSource3f.Position, worldPosition.X, 0, worldPosition.Y);
+            AL.Source(source, ALSource3f.Position, worldPosition.X, worldPosition.Y, worldPosition.Z);
         AL.SourcePlay(source);
 
         ApplySpatialParams(source, sound);
@@ -256,7 +271,7 @@ public class OpenALAudioRenderer : AudioRenderer
         CreateTempSource(sound, volume, default, pitch, track ?? sound.Track);
     }
 
-    public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1, AudioTrack? track = null)
+    public override void PlayOnce(Sound sound, Vector3 worldPosition, float volume = 1, float pitch = 1, AudioTrack? track = null)
     {
         if (sound.Data is not FixedAudioData)
             throw new Exception("Only fixed buffer audio sources can be overlapped using PlayOnce");
@@ -569,14 +584,14 @@ public class OpenALAudioRenderer : AudioRenderer
         }
     }
 
-    public override void SetPosition(Sound sound, Vector2 worldPosition)
+    public override void SetPosition(Sound sound, Vector3 worldPosition)
     {
         worldPosition *= SpatialMultiplier;
 
         UpdateIfRequired(sound, out var source);
         if (sound.SpatialParams.HasValue)
         {
-            AL.Source(source, ALSource3f.Position, worldPosition.X, 0, worldPosition.Y);
+            AL.Source(source, ALSource3f.Position, worldPosition.X, worldPosition.Y, worldPosition.Z);
 
         }
         else

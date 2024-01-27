@@ -40,6 +40,11 @@ public abstract class AudioRenderer
     public abstract Vector3 ListenerPosition { get; set; }
 
     /// <summary>
+    /// Normalised orientation vectors of the listener in world space. Determines the position of your two "ears".
+    /// </summary>
+    public abstract (Vector3 Forward, Vector3 Up) ListenerOrientation { get; set; }
+
+    /// <summary>
     /// Global multiplier for any spatial input. E.g any <c>worldPosition</c> parameter, or the listener position. This is used to align the audio world with your scene scale.
     /// 1 by default.
     /// </summary>
@@ -51,7 +56,7 @@ public abstract class AudioRenderer
     public abstract AudioDistanceModel DistanceModel { get; set; }
 
     /// <summary>
-    /// Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="PlayOnce(Sound, float, float, AudioTrack?)"/> or <see cref="PlayOnce(Sound, Vector2, float, float, AudioTrack?)"/>
+    /// Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="PlayOnce(Sound, float, float, AudioTrack?)"/> or <see cref="PlayOnce(Sound, Vector3, float, float, AudioTrack?)"/>
     /// </summary>
     public abstract bool IsPlaying(Sound sound);
 
@@ -68,12 +73,12 @@ public abstract class AudioRenderer
     /// <summary>
     /// Play sound at a position in the world (or resumes, if paused)
     /// </summary>
-    public abstract void Play(Sound sound, Vector2 worldPosition, float volume = 1);
+    public abstract void Play(Sound sound, Vector3 worldPosition, float volume = 1);
 
     /// <summary>
     /// Play sound at a position in the world and let it overlap itself
     /// </summary>
-    public abstract void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1, AudioTrack? track = null);
+    public abstract void PlayOnce(Sound sound, Vector3 worldPosition, float volume = 1, float pitch = 1, AudioTrack? track = null);
 
     /// <summary>
     /// Populates the given array with the most recently played samples of the given sound.
@@ -84,7 +89,7 @@ public abstract class AudioRenderer
     /// <summary>
     /// Set world position of the sound (if it is spatial)
     /// </summary>
-    public abstract void SetPosition(Sound sound, Vector2 worldPosition);
+    public abstract void SetPosition(Sound sound, Vector3 worldPosition);
 
     /// <summary>
     /// Stop a specific sound

@@ -36,5 +36,12 @@ public struct SpatialParams
         ReferenceDistance = referenceDistance;
         MaxDistance = maxDistance;
         RolloffFactor = rolloffFactor;
+    }    
+    
+    public SpatialParams()
+    {
+        ReferenceDistance = 1;
+        MaxDistance = float.PositiveInfinity;
+        RolloffFactor = 1;
     }
 }

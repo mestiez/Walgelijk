@@ -19,17 +19,25 @@ public struct AudioTestScene : ISceneCreator
 
     public class AudioTestSystem : Walgelijk.System
     {
-        private Sound OneShot = new Sound(Resources.Load<FixedAudioData>("cannot-build.wav"));
-        private Sound Streaming = new Sound(Resources.Load<StreamAudioData>("perfect-loop.ogg"), true);
+        private Sound OneShot = new Sound(Resources.Load<FixedAudioData>("walgelijk.wav"), false, new SpatialParams(1, float.PositiveInfinity, 1));
+        private Sound Streaming = new Sound(Resources.Load<StreamAudioData>("perfect-loop.ogg"), true, new SpatialParams(1, float.PositiveInfinity, 1));
 
         public override void FixedUpdate()
         {
+            Audio.DistanceModel = AudioDistanceModel.InverseSquare;
+            Audio.SpatialMultiplier = 0.1f;
             if (Input.IsKeyHeld(Key.Space))
-                Audio.PlayOnce(OneShot);
+            {
+                Audio.PlayOnce(OneShot, new Vector3(Utilities.RandomFloat(-100,100),0, 0), 0.1f);
+            }
         }
 
         public override void Update()
         {
+            var th = Time.SecondsSinceLoad;
+            Audio.ListenerOrientation = (new Vector3(1 * MathF.Cos(th), 0,  1 * MathF.Sin(th)), Vector3.UnitY);
+            Audio.SetPosition(Streaming, new Vector3(0, 0, 100));
+
             if (Input.IsKeyPressed(Key.Q))
                 if (Audio.IsPlaying(Streaming))
                     Audio.Pause(Streaming);

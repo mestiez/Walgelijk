@@ -89,6 +89,11 @@
             Position of the listener in world space
             </summary>
         </member>
+        <member name="P:Walgelijk.AudioRenderer.ListenerOrientation">
+            <summary>
+            Normalised orientation vectors of the listener in world space. Determines the position of your two "ears".
+            </summary>
+        </member>
         <member name="F:Walgelijk.AudioRenderer.SpatialMultiplier">
             <summary>
             Global multiplier for any spatial input. E.g any <c>worldPosition</c> parameter, or the listener position. This is used to align the audio world with your scene scale.
@@ -102,7 +107,7 @@
         </member>
         <member name="M:Walgelijk.AudioRenderer.IsPlaying(Walgelijk.Sound)">
             <summary>
-            Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Single,System.Single,Walgelijk.AudioTrack)"/> or <see cref="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Numerics.Vector2,System.Single,System.Single,Walgelijk.AudioTrack)"/>
+            Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Single,System.Single,Walgelijk.AudioTrack)"/> or <see cref="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Numerics.Vector3,System.Single,System.Single,Walgelijk.AudioTrack)"/>
             </summary>
         </member>
         <member name="M:Walgelijk.AudioRenderer.Play(Walgelijk.Sound,System.Single)">
@@ -115,12 +120,12 @@
             Play a sound once and let it overlap itself
             </summary>
         </member>
-        <member name="M:Walgelijk.AudioRenderer.Play(Walgelijk.Sound,System.Numerics.Vector2,System.Single)">
+        <member name="M:Walgelijk.AudioRenderer.Play(Walgelijk.Sound,System.Numerics.Vector3,System.Single)">
             <summary>
             Play sound at a position in the world (or resumes, if paused)
             </summary>
         </member>
-        <member name="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Numerics.Vector2,System.Single,System.Single,Walgelijk.AudioTrack)">
+        <member name="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Numerics.Vector3,System.Single,System.Single,Walgelijk.AudioTrack)">
             <summary>
             Play sound at a position in the world and let it overlap itself
             </summary>
@@ -131,7 +136,7 @@
             Returns the amount of samples.
             </summary>
         </member>
-        <member name="M:Walgelijk.AudioRenderer.SetPosition(Walgelijk.Sound,System.Numerics.Vector2)">
+        <member name="M:Walgelijk.AudioRenderer.SetPosition(Walgelijk.Sound,System.Numerics.Vector3)">
             <summary>
             Set world position of the sound (if it is spatial)
             </summary>

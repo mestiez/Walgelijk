@@ -42,6 +42,8 @@ public class Sound
 
     public Sound(AudioData data, bool loops = false, SpatialParams? spatialParams = null, AudioTrack? track = null)
     {
+        if (data.ChannelCount != 1 && spatialParams.HasValue)
+            throw new global::System.Exception("The audio data is stereo but spatial parameters are present. These two traits are not compatible.");
         Data = data;
         Looping = loops;
         SpatialParams = spatialParams;

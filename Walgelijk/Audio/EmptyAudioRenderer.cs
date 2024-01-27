@@ -14,6 +14,7 @@ internal sealed class EmptyAudioRenderer : AudioRenderer
     public override bool Muted { get; set; }
     public override Vector3 ListenerPosition { get; set; }
     public override AudioDistanceModel DistanceModel { get; set; }
+    public override (Vector3 Forward, Vector3 Up) ListenerOrientation { get; set; }
 
     public override void Pause(Sound sound) { }
 
@@ -44,9 +45,9 @@ internal sealed class EmptyAudioRenderer : AudioRenderer
 
     public override void PlayOnce(Sound sound, float volume = 1, float pitch = 1, AudioTrack? track = null) { }
 
-    public override void Play(Sound sound, Vector2 worldPosition, float volume = 1l) { }
+    public override void Play(Sound sound, Vector3 worldPosition, float volume = 1l) { }
 
-    public override void PlayOnce(Sound sound, Vector2 worldPosition, float volume = 1, float pitch = 1, AudioTrack? track = null) { }
+    public override void PlayOnce(Sound sound, Vector3 worldPosition, float volume = 1, float pitch = 1, AudioTrack? track = null) { }
 
     public override void PauseAll() { }
 
@@ -64,7 +65,7 @@ internal sealed class EmptyAudioRenderer : AudioRenderer
 
     public override float GetTime(Sound sound) => 0;
 
-    public override void SetPosition(Sound sound, Vector2 worldPosition) { }
+    public override void SetPosition(Sound sound, Vector3 worldPosition) { }
 
     public override FixedAudioData LoadSound(string path) => new FixedAudioData(Array.Empty<byte>(), 0, 0, 0);
 
