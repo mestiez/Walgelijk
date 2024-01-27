@@ -32,7 +32,7 @@ public class OggStreamer : IDisposable
 
     public TimeSpan CurrentTime
     {
-        get => TimeSpan.FromSeconds(processedSamples / (float)reader.SampleRate / Raw.ChannelCount);
+        get => TimeSpan.FromSeconds((processedSamples / (float)reader.SampleRate / Raw.ChannelCount) % (float)Sound.Data.Duration.TotalSeconds);
 
         set
         {
@@ -140,10 +140,10 @@ public class OggStreamer : IDisposable
             playedSamplesBacklog.Push(rawOggBuffer[i]);
     }
 
-    public void PreFill()
+    public void PreFill(int max = MaxBufferCount)
     {
         int queued = 0;
-        while (queued++ < MaxBufferCount && TryRead(out var readAmount))
+        while (queued++ < max && TryRead(out var readAmount))
         {
             if (!TryGetFreeBuffer(out var buffer))
                 continue;
@@ -169,7 +169,7 @@ public class OggStreamer : IDisposable
         while (monitorFlag)
         {
             Update();
-            Thread.Sleep(32);
+            Thread.Sleep(16);
         }
     }
 
@@ -209,7 +209,7 @@ public class OggStreamer : IDisposable
         {
             AL.GetSource(SourceHandle, ALGetSourcei.SampleOffset, out int samplesPlayedInThisBuffer);
             lastProcessedSampleCount += processed * BufferSize;
-            processedSamples = lastProcessedSampleCount + samplesPlayedInThisBuffer;
+            processedSamples = lastProcessedSampleCount;//+ samplesPlayedInThisBuffer;
         }
 
         // read processed buffer count again in case any of them were discarded
@@ -226,16 +226,16 @@ public class OggStreamer : IDisposable
                     if (Buffers[i].Handle == bufferHandle)
                         Buffers[i].Free = true;
             }
-
-            // check if end of file was reached right after all buffers are completely processed
-            if (endReached)
+        }
+        // check if end of file was reached right after there are no more buffers to process
+        else if (queued == 0 && endReached)
+        {
+            var sound = AudioObjects.Sources.GetSoundFor(SourceHandle);
+            if (!sound.Looping)
             {
                 AL.SourceStop(SourceHandle);
-
-                var sound = AudioObjects.Sources.GetSoundFor(SourceHandle);
+                sound.State = SoundState.Stopped;
                 Reset();
-                if (!sound.Looping)
-                    sound.State = SoundState.Stopped;
                 return;
             }
         }
@@ -260,6 +260,15 @@ public class OggStreamer : IDisposable
     private bool TryRead(out int read)
     {
         read = reader.ReadSamples(rawOggBuffer, 0, rawOggBuffer.Length);
+        if (Sound.Looping)
+        {
+            if (read == 0)
+            {
+                reader.SamplePosition = 0;
+                return TryRead(out read);
+            }
+        }
+
         return read > 0;
     }
 
