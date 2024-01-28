@@ -1,12 +1,11 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using System;
 using System.Numerics;
-
 namespace Walgelijk.OpenTK;
 
-public class VertexBufferCache : Cache<VertexBuffer, VertexBufferCacheHandles>
+public class VertexBufferCache<TVertex, TDescriptor> : Cache<VertexBuffer<TVertex, TDescriptor>, VertexBufferCacheHandles> where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct
 {
-    protected override VertexBufferCacheHandles CreateNew(VertexBuffer buffer)
+    protected override VertexBufferCacheHandles CreateNew(VertexBuffer<TVertex, TDescriptor> buffer)
     {
         var vao = CreateVertexArrayObject(buffer);
 
@@ -26,14 +25,15 @@ public class VertexBufferCache : Cache<VertexBuffer, VertexBufferCacheHandles>
         return handles;
     }
 
-    private static int[] CreateExtraVBO(VertexBuffer buffer)
+    private static int[] CreateExtraVBO(VertexBuffer<TVertex, TDescriptor> buffer)
     {
-        int[] ids = new int[buffer.ExtraAttributeCount];
+        var ids = new int[buffer.ExtraAttributeCount];
 
         for (int i = 0; i < buffer.ExtraAttributeCount; i++)
         {
             var array = buffer.GetAttribute(i);
-            if (array == null) continue;
+            if (array == null) 
+                continue;
 
             int vbo = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
@@ -72,35 +72,59 @@ public class VertexBufferCache : Cache<VertexBuffer, VertexBufferCacheHandles>
         }
     }
 
-    private static int CreateIndexBufferObject(VertexBuffer buffer)
+    private static VertexAttribPointerType GetPointerType(AttributeType v)
+    {
+        return v switch
+        {
+            AttributeType.Integer => VertexAttribPointerType.Int,
+            AttributeType.Float => VertexAttribPointerType.Float,
+            AttributeType.Double => VertexAttribPointerType.Double,
+            AttributeType.Vector2 => VertexAttribPointerType.Float,
+            AttributeType.Vector3 => VertexAttribPointerType.Float,
+            AttributeType.Vector4 => VertexAttribPointerType.Float,
+            AttributeType.Matrix4x4 => VertexAttribPointerType.Float,
+            _ => throw new Exception("Invalid attribute type"),
+        };
+    }
+
+    private static int CreateIndexBufferObject(VertexBuffer<TVertex, TDescriptor> buffer)
     {
         int ibo = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo);
         return ibo;
     }
 
-    private static int CreateVertexArrayObject(VertexBuffer buffer)
+    private static int CreateVertexArrayObject(VertexBuffer<TVertex, TDescriptor> buffer)
     {
         int vao = GL.GenVertexArray();
         GL.BindVertexArray(vao);
         return vao;
     }
 
-    private static void ConfigureAttributes(VertexBuffer buffer, int VBO, int[] extraDataObjects)
+    private static void ConfigureAttributes(VertexBuffer<TVertex, TDescriptor> buffer, int VBO, int[] extraDataObjects)
     {
         GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
 
-        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, Vertex.Stride, sizeof(float) * 0); //position
-        GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, Vertex.Stride, sizeof(float) * 3); //texcoords
-        GL.VertexAttribPointer(2, 3, VertexAttribPointerType.Float, false, Vertex.Stride, sizeof(float) * 5); //normal
-        GL.VertexAttribPointer(3, 4, VertexAttribPointerType.Float, false, Vertex.Stride, sizeof(float) * 8); //color
+        int location = 0;
+        int currentPointerPos = 0;
+        var desc = buffer.GetDescriptor();
 
-        GL.EnableVertexAttribArray(0);
-        GL.EnableVertexAttribArray(1);
-        GL.EnableVertexAttribArray(2);
-        GL.EnableVertexAttribArray(3);
+        foreach (var a in desc.GetAttributes())
+        {
+            GL.VertexAttribPointer(
+                location,
+                a.ComponentCount,
+                GetPointerType(a.Type),
+                false,
+                desc.GetTotalStride(),
+                currentPointerPos);
 
-        int location = 4;
+            GL.EnableVertexAttribArray(location);
+
+            currentPointerPos += a.TotalSize;
+            location++;
+        }
+
         for (int i = 0; i < buffer.ExtraAttributeCount; i++)
         {
             var array = buffer.GetAttribute(i);
@@ -148,14 +172,14 @@ public class VertexBufferCache : Cache<VertexBuffer, VertexBufferCacheHandles>
         }
     }
 
-    private static int CreateVertexBufferObject(VertexBuffer buffer)
+    private static int CreateVertexBufferObject(VertexBuffer<TVertex, TDescriptor> buffer)
     {
         int vbo = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
         return vbo;
     }
 
-    public void UpdateBuffer(VertexBuffer buffer, VertexBufferCacheHandles handles)
+    public void UpdateBuffer(VertexBuffer<TVertex, TDescriptor> buffer, VertexBufferCacheHandles handles)
     {
         var hint = buffer.Dynamic ? BufferUsageHint.DynamicDraw : BufferUsageHint.StaticDraw;
 
@@ -176,7 +200,7 @@ public class VertexBufferCache : Cache<VertexBuffer, VertexBufferCacheHandles>
         buffer.HasChanged = false;
     }
 
-    public void UpdateExtraData(VertexBuffer buffer, VertexBufferCacheHandles handles)
+    public void UpdateExtraData(VertexBuffer<TVertex, TDescriptor> buffer, VertexBufferCacheHandles handles)
     {
         var hint = buffer.Dynamic ? BufferUsageHint.DynamicDraw : BufferUsageHint.StaticDraw;
 

@@ -1,81 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Walgelijk;
-
-public interface IVertexDescriptor<TVertex>
-{
-    public IEnumerable<VertexAttributeDescriptor> GetAttributes();
-}
-
-public static class VertexDescriptorExtensions
-{
-    public static int GetTotalStride<T>(this IVertexDescriptor<T> descriptor) => descriptor.GetAttributes().Sum(static d => d.SizePerComponent);
-}
-
-public readonly struct VertexAttributeDescriptor
-{
-    public readonly AttributeType Type;
-    public readonly int ComponentCount;
-    public readonly int SizePerComponent;
-
-    /// <summary>
-    /// Identical to <code>SizePerComponent * ComponentCount</code>
-    /// </summary>
-    public readonly int TotalSize => SizePerComponent * ComponentCount;
-
-    public VertexAttributeDescriptor(AttributeType type, int componentCount, int sizeInBytes)
-    {
-        Type = type;
-        ComponentCount = componentCount;
-        SizePerComponent = sizeInBytes;
-    }
-
-    public VertexAttributeDescriptor(AttributeType type)
-    {
-        Type = type;
-
-        switch (type)
-        {
-            case AttributeType.Integer:
-                ComponentCount = 1;
-                SizePerComponent = sizeof(int);
-                break;
-            case AttributeType.Float:
-                ComponentCount = 1;
-                SizePerComponent = sizeof(float);
-                break;
-            case AttributeType.Double:
-                ComponentCount = 1;
-                SizePerComponent = sizeof(double);
-                break;
-            case AttributeType.Vector2:
-                ComponentCount = 2;
-                SizePerComponent = sizeof(float);
-                break;
-            case AttributeType.Vector3:
-                ComponentCount = 3;
-                SizePerComponent = sizeof(float);
-                break;
-            case AttributeType.Vector4:
-                ComponentCount = 4;
-                SizePerComponent = sizeof(float);
-                break;
-            case AttributeType.Matrix4x4:
-                ComponentCount = 4 * 4;
-                SizePerComponent = sizeof(float);
-                break;
-            default:
-                throw new Exception("invalid vertex attribute type");
-        }
-    }
-}
 
 /// <summary>
 /// Holds all the data needed to draw vertices to the screen
 /// </summary>
-public class VertexBuffer<TVertex, TDescriptor> : IDisposable where TDescriptor : IVertexDescriptor<TVertex> where TVertex : struct
+public class VertexBuffer<TVertex, TDescriptor> : IDisposable where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct
 {
     private TVertex[] vertices = [];
     private uint[] indices = [];
@@ -127,7 +57,6 @@ public class VertexBuffer<TVertex, TDescriptor> : IDisposable where TDescriptor 
     /// </summary>
     public bool HasChanged { get; set; } = false;
 
-    // TODO dit moet automatisch op true gezet worden als iets in de extraAttributes array verandert
     /// <summary>
     /// Whether the extra data needs to be uploaded to the GPU again
     /// </summary>

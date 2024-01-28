@@ -1,4 +1,4 @@
-﻿using System;
+﻿using static Walgelijk.Vertex;
 
 namespace Walgelijk;
 
@@ -17,7 +17,7 @@ public interface IGraphics
     /// </summary>
     /// <param name="vertexBuffer">VertexBuffer to draw</param>
     /// <param name="material">Material to draw it with</param>
-    public void Draw(VertexBuffer vertexBuffer, Material? material = null);
+    public void Draw<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vertexBuffer, Material? material = null) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct;
 
     /// <summary>
     /// Draw a instanced vertex buffer to the currently activated target
@@ -25,7 +25,7 @@ public interface IGraphics
     /// <param name="vertexBuffer">VertexBuffer to draw</param>
     /// <param name="instanceCount">Amount of elements to draw</param>
     /// <param name="material">Material to draw it with</param>
-    public void DrawInstanced(VertexBuffer vertexBuffer, int instanceCount, Material? material = null);
+    public void DrawInstanced<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vertexBuffer, int instanceCount, Material? material = null) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct;
 
     /// <summary>
     /// Set a shader program uniform
@@ -53,6 +53,16 @@ public interface IGraphics
     public void Upload(object obj);
 
     /// <summary>
+    /// Delete a VB from the GPU by its CPU representation
+    /// </summary>
+    public void Delete<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> graphicsObject) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct;
+
+    /// <summary>
+    /// Forcibly upload a VB to the GPU if supported. Won't do anything if the VB was already there.
+    /// </summary>
+    public void Upload<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> graphicsObject) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct;
+
+    /// <summary>
     /// Save a texture to disk as a PNG
     /// </summary>
     public void SaveTexture(global::System.IO.FileStream output, IReadableTexture texture);
@@ -74,7 +84,7 @@ public interface IGraphics
     /// <paramref name="vertexAttributeIds"/> expects an array of integers. It will be filled with the extra attribute IDs if they exist.
     /// Returns -1 if the given object could not be found, otherwise it returns the amount of extra vertex attribute IDs (clamped to the lenghth of the given array if applicable).
     /// </summary>
-    public int TryGetId(VertexBuffer graphicsObject, out int vertexBufferId, out int indexBufferId, out int vertexArrayId, ref int[] vertexAttributeIds);
+    public int TryGetId<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> graphicsObject, out int vertexBufferId, out int indexBufferId, out int vertexArrayId, ref int[] vertexAttributeIds) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct;
 
     /// <summary>
     /// Try to get the ID of the given graphics object. 
@@ -91,107 +101,4 @@ public interface IGraphics
     /// Access the stencil buffer state
     /// </summary>
     public StencilState Stencil { get; set; }
-}
-
-public struct StencilState : IEquatable<StencilState>
-{
-    /// <summary>
-    /// Is stencil writing/reading enabled at all? If false, the rest of the fields won't do anything.
-    /// </summary>
-    public bool Enabled;
-
-    /// <summary>
-    /// If true, the stencil buffer will be cleared to all zeroes
-    /// </summary>
-    public bool ShouldClear;
-
-    /// <summary>
-    /// The current stencil access mode, see <see cref="StencilAccessMode"/>
-    /// </summary>
-    public StencilAccessMode AccessMode;
-    public StencilTestMode TestMode;
-
-    /// <summary>
-    /// Disable stencil testing and writing
-    /// </summary>
-    public static StencilState Disabled => new() { Enabled = false };
-
-    /// <summary>
-    /// Clear the stencil buffer to all zeroes
-    /// </summary>
-    public static StencilState Clear => new() { Enabled = true, ShouldClear = true };
-
-    /// <summary>
-    /// Any geometry drawn will result in 1s on the stencil buffer, i.e determines the mask
-    /// </summary>
-    public static StencilState WriteMask => new() { Enabled = true, AccessMode = StencilAccessMode.Write };
-
-    /// <summary>
-    /// Fragments will only be drawn if the stencil buffer at that point is 1, i.e inside the mask
-    /// </summary>
-    public static StencilState InsideMask => new() { Enabled = true, AccessMode = StencilAccessMode.NoWrite, TestMode = StencilTestMode.Inside };
-
-    /// <summary>
-    /// Fragments will only be drawn if the stencil buffer at that point is 0, i.e outside the mask
-    /// </summary>
-    public static StencilState OutsideMask => new() { Enabled = true, AccessMode = StencilAccessMode.NoWrite, TestMode = StencilTestMode.Outside };
-
-    public override bool Equals(object? obj)
-    {
-        return obj is StencilState state && Equals(state);
-    }
-
-    public bool Equals(StencilState other)
-    {
-        return Enabled == other.Enabled &&
-               ShouldClear == other.ShouldClear &&
-               AccessMode == other.AccessMode &&
-               TestMode == other.TestMode;
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Enabled, ShouldClear, AccessMode, TestMode);
-    }
-
-    public static bool operator ==(StencilState left, StencilState right)
-    {
-        return left.Equals(right);
-    }
-
-    public static bool operator !=(StencilState left, StencilState right)
-    {
-        return !(left == right);
-    }
-}
-
-/// <summary>
-/// Stencil access mode. Defines ways for drawn geometry to interact with the stencil buffer
-/// </summary>
-public enum StencilAccessMode
-{
-    // glStencilMask(0x00);
-    /// <summary>
-    /// Only read from the stencil buffer
-    /// </summary>
-    NoWrite,
-    // glStencilMask(0xFF);
-    /// <summary>
-    /// Write 1 to the stencil buffer
-    /// </summary>
-    Write,
-}
-
-public enum StencilTestMode
-{
-    // glStencilFunc(GL_EQUAL, 1, 0xFF)
-    /// <summary>
-    /// Only draw inside the mask, i.e where the stencil buffer is set to 1
-    /// </summary>
-    Inside,
-    // glStencilFunc(GL_NOTEQUAL, 1, 0xFF)
-    /// <summary>
-    /// Only draw outside the mask, i.e where the stencil buffer is set to 0
-    /// </summary>
-    Outside
 }

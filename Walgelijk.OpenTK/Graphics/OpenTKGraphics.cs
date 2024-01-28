@@ -76,7 +76,7 @@ public class OpenTKGraphics : IGraphics
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
     }
 
-    public void Draw(VertexBuffer vertexBuffer, Material material = null)
+    public void Draw<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vertexBuffer, Material material = null) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct
     {
         if (currentTarget == null)
             return;
@@ -141,7 +141,7 @@ public class OpenTKGraphics : IGraphics
         }
     }
 
-    public void DrawInstanced(VertexBuffer vertexBuffer, int instanceCount, Material material = null)
+    public void DrawInstanced<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vertexBuffer, int instanceCount, Material material = null) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct
     {
         if (currentTarget == null)
             return;
@@ -157,20 +157,21 @@ public class OpenTKGraphics : IGraphics
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void PrepareVertexBuffer(VertexBuffer vertexBuffer, Material material)
+    private void PrepareVertexBuffer<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vertexBuffer, Material material) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct
     {
         SetMaterial(material);
         SetTransformationMatrixUniforms(material);
+        var cache = GPUObjects.VertexBufferCache.Load<TVertex, TDescriptor>();
 
-        VertexBufferCacheHandles handles = GPUObjects.VertexBufferCache.Load(vertexBuffer);
+        VertexBufferCacheHandles handles = cache.Load(vertexBuffer);
 
         GL.BindVertexArray(handles.VAO);
 
         if (vertexBuffer.HasChanged)
-            GPUObjects.VertexBufferCache.UpdateBuffer(vertexBuffer, handles);
+            cache.UpdateBuffer(vertexBuffer, handles);
 
         if (vertexBuffer.ExtraDataHasChanged)
-            GPUObjects.VertexBufferCache.UpdateExtraData(vertexBuffer, handles);
+            cache.UpdateExtraData(vertexBuffer, handles);
     }
 
     private void SetTransformationMatrixUniforms(Material material)
@@ -250,9 +251,6 @@ public class OpenTKGraphics : IGraphics
             case IReadableTexture texture:
                 GPUObjects.TextureCache.Unload(texture);
                 break;
-            case VertexBuffer vb:
-                GPUObjects.VertexBufferCache.Unload(vb);
-                break;
             case Material mat:
                 GPUObjects.MaterialCache.Unload(mat);
                 break;
@@ -306,12 +304,13 @@ public class OpenTKGraphics : IGraphics
         return false;
     }
 
-    public int TryGetId(VertexBuffer vb, out int vertexBufferId, out int indexBufferId, out int vertexArrayId, ref int[] vertexAttributeIds)
+    public int TryGetId<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vb, out int vertexBufferId, out int indexBufferId, out int vertexArrayId, ref int[] vertexAttributeIds) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct
     {
         vertexArrayId = vertexBufferId = indexBufferId = -1;
-        if (GPUObjects.VertexBufferCache.Has(vb))
+        var vbCache = GPUObjects.VertexBufferCache.Load<TVertex, TDescriptor>();
+        if (vbCache.Has(vb))
         {
-            var l = GPUObjects.VertexBufferCache.Load(vb);
+            var l = vbCache.Load(vb);
             int extraVboLength = Math.Min(l.ExtraVBO.Length, vertexAttributeIds.Length);
             for (int i = 0; i < extraVboLength; i++)
                 vertexAttributeIds[i] = l.ExtraVBO[i];
@@ -465,9 +464,6 @@ public class OpenTKGraphics : IGraphics
             case IReadableTexture texture:
                 GPUObjects.TextureCache.Load(texture);
                 break;
-            case VertexBuffer vb:
-                GPUObjects.VertexBufferCache.Load(vb);
-                break;
             case Material mat:
                 GPUObjects.MaterialCache.Load(mat);
                 break;
@@ -475,5 +471,21 @@ public class OpenTKGraphics : IGraphics
                 Logger.Error("Attempt to upload unsupported object to GPU");
                 break;
         }
+    }
+
+    public void Delete<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vb)
+        where TVertex : struct
+        where TDescriptor : IVertexDescriptor<TVertex>, new()
+    {
+        var cache = GPUObjects.VertexBufferCache.Load<TVertex, TDescriptor>();
+        cache.Load(vb);
+    }
+
+    public void Upload<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vb)
+        where TVertex : struct
+        where TDescriptor : IVertexDescriptor<TVertex>, new()
+    {
+        var cache = GPUObjects.VertexBufferCache.Load<TVertex, TDescriptor>();
+        cache.Unload(vb);
     }
 }
