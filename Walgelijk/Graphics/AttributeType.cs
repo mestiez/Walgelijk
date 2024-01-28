@@ -32,6 +32,6 @@
         /// <summary>
         /// Four rows of Vector4
         /// </summary>
-        Matrix4x4
+        Matrix4x4,
     }
 }

@@ -11,20 +11,25 @@ public interface IVertexDescriptor<TVertex>
 
 public static class VertexDescriptorExtensions
 {
-    public static int GetTotalStride<T>(this IVertexDescriptor<T> descriptor) => descriptor.GetAttributes().Sum(static d => d.SizeInBytes);
+    public static int GetTotalStride<T>(this IVertexDescriptor<T> descriptor) => descriptor.GetAttributes().Sum(static d => d.SizePerComponent);
 }
 
 public readonly struct VertexAttributeDescriptor
 {
     public readonly AttributeType Type;
     public readonly int ComponentCount;
-    public readonly int SizeInBytes;
+    public readonly int SizePerComponent;
+
+    /// <summary>
+    /// Identical to <code>SizePerComponent * ComponentCount</code>
+    /// </summary>
+    public readonly int TotalSize => SizePerComponent * ComponentCount;
 
     public VertexAttributeDescriptor(AttributeType type, int componentCount, int sizeInBytes)
     {
         Type = type;
         ComponentCount = componentCount;
-        SizeInBytes = sizeInBytes;
+        SizePerComponent = sizeInBytes;
     }
 
     public VertexAttributeDescriptor(AttributeType type)
@@ -35,31 +40,31 @@ public readonly struct VertexAttributeDescriptor
         {
             case AttributeType.Integer:
                 ComponentCount = 1;
-                SizeInBytes = sizeof(int);
+                SizePerComponent = sizeof(int);
                 break;
             case AttributeType.Float:
                 ComponentCount = 1;
-                SizeInBytes = sizeof(float);
+                SizePerComponent = sizeof(float);
                 break;
             case AttributeType.Double:
                 ComponentCount = 1;
-                SizeInBytes = sizeof(double);
+                SizePerComponent = sizeof(double);
                 break;
             case AttributeType.Vector2:
                 ComponentCount = 2;
-                SizeInBytes = sizeof(float);
+                SizePerComponent = sizeof(float);
                 break;
             case AttributeType.Vector3:
                 ComponentCount = 3;
-                SizeInBytes = sizeof(float);
+                SizePerComponent = sizeof(float);
                 break;
             case AttributeType.Vector4:
                 ComponentCount = 4;
-                SizeInBytes = sizeof(float);
+                SizePerComponent = sizeof(float);
                 break;
             case AttributeType.Matrix4x4:
                 ComponentCount = 4 * 4;
-                SizeInBytes = sizeof(float);
+                SizePerComponent = sizeof(float);
                 break;
             default:
                 throw new Exception("invalid vertex attribute type");

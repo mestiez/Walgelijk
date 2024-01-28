@@ -3547,6 +3547,11 @@
             Matrix4x4 vertex attribute array
             </summary>
         </member>
+        <member name="P:Walgelijk.VertexAttributeDescriptor.TotalSize">
+            <summary>
+            Identical to <code>SizePerComponent * ComponentCount</code>
+            </summary>
+        </member>
         <member name="T:Walgelijk.VertexBuffer`2">
             <summary>
             Holds all the data needed to draw vertices to the screen
