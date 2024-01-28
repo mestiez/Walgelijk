@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 
 namespace Walgelijk
 {
@@ -84,6 +85,17 @@ namespace Walgelijk
             TexCoords = Vector2.Zero;
             Color = Color.White;
             Normal = normal;
+        }
+
+        public readonly struct Descriptor : IVertexDescriptor<Vertex>
+        {
+            public IEnumerable<VertexAttributeDescriptor> GetAttributes()
+            {
+                yield return new VertexAttributeDescriptor(AttributeType.Vector3); // position
+                yield return new VertexAttributeDescriptor(AttributeType.Vector2); // uv
+                yield return new VertexAttributeDescriptor(AttributeType.Vector3); // normal
+                yield return new VertexAttributeDescriptor(AttributeType.Vector4); // color
+            }
         }
     }
 }
