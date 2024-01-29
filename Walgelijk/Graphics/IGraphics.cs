@@ -17,7 +17,7 @@ public interface IGraphics
     /// </summary>
     /// <param name="vertexBuffer">VertexBuffer to draw</param>
     /// <param name="material">Material to draw it with</param>
-    public void Draw<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vertexBuffer, Material? material = null) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct;
+    public void Draw<TVertex>(VertexBuffer<TVertex> vertexBuffer, Material? material = null) where TVertex : struct;
 
     /// <summary>
     /// Draw a instanced vertex buffer to the currently activated target
@@ -25,7 +25,7 @@ public interface IGraphics
     /// <param name="vertexBuffer">VertexBuffer to draw</param>
     /// <param name="instanceCount">Amount of elements to draw</param>
     /// <param name="material">Material to draw it with</param>
-    public void DrawInstanced<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vertexBuffer, int instanceCount, Material? material = null) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct;
+    public void DrawInstanced<TVertex>(VertexBuffer<TVertex> vertexBuffer, int instanceCount, Material? material = null) where TVertex : struct;
 
     /// <summary>
     /// Set a shader program uniform
@@ -55,12 +55,12 @@ public interface IGraphics
     /// <summary>
     /// Delete a VB from the GPU by its CPU representation
     /// </summary>
-    public void Delete<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> graphicsObject) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct;
+    public void Delete<TVertex>(VertexBuffer<TVertex> graphicsObject) where TVertex : struct;
 
     /// <summary>
     /// Forcibly upload a VB to the GPU if supported. Won't do anything if the VB was already there.
     /// </summary>
-    public void Upload<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> graphicsObject) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct;
+    public void Upload<TVertex>(VertexBuffer<TVertex> graphicsObject) where TVertex : struct;
 
     /// <summary>
     /// Save a texture to disk as a PNG
@@ -84,7 +84,7 @@ public interface IGraphics
     /// <paramref name="vertexAttributeIds"/> expects an array of integers. It will be filled with the extra attribute IDs if they exist.
     /// Returns -1 if the given object could not be found, otherwise it returns the amount of extra vertex attribute IDs (clamped to the lenghth of the given array if applicable).
     /// </summary>
-    public int TryGetId<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> graphicsObject, out int vertexBufferId, out int indexBufferId, out int vertexArrayId, ref int[] vertexAttributeIds) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct;
+    public int TryGetId<TVertex>(VertexBuffer<TVertex> graphicsObject, out int vertexBufferId, out int indexBufferId, out int vertexArrayId, ref int[] vertexAttributeIds) where TVertex : struct;
 
     /// <summary>
     /// Try to get the ID of the given graphics object. 

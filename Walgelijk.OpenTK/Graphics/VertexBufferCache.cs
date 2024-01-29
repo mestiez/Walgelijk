@@ -1,16 +1,17 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using System;
 using System.Numerics;
+
 namespace Walgelijk.OpenTK;
 
-public class VertexBufferCache<TVertex, TDescriptor> : Cache<VertexBuffer<TVertex, TDescriptor>, VertexBufferCacheHandles> where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct
+public class VertexBufferCache<TVertex> : Cache<VertexBuffer<TVertex>, VertexBufferCacheHandles> where TVertex : struct
 {
-    protected override VertexBufferCacheHandles CreateNew(VertexBuffer<TVertex, TDescriptor> buffer)
+    protected override VertexBufferCacheHandles CreateNew(VertexBuffer<TVertex> buffer)
     {
-        var vao = CreateVertexArrayObject(buffer);
+        var vao = CreateVertexArrayObject();
 
-        var vbo = CreateVertexBufferObject(buffer);
-        var ibo = CreateIndexBufferObject(buffer);
+        var vbo = CreateVertexBufferObject();
+        var ibo = CreateIndexBufferObject();
         var extraVbos = CreateExtraVBO(buffer);
 
         ConfigureAttributes(buffer, vbo, extraVbos);
@@ -25,7 +26,7 @@ public class VertexBufferCache<TVertex, TDescriptor> : Cache<VertexBuffer<TVerte
         return handles;
     }
 
-    private static int[] CreateExtraVBO(VertexBuffer<TVertex, TDescriptor> buffer)
+    private static int[] CreateExtraVBO(VertexBuffer<TVertex> buffer)
     {
         var ids = new int[buffer.ExtraAttributeCount];
 
@@ -87,27 +88,27 @@ public class VertexBufferCache<TVertex, TDescriptor> : Cache<VertexBuffer<TVerte
         };
     }
 
-    private static int CreateIndexBufferObject(VertexBuffer<TVertex, TDescriptor> buffer)
+    private static int CreateIndexBufferObject()
     {
         int ibo = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo);
         return ibo;
     }
 
-    private static int CreateVertexArrayObject(VertexBuffer<TVertex, TDescriptor> buffer)
+    private static int CreateVertexArrayObject()
     {
         int vao = GL.GenVertexArray();
         GL.BindVertexArray(vao);
         return vao;
     }
 
-    private static void ConfigureAttributes(VertexBuffer<TVertex, TDescriptor> buffer, int VBO, int[] extraDataObjects)
+    private static void ConfigureAttributes(VertexBuffer<TVertex> buffer, int VBO, int[] extraDataObjects)
     {
         GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
 
         int location = 0;
         int currentPointerPos = 0;
-        var desc = buffer.GetDescriptor();
+        var desc = buffer.Descriptor;
 
         foreach (var a in desc.GetAttributes())
         {
@@ -172,20 +173,21 @@ public class VertexBufferCache<TVertex, TDescriptor> : Cache<VertexBuffer<TVerte
         }
     }
 
-    private static int CreateVertexBufferObject(VertexBuffer<TVertex, TDescriptor> buffer)
+    private static int CreateVertexBufferObject()
     {
         int vbo = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
         return vbo;
     }
 
-    public void UpdateBuffer(VertexBuffer<TVertex, TDescriptor> buffer, VertexBufferCacheHandles handles)
+    public void UpdateBuffer(VertexBuffer<TVertex> buffer, VertexBufferCacheHandles handles)
     {
         var hint = buffer.Dynamic ? BufferUsageHint.DynamicDraw : BufferUsageHint.StaticDraw;
+        var desc = buffer.Descriptor;
 
         //upload vertices
         GL.BindBuffer(BufferTarget.ArrayBuffer, handles.VBO);
-        GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(buffer.Vertices.Length * Vertex.Stride), buffer.Vertices, hint);
+        GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(buffer.Vertices.Length * desc.GetTotalStride()), buffer.Vertices, hint);
 
         //upload indices
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, handles.IBO);
@@ -200,7 +202,7 @@ public class VertexBufferCache<TVertex, TDescriptor> : Cache<VertexBuffer<TVerte
         buffer.HasChanged = false;
     }
 
-    public void UpdateExtraData(VertexBuffer<TVertex, TDescriptor> buffer, VertexBufferCacheHandles handles)
+    public void UpdateExtraData(VertexBuffer<TVertex> buffer, VertexBufferCacheHandles handles)
     {
         var hint = buffer.Dynamic ? BufferUsageHint.DynamicDraw : BufferUsageHint.StaticDraw;
 
@@ -213,7 +215,7 @@ public class VertexBufferCache<TVertex, TDescriptor> : Cache<VertexBuffer<TVerte
             GL.BindBuffer(BufferTarget.ArrayBuffer, id);
 
             var stride = AttributeTypeInfoLookup.GetStride(array.AttributeType);
-            IntPtr size = (IntPtr)(array.Count * stride);
+            IntPtr size = array.Count * stride;
             UploadCustomDataArray(array, size, hint);
         }
 

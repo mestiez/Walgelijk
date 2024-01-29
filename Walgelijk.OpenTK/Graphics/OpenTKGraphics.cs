@@ -76,7 +76,7 @@ public class OpenTKGraphics : IGraphics
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
     }
 
-    public void Draw<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vertexBuffer, Material material = null) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct
+    public void Draw<TVertex>(VertexBuffer<TVertex> vertexBuffer, Material material = null) where TVertex : struct
     {
         if (currentTarget == null)
             return;
@@ -108,32 +108,32 @@ public class OpenTKGraphics : IGraphics
                 switch (Stencil.AccessMode)
                 {
                     case StencilAccessMode.Write:
-                    {
-                        GL.Disable(EnableCap.DepthTest);
-                        GL.StencilMask(0xFF);
+                        {
+                            GL.Disable(EnableCap.DepthTest);
+                            GL.StencilMask(0xFF);
 
-                        GL.ColorMask(false, false, false, false);
-                        GL.StencilOp(StencilOp.Replace, StencilOp.Replace, StencilOp.Replace);
-                        GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
-                    }
-                    break;
+                            GL.ColorMask(false, false, false, false);
+                            GL.StencilOp(StencilOp.Replace, StencilOp.Replace, StencilOp.Replace);
+                            GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
+                        }
+                        break;
 
                     case StencilAccessMode.NoWrite:
-                    {
-                        GL.StencilMask(0x00);
-
-                        GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Keep);
-                        switch (stencil.TestMode)
                         {
-                            case StencilTestMode.Inside:
-                                GL.StencilFunc(StencilFunction.Equal, 1, 0xFF);
-                                break;
-                            case StencilTestMode.Outside:
-                                GL.StencilFunc(StencilFunction.Notequal, 1, 0xFF);
-                                break;
+                            GL.StencilMask(0x00);
+
+                            GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Keep);
+                            switch (stencil.TestMode)
+                            {
+                                case StencilTestMode.Inside:
+                                    GL.StencilFunc(StencilFunction.Equal, 1, 0xFF);
+                                    break;
+                                case StencilTestMode.Outside:
+                                    GL.StencilFunc(StencilFunction.Notequal, 1, 0xFF);
+                                    break;
+                            }
                         }
-                    }
-                    break;
+                        break;
                 }
             }
             else
@@ -141,7 +141,7 @@ public class OpenTKGraphics : IGraphics
         }
     }
 
-    public void DrawInstanced<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vertexBuffer, int instanceCount, Material material = null) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct
+    public void DrawInstanced<TVertex>(VertexBuffer<TVertex> vertexBuffer, int instanceCount, Material material = null) where TVertex : struct
     {
         if (currentTarget == null)
             return;
@@ -157,11 +157,11 @@ public class OpenTKGraphics : IGraphics
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void PrepareVertexBuffer<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vertexBuffer, Material material) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct
+    private void PrepareVertexBuffer<TVertex>(VertexBuffer<TVertex> vertexBuffer, Material material) where TVertex : struct
     {
         SetMaterial(material);
         SetTransformationMatrixUniforms(material);
-        var cache = GPUObjects.VertexBufferCache.Load<TVertex, TDescriptor>();
+        var cache = GPUObjects.VertexBufferCache.Load<TVertex>();
 
         VertexBufferCacheHandles handles = cache.Load(vertexBuffer);
 
@@ -304,10 +304,10 @@ public class OpenTKGraphics : IGraphics
         return false;
     }
 
-    public int TryGetId<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vb, out int vertexBufferId, out int indexBufferId, out int vertexArrayId, ref int[] vertexAttributeIds) where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct
+    public int TryGetId<TVertex>(VertexBuffer<TVertex> vb, out int vertexBufferId, out int indexBufferId, out int vertexArrayId, ref int[] vertexAttributeIds) where TVertex : struct
     {
         vertexArrayId = vertexBufferId = indexBufferId = -1;
-        var vbCache = GPUObjects.VertexBufferCache.Load<TVertex, TDescriptor>();
+        var vbCache = GPUObjects.VertexBufferCache.Load<TVertex>();
         if (vbCache.Has(vb))
         {
             var l = vbCache.Load(vb);
@@ -473,19 +473,15 @@ public class OpenTKGraphics : IGraphics
         }
     }
 
-    public void Delete<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vb)
-        where TVertex : struct
-        where TDescriptor : IVertexDescriptor<TVertex>, new()
+    public void Delete<TVertex>(VertexBuffer<TVertex> vb) where TVertex : struct
     {
-        var cache = GPUObjects.VertexBufferCache.Load<TVertex, TDescriptor>();
+        var cache = GPUObjects.VertexBufferCache.Load<TVertex>();
         cache.Load(vb);
     }
 
-    public void Upload<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vb)
-        where TVertex : struct
-        where TDescriptor : IVertexDescriptor<TVertex>, new()
+    public void Upload<TVertex>(VertexBuffer<TVertex> vb) where TVertex : struct
     {
-        var cache = GPUObjects.VertexBufferCache.Load<TVertex, TDescriptor>();
+        var cache = GPUObjects.VertexBufferCache.Load<TVertex>();
         cache.Unload(vb);
     }
 }

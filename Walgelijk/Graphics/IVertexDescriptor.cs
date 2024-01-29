@@ -5,8 +5,7 @@ namespace Walgelijk;
 /// <summary>
 /// Provides a function that returns all specified attribute arrays of a vertex
 /// </summary>
-/// <typeparam name="TVertex"></typeparam>
-public interface IVertexDescriptor<TVertex>
+public interface IVertexDescriptor
 {
     /// <summary>
     /// Get all attributes of this vertex in the correct order

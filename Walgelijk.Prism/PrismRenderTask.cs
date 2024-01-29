@@ -2,9 +2,9 @@
 
 namespace Walgelijk.Prism;
 
-public class PrismRenderTask : IRenderTask
+public class PrismRenderTask<TVertex> : IRenderTask where TVertex : struct
 {
-    public PrismRenderTask(VertexBuffer vertexBuffer, Matrix4x4 modelMatrix = default, Material? material = null)
+    public PrismRenderTask(VertexBuffer<TVertex> vertexBuffer, Matrix4x4 modelMatrix = default, Material? material = null)
     {
         VertexBuffer = vertexBuffer;
         Material = material ?? new Material(Material.DefaultTextured) { DepthTested = true };
@@ -13,7 +13,7 @@ public class PrismRenderTask : IRenderTask
     }
 
     public Matrix4x4 ModelMatrix;
-    public VertexBuffer VertexBuffer;
+    public VertexBuffer<TVertex> VertexBuffer;
     public Material Material;
     public bool ScreenSpace;
 

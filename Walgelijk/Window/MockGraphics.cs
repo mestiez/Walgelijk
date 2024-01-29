@@ -18,19 +18,16 @@ public class MockGraphics : IGraphics
 
     public void Delete(object obj) { }
 
-    public void Delete<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> graphicsObject)
+    public void Delete<TVertex>(VertexBuffer<TVertex> graphicsObject)
         where TVertex : struct
-        where TDescriptor : IVertexDescriptor<TVertex>, new()
     { }
 
-    public void Draw<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vertexBuffer, Material? material = null)
+    public void Draw<TVertex>(VertexBuffer<TVertex> vertexBuffer, Material? material = null)
         where TVertex : struct
-        where TDescriptor : IVertexDescriptor<TVertex>, new()
     { }
 
-    public void DrawInstanced<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> vertexBuffer, int instanceCount, Material? material = null)
+    public void DrawInstanced<TVertex>(VertexBuffer<TVertex> vertexBuffer, int instanceCount, Material? material = null)
         where TVertex : struct
-        where TDescriptor : IVertexDescriptor<TVertex>, new()
     { }
 
     public void SaveTexture(FileStream output, IReadableTexture texture) { }
@@ -56,9 +53,8 @@ public class MockGraphics : IGraphics
         return false;
     }
 
-    public int TryGetId<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> graphicsObject, out int vertexBufferId, out int indexBufferId, out int vertexArrayId, ref int[] vertexAttributeIds)
+    public int TryGetId<TVertex>(VertexBuffer<TVertex> graphicsObject, out int vertexBufferId, out int indexBufferId, out int vertexArrayId, ref int[] vertexAttributeIds)
         where TVertex : struct
-        where TDescriptor : IVertexDescriptor<TVertex>, new()
     {
         vertexBufferId = 0;
         indexBufferId = 0;
@@ -68,8 +64,7 @@ public class MockGraphics : IGraphics
 
     public void Upload(object obj) { }
 
-    public void Upload<TVertex, TDescriptor>(VertexBuffer<TVertex, TDescriptor> graphicsObject)
+    public void Upload<TVertex>(VertexBuffer<TVertex> graphicsObject)
         where TVertex : struct
-        where TDescriptor : IVertexDescriptor<TVertex>, new()
     { }
 }

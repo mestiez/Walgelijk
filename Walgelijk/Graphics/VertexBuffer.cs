@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Walgelijk;
 
 /// <summary>
 /// Holds all the data needed to draw vertices to the screen
 /// </summary>
-public class VertexBuffer<TVertex, TDescriptor> : IDisposable where TDescriptor : IVertexDescriptor<TVertex>, new() where TVertex : struct
+public class VertexBuffer<TVertex> : IDisposable, IVertexBuffer where TVertex : struct
 {
     private TVertex[] vertices = [];
     private uint[] indices = [];
     private bool disposed = false;
+
+    private MemoryHandle verticesHandle;
 
     public bool Disposed => disposed;
 
@@ -23,20 +27,25 @@ public class VertexBuffer<TVertex, TDescriptor> : IDisposable where TDescriptor 
     /// <summary>
     /// Create a VertexBuffer with the specified vertices and indices
     /// </summary>
-    public VertexBuffer(TVertex[] vertices, uint[] indices, VertexAttributeArray[]? extraAttributes = null)
+    public VertexBuffer(TVertex[] vertices, uint[] indices, IVertexDescriptor vertexDescriptor, VertexAttributeArray[]? extraAttributes = null)
     {
         this.vertices = vertices;
         this.indices = indices;
-
         this.extraAttributes = extraAttributes;
+        Descriptor = vertexDescriptor;
+
+        verticesHandle = vertices.AsMemory().Pin();
     }
 
     /// <summary>
     /// Create a VertexBuffer with the specified vertices. The indices will be set automatically
     /// </summary>
-    public VertexBuffer(TVertex[] vertices)
+    public VertexBuffer(TVertex[] vertices, IVertexDescriptor vertexDescriptor)
     {
         Vertices = vertices;
+        verticesHandle = vertices.AsMemory().Pin();
+        Descriptor = vertexDescriptor;
+
         GenerateIndices();
     }
 
@@ -83,6 +92,8 @@ public class VertexBuffer<TVertex, TDescriptor> : IDisposable where TDescriptor 
         {
             vertices = value;
             HasChanged = true;
+            verticesHandle.Dispose();
+            verticesHandle = vertices.AsMemory().Pin();
         }
     }
 
@@ -183,30 +194,39 @@ public class VertexBuffer<TVertex, TDescriptor> : IDisposable where TDescriptor 
         {
             Game.Main?.Window?.Graphics?.Delete(this);
             GC.SuppressFinalize(this);
+            verticesHandle.Dispose();
         }
         disposed = true;
     }
+
+    public MemoryHandle GetVerticesMemoryHandle() => verticesHandle;
 
     /// <summary>
     /// Returns the amount of extra attributes. The total amount of attributes equals this value + 3
     /// </summary>
     public int ExtraAttributeCount => extraAttributes?.Length ?? 0;
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    [DisallowNull]
+    public IVertexDescriptor Descriptor { get; init; }
 }
 
 /// <summary>
-/// Implements <see cref="VertexBuffer{TVertex, TDescriptor}"/> with the default <see cref="Vertex"/> struct
+/// Implements <see cref="VertexBuffer{TVertex}"/> with the default <see cref="Vertex"/> struct
 /// </summary>
-public class VertexBuffer : VertexBuffer<Vertex, Vertex.Descriptor>
+public class VertexBuffer : VertexBuffer<Vertex>
 {
     public VertexBuffer()
     {
     }
 
-    public VertexBuffer(Vertex[] vertices) : base(vertices)
+    public VertexBuffer(Vertex[] vertices) : base(vertices, new Vertex.Descriptor())
     {
     }
 
-    public VertexBuffer(Vertex[] vertices, uint[] indices, VertexAttributeArray[]? extraAttributes = null) : base(vertices, indices, extraAttributes)
+    public VertexBuffer(Vertex[] vertices, uint[] indices, VertexAttributeArray[]? extraAttributes = null) : base(vertices, indices, new Vertex.Descriptor(), extraAttributes)
     {
     }
 }

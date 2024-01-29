@@ -2207,14 +2207,14 @@
             Clear current target
             </summary>
         </member>
-        <member name="M:Walgelijk.IGraphics.Draw``2(Walgelijk.VertexBuffer{``0,``1},Walgelijk.Material)">
+        <member name="M:Walgelijk.IGraphics.Draw``1(Walgelijk.VertexBuffer{``0},Walgelijk.Material)">
             <summary>
             Draw a vertex buffer to the currently activated target
             </summary>
             <param name="vertexBuffer">VertexBuffer to draw</param>
             <param name="material">Material to draw it with</param>
         </member>
-        <member name="M:Walgelijk.IGraphics.DrawInstanced``2(Walgelijk.VertexBuffer{``0,``1},System.Int32,Walgelijk.Material)">
+        <member name="M:Walgelijk.IGraphics.DrawInstanced``1(Walgelijk.VertexBuffer{``0},System.Int32,Walgelijk.Material)">
             <summary>
             Draw a instanced vertex buffer to the currently activated target
             </summary>
@@ -2247,12 +2247,12 @@
             Forcibly upload an object to the GPU if supported. Won't do anything if the object was already there.
             </summary>
         </member>
-        <member name="M:Walgelijk.IGraphics.Delete``2(Walgelijk.VertexBuffer{``0,``1})">
+        <member name="M:Walgelijk.IGraphics.Delete``1(Walgelijk.VertexBuffer{``0})">
             <summary>
             Delete a VB from the GPU by its CPU representation
             </summary>
         </member>
-        <member name="M:Walgelijk.IGraphics.Upload``2(Walgelijk.VertexBuffer{``0,``1})">
+        <member name="M:Walgelijk.IGraphics.Upload``1(Walgelijk.VertexBuffer{``0})">
             <summary>
             Forcibly upload a VB to the GPU if supported. Won't do anything if the VB was already there.
             </summary>
@@ -2274,7 +2274,7 @@
             Returns false if the given object could not be found, true otherwise.
             </summary>
         </member>
-        <member name="M:Walgelijk.IGraphics.TryGetId``2(Walgelijk.VertexBuffer{``0,``1},System.Int32@,System.Int32@,System.Int32@,System.Int32[]@)">
+        <member name="M:Walgelijk.IGraphics.TryGetId``1(Walgelijk.VertexBuffer{``0},System.Int32@,System.Int32@,System.Int32@,System.Int32[]@)">
             <summary>
             Try to get the ID of the given graphics object. 
             <paramref name="vertexAttributeIds"/> expects an array of integers. It will be filled with the extra attribute IDs if they exist.
@@ -2354,13 +2354,33 @@
             Whether or not the renderer needs to send new information to the GPU
             </summary>
         </member>
-        <member name="T:Walgelijk.IVertexDescriptor`1">
+        <member name="T:Walgelijk.IVertexBuffer">
+            <summary>
+            Provides functions that are common to all vertex buffers and required for the graphics backend
+            </summary>
+        </member>
+        <member name="M:Walgelijk.IVertexBuffer.GetVerticesMemoryHandle">
+            <summary>
+            Returns a <see cref="T:System.Buffers.MemoryHandle"/> to the contiguous block of memory that stores all vertices, whatever type they may be
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Walgelijk.IVertexBuffer.VertexCount">
+            <summary>
+            Amount of vertices
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IVertexBuffer.Descriptor">
+            <summary>
+            The descriptor that provides functions to describe the vertex object to the graphics backend
+            </summary>
+        </member>
+        <member name="T:Walgelijk.IVertexDescriptor">
             <summary>
             Provides a function that returns all specified attribute arrays of a vertex
             </summary>
-            <typeparam name="TVertex"></typeparam>
         </member>
-        <member name="M:Walgelijk.IVertexDescriptor`1.GetAttributes">
+        <member name="M:Walgelijk.IVertexDescriptor.GetAttributes">
             <summary>
             Get all attributes of this vertex in the correct order
             </summary>
@@ -3454,7 +3474,8 @@
         </member>
         <member name="T:Walgelijk.Vertex">
             <summary>
-            A vertex
+            The default vertex used by a <see cref="T:Walgelijk.VertexBuffer"/> if no type parameter is provided.
+            This vertex is generally useful for 2D and 3D objects but keeps it simple.
             </summary>
         </member>
         <member name="F:Walgelijk.Vertex.Stride">
@@ -3507,6 +3528,9 @@
             <summary>
             Create a vertex with a position and a normal.  White and zero UV by default
             </summary>
+        </member>
+        <member name="M:Walgelijk.Vertex.Descriptor.GetAttributes">
+            <inheritdoc/>
         </member>
         <member name="T:Walgelijk.VertexAttributeArray">
             <summary>
@@ -3603,112 +3627,117 @@
             Create a vertex attribute descriptor based on the given attribute type
             </summary>
         </member>
-        <member name="T:Walgelijk.VertexBuffer`2">
+        <member name="T:Walgelijk.VertexBuffer`1">
             <summary>
             Holds all the data needed to draw vertices to the screen
             </summary>
         </member>
-        <member name="P:Walgelijk.VertexBuffer`2.PrimitiveType">
+        <member name="P:Walgelijk.VertexBuffer`1.PrimitiveType">
             <summary>
             The way vertices are drawn
             </summary>
         </member>
-        <member name="M:Walgelijk.VertexBuffer`2.#ctor(`0[],System.UInt32[],Walgelijk.VertexAttributeArray[])">
+        <member name="M:Walgelijk.VertexBuffer`1.#ctor(`0[],System.UInt32[],Walgelijk.IVertexDescriptor,Walgelijk.VertexAttributeArray[])">
             <summary>
             Create a VertexBuffer with the specified vertices and indices
             </summary>
         </member>
-        <member name="M:Walgelijk.VertexBuffer`2.#ctor(`0[])">
+        <member name="M:Walgelijk.VertexBuffer`1.#ctor(`0[],Walgelijk.IVertexDescriptor)">
             <summary>
             Create a VertexBuffer with the specified vertices. The indices will be set automatically
             </summary>
         </member>
-        <member name="M:Walgelijk.VertexBuffer`2.#ctor">
+        <member name="M:Walgelijk.VertexBuffer`1.#ctor">
             <summary>
             Create an empty vertex buffer
             </summary>
         </member>
-        <member name="F:Walgelijk.VertexBuffer`2.AmountOfIndicesToRender">
+        <member name="F:Walgelijk.VertexBuffer`1.AmountOfIndicesToRender">
             <summary>
-            If non-null, this determines the amount of indices to render. If null, the renderer will fall back to the amount of indices in the <see cref="P:Walgelijk.VertexBuffer`2.Indices"/> array. <b>This should NOT exceed the amount of available indices</b>
+            If non-null, this determines the amount of indices to render. If null, the renderer will fall back to the amount of indices in the <see cref="P:Walgelijk.VertexBuffer`1.Indices"/> array. <b>This should NOT exceed the amount of available indices</b>
             </summary>
         </member>
-        <member name="P:Walgelijk.VertexBuffer`2.HasChanged">
+        <member name="P:Walgelijk.VertexBuffer`1.HasChanged">
             <summary>
             Whether the data needs to be uploaded to the GPU again
             </summary>
         </member>
-        <member name="P:Walgelijk.VertexBuffer`2.ExtraDataHasChanged">
+        <member name="P:Walgelijk.VertexBuffer`1.ExtraDataHasChanged">
             <summary>
             Whether the extra data needs to be uploaded to the GPU again
             </summary>
         </member>
-        <member name="P:Walgelijk.VertexBuffer`2.Dynamic">
+        <member name="P:Walgelijk.VertexBuffer`1.Dynamic">
             <summary>
             Does the vertex data change often?
             </summary>
         </member>
-        <member name="P:Walgelijk.VertexBuffer`2.DisposeLocalCopy">
+        <member name="P:Walgelijk.VertexBuffer`1.DisposeLocalCopy">
             <summary>
             The local arrays will be cleared and made unusable after upload to the GPU
             </summary>
         </member>
-        <member name="P:Walgelijk.VertexBuffer`2.Vertices">
+        <member name="P:Walgelijk.VertexBuffer`1.Vertices">
             <summary>
-            Vertices to draw. <b>Do not forget to set the corresponding indices, or use <see cref="M:Walgelijk.VertexBuffer`2.GenerateIndices"/></b>
+            Vertices to draw. <b>Do not forget to set the corresponding indices, or use <see cref="M:Walgelijk.VertexBuffer`1.GenerateIndices"/></b>
             </summary>
         </member>
-        <member name="P:Walgelijk.VertexBuffer`2.Indices">
+        <member name="P:Walgelijk.VertexBuffer`1.Indices">
             <summary>
             Indices to draw vertices by
             </summary>
         </member>
-        <member name="P:Walgelijk.VertexBuffer`2.IndexCount">
+        <member name="P:Walgelijk.VertexBuffer`1.IndexCount">
             <summary>
             Amount of indices
             </summary>
         </member>
-        <member name="P:Walgelijk.VertexBuffer`2.VertexCount">
+        <member name="P:Walgelijk.VertexBuffer`1.VertexCount">
             <summary>
             Amount of vertices
             </summary>
         </member>
-        <member name="M:Walgelijk.VertexBuffer`2.ForceUpdate">
+        <member name="M:Walgelijk.VertexBuffer`1.ForceUpdate">
             <summary>
             Force the data to be reuploaded to the GPU
             </summary>
         </member>
-        <member name="M:Walgelijk.VertexBuffer`2.GenerateIndices">
+        <member name="M:Walgelijk.VertexBuffer`1.GenerateIndices">
             <summary>
             Generates indices that simply walk the vertex array from beginning to end
             </summary>
         </member>
-        <member name="M:Walgelijk.VertexBuffer`2.FindAttribute(Walgelijk.AttributeType)">
+        <member name="M:Walgelijk.VertexBuffer`1.FindAttribute(Walgelijk.AttributeType)">
             <summary>
             Find the location of a vertex attribute array with the given type. Returns -1 if nothing is found.
             </summary>
         </member>
-        <member name="M:Walgelijk.VertexBuffer`2.GetAttribute(System.Int32)">
+        <member name="M:Walgelijk.VertexBuffer`1.GetAttribute(System.Int32)">
             <summary>
             Get a vertex attribute array. Returns null if nothing is found. This is a reference value.
             </summary>
         </member>
-        <member name="M:Walgelijk.VertexBuffer`2.GetAttribute``1(System.Int32)">
+        <member name="M:Walgelijk.VertexBuffer`1.GetAttribute``1(System.Int32)">
             <summary>
             Get a vertex attribute array. Returns null if nothing is found. This is a reference value.
             </summary>
         </member>
-        <member name="P:Walgelijk.VertexBuffer`2.ExtraAttributeCount">
+        <member name="P:Walgelijk.VertexBuffer`1.ExtraAttributeCount">
             <summary>
             Returns the amount of extra attributes. The total amount of attributes equals this value + 3
             </summary>
         </member>
-        <member name="T:Walgelijk.VertexBuffer">
+        <member name="P:Walgelijk.VertexBuffer`1.Descriptor">
             <summary>
-            Implements <see cref="T:Walgelijk.VertexBuffer`2"/> with the default <see cref="T:Walgelijk.Vertex"/> struct
+            <inheritdoc/>
             </summary>
         </member>
-        <member name="M:Walgelijk.VertexDescriptorExtensions.GetTotalStride``1(Walgelijk.IVertexDescriptor{``0})">
+        <member name="T:Walgelijk.VertexBuffer">
+            <summary>
+            Implements <see cref="T:Walgelijk.VertexBuffer`1"/> with the default <see cref="T:Walgelijk.Vertex"/> struct
+            </summary>
+        </member>
+        <member name="M:Walgelijk.VertexDescriptorExtensions.GetTotalStride(Walgelijk.IVertexDescriptor)">
             <summary>
             Get the total size of the vertex object
             </summary>
