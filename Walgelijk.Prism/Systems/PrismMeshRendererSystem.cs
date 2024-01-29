@@ -4,18 +4,14 @@ public class PrismMeshRendererSystem : Walgelijk.System
 {
     public override void Render()
     {
-        if (!Game.Compositor.Flags.HasFlag(RenderTargetFlags.DepthStencil))
-            Game.Compositor.Flags |= RenderTargetFlags.DepthStencil;
-
-        foreach (var item in Scene.GetAllComponentsOfType<PrismMeshComponent>())
+        foreach (var item in Scene.GetAllComponentsOfType<BasePrismMeshComponent>())
         {
-            var transform = Scene.GetComponentFrom<PrismTransformComponent>(item.Entity);
-
-            item.RenderTask.VertexBuffer = item.VertexBuffer;
-            item.RenderTask.Material = item.Material;
-            item.RenderTask.ModelMatrix = transform.Transformation;
-
-            RenderQueue.Add(item.RenderTask);
+            var r = item.GetRenderTask();
+            if (r != null)
+            {
+                item.UpdateRenderTask(Scene);
+                RenderQueue.Add(r);
+            }
         }
     }
 }

@@ -108,7 +108,7 @@ public class VertexBufferCache<TVertex> : Cache<VertexBuffer<TVertex>, VertexBuf
 
         int location = 0;
         int currentPointerPos = 0;
-        var desc = buffer.Descriptor;
+        var desc = buffer.Descriptor ?? throw new Exception("VertexBuffer Descriptor is null!");
 
         foreach (var a in desc.GetAttributes())
         {
@@ -183,7 +183,7 @@ public class VertexBufferCache<TVertex> : Cache<VertexBuffer<TVertex>, VertexBuf
     public void UpdateBuffer(VertexBuffer<TVertex> buffer, VertexBufferCacheHandles handles)
     {
         var hint = buffer.Dynamic ? BufferUsageHint.DynamicDraw : BufferUsageHint.StaticDraw;
-        var desc = buffer.Descriptor;
+        var desc = buffer.Descriptor ?? throw new Exception("VertexBuffer Descriptor is null!");
 
         //upload vertices
         GL.BindBuffer(BufferTarget.ArrayBuffer, handles.VBO);

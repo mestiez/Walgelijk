@@ -54,6 +54,7 @@ public class VertexBuffer<TVertex> : IDisposable, IVertexBuffer where TVertex : 
     /// </summary>
     public VertexBuffer()
     {
+        Descriptor = new Vertex.Descriptor(); // Might as well lmao
     }
 
     /// <summary>

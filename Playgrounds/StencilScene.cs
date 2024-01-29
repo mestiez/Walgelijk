@@ -53,8 +53,6 @@ public struct StencilScene : ISceneCreator
     {
         public void Execute(IGraphics g)
         {
-            //TODO stencil clear werkt niet? iets met stencil buffer zelf maken?
-
             g.CurrentTarget.ProjectionMatrix = g.CurrentTarget.OrthographicMatrix;
             g.Clear(Colors.Purple.Brightness(0.2f));
 

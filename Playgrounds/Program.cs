@@ -40,7 +40,7 @@ public class Program
         Resources.SetBasePathForType<Texture>("textures");
         Resources.SetBasePathForType<Font>("fonts");
 
-        game.Scene = new AudioTestScene().Load(game);
+        game.Scene = new CustomVertexScene().Load(game);
 
 #if DEBUG
         game.DevelopmentMode = true;
