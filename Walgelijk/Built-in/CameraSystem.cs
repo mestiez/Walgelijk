@@ -76,7 +76,11 @@ namespace Walgelijk
         public override void PreRender()
         {
             if (!mainCameraSet || MainCameraComponent == null)
+            {
+                FallbackToFirstCamera();
                 return;
+            }
+
             SetRenderTask();
 
             if (MainCameraComponent.Clear)

@@ -199,15 +199,14 @@ public sealed class Scene : IDisposable
     /// Returns the first found instance of the given type.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool FindAnyComponent<T>([global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out T? anyInstance) where T : Component
+    public bool FindAnyComponent<T>([NotNullWhen(true)] out T? anyInstance) where T : Component
     {
-        var arr = new T[1];
-        if (components.GetAllOfType(arr, 0, 1) > 0)
+        foreach (var item in components.GetAllOfType<T>())
         {
-            anyInstance = arr[0];
+            anyInstance = item;
             return true;
         }
-        anyInstance = default;
+        anyInstance = null;
         return false;
     }
 
