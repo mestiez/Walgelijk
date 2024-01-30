@@ -4,9 +4,14 @@ public class NodeComparer : IComparer<int>
 {
     public int Compare(int x, int y)
     {
-        var xOrder = Onion.Tree.Nodes[x].SiblingIndex;
-        var yOrder = Onion.Tree.Nodes[y].SiblingIndex;
+        if (Onion.Tree.Nodes.TryGetValue(x, out var xNode) && Onion.Tree.Nodes.TryGetValue(y, out var yNode))
+        {
+            var xOrder = xNode.SiblingIndex;
+            var yOrder = yNode.SiblingIndex;
 
-        return xOrder - yOrder;
+            return xOrder - yOrder;
+        }
+
+        return 0;
     }
 }
