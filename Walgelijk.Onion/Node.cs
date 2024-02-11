@@ -18,16 +18,18 @@ public class Node
     public IEnumerable<Node> GetChildren()
     {
         foreach (var item in Children)
-            yield return Onion.Tree.Nodes[item];
+        {
+            if (Onion.Tree.Nodes.TryGetValue(item, out var n))
+                yield return n;
+        }
     }
 
     public IEnumerable<Node> GetLivingChildren()
     {
         foreach (var item in Children)
         {
-            var v = Onion.Tree.Nodes[item];
-            if (v.AliveLastFrame)
-                yield return v;
+            if (Onion.Tree.Nodes.TryGetValue(item, out var n) && n.AliveLastFrame)
+                yield return n;
         }
     }
 
@@ -313,6 +315,18 @@ public class Node
         }
     }
 
+    public void RecursiveDeleteChild(int id)
+    {
+        if (id == Identity)
+            return; // IM GOING TO DIEEEEEEEEEE
+
+        if (!Children.Remove(id))
+        {
+            foreach (var child in GetChildren())
+                child.RecursiveDeleteChild(id);
+        }
+    }
+
     public void RefreshChildrenList(ControlTree tree, float dt)
     {
         ChronologicalPosition = -1;
@@ -321,7 +335,7 @@ public class Node
         inst.Rects.ComputedChildContentSize = Vector2.Zero;
 
         // remove dead children from the child list
-        var toDelete = ArrayPool<int>.Shared.Rent(Children.Count);
+        //var toDelete = ArrayPool<int>.Shared.Rent(Children.Count);
         var length = 0;
         int siblingIndex = 0;
         foreach (var item in GetChildren())
@@ -329,8 +343,9 @@ public class Node
             var childInst = tree.EnsureInstance(item.Identity);
             if (!item.AliveLastFrame)
             {
-                if (childInst.AllowedDeadTime <= item.SecondsDead)
-                    toDelete[length++] = item.Identity;
+                // BYE this is handled by the ControlTree using RecursiveDeleteChild
+                //if (childInst.AllowedDeadTime <= item.SecondsDead)
+                //    toDelete[length++] = item.Identity;
             }
             else
             {
@@ -346,7 +361,7 @@ public class Node
         inst.Rects.ComputedChildContentSize -= inst.Rects.ComputedGlobal.BottomLeft;
         //for (int i = 0; i < length; i++) // TODO
         //    Children.Remove(toDelete[i]);
-        ArrayPool<int>.Shared.Return(toDelete);
+        //ArrayPool<int>.Shared.Return(toDelete);
 
         foreach (var item in GetChildren())
             item.RefreshChildrenList(tree, dt);

@@ -148,8 +148,9 @@ public class ControlTree
             node.Alive = false;
             node.CreationCount = 0;
 
-            if (!node.AliveLastFrame && node.SecondsDead > CacheTimeToLive)
-                toDelete.Enqueue(node);
+            // TODO MAJOR::: DEleting nodes... causes issues :(
+            //if (!node.AliveLastFrame && node.SecondsDead > CacheTimeToLive)
+            //    toDelete.Enqueue(node);
         }
         var p = new ControlParams(Root, EnsureInstance(Root.Identity));
 
@@ -166,9 +167,12 @@ public class ControlTree
 
         incrementor = 0;
 
-        //while (toDelete.TryDequeue(out var node)) // TODO
-       //     if (!Nodes.Remove(node.Identity))
-        //        Logger.Warn($"Onion: failed to delete {node}");
+        while (toDelete.TryDequeue(out var node))
+        {
+            Root.RecursiveDeleteChild(node.Identity);
+            if (!Nodes.Remove(node.Identity))
+                Logger.Warn($"Onion: failed to delete {node}");
+        }
 
         focusAnimationProgress = Utilities.Clamp(focusAnimationProgress + dt, 0, 1);
 
