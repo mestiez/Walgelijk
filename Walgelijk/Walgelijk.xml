@@ -5270,14 +5270,14 @@
             Clear the console
             </summary>
         </member>
-        <member name="T:Walgelijk.DiskLogger">
-            <summary>
-            A disk logger. Logs to the <see cref="F:Walgelijk.DiskLogger.TargetPath"/>
-            </summary>
-        </member>
         <member name="T:Walgelijk.ConsoleLogger">
             <summary>
             The default logger. Logs to the console.
+            </summary>
+        </member>
+        <member name="T:Walgelijk.DiskLogger">
+            <summary>
+            A disk logger. Logs to the <see cref="F:Walgelijk.DiskLogger.TargetPath"/>
             </summary>
         </member>
         <member name="T:Walgelijk.ILogger">
@@ -5285,22 +5285,22 @@
             Interface for basic logging
             </summary>
         </member>
-        <member name="M:Walgelijk.ILogger.Debug(System.String,System.String)">
+        <member name="M:Walgelijk.ILogger.Debug``1(``0,System.String)">
             <summary>
             Debug information
             </summary>
         </member>
-        <member name="M:Walgelijk.ILogger.Log(System.String,System.String)">
+        <member name="M:Walgelijk.ILogger.Log``1(``0,System.String)">
             <summary>
             Log information
             </summary>
         </member>
-        <member name="M:Walgelijk.ILogger.Warn(System.String,System.String)">
+        <member name="M:Walgelijk.ILogger.Warn``1(``0,System.String)">
             <summary>
             Log a warning
             </summary>
         </member>
-        <member name="M:Walgelijk.ILogger.Error(System.String,System.String)">
+        <member name="M:Walgelijk.ILogger.Error``1(``0,System.String)">
             <summary>
             Log an error
             </summary>
@@ -5315,29 +5315,24 @@
             The logging implementation used. Set to <see cref="T:Walgelijk.ConsoleLogger"/> by default
             </summary>
         </member>
-        <member name="M:Walgelijk.Logger.Debug(System.String@,System.String@)">
+        <member name="M:Walgelijk.Logger.Debug``1(``0@,System.String@)">
             <summary>
             Log information
             </summary>
         </member>
-        <member name="M:Walgelijk.Logger.Log(System.String@,System.String@)">
+        <member name="M:Walgelijk.Logger.Log``1(``0@,System.String@)">
             <summary>
             Log information
             </summary>
         </member>
-        <member name="M:Walgelijk.Logger.Warn(System.String@,System.String@)">
+        <member name="M:Walgelijk.Logger.Warn``1(``0@,System.String@)">
             <summary>
             Log a warning
             </summary>
         </member>
-        <member name="M:Walgelijk.Logger.Error(System.String@,System.String@)">
+        <member name="M:Walgelijk.Logger.Error``1(``0@,System.String@)">
             <summary>
             Log an error
-            </summary>
-        </member>
-        <member name="F:Walgelijk.Logger.OnLog">
-            <summary>
-            Event dispatched when a message is logged at any level
             </summary>
         </member>
         <member name="T:Walgelijk.LogLevel">
@@ -5363,26 +5358,6 @@
         <member name="F:Walgelijk.LogLevel.Error">
             <summary>
             Error messages
-            </summary>
-        </member>
-        <member name="T:Walgelijk.LogMessage">
-            <summary>
-            Struct that contains all information associated with a logged message
-            </summary>
-        </member>
-        <member name="F:Walgelijk.LogMessage.Message">
-            <summary>
-            Object sent by the source.
-            </summary>
-        </member>
-        <member name="F:Walgelijk.LogMessage.Source">
-            <summary>
-            Object that sent the message. Can be null.
-            </summary>
-        </member>
-        <member name="F:Walgelijk.LogMessage.Level">
-            <summary>
-            Level of this message
             </summary>
         </member>
         <member name="T:Walgelijk.Profiler">

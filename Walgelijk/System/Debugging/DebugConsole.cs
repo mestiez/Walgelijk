@@ -10,7 +10,7 @@ namespace Walgelijk;
 /// <summary>
 /// Class that renders and controls the debug console
 /// </summary>
-public class DebugConsole : IDisposable
+public class DebugConsole : ILogger, IDisposable
 {
     /// <summary>
     /// The key that will toggle the console
@@ -90,8 +90,8 @@ public class DebugConsole : IDisposable
         writer = new(stream, Encoding.ASCII);
         writer.AutoFlush = true;
         UI = new DebugConsoleUi(this);
-        Logger.OnLog.AddListener(OnLog);
         sessionHistory = new();
+        Logger.Implementations.Add(this);
 
         // Push the session history into our current history.
         if (sessionHistory.LastSessionCommands != null)
@@ -105,28 +105,6 @@ public class DebugConsole : IDisposable
             }
 
             historyIndex = sessionHistory.LastSessionCommands.Length;
-        }
-    }
-
-    private void OnLog(LogMessage obj)
-    {
-        switch (obj.Level)
-        {
-            case LogLevel.Debug:
-                WriteLine(obj.Message, ConsoleMessageType.Debug);
-                break;
-            case LogLevel.Info:
-                WriteLine(obj.Message, ConsoleMessageType.Info);
-                break;
-            case LogLevel.Warn:
-                WriteLine(obj.Message, ConsoleMessageType.Warning);
-                break;
-            case LogLevel.Error:
-                WriteLine(obj.Message, ConsoleMessageType.Error);
-                break;
-            default:
-                WriteLine(obj.Message);
-                break;
         }
     }
 
@@ -352,9 +330,8 @@ public class DebugConsole : IDisposable
 
         writer.WriteLine(v);
         UI.ParseLines();
-        ScrollOffset = UI.VisibleLineCount - UI.MaxLineCount;
+        ScrollOffset = int.Max(UI.VisibleLineCount - UI.MaxLineCount, 0);
     }
-
 
     /// <summary>
     /// Return the <see cref="ConsoleMessageType"/> flags for the given text based on the prefix
@@ -395,5 +372,25 @@ public class DebugConsole : IDisposable
         writer.Dispose();
         stream.Dispose();
         UI.Dispose();
+    }
+
+    public void Debug<T>(T message, string? source = null)
+    {
+        WriteLine(message!.ToString() ?? "NULL", ConsoleMessageType.Debug);
+    }
+
+    public void Log<T>(T message, string? source = null)
+    {
+        WriteLine(message!.ToString() ?? "NULL", ConsoleMessageType.Info);
+    }
+
+    public void Warn<T>(T message, string? source = null)
+    {
+        WriteLine(message!.ToString() ?? "NULL", ConsoleMessageType.Warning);
+    }
+
+    public void Error<T>(T message, string? source = null)
+    {
+        WriteLine(message!.ToString() ?? "NULL", ConsoleMessageType.Error);
     }
 }

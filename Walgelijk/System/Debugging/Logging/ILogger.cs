@@ -8,18 +8,18 @@
         /// <summary>
         /// Debug information
         /// </summary>
-        public void Debug(string message, string? source = null);
+        public void Debug<T>(T message, string? source = null);
         /// <summary>
         /// Log information
         /// </summary>
-        public void Log(string message, string? source = null);
+        public void Log<T>(T message, string? source = null);
         /// <summary>
         /// Log a warning
         /// </summary>
-        public void Warn(string message, string? source = null);
+        public void Warn<T>(T message, string? source = null);
         /// <summary>
         /// Log an error
         /// </summary>
-        public void Error(string message, string? source = null);
+        public void Error<T>(T message, string? source = null);
     }
 }

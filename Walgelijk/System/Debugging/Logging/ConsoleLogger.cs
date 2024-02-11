@@ -1,95 +1,51 @@
 ﻿using System;
-using System.IO;
 
-namespace Walgelijk
+namespace Walgelijk;
+
+/// <summary>
+/// The default logger. Logs to the console.
+/// </summary>
+public class ConsoleLogger : ILogger
 {
-    /// <summary>
-    /// A disk logger. Logs to the <see cref="TargetPath"/>
-    /// </summary>
-    public class DiskLogger : ILogger, IDisposable
+    public void Debug<T>(T message, string? source = null)
     {
-        public string TargetPath = "output.log";
-        private StreamWriter? output;
-
-        public DiskLogger()
-        {
-            output = new StreamWriter(TargetPath, false, global::System.Text.Encoding.UTF8);
-        }
-
-        public void Debug(string message, string? source = null)
-        {
-            output?.WriteLine("[DBG] {0} ({1})", message, source);
-        }
-
-        public void Error(string message, string? source = null)
-        {
-            output?.WriteLine("[ERR] {0} ({1})", message, source);
-        }
-
-        public void Log(string message, string? source = null)
-        {
-            output?.WriteLine("[INF] {0} ({1})", message, source);
-        }
-
-        public void Warn(string message, string? source = null)
-        {
-            output?.WriteLine("[WRN] {0} ({1})", message, source);
-        }
-
-        public void Dispose()
-        {
-            output?.Close();
-            output?.Dispose();
-            output = null;
-        }
+        Write("[DBG]", message, source ?? "null", ConsoleColor.Magenta);
     }
 
-    /// <summary>
-    /// The default logger. Logs to the console.
-    /// </summary>
-    public class ConsoleLogger : ILogger
+    public void Log<T>(T message, string? source = null)
     {
-        public void Debug(string message, string? source = null)
-        {
-            Write("[DBG]", message, source ?? "null", ConsoleColor.Magenta);
-        }
+        Write("[INF]", message, source ?? "null");
+    }
 
-        public void Log(string message, string? source = null)
-        {
-            Write("[INF]", message, source ?? "null");
-        }
+    public void Warn<T>(T message, string? source = null)
+    {
+        Write("[WRN]", message, source ?? "null", ConsoleColor.DarkYellow);
+    }
 
-        public void Warn(string message, string? source = null)
-        {
-            Write("[WRN]", message, source ?? "null", ConsoleColor.DarkYellow);
-        }
+    public void Error<T>(T message, string? source = null)
+    {
+        Write("[ERR]", message, source ?? "null", ConsoleColor.Red);
+    }
 
-        public void Error(string message, string? source = null)
-        {
-            Write("[ERR]", message, source ?? "null", ConsoleColor.Red);
-        }
+    private static void Write<T>(ReadOnlySpan<char> prefix, T message, ReadOnlySpan<char> source, ConsoleColor color = ConsoleColor.White)
+    {
+        Console.ForegroundColor = color;
+        for (int i = 0; i < prefix.Length; i++)
+            Console.Write(prefix[i]);
 
-        private void Write(ReadOnlySpan<char> prefix, ReadOnlySpan<char> message, ReadOnlySpan<char> source, ConsoleColor color = ConsoleColor.White)
-        {
-            Console.ForegroundColor = color;
-            for (int i = 0; i < prefix.Length; i++)
-                Console.Write(prefix[i]);
+        Console.Write(' ');
 
+        Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write(message?.ToString() ?? "NULL");
+
+        if (source != null)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.Write(' ');
-
-            Console.ForegroundColor = ConsoleColor.Gray;
-            for (int i = 0; i < message.Length; i++)
-                Console.Write(message[i]);
-
-            if (source != null)
-            {
-                Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.Write(' ');
-                for (int i = 0; i < source.Length; i++)
-                    Console.Write(source[i]);
-            }
-
-            Console.Write(Environment.NewLine);
+            for (int i = 0; i < source.Length; i++)
+                Console.Write(source[i]);
         }
+
+        Console.Write(Environment.NewLine);
     }
 }
