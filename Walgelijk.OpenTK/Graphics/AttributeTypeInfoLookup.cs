@@ -27,7 +27,7 @@ namespace Walgelijk.OpenTK
             return 0;
         }
 
-        public static int GetSize(AttributeType type)
+        public static int GetComponentCount(AttributeType type)
         {
             switch (type)
             {

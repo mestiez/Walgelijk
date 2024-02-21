@@ -73,21 +73,6 @@ public class VertexBufferCache<TVertex> : Cache<VertexBuffer<TVertex>, VertexBuf
         }
     }
 
-    private static VertexAttribPointerType GetPointerType(AttributeType v)
-    {
-        return v switch
-        {
-            AttributeType.Integer => VertexAttribPointerType.Int,
-            AttributeType.Float => VertexAttribPointerType.Float,
-            AttributeType.Double => VertexAttribPointerType.Double,
-            AttributeType.Vector2 => VertexAttribPointerType.Float,
-            AttributeType.Vector3 => VertexAttribPointerType.Float,
-            AttributeType.Vector4 => VertexAttribPointerType.Float,
-            AttributeType.Matrix4x4 => VertexAttribPointerType.Float,
-            _ => throw new Exception("Invalid attribute type"),
-        };
-    }
-
     private static int CreateIndexBufferObject()
     {
         int ibo = GL.GenBuffer();
@@ -115,7 +100,7 @@ public class VertexBufferCache<TVertex> : Cache<VertexBuffer<TVertex>, VertexBuf
             GL.VertexAttribPointer(
                 location,
                 a.ComponentCount,
-                GetPointerType(a.Type),
+                AttributeTypeInfoLookup.GetPointerType(a.Type),
                 false,
                 desc.GetTotalStride(),
                 currentPointerPos);
@@ -136,7 +121,7 @@ public class VertexBufferCache<TVertex> : Cache<VertexBuffer<TVertex>, VertexBuf
             }
 
             var type = AttributeTypeInfoLookup.GetPointerType(array.AttributeType);
-            var size = AttributeTypeInfoLookup.GetSize(array.AttributeType);
+            var size = AttributeTypeInfoLookup.GetComponentCount(array.AttributeType);
             var stride = AttributeTypeInfoLookup.GetStride(array.AttributeType);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, extraDataObjects[i]);

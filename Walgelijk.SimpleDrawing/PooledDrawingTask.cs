@@ -23,106 +23,111 @@ namespace Walgelijk.SimpleDrawing
 
         public void Execute(IGraphics graphics)
         {
-            Material material = Drawing.Material;
-
-            if (Drawing.VertexBuffer != null)
+            try
             {
-                if (Drawing.TextDrawing.HasValue)//yo ik heb text om te genereren
+                Material material = Drawing.Material;
+
+                if (Drawing.VertexBuffer != null)
                 {
-                    var text = Drawing.TextDrawing.Value.Text;
-                    var textDrawing = Drawing.TextDrawing.Value;
+                    if (Drawing.TextDrawing.HasValue)//yo ik heb text om te genereren
+                    {
+                        var text = Drawing.TextDrawing.Value.Text;
+                        var textDrawing = Drawing.TextDrawing.Value;
 
-                    if (string.IsNullOrWhiteSpace(text))
-                        return;
+                        if (string.IsNullOrWhiteSpace(text))
+                            return;
 
-                    if (string.IsNullOrWhiteSpace(text))
-                        Drawing.VertexBuffer.AmountOfIndicesToRender = 0;
+                        if (string.IsNullOrWhiteSpace(text))
+                            Drawing.VertexBuffer.AmountOfIndicesToRender = 0;
+                        else
+                        {
+                            int count = -1;
+                            if (Draw.CacheTextMeshes >= 0)
+                            {
+                                if (textFrequencyCounter.TryGetValue(text, out count))
+                                    textFrequencyCounter[text] = count + 1;
+                                else
+                                {
+                                    textFrequencyCounter.Add(text, 1);
+                                    count = 1;
+                                }
+                            }
+
+                            var cachable = new CachableTextDrawing
+                            {
+                                Color = Drawing.Color,
+                                Font = textDrawing.Font ?? Font.Default,
+                                HorizontalAlign = textDrawing.HorizontalAlign,
+                                VerticalAlign = textDrawing.VerticalAlign,
+                                Text = text,
+                                TextBoxWidth = textDrawing.TextBoxWidth,
+                            };
+
+                            if (count > Draw.CacheTextMeshes)
+                                Drawing.VertexBuffer = Draw.TextMeshCache.Load(cachable); // this text is common! use cache
+                            else
+                                TextMeshCache.Prepare(cachable, Drawing.VertexBuffer, true); // this text has only appeared infrequently.
+
+                            const float indicesPerLetter = 6;
+                            int total = Drawing.VertexBuffer.AmountOfIndicesToRender ?? Drawing.VertexBuffer.IndexCount;
+                            Drawing.VertexBuffer.AmountOfIndicesToRender = (int)Utilities.Snap(total * textDrawing.TextDrawRatio, indicesPerLetter);
+                        }
+                    }
                     else
                     {
-                        int count = -1;
-                        if (Draw.CacheTextMeshes >= 0)
+                        material.SetUniform(DrawingMaterialCreator.MainTexUniform, Drawing.Texture ?? Texture.White);
+                        material.SetUniform(DrawingMaterialCreator.ScaleUniform, new Vector2(MathF.Abs(Drawing.Scale.X), MathF.Abs(Drawing.Scale.Y)));
+                        material.SetUniform(DrawingMaterialCreator.RoundednessUniform, Drawing.Roundness);
+                        material.SetUniform(DrawingMaterialCreator.OutlineWidthUniform, Drawing.OutlineWidth);
+                        material.SetUniform(DrawingMaterialCreator.OutlineColourUniform, Drawing.OutlineColour);
+                        material.SetUniform(DrawingMaterialCreator.TintUniform, Drawing.Color);
+                        material.SetUniform(DrawingMaterialCreator.ImageModeUniform, (int)Drawing.ImageMode);
+                    }
+
+                    if (Drawing.ScreenSpace)
+                    {
+                        if (!Drawing.TextDrawing.HasValue)
                         {
-                            if (textFrequencyCounter.TryGetValue(text, out count))
-                                textFrequencyCounter[text] = count + 1;
-                            else
-                            {
-                                textFrequencyCounter.Add(text, 1);
-                                count = 1;
-                            }
+                            Drawing.Position.X = MathF.Round(Drawing.Position.X);
+                            Drawing.Position.Y = MathF.Round(Drawing.Position.Y);
+                            Drawing.Scale.X = MathF.Round(Drawing.Scale.X);
+                            Drawing.Scale.Y = MathF.Round(Drawing.Scale.Y);
                         }
 
-                        var cachable = new CachableTextDrawing
-                        {
-                            Color = Drawing.Color,
-                            Font = textDrawing.Font ?? Font.Default,
-                            HorizontalAlign = textDrawing.HorizontalAlign,
-                            VerticalAlign = textDrawing.VerticalAlign,
-                            Text = text,
-                            TextBoxWidth = textDrawing.TextBoxWidth,
-                        };
+                        var target = graphics.CurrentTarget;
 
-                        if (count > Draw.CacheTextMeshes)
-                            Drawing.VertexBuffer = Draw.TextMeshCache.Load(cachable); // this text is common! use cache
-                        else
-                            TextMeshCache.Prepare(cachable, Drawing.VertexBuffer, true); // this text has only appeared infrequently.
-
-                        const float indicesPerLetter = 6;
-                        int total = Drawing.VertexBuffer.AmountOfIndicesToRender ?? Drawing.VertexBuffer.IndexCount;
-                        Drawing.VertexBuffer.AmountOfIndicesToRender = (int)Utilities.Snap(total * textDrawing.TextDrawRatio, indicesPerLetter);
+                        var view = target.ViewMatrix;
+                        var proj = target.ProjectionMatrix;
+                        target.ProjectionMatrix = target.OrthographicMatrix;
+                        target.ViewMatrix = Matrix4x4.Identity;
+                        Drawing.Scale.Y *= -1;
+                        draw(graphics);
+                        target.ViewMatrix = view;
+                        target.ProjectionMatrix = proj;
                     }
+                    else
+                        draw(graphics);
+
+                    if (Drawing.ReturnVertexBufferToPool)
+                        Draw.PolygonPool.ReturnToPool(Drawing.VertexBuffer);
                 }
-                else
+
+                [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+                void draw(IGraphics graphics)
                 {
-                    material.SetUniform(DrawingMaterialCreator.MainTexUniform, Drawing.Texture ?? Texture.White);
-                    material.SetUniform(DrawingMaterialCreator.ScaleUniform, new Vector2(MathF.Abs(Drawing.Scale.X), MathF.Abs(Drawing.Scale.Y)));
-                    material.SetUniform(DrawingMaterialCreator.RoundednessUniform, Drawing.Roundness);
-                    material.SetUniform(DrawingMaterialCreator.OutlineWidthUniform, Drawing.OutlineWidth);
-                    material.SetUniform(DrawingMaterialCreator.OutlineColourUniform, Drawing.OutlineColour);
-                    material.SetUniform(DrawingMaterialCreator.TintUniform, Drawing.Color);
-                    material.SetUniform(DrawingMaterialCreator.ImageModeUniform, (int)Drawing.ImageMode);
+                    graphics.DrawBounds = Drawing.DrawBounds;
+                    graphics.CurrentTarget.ModelMatrix = new Matrix4x4(CreateMatrix(Drawing.Position, Drawing.Scale, Drawing.RotationRadians) * Drawing.Transformation);
+                    var oldBm = material.BlendMode;
+                    material.BlendMode = Drawing.BlendMode ?? BlendMode.AlphaBlend;
+                    graphics.Stencil = Drawing.Stencil;
+                    graphics.Draw(Drawing.VertexBuffer, material);
+                    material.BlendMode = oldBm;
+                    graphics.DrawBounds = DrawBounds.DisabledBounds;
                 }
-
-                if (Drawing.ScreenSpace)
-                {
-                    if (!Drawing.TextDrawing.HasValue)
-                    {
-                        Drawing.Position.X = MathF.Round(Drawing.Position.X);
-                        Drawing.Position.Y = MathF.Round(Drawing.Position.Y);
-                        Drawing.Scale.X = MathF.Round(Drawing.Scale.X);
-                        Drawing.Scale.Y = MathF.Round(Drawing.Scale.Y);
-                    }
-
-                    var target = graphics.CurrentTarget;
-
-                    var view = target.ViewMatrix;
-                    var proj = target.ProjectionMatrix;
-                    target.ProjectionMatrix = target.OrthographicMatrix;
-                    target.ViewMatrix = Matrix4x4.Identity;
-                    Drawing.Scale.Y *= -1;
-                    draw(graphics);
-                    target.ViewMatrix = view;
-                    target.ProjectionMatrix = proj;
-                }
-                else
-                    draw(graphics);
-
-                if (Drawing.ReturnVertexBufferToPool)
-                    Draw.PolygonPool.ReturnToPool(Drawing.VertexBuffer);
             }
-
-            Draw.TaskPool.ReturnToPool(this);
-
-            [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-            void draw(IGraphics graphics)
+            finally
             {
-                graphics.DrawBounds = Drawing.DrawBounds;
-                graphics.CurrentTarget.ModelMatrix = new Matrix4x4(CreateMatrix(Drawing.Position, Drawing.Scale, Drawing.RotationRadians) * Drawing.Transformation);
-                var oldBm = material.BlendMode;
-                material.BlendMode = Drawing.BlendMode ?? BlendMode.AlphaBlend;
-                graphics.Stencil = Drawing.Stencil;
-                graphics.Draw(Drawing.VertexBuffer, material);
-                material.BlendMode = oldBm;
-                graphics.DrawBounds = DrawBounds.DisabledBounds;
+                Draw.TaskPool.ReturnToPool(this);
             }
         }
 
