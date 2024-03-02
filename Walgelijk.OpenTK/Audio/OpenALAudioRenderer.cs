@@ -41,7 +41,7 @@ public class OpenALAudioRenderer : AudioRenderer
             return new Vector3(x, y, z);
         }
 
-        set => AL.Listener(ALListener3f.Position, value.X, value.Y, value.Y);
+        set => AL.Listener(ALListener3f.Position, value.X, value.Y, value.Z);
     }
 
     public override AudioDistanceModel DistanceModel
