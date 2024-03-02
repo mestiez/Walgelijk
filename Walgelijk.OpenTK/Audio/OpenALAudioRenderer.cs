@@ -41,7 +41,7 @@ public class OpenALAudioRenderer : AudioRenderer
             return new Vector3(x, y, z);
         }
 
-        set => AL.Listener(ALListener3f.Position, value.X, value.Z, value.Y);
+        set => AL.Listener(ALListener3f.Position, value.X, value.Y, value.Y);
     }
 
     public override AudioDistanceModel DistanceModel
@@ -130,7 +130,7 @@ public class OpenALAudioRenderer : AudioRenderer
 
         sound.RequiresUpdate = false;
 
-        AL.Source(source, ALSourceb.Looping, sound.Looping);
+        AL.Source(source, ALSourceb.Looping, sound.Data is not StreamAudioData && sound.Looping);
         AL.Source(source, ALSourcef.Pitch, sound.Pitch * (sound.Track?.Pitch ?? 1));
         AL.Source(source, ALSourcef.Gain, (sound.Track?.Muted ?? false) ? 0 : (sound.Volume * (sound.Track?.Volume ?? 1)));
 
@@ -294,7 +294,8 @@ public class OpenALAudioRenderer : AudioRenderer
 
         sound.State = SoundState.Stopped;
         UpdateIfRequired(sound, out int s);
-        AL.SourceRewind(s);
+        if (sound.Data is not StreamAudioData)
+            AL.SourceRewind(s);
     }
 
     public override void StopAll()
@@ -348,7 +349,7 @@ public class OpenALAudioRenderer : AudioRenderer
             if (sound.Data is StreamAudioData)
                 continue;
 
-            var sourceState = source.GetSourceState();
+            var sourceState = source.GetALState();
             if (sourceState == ALSourceState.Initial)
                 continue;
 
@@ -407,7 +408,7 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public override bool IsPlaying(Sound sound)
     {
-        return sound.State == SoundState.Playing || AudioObjects.Sources.Load(sound).GetSourceState() == ALSourceState.Playing;
+        return sound.State == SoundState.Playing || AudioObjects.Sources.Load(sound).GetALState() == ALSourceState.Playing;
     }
 
     public override void DisposeOf(AudioData audioData)
@@ -461,7 +462,7 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public void Resume(Sound sound)
     {
-        if (AudioObjects.Sources.Load(sound).GetSourceState() == ALSourceState.Paused)
+        if (AudioObjects.Sources.Load(sound).GetALState() == ALSourceState.Paused)
             Play(sound);
     }
 

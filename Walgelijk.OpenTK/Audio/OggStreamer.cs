@@ -1,6 +1,4 @@
-﻿//#define USE_FLOAT_EXT
-
-using NVorbis;
+﻿using NVorbis;
 using OpenTK.Audio.OpenAL;
 using System;
 using System.Collections.Concurrent;
@@ -12,27 +10,25 @@ namespace Walgelijk.OpenTK;
 
 public class OggStreamer : IDisposable
 {
-    public const int BufferSize = 1024;
-    public const int MaxBufferCount = 16;
+    public const int BufferSize = 2048;
+    public const int MaxBufferCount = 8;
 
-#if USE_FLOAT_EXT
-    public FloatBufferFormat Format => Raw.ChannelCount == 1 ? FloatBufferFormat.Mono : FloatBufferFormat.Stereo;
-#else
-    public ALFormat Format => Raw.ChannelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16;
-    private readonly short[] shortDataBuffer = new short[BufferSize];
-#endif
-
-    public readonly SourceHandle SourceHandle;
+    public readonly SourceHandle Source;
     public readonly Sound Sound;
-    public readonly StreamAudioData Raw;
-    public readonly BufferEntry[] Buffers = new BufferEntry[MaxBufferCount];
+    public readonly StreamAudioData AudioData;
+    public readonly Dictionary<BufferHandle, BufferEntry> Buffers = [];
+    public BufferHandle? CurrentPlayingBuffer;
 
-    private int lastProcessedSampleCount = 0;
-    private int processedSamples = 0;
-
+    public ALFormat Format => AudioData.ChannelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16;
     public TimeSpan CurrentTime
     {
-        get => TimeSpan.FromSeconds((processedSamples / (float)reader.SampleRate / Raw.ChannelCount) % (float)Sound.Data.Duration.TotalSeconds);
+        get
+        {
+            AL.GetSource(Source, ALGetSourcei.SampleOffset, out int samplesPlayedInThisBuffer);
+            AlCheck();
+            var total = samplesPlayedInThisBuffer + processedSamples;
+            return TimeSpan.FromSeconds((total / (float)reader.SampleRate / AudioData.ChannelCount) % (float)Sound.Data.Duration.TotalSeconds);
+        }
 
         set
         {
@@ -40,232 +36,165 @@ public class OggStreamer : IDisposable
         }
     }
 
-    private FileStream stream;
-    private VorbisReader reader;
-    private bool endReached;
+    private readonly short[] shortDataBuffer = new short[BufferSize];
     private readonly float[] rawOggBuffer = new float[BufferSize];
-    private readonly Thread monitorThread;
+    private readonly int[] bufferHandles = new int[MaxBufferCount];
+    private readonly ConcurrentQueue<float> playedSamplesBacklog = [];
+    private readonly Thread thread;
+
+    private int processedSamples = 0;
+    private VorbisReader reader;
+    private FileStream stream;
+    private bool endReached;
     private volatile bool monitorFlag = true;
-
-    public BufferHandle? CurrentPlayingBuffer;
-
-    private readonly ConcurrentStack<float> playedSamplesBacklog = new();
-
-    public IEnumerable<float> TakeLastPlayed(int count = 1024)
-    {
-        for (int i = 0; i < count; i++)
-            if (playedSamplesBacklog.TryPop(out var f))
-                yield return f;
-            else
-                yield break;
-    }
-
-    public class BufferEntry
-    {
-        public readonly BufferHandle Handle;
-        public bool Free;
-        public float[] Data = new float[BufferSize];
-
-        public BufferEntry(BufferHandle bufferHandle, bool free)
-        {
-            Handle = bufferHandle;
-            Free = free;
-        }
-    }
 
     public OggStreamer(SourceHandle sourceHandle, Sound sound, StreamAudioData raw)
     {
-        Raw = raw;
-        SourceHandle = sourceHandle;
+        AudioData = raw;
+        Source = sourceHandle;
         Sound = sound;
 
-        for (int i = 0; i < MaxBufferCount; i++)
-            Buffers[i] = new BufferEntry(AL.GenBuffer(), true);
-
-        Reset();
-
-        monitorThread = new Thread(MonitorLoop);
-        monitorThread.Start();
-
-    }
-
-    public void Reset()
-    {
-        AL.GetSource(SourceHandle, ALGetSourcei.BuffersProcessed, out int processed);
-
-        for (int p = 0; p < processed; p++)
-            AL.SourceUnqueueBuffer(SourceHandle);
-
-        foreach (var item in Buffers)
-            item.Free = true;
-
-        endReached = false;
-        stream?.Dispose();
-        reader?.Dispose();
-
-        stream = new FileStream(Raw.File.FullName, FileMode.Open, FileAccess.Read);
+        stream = new FileStream(AudioData.File.FullName, FileMode.Open, FileAccess.Read);
         reader = new VorbisReader(stream, true);
-        playedSamplesBacklog.Clear();
 
-        lastProcessedSampleCount = 0;
-        processedSamples = 0;
-        CurrentPlayingBuffer = null;
-
-        AL.SourceRewind(SourceHandle);
-
-        PreFill();
-    }
-
-    private void FillBuffer(BufferEntry buffer, int readAmount)
-    {
-        buffer.Free = false;
-        Array.Copy(rawOggBuffer, buffer.Data, BufferSize);
-
-#if USE_FLOAT_EXT
-        AL.EXTFloat32.BufferData(buffer.Handle, Format, buffer.Data.AsSpan(0, readAmount), Raw.SampleRate);
-        if (!AL.EXTFloat32.IsExtensionPresent())
-            throw new Exception($"The provided OpenAL distribution is missing the \"{AL.EXTFloat32.ExtensionName}\" extension");
-#else
-        for (int i = 0; i < readAmount; i++)
+        for (int i = 0; i < MaxBufferCount; i++)
         {
-            var v = (short)Utilities.MapRange(-1, 1, short.MinValue, short.MaxValue, buffer.Data[i]);
-            shortDataBuffer[i] = v;
+            var a = new BufferEntry(AL.GenBuffer());
+            AlCheck();
+            Buffers.Add(a.Handle, a);
+            bufferHandles[i] = a.Handle;
         }
-        AL.BufferData<short>(buffer.Handle, Format, shortDataBuffer.AsSpan(0, readAmount), Raw.SampleRate);
-#endif
 
-        AL.SourceQueueBuffer(SourceHandle, buffer.Handle);
-
-        for (int i = 0; i < readAmount; i++)
-            playedSamplesBacklog.Push(rawOggBuffer[i]);
+        thread = new Thread(ThreadLoop);
+        thread.IsBackground = true;
+        thread.Start();
     }
 
-    public void PreFill(int max = MaxBufferCount)
+    private void FillQueue()
     {
-        int queued = 0;
-        while (queued++ < max && TryRead(out var readAmount))
+        foreach (var b in Buffers.Values)
+            FillBuffer(b);
+    }
+
+    private bool FillBuffer(BufferEntry buffer)
+    {
+        if (ReadOgg(out var readAmount))
         {
-            if (!TryGetFreeBuffer(out var buffer))
-                continue;
-            FillBuffer(buffer, readAmount);
-        }
-    }
+            Array.Copy(rawOggBuffer, buffer.Data, BufferSize);
 
-    private bool TryGetFreeBuffer(out BufferEntry? entry)
-    {
-        foreach (var item in Buffers)
-            if (item.Free)
+            for (int i = 0; i < readAmount; i++)
             {
-                entry = item;
-                return true;
+                var v = (short)Utilities.MapRange(-1, 1, short.MinValue, short.MaxValue, buffer.Data[i]);
+                shortDataBuffer[i] = v;
             }
-        entry = null;
-        Logger.Warn("Streaming buffer requested but all of them are occupied");
+            AL.BufferData<short>(buffer.Handle, Format, shortDataBuffer.AsSpan(0, readAmount), AudioData.SampleRate);
+            AlCheck();
+
+            AL.SourceQueueBuffer(Source, buffer.Handle);
+            AlCheck();
+
+            while (playedSamplesBacklog.Count > BufferSize)
+                playedSamplesBacklog.TryDequeue(out _);
+            for (int i = 0; i < readAmount; i++)
+                playedSamplesBacklog.Enqueue(rawOggBuffer[i]);
+
+            return true;
+        }
         return false;
     }
 
-    private void MonitorLoop()
+    private void ThreadLoop()
     {
+        FillQueue();
+
+        if (Sound.State == SoundState.Playing)
+            AL.SourcePlay(Source);
+        AlCheck();
+
         while (monitorFlag)
         {
-            Update();
-            Thread.Sleep(16);
-        }
-    }
+            Thread.Sleep(8);
 
-    public void Update()
-    {
-        // deal with looping ourselves
-        AL.Source(SourceHandle, ALSourceb.Looping, false);
+            var state = Source.GetALState();
+            var processed = AL.GetSource(Source, ALGetSourcei.BuffersProcessed);
+            AlCheck();
 
-        var state = SourceHandle.GetSourceState();
-        AL.GetSource(SourceHandle, ALGetSourcei.BuffersQueued, out int queued);
-        AL.GetSource(SourceHandle, ALGetSourcei.BuffersProcessed, out int processed);
-
-        // sync sound state and source state
-        switch (Sound.State)
-        {
-            case SoundState.Playing:
-                if (!endReached && state != ALSourceState.Playing)
-                    AL.SourcePlay(SourceHandle);
-                break;
-            case SoundState.Paused:
-                if (state == ALSourceState.Playing)
-                    AL.SourcePause(SourceHandle);
-                break;
-            case SoundState.Stopped:
-                if (state is ALSourceState.Playing or ALSourceState.Paused)
-                {
-                    AL.SourceStop(SourceHandle);
-                    Reset();
-                }
-                break;
-        }
-
-        // calculate current time offset
-        if (Sound.State is SoundState.Stopped or SoundState.Idle)
-            lastProcessedSampleCount = 0;
-        else
-        {
-            AL.GetSource(SourceHandle, ALGetSourcei.SampleOffset, out int samplesPlayedInThisBuffer);
-            lastProcessedSampleCount += processed * BufferSize;
-            processedSamples = lastProcessedSampleCount;//+ samplesPlayedInThisBuffer;
-        }
-
-        // read processed buffer count again in case any of them were discarded
-        AL.GetSource(SourceHandle, ALGetSourcei.BuffersProcessed, out processed);
-
-        // unqueue processed buffers
-        if (processed > 0)
-        {
-            for (int p = 0; p < processed; p++)
+            switch (Sound.State)
             {
-                var bufferHandle = AL.SourceUnqueueBuffer(SourceHandle);
-
-                for (int i = 0; i < Buffers.Length; i++)
-                    if (Buffers[i].Handle == bufferHandle)
-                        Buffers[i].Free = true;
-            }
-        }
-        // check if end of file was reached right after there are no more buffers to process
-        else if (queued == 0 && endReached)
-        {
-            var sound = AudioObjects.Sources.GetSoundFor(SourceHandle);
-            if (!sound.Looping)
-            {
-                AL.SourceStop(SourceHandle);
-                sound.State = SoundState.Stopped;
-                Reset();
-                return;
-            }
-        }
-
-        // queue new buffers
-        if (Sound.State is SoundState.Playing && !endReached)
-        {
-            while (queued++ < MaxBufferCount)
-            {
-                if (!TryRead(out var readAmount))
-                {
-                    endReached = true;
+                case SoundState.Playing:
+                    // if we are requested to play, didnt reach the end yet, and the source isnt playing: play the source
+                    if (!endReached && state is ALSourceState.Stopped or ALSourceState.Initial or ALSourceState.Paused)
+                        AL.SourcePlay(Source);
+                    AlCheck();
                     break;
-                }
+                case SoundState.Paused:
+                    // if we are requested to pause and the source is still playing, pause
+                    if (state == ALSourceState.Playing)
+                        AL.SourcePause(Source);
+                    AlCheck();
+                    break;
+                case SoundState.Stopped:
+                    // if we are requested to stop and the source isnt stopped, stop
+                    if (state is ALSourceState.Playing or ALSourceState.Paused)
+                    {
+                        AL.SourceStop(Source);
+                        AlCheck();
+                        processed = AL.GetSource(Source, ALGetSourcei.BuffersProcessed);
+                        AlCheck();
 
-                if (TryGetFreeBuffer(out var buffer))
-                    FillBuffer(buffer, readAmount);
+                        for (int i = 0; i < processed; i++)
+                        {
+                            AL.SourceUnqueueBuffer(Source);
+                            AlCheck();
+                        }
+
+                        //AL.SourceRewind(Source);
+                        AlCheck();
+
+                        stream?.Dispose();
+                        reader?.Dispose();
+
+                        endReached = false;
+                        processedSamples = 0;
+                        stream = new FileStream(AudioData.File.FullName, FileMode.Open, FileAccess.Read);
+                        reader = new VorbisReader(stream, true);
+
+                        FillQueue();
+                    }
+                    continue;
             }
+
+            while (processed > 0)
+            {
+                int bufferHandle = AL.SourceUnqueueBuffer(Source);
+                AlCheck();
+
+                if (Sound.State is SoundState.Playing && Buffers.TryGetValue(bufferHandle, out var buffer))
+                    if (!FillBuffer(buffer))
+                    {
+                        endReached = true;
+                        break;
+                    }
+
+                processed--;
+                processedSamples += BufferSize;
+            }
+
+            if (endReached && !Sound.Looping)
+                Sound.State = SoundState.Stopped;
         }
     }
 
-    private bool TryRead(out int read)
+    private bool ReadOgg(out int read)
     {
         read = reader.ReadSamples(rawOggBuffer, 0, rawOggBuffer.Length);
         if (Sound.Looping)
         {
+            // if the file is set to loop, just start from the beginning again
             if (read == 0)
             {
                 reader.SamplePosition = 0;
-                return TryRead(out read);
+                return ReadOgg(out read);
             }
         }
 
@@ -275,16 +204,43 @@ public class OggStreamer : IDisposable
     public void Dispose()
     {
         monitorFlag = false;
-        monitorThread.Join();
+        thread.Join();
 
         GC.SuppressFinalize(this);
         reader.Dispose();
         stream.Dispose();
 
-        AL.SourceStop(SourceHandle);
-        AL.Source(SourceHandle, ALSourcei.Buffer, 0);
+        AL.SourceStop(Source);
+        AL.Source(Source, ALSourcei.Buffer, 0);
 
-        foreach (var b in Buffers)
+        foreach (var b in Buffers.Keys)
             AL.DeleteBuffer(b.Handle);
+    }
+
+    private void AlCheck()
+    {
+        while (true)
+        {
+            var err = AL.GetError();
+            if (err == ALError.NoError)
+                break;
+            Console.Error.WriteLine(err);
+        }
+    }
+
+    public IEnumerable<float> TakeLastPlayed(int count = 1024)
+    {
+        for (int i = 0; i < count; i++)
+            if (playedSamplesBacklog.TryDequeue(out var f))
+                yield return f;
+            else
+                yield break;
+    }
+
+    public class BufferEntry(BufferHandle bufferHandle)
+    {
+        public readonly BufferHandle Handle = bufferHandle;
+        public float[] Data = new float[BufferSize];
+        public override string ToString() => Handle.ToString();
     }
 }

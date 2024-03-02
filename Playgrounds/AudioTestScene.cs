@@ -1,8 +1,51 @@
 ﻿using System.Numerics;
 using Walgelijk;
+using Walgelijk.Onion;
 using Walgelijk.SimpleDrawing;
 
 namespace Playgrounds;
+
+public struct OggStreamerTestScene : ISceneCreator
+{
+    public Scene Load(Game game)
+    {
+        var scene = new Scene(game);
+        scene.AddSystem(new TestSystem());
+        scene.AddSystem(new OnionSystem());
+
+        game.UpdateRate = 120;
+        game.FixedUpdateRate = 50;
+
+        return scene;
+    }
+
+    public class TestSystem : Walgelijk.System
+    {
+        public Sound Stream = new Sound(Resources.Load<StreamAudioData>("perfect-loop.ogg"), loops: true);
+
+        public override void Update()
+        {
+           // Stream.ForceUpdate();
+
+            Ui.Layout.Size(200, 32).Move(0, 0);
+            if (Ui.Button("Play"))
+                Audio.Play(Stream);
+
+            Ui.Layout.Size(200, 32).Move(200, 0);
+            if (Ui.Button("Pause"))
+                Audio.Pause(Stream);
+
+            Ui.Layout.Size(200, 32).Move(400, 0);
+            if (Ui.Button("Stop"))
+                Audio.Stop(Stream);
+
+            Ui.Layout.Size(200,200).Center();
+            Ui.Label($"{(Audio.IsPlaying(Stream) ? "playing" : "stopped")}\n{Audio.GetTime(Stream)}" );
+
+            RenderQueue.Add(new ClearRenderTask());
+        }
+    }
+}
 
 public struct AudioTestScene : ISceneCreator
 {
