@@ -336,7 +336,7 @@ public class Node
 
         // remove dead children from the child list
         //var toDelete = ArrayPool<int>.Shared.Rent(Children.Count);
-        var length = 0;
+        //var length = 0;
         int siblingIndex = 0;
         foreach (var item in GetChildren())
         {
@@ -356,6 +356,7 @@ public class Node
                     inst.Rects.ComputedChildContentSize = Vector2.Max(inst.Rects.ComputedChildContentSize, childInst.Rects.ComputedGlobal.TopRight);
                 }
             }
+
             item.SiblingIndex = siblingIndex++;
         }
         inst.Rects.ComputedChildContentSize -= inst.Rects.ComputedGlobal.BottomLeft;

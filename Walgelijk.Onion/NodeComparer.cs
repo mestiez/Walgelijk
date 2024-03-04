@@ -6,10 +6,10 @@ public class NodeComparer : IComparer<int>
     {
         if (Onion.Tree.Nodes.TryGetValue(x, out var xNode) && Onion.Tree.Nodes.TryGetValue(y, out var yNode))
         {
-            var xOrder = xNode.SiblingIndex;
-            var yOrder = yNode.SiblingIndex;
+            var xOrder = xNode.ChronologicalPosition;
+            var yOrder = yNode.ChronologicalPosition;
 
-            return xOrder - yOrder;
+            return yOrder - xOrder;
         }
 
         return 0;

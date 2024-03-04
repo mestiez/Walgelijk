@@ -90,9 +90,11 @@ Deserves kindness and love, a smile on their face";
             if (Input.IsKeyReleased(Key.D1))
                 SelectedDemo = 0;
             if (Input.IsKeyReleased(Key.D2))
-                SelectedDemo = 1; 
+                SelectedDemo = 1;
             if (Input.IsKeyReleased(Key.D3))
                 SelectedDemo = 2;
+            if (Input.IsKeyReleased(Key.D4))
+                SelectedDemo = 3;
 
             switch (SelectedDemo)
             {
@@ -105,6 +107,9 @@ Deserves kindness and love, a smile on their face";
                 case 2:
                     AutoSizeTest();
                     break;
+                case 3:
+                    TabTest();
+                    break;
             }
         }
 
@@ -114,17 +119,80 @@ Deserves kindness and love, a smile on their face";
             Ui.StartDragWindow("Huh?");
             {
                 Ui.Layout.Size(300, 32).StickTop().StickLeft();
-                Ui.Button("Button A");      
-                
-                Ui.Layout.Size(300, 32).StickTop().StickLeft().Move(0,32);
+                Ui.Button("Button A");
+
+                Ui.Layout.Size(300, 32).StickTop().StickLeft().Move(0, 32);
                 Ui.Button("Button B");
 
-                Ui.Layout.PreferredSize().Width(300).Move(0,64);
+                Ui.Layout.PreferredSize().Width(300).Move(0, 64);
                 Ui.TextRect(textRectContents, HorizontalTextAlign.Left, VerticalTextAlign.Top);
             }
             Ui.End();
         }
-        
+
+        enum Tab
+        {
+            Text,
+            Things,
+            Inspiration,
+            Continuously,
+            Jump
+        }
+
+        Tab tab;
+
+        private void TabTest()
+        {
+            Ui.Layout.Width(640).Height(40).Center().StickTop().HorizontalLayout();
+            Ui.StartGroup();
+            {
+                foreach (var item in Enum.GetValues<Tab>())
+                {
+                    Ui.Layout.FitHeight().Width(120).StickLeft().StickTop().MoveAbs(0, 5);
+                    if (item == tab)
+                        Ui.Layout.Scale(0, 4).Move(0, -4);
+
+                    if (Ui.Button(item.ToString(), (int)item))
+                        tab = item;
+                }
+            }
+            Ui.End();
+
+            Ui.Layout.Width(640).FitHeight().Scale(0, -45).Center().StickBottom().VerticalLayout();
+            Ui.StartGroup();
+            {
+                switch (tab)
+                {
+                    case Tab.Text:
+                        Ui.Layout.Width(120).Height(26);
+                        Ui.Button(tab.ToString());
+                        for (int i = 0; i < Utilities.Hash((int)tab * 4330.12123f) * 6; i++)
+                        {
+                            Ui.Label($"bla {i}", identity: i);
+                        }
+                        Ui.Layout.Width(120).Height(26);
+                        Ui.Button("ik sta helemaal onder");
+                        break;
+                    case Tab.Things:
+                        break;
+                    case Tab.Inspiration:
+                        break;
+                    case Tab.Continuously:
+                    case Tab.Jump:
+                        Ui.Layout.Width(120).Height(26);
+                        Ui.Button(tab.ToString());
+                        for (int i = 0; i < Utilities.Hash((int)tab * 4330.12123f) * 6; i++)
+                        {
+                            Ui.Label($"bla {i}", identity: i);
+                        }
+                        Ui.Layout.Width(120).Height(26);
+                        Ui.Button("ik sta helemaal onder");
+                        break;
+                }
+            }
+            Ui.End();
+        }
+
         private void ManyScrolling()
         {
             Ui.Layout.Width(300).FitHeight(false).CenterHorizontal().VerticalLayout();
@@ -176,7 +244,7 @@ Deserves kindness and love, a smile on their face";
                     layout.Move(Onion.Theme.Base.Padding, Onion.Theme.Base.Padding);
                     layout.Size(0, 32);
                     layout.FitContainer(1, null);
-                     
+
                     if (Button.Click("Ik besta ook " + i, i))
                         WindowsOpen[i % WindowsOpen.Length] = !WindowsOpen[i % WindowsOpen.Length];
                 }
