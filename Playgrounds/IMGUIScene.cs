@@ -348,7 +348,7 @@ Deserves kindness and love, a smile on their face";
                 }
                 Ui.StartDragWindow(textBoxContent, ref WindowsOpen[i], i);
                 {
-                    layout.FitContainer().StickTop().StickLeft().Scale(0, Onion.Theme.Base.Padding);
+                    layout.FitContainer().StickTop().StickLeft().Scale(0, Onion.Theme.Base.Padding).Overflow(false, true); ;
                     //Ui.Theme.Padding(0).Once();
                     Ui.StartScrollView(false, i);
                     {
@@ -358,7 +358,7 @@ Deserves kindness and love, a smile on their face";
                         if (Ui.Dropdown(DropdownOptions, ref DropdownSelectedIndex, identity: i))
                             Logger.Log("Window dropdown selected!");
 
-                        layout.FitContainer(1, 1, false).Move(0, 32).Scale(0, -80);
+                        layout.FitContainer(1, 1, false).Move(0, 32).Scale(0, -80).Overflow(false, true);
                         Ui.StartScrollView(false, i);
                         {
                             layout.Height(32).FitWidth().Move(Onion.Theme.Base.Padding, Onion.Theme.Base.Padding);

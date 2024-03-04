@@ -114,6 +114,16 @@ public class LayoutQueue
     public LayoutQueue IgnoreScroll() => EnqueueConstraint(new IgnoreScroll());
 
     /// <summary>
+    /// Determine overflow behaviour
+    /// </summary>
+    public LayoutQueue Overflow(bool horizontalScroll, bool verticalScroll) => EnqueueConstraint(new Overflow(horizontalScroll, verticalScroll));
+
+    /// <summary>
+    /// Maintain a certain aspect ratio
+    /// </summary>
+    public LayoutQueue AspectRatio(float heightOverWidth, Layout.AspectRatio.Behaviour behaviour) => EnqueueConstraint(new AspectRatio(heightOverWidth, behaviour));
+
+    /// <summary>
     /// Offset the size by adding the given values to the width and height respectively
     /// </summary>
     public LayoutQueue Scale(float w, float h) => EnqueueConstraint(new OffsetSize(w, h));

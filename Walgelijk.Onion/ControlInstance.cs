@@ -111,6 +111,11 @@ public class ControlInstance
     public Theme Theme;
 
     /// <summary>
+    /// Determine the overflow behaviour, i.e what happens when the children don't fit inside this container
+    /// </summary>
+    public OverflowBehaviour OverflowBehaviour = OverflowBehaviour.ScrollHorizontal | OverflowBehaviour.ScrollVertical;
+
+    /// <summary>
     /// List of decorators to apply to this control, maximum of 8
     /// </summary>
     public readonly ClampedArray<IDecorator> Decorators = new(DecoratorQueue.MaxDecoratorsPerControl);
@@ -149,4 +154,11 @@ public class ControlInstance
 
     public float GetTransitionProgress(float secondsSinceSceneChangeUnscaled) => Utilities.Clamp((secondsSinceSceneChangeUnscaled - LastStateChangeTime) / Onion.Animation.DefaultDurationSeconds);
     public float GetTransitionProgress() => Utilities.Clamp(TimeSinceStateChange / Onion.Animation.DefaultDurationSeconds);
+}
+
+[Flags]
+public enum OverflowBehaviour
+{
+    ScrollHorizontal = 1,
+    ScrollVertical = 2
 }

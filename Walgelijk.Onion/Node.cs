@@ -279,6 +279,8 @@ public class Node
         else
         {
             var rects = p.Instance.Rects;
+            var scrollHorizontal = p.Instance.OverflowBehaviour.HasFlag(OverflowBehaviour.ScrollHorizontal);
+            var scrollVertical = p.Instance.OverflowBehaviour.HasFlag(OverflowBehaviour.ScrollVertical);
 
             //all we need is the size lol
             var newLocal = rects.Intermediate;
@@ -286,20 +288,14 @@ public class Node
             newLocal.MaxY -= rects.Intermediate.MinY + p.Theme.Padding;
             newLocal.MinX = newLocal.MinY = 0;
 
-            var remainingSpaceLeft = MathF.Max(newLocal.MinX - childContent.MinX, 0);
-            var remainingSpaceRight = MathF.Max(childContent.MaxX - newLocal.MaxX, 0);
+            var remainingSpaceLeft =  scrollHorizontal ? MathF.Max(newLocal.MinX - childContent.MinX, 0) : 0;
+            var remainingSpaceRight = scrollHorizontal ? MathF.Max(childContent.MaxX - newLocal.MaxX, 0) : 0;
+
             p.Instance.InnerScrollOffset.X = MathF.Min(p.Instance.InnerScrollOffset.X, remainingSpaceLeft);
             p.Instance.InnerScrollOffset.X = MathF.Max(p.Instance.InnerScrollOffset.X, -remainingSpaceRight);
 
-            var remainingSpaceAbove = MathF.Max(newLocal.MinY - childContent.MinY, 0);
-            var remainingSpaceBelow = MathF.Max(childContent.MaxY - newLocal.MaxY, 0);
-
-            // TODO elastic clamping?
-            //if (p.Instance.InnerScrollOffset.Y > remainingSpaceAbove)
-            //    p.Instance.InnerScrollOffset.Y = Utilities.SmoothApproach(p.Instance.InnerScrollOffset.Y, remainingSpaceAbove, 25, p.GameState.Time.DeltaTime);
-
-            //if (p.Instance.InnerScrollOffset.Y < -remainingSpaceBelow)
-            //    p.Instance.InnerScrollOffset.Y = Utilities.SmoothApproach(p.Instance.InnerScrollOffset.Y, -remainingSpaceBelow, 25, p.GameState.Time.DeltaTime);
+            var remainingSpaceAbove = scrollVertical ? MathF.Max(newLocal.MinY - childContent.MinY, 0) : 0;
+            var remainingSpaceBelow = scrollVertical ? MathF.Max(childContent.MaxY - newLocal.MaxY, 0) : 0;
 
             p.Instance.InnerScrollOffset.Y = MathF.Min(p.Instance.InnerScrollOffset.Y, remainingSpaceAbove);
             p.Instance.InnerScrollOffset.Y = MathF.Max(p.Instance.InnerScrollOffset.Y, -remainingSpaceBelow);

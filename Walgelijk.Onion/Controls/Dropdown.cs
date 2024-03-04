@@ -62,7 +62,7 @@ public readonly struct Dropdown<T> : IControl
         {
             float height = instance.Rects.ComputedGlobal.Height;
 
-            Onion.Layout.Height(dropdownRect.Height).FitContainer(1, null).Move(instance.Theme.Padding, height + instance.Theme.Padding);
+            Onion.Layout.Height(dropdownRect.Height).FitContainer(1, null).Move(instance.Theme.Padding, height + instance.Theme.Padding).Overflow(false, true);
             Onion.Theme.SetAll(instance.Theme).ShowScrollbars(false).Once(); //TODO global scaling issue
             Onion.Tree.Start(instance.Identity + 38, new ScrollView(true, false));
 
