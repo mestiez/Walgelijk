@@ -64,6 +64,7 @@ public class DebugConsole : ILogger, IDisposable
 
     private readonly string[] suggestionBuffer = new string[8];
     private int suggestionIndex;
+    private bool disposed = false;
 
     public string DebugPrefix   = "[DBG]";
     public string InfoPrefix    = "[INF]";
@@ -302,6 +303,9 @@ public class DebugConsole : ILogger, IDisposable
     /// </summary>
     public void WriteLine(ReadOnlySpan<char> v, ConsoleMessageType level = ConsoleMessageType.Info)
     {
+        if (disposed)
+            return;
+
         switch (level)
         {
             case ConsoleMessageType.Debug:
@@ -369,6 +373,7 @@ public class DebugConsole : ILogger, IDisposable
 
     public void Dispose()
     {
+        disposed = true;
         writer.Dispose();
         stream.Dispose();
         UI.Dispose();

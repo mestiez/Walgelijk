@@ -204,21 +204,21 @@ public class OggStreamer : IDisposable
     public void Dispose()
     {
         monitorFlag = false;
-        thread.Join();
-
         GC.SuppressFinalize(this);
-        reader.Dispose();
-        stream.Dispose();
 
         AL.SourceStop(Source);
         AL.Source(Source, ALSourcei.Buffer, 0);
 
         foreach (var b in Buffers.Keys)
             AL.DeleteBuffer(b.Handle);
+
+        reader.Dispose();
+        stream.Dispose();
     }
 
     private void AlCheck()
     {
+#if DEBUG
         while (true)
         {
             var err = AL.GetError();
@@ -226,6 +226,7 @@ public class OggStreamer : IDisposable
                 break;
             Console.Error.WriteLine(err);
         }
+#endif
     }
 
     public IEnumerable<float> TakeLastPlayed(int count = 1024)

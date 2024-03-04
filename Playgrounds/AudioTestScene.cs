@@ -21,26 +21,38 @@ public struct OggStreamerTestScene : ISceneCreator
 
     public class TestSystem : Walgelijk.System
     {
-        public Sound Stream = new Sound(Resources.Load<StreamAudioData>("perfect-loop.ogg"), loops: true);
+        public Sound[] Streams = [
+            new Sound(Resources.Load<StreamAudioData>("perfect-loop.ogg"), loops: false),
+            new Sound(Resources.Load<StreamAudioData>("mc4.ogg"), loops: false),
+        ];
 
         public override void Update()
         {
-           // Stream.ForceUpdate();
+            // Stream.ForceUpdate();
 
-            Ui.Layout.Size(200, 32).Move(0, 0);
-            if (Ui.Button("Play"))
-                Audio.Play(Stream);
+            int i = 0;
+            foreach (var s in Streams)
+            {
+                Ui.Layout.Size(512, 112);
+                Ui.StartDragWindow("Controller", i++);
+                {
+                    Ui.Layout.Size(100, 32).Move(0, 0);
+                    if (Ui.Button("Play"))
+                        Audio.Play(s);
 
-            Ui.Layout.Size(200, 32).Move(200, 0);
-            if (Ui.Button("Pause"))
-                Audio.Pause(Stream);
+                    Ui.Layout.Size(100, 32).Move(100, 0);
+                    if (Ui.Button("Pause"))
+                        Audio.Pause(s);
 
-            Ui.Layout.Size(200, 32).Move(400, 0);
-            if (Ui.Button("Stop"))
-                Audio.Stop(Stream);
+                    Ui.Layout.Size(100, 32).Move(200, 0);
+                    if (Ui.Button("Stop"))
+                        Audio.Stop(s);
 
-            Ui.Layout.Size(200,200).Center();
-            Ui.Label($"{(Audio.IsPlaying(Stream) ? "playing" : "stopped")}\n{Audio.GetTime(Stream)}" );
+                    Ui.Layout.Size(200, 200).StickRight();
+                    Ui.Label($"{(Audio.IsPlaying(s) ? "playing" : "stopped")}\n{Audio.GetTime(s)}");
+                }
+                Ui.End();
+            }
 
             RenderQueue.Add(new ClearRenderTask());
         }
@@ -71,14 +83,14 @@ public struct AudioTestScene : ISceneCreator
             Audio.SpatialMultiplier = 0.1f;
             if (Input.IsKeyHeld(Key.Space))
             {
-                Audio.PlayOnce(OneShot, new Vector3(Utilities.RandomFloat(-100,100),0, 0), 0.1f);
+                Audio.PlayOnce(OneShot, new Vector3(Utilities.RandomFloat(-100, 100), 0, 0), 0.1f);
             }
         }
 
         public override void Update()
         {
             var th = Time.SecondsSinceLoad;
-            Audio.ListenerOrientation = (new Vector3(1 * MathF.Cos(th), 0,  1 * MathF.Sin(th)), Vector3.UnitY);
+            Audio.ListenerOrientation = (new Vector3(1 * MathF.Cos(th), 0, 1 * MathF.Sin(th)), Vector3.UnitY);
             Audio.SetPosition(Streaming, new Vector3(0, 0, 100));
 
             if (Input.IsKeyPressed(Key.Q))

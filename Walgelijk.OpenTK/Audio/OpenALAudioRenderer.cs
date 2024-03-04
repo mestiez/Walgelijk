@@ -317,12 +317,14 @@ public class OpenALAudioRenderer : AudioRenderer
     {
         if (!canPlayAudio)
             return;
+
         canPlayAudio = false;
+
+        AudioObjects.OggStreamers.UnloadAll();
 
         foreach (var item in AudioObjects.Sources.GetAllLoaded())
             AL.SourceStop(item);
 
-        AudioObjects.OggStreamers.UnloadAll();
         AudioObjects.FixedBuffers.UnloadAll();
         AudioObjects.Sources.UnloadAll();
 
@@ -560,7 +562,7 @@ public class OpenALAudioRenderer : AudioRenderer
         switch (sound.Data)
         {
             case StreamAudioData:
-                var streamer = AudioObjects.OggStreamers.Load((source, sound));
+                var streamer = AudioObjects.OggStreamers.Load(new OggStreamerHandle(source, sound));
                 streamer.CurrentTime = TimeSpan.FromSeconds(seconds);
                 break;
             default:
@@ -576,7 +578,7 @@ public class OpenALAudioRenderer : AudioRenderer
         switch (sound.Data)
         {
             case StreamAudioData:
-                var streamer = AudioObjects.OggStreamers.Load((source, sound));
+                var streamer = AudioObjects.OggStreamers.Load(new OggStreamerHandle(source, sound));
                 return (float)streamer.CurrentTime.TotalSeconds;
             default:
                 AL.GetSource(source, ALSourcef.SecOffset, out var offset);
@@ -613,7 +615,7 @@ public class OpenALAudioRenderer : AudioRenderer
         {
             case StreamAudioData:
                 {
-                    var streamer = AudioObjects.OggStreamers.Load((source, sound));
+                    var streamer = AudioObjects.OggStreamers.Load(new OggStreamerHandle(source, sound));
                     int i = 0;
                     foreach (var item in streamer.TakeLastPlayed(arr.Length))
                         arr[i++] = item;
