@@ -164,36 +164,51 @@ public class Node
          * Scrollbar proper focus & raycast
          * Dropdown has issues with it
          */
-        if (p.Instance.Theme.ShowScrollbars && p.Instance.CaptureFlags.HasFlag(CaptureFlags.Scroll) && p.Instance.Rects.ComputedScrollBounds.Height != 0)
+
+        if (p.Instance.Theme.ShowScrollbars && p.Instance.CaptureFlags.HasFlag(CaptureFlags.Scroll))
         {
-            Draw.ResetTexture();
-            Draw.DrawBounds = new DrawBounds(p.Instance.Rects.ComputedDrawBounds, true);
-            Draw.ResetTransformation();
-            Draw.BlendMode = BlendMode.AlphaBlend;
-            Draw.ScreenSpace = true;
-            Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, p.Node.ComputedGlobalOrder);
-            Draw.OutlineWidth = 0;
-
-            var scrollbarRect = p.Instance.Rects.ComputedGlobal with { MinX = p.Instance.Rects.ComputedGlobal.MaxX - p.Instance.Theme.ScrollbarWidth };
-            var padding = p.Instance.Theme.Padding;
-            var trackerRect = scrollbarRect;
-            var ratio = scrollbarRect.Height / (scrollbarRect.Height + p.Instance.Rects.ComputedScrollBounds.Height);
-            trackerRect.MaxY = trackerRect.MinY + scrollbarRect.Height * ratio;
-            trackerRect = trackerRect.Translate(0, -(scrollbarRect.Height - trackerRect.Height) * (p.Instance.InnerScrollOffset.Y / p.Instance.Rects.ComputedScrollBounds.Height));
-            Draw.Colour = p.Instance.Theme.Background.Default.Color;
-
-            if (scrollbarRect.ContainsPoint(Onion.Input.MousePosition))
+            if (p.Instance.Rects.ComputedScrollBounds.Height != 0)
             {
-                Game.Main.Window.CursorStack.SetCursor(DefaultCursor.Pointer);
-                Draw.Colour = Utilities.Lerp(Draw.Colour, p.Instance.Theme.Accent.Default, 0.2f);
-            }
-            Draw.Quad(scrollbarRect, 0, p.Instance.Theme.Rounding);
-            Draw.Colour = p.Instance.Theme.Accent.Default;
-            Draw.Quad(trackerRect.Expand(-padding), 0, p.Instance.Theme.Rounding);
+                var scrollbarId = IdGen.Create(p.Identity, 852937);
 
-            if (Onion.Input.MousePrimaryHeld && scrollbarRect.ContainsPoint(Onion.Input.MousePosition))
-            {
-                p.Instance.InnerScrollOffset.Y -= Onion.Input.MouseDelta.Y / ratio;
+                var scrollbarRect = p.Instance.Rects.ComputedGlobal with { MinX = p.Instance.Rects.ComputedGlobal.MaxX - p.Instance.Theme.ScrollbarWidth };
+
+                if (!Onion.Navigator.ActiveControl.HasValue && p.Instance.IsHover)
+                    if (scrollbarRect.ContainsPoint(p.Input.MousePosition) && p.Input.MousePrimaryPressed)
+                        Onion.Navigator.ScrollbarOverride = scrollbarId; // random ass number for scrollbar id
+
+                Draw.ResetTexture();
+                Draw.DrawBounds = new DrawBounds(p.Instance.Rects.ComputedDrawBounds, true);
+                Draw.ResetTransformation();
+                Draw.BlendMode = BlendMode.AlphaBlend;
+                Draw.ScreenSpace = true;
+                Draw.Order = new RenderOrder(Onion.Configuration.RenderLayer, p.Node.ComputedGlobalOrder);
+                Draw.OutlineWidth = 0;
+
+                var padding = p.Instance.Theme.Padding;
+                var trackerRect = scrollbarRect;
+                var ratio = scrollbarRect.Height / (scrollbarRect.Height + p.Instance.Rects.ComputedScrollBounds.Height);
+                trackerRect.MaxY = trackerRect.MinY + scrollbarRect.Height * ratio;
+                trackerRect = trackerRect.Translate(0, -(scrollbarRect.Height - trackerRect.Height) * (p.Instance.InnerScrollOffset.Y / p.Instance.Rects.ComputedScrollBounds.Height));
+                Draw.Colour = p.Instance.Theme.Background.Default.Color;
+
+                if (scrollbarRect.ContainsPoint(Onion.Input.MousePosition))
+                {
+                    Game.Main.Window.CursorStack.SetCursor(DefaultCursor.Pointer);
+                    Draw.Colour = Utilities.Lerp(Draw.Colour, p.Instance.Theme.Accent.Default, 0.2f);
+                }
+                Draw.Quad(scrollbarRect, 0, p.Instance.Theme.Rounding);
+                Draw.Colour = p.Instance.Theme.Accent.Default;
+                Draw.Quad(trackerRect.Expand(-padding), 0, p.Instance.Theme.Rounding);
+
+                if (Onion.Navigator.ScrollbarOverride == scrollbarId)
+                {
+                    if (Onion.Input.MousePrimaryHeld)
+                        p.Instance.InnerScrollOffset.Y -= Onion.Input.MouseDelta.Y / ratio;
+
+                    if (Onion.Input.MousePrimaryRelease)
+                        Onion.Navigator.ScrollbarOverride = null;
+                }
             }
         }
     }
@@ -288,7 +303,7 @@ public class Node
             newLocal.MaxY -= rects.Intermediate.MinY + p.Theme.Padding;
             newLocal.MinX = newLocal.MinY = 0;
 
-            var remainingSpaceLeft =  scrollHorizontal ? MathF.Max(newLocal.MinX - childContent.MinX, 0) : 0;
+            var remainingSpaceLeft = scrollHorizontal ? MathF.Max(newLocal.MinX - childContent.MinX, 0) : 0;
             var remainingSpaceRight = scrollHorizontal ? MathF.Max(childContent.MaxX - newLocal.MaxX, 0) : 0;
 
             p.Instance.InnerScrollOffset.X = MathF.Min(p.Instance.InnerScrollOffset.X, remainingSpaceLeft);

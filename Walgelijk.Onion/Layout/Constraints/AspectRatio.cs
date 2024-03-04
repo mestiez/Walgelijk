@@ -2,7 +2,9 @@
 
 namespace Walgelijk.Onion.Layout;
 
-public readonly struct AspectRatio : IConstraint
+// YES THIS IS UNICODE VISUAL STUDIO JESUS CHRIST 🚞🚞🚠🌷🥀
+
+public readonly struct AspectRatio : IConstraint 
 {
     private readonly float heightOverWidth;
     private readonly Behaviour behaviour;

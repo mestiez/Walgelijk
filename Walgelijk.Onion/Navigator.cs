@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Buffers;
-using System.Drawing;
+﻿using System.Buffers;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Walgelijk.SimpleDrawing;
@@ -88,6 +85,8 @@ public class Navigator
         }
     }
 
+    internal int? ScrollbarOverride;
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void ProcessStateChange(int? currentId, int? newId, ControlState s)
     {
@@ -137,8 +136,12 @@ public class Navigator
             activeControl = null;
             triggeredControl = null;
             hoverControl = null;
+            ScrollbarOverride = null;
             return;
         }
+
+        if (ScrollbarOverride.HasValue)
+            return;
 
         HoverControl = Raycast(input.MousePosition.X, input.MousePosition.Y, CaptureFlags.Hover);
 
