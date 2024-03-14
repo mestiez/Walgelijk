@@ -71,6 +71,8 @@ public readonly struct ImageButton : IControl
         Draw.ImageMode = default;
         Draw.Colour = p.Theme.Image[instance.State];
         anim.AnimateColour(ref Draw.Colour, t);
+        Draw.OutlineWidth = 0;
+
         Draw.Image(Texture, instance.Rects.Rendered, ContainmentMode, 0, p.Theme.Rounding);
         Draw.ResetTexture();
     }
