@@ -129,17 +129,17 @@ public struct Color : IEquatable<Color>
     /// Returns a copy of this colour with each value clamped between 0 and 1 
     /// </summary>
     /// <returns></returns>
-    public Color Clamped() => new Color(Utilities.Clamp(R), Utilities.Clamp(G), Utilities.Clamp(B), Utilities.Clamp(A));
+    public readonly Color Clamped() => new Color(Utilities.Clamp(R), Utilities.Clamp(G), Utilities.Clamp(B), Utilities.Clamp(A));
 
     /// <summary>
     /// Return a copy of the colour with the given alpha
     /// </summary>
-    public Color WithAlpha(float alpha) => new Color(R, G, B, alpha);
+    public readonly Color WithAlpha(float alpha) => new Color(R, G, B, alpha);
 
     /// <summary>
     /// Returns a tuple where each element corresponds with a component of the colour
     /// </summary>
-    public (byte r, byte g, byte b, byte a) ToBytes()
+    public readonly (byte r, byte g, byte b, byte a) ToBytes()
     {
         byte r = (byte)(Utilities.Clamp(R) * 255);
         byte g = (byte)(Utilities.Clamp(G) * 255);
@@ -149,7 +149,7 @@ public struct Color : IEquatable<Color>
         return (r, g, b, a);
     }
 
-    public string ToHexCode()
+    public readonly string ToHexCode()
     {
         int r = (int)(R * 255);
         int g = (int)(G * 255);
@@ -167,7 +167,7 @@ public struct Color : IEquatable<Color>
     /// <summary>
     /// Get HSV all of which are in range 0 to 1
     /// </summary>
-    public void GetHsv(out float h, out float s, out float v)
+    public readonly void GetHsv(out float h, out float s, out float v)
     {
         float max = Math.Max(R, Math.Max(G, B));
         float min = Math.Min(R, Math.Min(G, B));
@@ -236,11 +236,7 @@ public struct Color : IEquatable<Color>
 
     public override bool Equals(object? obj)
     {
-        return obj is Color color &&
-               R == color.R &&
-               G == color.G &&
-               B == color.B &&
-               A == color.A;
+        return obj is Color color && color == this;
     }
 
     public override int GetHashCode()
@@ -250,20 +246,17 @@ public struct Color : IEquatable<Color>
 
     public bool Equals(Color other)
     {
-        return R == other.R &&
-               G == other.G &&
-               B == other.B &&
-               A == other.A;
+        return other == this;
     }
 
-    public Color Brightness(float multiplier)
+    public readonly Color Brightness(float multiplier)
     {
         multiplier = MathF.Max(0, multiplier);
         var c = new Color(R * multiplier, G * multiplier, B * multiplier, A);
         return c;
     }
 
-    public Color Saturation(float multiplier)
+    public readonly Color Saturation(float multiplier)
     {
         multiplier = MathF.Max(0, multiplier);
         return new Vector4(Vector3.Lerp(RGB, new((R + G + B) / 3f), multiplier), A);
@@ -271,10 +264,11 @@ public struct Color : IEquatable<Color>
 
     public static bool operator ==(Color left, Color right)
     {
-        return left.R == right.R &&
-               left.G == right.G &&
-               left.B == right.B &&
-               left.A == right.A;
+        const float tolerance = 0.00001f;
+        return float.Abs(left.R - right.R) < tolerance &&
+               float.Abs(left.G - right.G) < tolerance &&
+               float.Abs(left.B - right.B) < tolerance &&
+               float.Abs(left.A - right.A) < tolerance;
     }
 
     public static bool operator !=(Color left, Color right)

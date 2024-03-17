@@ -3,13 +3,6 @@ using System.IO;
 
 namespace Walgelijk;
 
-public interface IAudioStream : IDisposable
-{
-    public int Position { get; set; }
-    public int ReadSamples(Span<float> buffer);
-    public TimeSpan TimePosition { get; set; }
-}
-
 public class StreamAudioData : AudioData
 {
     public readonly Func<IAudioStream> InputSourceFactory;

@@ -1,5 +1,4 @@
-﻿using NVorbis;
-using OpenTK.Audio.OpenAL;
+﻿using OpenTK.Audio.OpenAL;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -11,13 +10,12 @@ namespace Walgelijk.OpenTK;
 public class AudioStreamer : IDisposable
 {
     public const int BufferSize = 2048;
-    public const int MaxBufferCount = 8;
+    public const int MaxBufferCount = 4;
 
     public readonly SourceHandle Source;
     public readonly Sound Sound;
     public readonly StreamAudioData AudioData;
     public readonly Dictionary<BufferHandle, BufferEntry> Buffers = [];
-    public BufferHandle? CurrentPlayingBuffer;
 
     public ALFormat Format => AudioData.ChannelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16;
 
@@ -32,16 +30,14 @@ public class AudioStreamer : IDisposable
                                         (float)Sound.Data.Duration.TotalSeconds);
         }
 
-        set
-        {
+        set =>
             stream.TimePosition = value > TimeSpan.Zero
                 ? (value < AudioData.Duration ? value : AudioData.Duration)
                 : TimeSpan.Zero;
-        }
     }
 
     private readonly short[] shortDataBuffer = new short[BufferSize];
-    private readonly float[] rawOggBuffer = new float[BufferSize];
+    private readonly float[] rawBuffer = new float[BufferSize];
     private readonly int[] bufferHandles = new int[MaxBufferCount];
     private readonly ConcurrentQueue<float> playedSamplesBacklog = [];
     private readonly Thread thread;
@@ -83,7 +79,7 @@ public class AudioStreamer : IDisposable
     {
         if (ReadSamples(out var readAmount))
         {
-            Array.Copy(rawOggBuffer, buffer.Data, BufferSize);
+            Array.Copy(rawBuffer, buffer.Data, BufferSize);
 
             for (int i = 0; i < readAmount; i++)
             {
@@ -100,7 +96,7 @@ public class AudioStreamer : IDisposable
             while (playedSamplesBacklog.Count > BufferSize)
                 playedSamplesBacklog.TryDequeue(out _);
             for (int i = 0; i < readAmount; i++)
-                playedSamplesBacklog.Enqueue(rawOggBuffer[i]);
+                playedSamplesBacklog.Enqueue(rawBuffer[i]);
 
             return true;
         }
@@ -191,7 +187,7 @@ public class AudioStreamer : IDisposable
 
     private bool ReadSamples(out int read)
     {
-        read = stream.ReadSamples(rawOggBuffer);
+        read = stream.ReadSamples(rawBuffer);
         if (Sound.Looping)
         {
             // if the file is set to loop, just start from the beginning again
@@ -219,7 +215,7 @@ public class AudioStreamer : IDisposable
         stream.Dispose();
     }
 
-    private void AlCheck()
+    private static void AlCheck()
     {
 #if DEBUG
         while (true)
@@ -246,34 +242,5 @@ public class AudioStreamer : IDisposable
         public readonly BufferHandle Handle = bufferHandle;
         public float[] Data = new float[BufferSize];
         public override string ToString() => Handle.ToString();
-    }
-}
-
-public class OggAudioStream : IAudioStream
-{
-    private readonly VorbisReader reader;
-
-    public OggAudioStream(string path)
-    {
-        reader = new VorbisReader(path);
-    }
-
-    public int Position
-    {
-        get => (int)reader.SamplePosition;
-        set => reader.SamplePosition = value;
-    }
-    
-    public TimeSpan TimePosition   
-    {
-        get => reader.TimePosition;
-        set => reader.TimePosition = value;
-    }
-    
-    public int ReadSamples(Span<float> b) => reader.ReadSamples(b);
-
-    public void Dispose()
-    {
-        reader?.Dispose();
     }
 }

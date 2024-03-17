@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace Walgelijk.OpenTK;
 
-public readonly struct OggStreamerHandle : IEquatable<OggStreamerHandle>
+public readonly struct AudioStreamerHandle : IEquatable<AudioStreamerHandle>
 {
     public readonly SourceHandle SourceHandle;
     public readonly Sound Sound;
 
-    public OggStreamerHandle(SourceHandle sourceHandle, Sound sound)
+    public AudioStreamerHandle(SourceHandle sourceHandle, Sound sound)
     {
         SourceHandle = sourceHandle;
         Sound = sound;
@@ -16,10 +16,10 @@ public readonly struct OggStreamerHandle : IEquatable<OggStreamerHandle>
 
     public override bool Equals(object obj)
     {
-        return obj is OggStreamerHandle handle && Equals(handle);
+        return obj is AudioStreamerHandle handle && Equals(handle);
     }
 
-    public bool Equals(OggStreamerHandle other)
+    public bool Equals(AudioStreamerHandle other)
     {
         return SourceHandle.Equals(other.SourceHandle) &&
                EqualityComparer<Sound>.Default.Equals(Sound, other.Sound);
@@ -30,12 +30,12 @@ public readonly struct OggStreamerHandle : IEquatable<OggStreamerHandle>
         return HashCode.Combine(SourceHandle, Sound);
     }
 
-    public static bool operator ==(OggStreamerHandle left, OggStreamerHandle right)
+    public static bool operator ==(AudioStreamerHandle left, AudioStreamerHandle right)
     {
         return left.Equals(right);
     }
 
-    public static bool operator !=(OggStreamerHandle left, OggStreamerHandle right)
+    public static bool operator !=(AudioStreamerHandle left, AudioStreamerHandle right)
     {
         return !(left == right);
     }

@@ -7,7 +7,7 @@ internal static class AudioObjects
 {
     public static readonly FixedAudioCache FixedBuffers = new();
     public static readonly SourceCache Sources = new();
-    public static readonly OggStreamerCache OggStreamers = new();
+    public static readonly AudioStreamerCache AudioStreamers = new();
 
     public static readonly ConcurrentDictionary<BufferHandle, List<SourceHandle>> SourceByBuffer = new();
 }

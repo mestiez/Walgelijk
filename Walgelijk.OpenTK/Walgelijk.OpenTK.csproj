@@ -6,8 +6,8 @@
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <Authors>mestiez</Authors>
     <Company>Studio Minus</Company>
-    <RepositoryType></RepositoryType>
-    <Version>0.18.9</Version>
+    <RepositoryType>git</RepositoryType>
+    <Version>0.19.0</Version>
     <PackageIcon>icon.png</PackageIcon>
     <Description>Windowing, input, video, and audio interface for Walgelijk using OpenTK</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

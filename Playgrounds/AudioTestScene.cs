@@ -5,7 +5,7 @@ using Walgelijk.SimpleDrawing;
 
 namespace Playgrounds;
 
-public struct OggStreamerTestScene : ISceneCreator
+public struct AudioStreamerTestScene : ISceneCreator
 {
     public Scene Load(Game game)
     {
@@ -21,10 +21,41 @@ public struct OggStreamerTestScene : ISceneCreator
 
     public class TestSystem : Walgelijk.System
     {
-        public Sound[] Streams = [
-            new Sound(Resources.Load<StreamAudioData>("perfect-loop.ogg"), loops: false),
+        public Sound[] Streams =
+        [
+            new Sound(Resources.Load<StreamAudioData>("perfect-loop.ogg"), loops: true),
             new Sound(Resources.Load<StreamAudioData>("mc4.ogg"), loops: false),
+            new Sound(new StreamAudioData(() => new SineWaveStream(), 44100, 1, 441000), loops: false),
         ];
+
+        private class SineWaveStream : IAudioStream
+        {
+            public int SampleRate = 44100;
+            public long Position { get; set; }
+
+            public int ReadSamples(Span<float> buffer)
+            {
+                // Position = 0;
+                for (int i = 0; i < buffer.Length; i++)
+                {
+                    double time = Position / (double)SampleRate;
+                    var v = double.Sin(time * 250.0 * double.Tau);
+                  
+                    buffer[i] = (float)v;
+                    
+                    Position++;
+                    TimePosition += TimeSpan.FromSeconds(1.0 / SampleRate);
+                }
+
+                return buffer.Length;
+            }
+
+            public TimeSpan TimePosition { get; set; }
+
+            public void Dispose()
+            {
+            }
+        }
 
         public override void Update()
         {
@@ -74,8 +105,11 @@ public struct AudioTestScene : ISceneCreator
 
     public class AudioTestSystem : Walgelijk.System
     {
-        private Sound OneShot = new Sound(Resources.Load<FixedAudioData>("mono_hit.wav"), false, new SpatialParams(1, float.PositiveInfinity, 1));
-        private Sound Streaming = new Sound(Resources.Load<StreamAudioData>("perfect-loop.ogg"), true, new SpatialParams(1, float.PositiveInfinity, 1));
+        private Sound OneShot = new Sound(Resources.Load<FixedAudioData>("mono_hit.wav"), false,
+            new SpatialParams(1, float.PositiveInfinity, 1));
+
+        private Sound Streaming = new Sound(Resources.Load<StreamAudioData>("perfect-loop.ogg"), true,
+            new SpatialParams(1, float.PositiveInfinity, 1));
 
         public override void FixedUpdate()
         {
@@ -107,8 +141,10 @@ public struct AudioTestScene : ISceneCreator
             Draw.Colour = Colors.White;
             if (Audio is Walgelijk.OpenTK.OpenALAudioRenderer audio)
             {
-                Draw.Text("Sources in use: " + audio.TemporarySourceBuffer.Count(), new Vector2(30, 30), Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Top);
-                Draw.Text("Sources created: " + audio.CreatedTemporarySourceCount, new Vector2(30, 40), Vector2.One, HorizontalTextAlign.Left, VerticalTextAlign.Top);
+                Draw.Text("Sources in use: " + audio.TemporarySourceBuffer.Count(), new Vector2(30, 30), Vector2.One,
+                    HorizontalTextAlign.Left, VerticalTextAlign.Top);
+                Draw.Text("Sources created: " + audio.CreatedTemporarySourceCount, new Vector2(30, 40), Vector2.One,
+                    HorizontalTextAlign.Left, VerticalTextAlign.Top);
             }
 
             var p = Audio.GetTime(Streaming) / (float)Streaming.Data.Duration.TotalSeconds;

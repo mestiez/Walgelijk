@@ -2,9 +2,9 @@
 
 namespace Walgelijk.OpenTK;
 
-public class OggStreamerCache : Cache<OggStreamerHandle, AudioStreamer>
+public class AudioStreamerCache : Cache<AudioStreamerHandle, AudioStreamer>
 {
-    protected override AudioStreamer CreateNew(OggStreamerHandle raw)
+    protected override AudioStreamer CreateNew(AudioStreamerHandle raw)
     {
         return new AudioStreamer(
             raw.SourceHandle, 
