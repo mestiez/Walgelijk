@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Walgelijk.OpenTK;
 
-public class OggStreamer : IDisposable
+public class AudioStreamer : IDisposable
 {
     public const int BufferSize = 2048;
     public const int MaxBufferCount = 8;
@@ -20,6 +20,7 @@ public class OggStreamer : IDisposable
     public BufferHandle? CurrentPlayingBuffer;
 
     public ALFormat Format => AudioData.ChannelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16;
+
     public TimeSpan CurrentTime
     {
         get
@@ -27,12 +28,15 @@ public class OggStreamer : IDisposable
             AL.GetSource(Source, ALGetSourcei.SampleOffset, out int samplesPlayedInThisBuffer);
             AlCheck();
             var total = samplesPlayedInThisBuffer + processedSamples;
-            return TimeSpan.FromSeconds((total / (float)reader.SampleRate / AudioData.ChannelCount) % (float)Sound.Data.Duration.TotalSeconds);
+            return TimeSpan.FromSeconds((total / (float)AudioData.SampleRate / AudioData.ChannelCount) %
+                                        (float)Sound.Data.Duration.TotalSeconds);
         }
 
         set
         {
-            reader.TimePosition = value > TimeSpan.Zero ? (value < reader.TotalTime ? value : reader.TotalTime) : TimeSpan.Zero;
+            stream.TimePosition = value > TimeSpan.Zero
+                ? (value < AudioData.Duration ? value : AudioData.Duration)
+                : TimeSpan.Zero;
         }
     }
 
@@ -43,19 +47,18 @@ public class OggStreamer : IDisposable
     private readonly Thread thread;
 
     private int processedSamples = 0;
-    private VorbisReader reader;
-    private FileStream stream;
+
+    private IAudioStream stream;
     private bool endReached;
     private volatile bool monitorFlag = true;
 
-    public OggStreamer(SourceHandle sourceHandle, Sound sound, StreamAudioData raw)
+    public AudioStreamer(SourceHandle sourceHandle, Sound sound, StreamAudioData raw)
     {
         AudioData = raw;
         Source = sourceHandle;
         Sound = sound;
 
-        stream = new FileStream(AudioData.File.FullName, FileMode.Open, FileAccess.Read);
-        reader = new VorbisReader(stream, true);
+        stream = AudioData.InputSourceFactory();
 
         for (int i = 0; i < MaxBufferCount; i++)
         {
@@ -78,7 +81,7 @@ public class OggStreamer : IDisposable
 
     private bool FillBuffer(BufferEntry buffer)
     {
-        if (ReadOgg(out var readAmount))
+        if (ReadSamples(out var readAmount))
         {
             Array.Copy(rawOggBuffer, buffer.Data, BufferSize);
 
@@ -87,6 +90,7 @@ public class OggStreamer : IDisposable
                 var v = (short)Utilities.MapRange(-1, 1, short.MinValue, short.MaxValue, buffer.Data[i]);
                 shortDataBuffer[i] = v;
             }
+
             AL.BufferData<short>(buffer.Handle, Format, shortDataBuffer.AsSpan(0, readAmount), AudioData.SampleRate);
             AlCheck();
 
@@ -100,6 +104,7 @@ public class OggStreamer : IDisposable
 
             return true;
         }
+
         return false;
     }
 
@@ -126,6 +131,7 @@ public class OggStreamer : IDisposable
                     if (!endReached && state is ALSourceState.Stopped or ALSourceState.Initial or ALSourceState.Paused)
                         AL.SourcePlay(Source);
                     AlCheck();
+                    processed = AL.GetSource(Source, ALGetSourcei.BuffersProcessed);
                     break;
                 case SoundState.Paused:
                     // if we are requested to pause and the source is still playing, pause
@@ -152,12 +158,10 @@ public class OggStreamer : IDisposable
                         AlCheck();
 
                         stream?.Dispose();
-                        reader?.Dispose();
 
                         endReached = false;
                         processedSamples = 0;
-                        stream = new FileStream(AudioData.File.FullName, FileMode.Open, FileAccess.Read);
-                        reader = new VorbisReader(stream, true);
+                        stream = AudioData.InputSourceFactory();
 
                         FillQueue();
                     }
@@ -185,16 +189,16 @@ public class OggStreamer : IDisposable
         }
     }
 
-    private bool ReadOgg(out int read)
+    private bool ReadSamples(out int read)
     {
-        read = reader.ReadSamples(rawOggBuffer, 0, rawOggBuffer.Length);
+        read = stream.ReadSamples(rawOggBuffer);
         if (Sound.Looping)
         {
             // if the file is set to loop, just start from the beginning again
             if (read == 0)
             {
-                reader.SamplePosition = 0;
-                return ReadOgg(out read);
+                stream.Position = 0;
+                return ReadSamples(out read);
             }
         }
 
@@ -212,7 +216,6 @@ public class OggStreamer : IDisposable
         foreach (var b in Buffers.Keys)
             AL.DeleteBuffer(b.Handle);
 
-        reader.Dispose();
         stream.Dispose();
     }
 
@@ -243,5 +246,34 @@ public class OggStreamer : IDisposable
         public readonly BufferHandle Handle = bufferHandle;
         public float[] Data = new float[BufferSize];
         public override string ToString() => Handle.ToString();
+    }
+}
+
+public class OggAudioStream : IAudioStream
+{
+    private readonly VorbisReader reader;
+
+    public OggAudioStream(string path)
+    {
+        reader = new VorbisReader(path);
+    }
+
+    public int Position
+    {
+        get => (int)reader.SamplePosition;
+        set => reader.SamplePosition = value;
+    }
+    
+    public TimeSpan TimePosition   
+    {
+        get => reader.TimePosition;
+        set => reader.TimePosition = value;
+    }
+    
+    public int ReadSamples(Span<float> b) => reader.ReadSamples(b);
+
+    public void Dispose()
+    {
+        reader?.Dispose();
     }
 }

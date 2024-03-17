@@ -3,13 +3,20 @@ using System.IO;
 
 namespace Walgelijk;
 
+public interface IAudioStream : IDisposable
+{
+    public int Position { get; set; }
+    public int ReadSamples(Span<float> buffer);
+    public TimeSpan TimePosition { get; set; }
+}
+
 public class StreamAudioData : AudioData
 {
-    public readonly FileInfo File;
+    public readonly Func<IAudioStream> InputSourceFactory;
 
-    public StreamAudioData(string path, int sampleRate, int channelCount, long sampleCount)
+    public StreamAudioData(Func<IAudioStream> sourceFactory, int sampleRate, int channelCount, long sampleCount)
     {
-        File = new FileInfo(path);
+        InputSourceFactory = sourceFactory;
         ChannelCount = channelCount;
         DisposeLocalCopyAfterUpload = false;
         SampleRate = sampleRate;
@@ -18,7 +25,7 @@ public class StreamAudioData : AudioData
         if (SampleRate == 0 || ChannelCount == 0 || SampleCount == 0)
             Duration = TimeSpan.Zero;
         else
-            Duration = TimeSpan.FromSeconds(SampleCount / ChannelCount / (double)sampleRate);
+            Duration = TimeSpan.FromSeconds(SampleCount / (double)ChannelCount / sampleRate);
     }
 
     /// <summary>
