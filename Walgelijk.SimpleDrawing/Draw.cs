@@ -133,7 +133,7 @@ namespace Walgelijk.SimpleDrawing
         public static void ClearPools()
         {
             foreach (var item in TaskPool.GetAllInUse().ToArray())
-                TaskPool.ReturnToPool(item);    
+                TaskPool.ReturnToPool(item);
             foreach (var item in PolygonPool.GetAllInUse().ToArray())
                 PolygonPool.ReturnToPool(item);
 
@@ -152,6 +152,19 @@ namespace Walgelijk.SimpleDrawing
         private static RenderQueue Queue => RenderQueue ?? Game.Main.RenderQueue;
         private static readonly VertexBuffer textMesh = new(Array.Empty<Vertex>(), Array.Empty<uint>()) { Dynamic = true };
 
+        private static StencilRenderTask clearMaskTask = new StencilRenderTask(StencilState.Clear);
+        private static StencilRenderTask disableMaskTask = new StencilRenderTask(StencilState.Disabled);
+
+        private class StencilRenderTask(StencilState state) : IRenderTask
+        {
+            public readonly StencilState State = state;
+
+            public void Execute(IGraphics graphics)
+            {
+                graphics.Stencil = State;
+            }
+        }
+
         [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         private static void Enqueue(Drawing drawing)
         {
@@ -164,16 +177,16 @@ namespace Walgelijk.SimpleDrawing
         private static Drawing DrawingFor(VertexBuffer vtx, Vector2 position, Vector2 scale, float degrees)
             => new(
                 vtx,
-                position, 
+                position,
                 scale,
                 degrees * Utilities.DegToRad, Colour,
                 Material ?? DrawingMaterialCreator.Cache.Load(Texture ?? Walgelijk.Texture.White),
                 Texture ?? Walgelijk.Texture.White, ScreenSpace, DrawBounds, OutlineWidth, OutlineColour, ImageMode)
-                {
-                    Stencil = Stencil,
-                    Transformation = TransformMatrix,
-                    BlendMode = BlendMode
-                };
+            {
+                Stencil = Stencil,
+                Transformation = TransformMatrix,
+                BlendMode = BlendMode
+            };
 
         /// <summary>
         /// Reset the drawing state: <br></br><br></br>
@@ -233,7 +246,11 @@ namespace Walgelijk.SimpleDrawing
         /// <summary>
         /// Disable interaction with the stencil buffer entirely
         /// </summary>
-        public static void DisableMask() => Stencil = StencilState.Disabled;
+        public static void DisableMask()
+        {
+            Stencil = StencilState.Disabled;
+            Queue.Add(disableMaskTask, Order);
+        }
 
         /// <summary>
         /// Set the stencil state to "write" mode, meaning everything drawn will determine the mask
@@ -253,7 +270,11 @@ namespace Walgelijk.SimpleDrawing
         /// <summary>
         /// Clear the mask to black
         /// </summary>
-        public static void ClearMask() => Stencil = StencilState.Clear;
+        public static void ClearMask()
+        {
+            Stencil = StencilState.Clear;
+            Queue.Add(clearMaskTask, Order);
+        }
 
         /// <summary>
         /// Draw a <see cref="DrawingPrimitives.Quad"/>
@@ -314,7 +335,7 @@ namespace Walgelijk.SimpleDrawing
         /// <param name="textBoxWidth">The width before the text starts wrapping</param>
         /// <param name="degrees">Text rotation in degrees</param>
         public static void Text(
-            string text, Vector2 pivot, Vector2 scale, HorizontalTextAlign halign = HorizontalTextAlign.Left, VerticalTextAlign valign = VerticalTextAlign.Top, 
+            string text, Vector2 pivot, Vector2 scale, HorizontalTextAlign halign = HorizontalTextAlign.Left, VerticalTextAlign valign = VerticalTextAlign.Top,
             float textBoxWidth = float.PositiveInfinity, float degrees = 0)
         {
             Vector2 calculatedScale = scale * (FontSize / Font.Size);

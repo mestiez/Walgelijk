@@ -42,8 +42,10 @@ public class ThemeStack
     public void Pop()
     {
         Next = null;
-        if (stack.Count > 0)
-            stack.Pop();
+        if (stack.TryPop(out var l))
+        {
+            //Next = l;
+        }
     }
 
     /// <summary>

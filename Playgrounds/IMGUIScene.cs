@@ -95,6 +95,8 @@ Deserves kindness and love, a smile on their face";
                 SelectedDemo = 2;
             if (Input.IsKeyReleased(Key.D4))
                 SelectedDemo = 3;
+            if (Input.IsKeyReleased(Key.D5))
+                SelectedDemo = 4;
 
             switch (SelectedDemo)
             {
@@ -109,6 +111,9 @@ Deserves kindness and love, a smile on their face";
                     break;
                 case 3:
                     TabTest();
+                    break;
+                case 4:
+                    ThemeTest();
                     break;
             }
         }
@@ -126,6 +131,46 @@ Deserves kindness and love, a smile on their face";
 
                 Ui.Layout.PreferredSize().Width(300).Move(0, 64);
                 Ui.TextRect(textRectContents, HorizontalTextAlign.Left, VerticalTextAlign.Top);
+            }
+            Ui.End();
+        }
+
+        private void ThemeTest()
+        {
+            Ui.Layout.Size(800,512);
+            Ui.StartDragWindow("Theme stack");
+            {
+                Ui.Layout.FitContainer(1, 1, false).VerticalLayout();
+                Ui.StartScrollView();
+                {
+                    Ui.Theme.FontSize(24);
+
+                    Ui.Layout.Size(500, 32).StickLeft();
+                    Ui.Button("Ui.Theme.FontSize(24);");
+
+                    Ui.Theme.Text(Colors.Orange).Once();
+                    Ui.Layout.Size(400, 32).FitWidth().StickLeft();
+                    Ui.Button("Ui.Theme.Text(Colors.Orange).Once();");
+
+                    Ui.Layout.Size(300, 32).StickLeft();
+                    Ui.Button("Button C");
+
+                    Ui.Theme.Text(Colors.Cyan);
+                    Ui.Label("Ui.Theme.Text(Colors.Cyan);");   
+
+                    Ui.Label("I should be cyan");
+
+                    Ui.Theme.Pop();
+
+                    Ui.Label("Ui.Theme.Pop(); (no cyan, big text)");
+
+                    Ui.Layout.FitWidth().Height(50);
+                    Ui.FloatSlider(ref Onion.Configuration.SoundVolume, Direction.Horizontal, (0, 1));
+
+                    Ui.Theme.Pop();
+                    Ui.Label("Ui.Theme.Pop(); (no cyan, no big text)");
+                }
+                Ui.End();
             }
             Ui.End();
         }

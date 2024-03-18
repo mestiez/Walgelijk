@@ -121,7 +121,7 @@ public class LayoutQueue
     /// <summary>
     /// Maintain a certain aspect ratio
     /// </summary>
-    public LayoutQueue AspectRatio(float heightOverWidth, Layout.AspectRatio.Behaviour behaviour) => EnqueueConstraint(new AspectRatio(heightOverWidth, behaviour));
+    public LayoutQueue AspectRatio(float heightOverWidth, Layout.AspectRatio.Behaviour behaviour = Layout.AspectRatio.Behaviour.Grow) => EnqueueConstraint(new AspectRatio(heightOverWidth, behaviour));
 
     /// <summary>
     /// Offset the size by adding the given values to the width and height respectively
