@@ -50,6 +50,9 @@ public readonly struct Tooltip : IDecorator
         if (bottomPivot)
             freeVerticalSpace = space.Y - freeVerticalSpace - padding;
 
+        Draw.Font = p.Theme.Font;
+        Draw.FontSize = p.Theme.FontSize.Default;
+
         var textWidth = Draw.CalculateTextWidth(Message);
         float rectWidth = MathF.Min(freeHorizontalSpace, textWidth + padDbl);
 
@@ -65,8 +68,6 @@ public readonly struct Tooltip : IDecorator
         Draw.Order = Draw.Order.WithOrder(int.MaxValue);
         Draw.Colour = appearance.Color.WithAlpha(0.95f * p.Instance.GetTransitionProgress());
         //Draw.Colour = Colors.Red.WithAlpha(0.95f);
-        Draw.Font = p.Theme.Font;
-        Draw.FontSize = p.Theme.FontSize.Default;
         Draw.Texture = appearance.Texture;
         Draw.ImageMode = appearance.ImageMode;
         Draw.OutlineWidth = p.Theme.OutlineWidth[ControlState.None];
