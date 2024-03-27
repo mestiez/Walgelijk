@@ -31,6 +31,7 @@ in vec4 vertexColor;
 out vec4 color;
 
 uniform vec4 tint;
+uniform float u_hue;
 uniform sampler2D mainTex;
 
 float fff(float n, float h, float s, float v) 
@@ -90,13 +91,11 @@ vec3 toHsv(in vec3 rgb)
 
 void main()
 {
-    vec3 hsv = toHsv(tint.rgb);
+    float h = u_hue;
+    float s = uv.x;
+    float v = uv.y;
 
-    hsv.x = tint.a;
-    hsv.y = uv.x;
-    hsv.z = uv.y;
-
-    color = vec4(fromHsv(hsv.x, hsv.y, hsv.z), 1);
+    color = vec4(fromHsv(h, s, v), 1);
     color.a = tint.a;
     //color = tint * vertexColor * texture(mainTex, uv);
 }"
@@ -293,14 +292,15 @@ void main()
         if (!EditableAlpha)
             Draw.Colour.A = 1;
         anim.AnimateColour(ref Draw.Colour, t);
-        Draw.Colour = Colors.White.WithAlpha(Draw.Colour.A);
+        Draw.Colour = pickedColour.Color.WithAlpha(Draw.Colour.A);
         Draw.Quad(previewBox, 0, p.Theme.Rounding);
 
         Draw.ResetTexture();
-        Draw.Colour = pickedColour.Color with { A = pickedColour.SelectedHue };
+        Draw.Colour = Colors.White;
         anim.AnimateColour(ref Draw.Colour, t);
-        Draw.Colour = Colors.White.WithAlpha(Draw.Colour.A);
+        //Draw.Colour = Colors.White.WithAlpha(Draw.Colour.A);
         Draw.Material = hsBox;
+        hsBox.SetUniform("u_hue", pickedColour.SelectedHue);
         Draw.Quad(svRect);
 
         Draw.ResetMaterial();

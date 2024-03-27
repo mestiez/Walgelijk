@@ -5002,68 +5002,6 @@
             Smoothstep function
             </summary>
         </member>
-        <member name="T:Walgelijk.Asset">
-            <summary>
-            An asset ID. This is actually just a signed 32 bit integer.
-            </summary>
-        </member>
-        <member name="F:Walgelijk.Asset.Id">
-            <summary>
-            The unique identity
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Asset.#ctor(System.String@)">
-            <summary>
-            Construct an asset ID from a string. The actual Id is just the hashcode of the string. 
-            <br></br>
-            Note that this constructor adds permanently binds the asset ID and the given string in a static dictionary, accessible from <see cref="M:Walgelijk.Assets.GetAssetName(Walgelijk.Asset@)"/>
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Asset.#ctor(System.Int32)">
-            <summary>
-            Construct an asset ID from an integer
-            </summary>
-        </member>
-        <member name="T:Walgelijk.Assets">
-            <summary>
-            Global ID based resource directory
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Assets.Load``1(Walgelijk.Asset@)">
-            <summary>
-            Loads the given asset
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Assets.TryLoad``1(Walgelijk.Asset@,``0@)">
-            <summary>
-            Tries to load the given asset. Returns true if successful, meaning the loaded object is non-null
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Assets.GetAssetName(Walgelijk.Asset@)">
-            <summary>
-            Gets the associated name or integer ID of the given asset
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Assets.Register(Walgelijk.Asset@,Walgelijk.Assets.AssetProvider)">
-            <summary>
-            Register an asset to the registry. This asset can later be loaded and retrieved using the given asset ID
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Assets.RegisterEntireDirectory(Walgelijk.Assets.AssetProvider,System.String,System.String,System.IO.SearchOption)">
-            <summary>
-            Register the contents of a directory to the asset system, using the file names with extension as their ID
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Assets.TextureFileProvider(Walgelijk.Asset)">
-            <summary>
-            Standard path-based <see cref="T:Walgelijk.Texture"/> loader
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Assets.AudioDataFileProvider(Walgelijk.Asset)">
-            <summary>
-            Standard path-based <see cref="T:Walgelijk.AudioData"/> loader
-            </summary>
-        </member>
         <member name="T:Walgelijk.ComponentRef`1">
             <summary>
             Represents a reference to a component of type T that is attached to an entity.
@@ -6014,6 +5952,11 @@
         <member name="P:Walgelijk.Time.FixedInterval">
             <summary>
             Intended amount of time in seconds between fixed updates
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Time.op_Implicit(Walgelijk.Time)~System.Single">
+            <summary>
+            Returns <see cref="P:Walgelijk.Time.SecondsSinceLoad"/>
             </summary>
         </member>
         <member name="T:Walgelijk.BmFont.BmFontGlyph">

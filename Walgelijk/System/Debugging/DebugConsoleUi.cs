@@ -16,6 +16,8 @@ public class DebugConsoleUi : IDisposable
     public float AnimationDuration = 0.2f;
     public float BackgroundIntensity = 1;
 
+    public float EffectiveHeight => float.Min(Height, debugConsole.Game.Window.Height);
+
     public Color BackgroundColour = new(25, 25, 25, 250);
     public Color InputBoxColour = new(15, 15, 15);
     public Color InputTextColour = new(240, 240, 240);
@@ -23,7 +25,7 @@ public class DebugConsoleUi : IDisposable
     public Color CaretColour = new(250, 250, 250);
     public IReadableTexture? BackgroundTexture = DebugConsoleAssets.DefaultBg;
 
-    public int MaxLineCount => (Height - InputHeight - Padding) / LineHeight;
+    public int MaxLineCount => ((int)EffectiveHeight - InputHeight - Padding) / LineHeight;
     public int VisibleLineCount { get; private set; }
 
     public float CaretBlinkTime = 0;
@@ -127,12 +129,12 @@ public class DebugConsoleUi : IDisposable
         flashTime = Utilities.Clamp(flashTime - game.State.Time.DeltaTimeUnscaled);
 
         animationProgress = Utilities.Clamp(animationProgress + dt);
-        dropdownOffset = (int)(animationProgress * Height - Height);
+        dropdownOffset = (int)(animationProgress * EffectiveHeight - EffectiveHeight);
         mat.SetUniform("time", game.State.Time.SecondsSinceLoadUnscaled * 0.04f);
-        var bottom = Height + dropdownOffset;
+        var bottom = EffectiveHeight + dropdownOffset;
 
-        backgroundRect = new Rect(0, 0, width, Height).Translate(0, dropdownOffset);
-        inputBoxRect = new Rect(0, -InputHeight, width - FilterWidth, 0).Translate(0, Height + dropdownOffset);
+        backgroundRect = new Rect(0, 0, width, EffectiveHeight).Translate(0, dropdownOffset);
+        inputBoxRect = new Rect(0, -InputHeight, width - FilterWidth, 0).Translate(0, EffectiveHeight + dropdownOffset);
 
         const float iconSize = 24;
         var filtersPos = new Vector2(width - FilterWidth, bottom - InputHeight / 2);
@@ -164,7 +166,7 @@ public class DebugConsoleUi : IDisposable
         graphics.Stencil = default;
         graphics.DrawBounds = DrawBounds.DisabledBounds;
         {
-            graphics.DrawBounds = new DrawBounds(new Vector2(target.Size.X, Height), Vector2.Zero);
+            graphics.DrawBounds = new DrawBounds(new Vector2(target.Size.X, EffectiveHeight), Vector2.Zero);
 
             DrawPanels(graphics);
             DrawFilterButtons(graphics);
@@ -250,7 +252,7 @@ public class DebugConsoleUi : IDisposable
     private void DrawConsoleBuffer(IGraphics graphics)
     {
         var lineRect = new Rect(0, 0, graphics.CurrentTarget.Size.X, LineHeight).Expand(-Padding).Translate(0, dropdownOffset);
-        var totalRect = (backgroundRect with { MaxY = Height - InputHeight }).Translate(0, dropdownOffset);
+        var totalRect = (backgroundRect with { MaxY = EffectiveHeight - InputHeight }).Translate(0, dropdownOffset);
         int lineOffset = debugConsole.ScrollOffset;
         graphics.DrawBounds = new DrawBounds(totalRect);
 

@@ -43,8 +43,8 @@ public class Program
         Resources.SetBasePathForType<Font>("fonts");
         Resources.SetBasePathForType<Language>("locale");
 
-        Assets.Register("qoitest", static asset => Resources.Load<Texture>("qoitest.qoi"));
-        Assets.Register("resources/textures/pride.png", Assets.TextureFileProvider);
+        //Resources.Load<Texture>(("qoitest.qoi"));
+        //Resources.Load<Texture>(("pride.png"));
 
         //game.Scene = SplashScreen.CreateScene(Resources.Load<Texture>("opening_bg.png"), new[]
         //{
