@@ -49,7 +49,7 @@ public readonly struct Label : IControl
         Draw.Font = p.Theme.Font;
         Draw.Colour = p.Theme.Text[p.Instance.State];
         anim.AnimateColour(ref Draw.Colour, t);
-        anim.AnimateAlpha(ref Draw.Colour.A, t);
+        anim.AnimateRect(ref instance.Rects.Rendered, t);
 
         Vector2 pivot = instance.Rects.Rendered.GetCenter();
 

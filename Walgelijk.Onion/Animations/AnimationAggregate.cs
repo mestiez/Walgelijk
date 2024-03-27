@@ -2,15 +2,9 @@
 
 namespace Walgelijk.Onion.Animations;
 
-public class AnimationCollection : IAnimation
+public class AnimationAggregate : IAnimation
 {
     public IAnimation[] All = Array.Empty<IAnimation>();
-
-    public void AnimateAlpha(ref float alpha, float t)
-    {
-        for (int i = 0; i < All.Length; i++)
-            All[i].AnimateAlpha(ref alpha, t);
-    }
 
     public void AnimateColour(ref Color color, float t)
     {

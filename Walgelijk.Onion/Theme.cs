@@ -34,32 +34,34 @@ public struct Theme
     public bool ShowScrollbars = true;
     public float ScrollbarWidth = 16;
 
+    private bool wasScaled = false;
+
     public Theme()
     {
     }
 
-    public Theme WithBackgroundColor(StateDependent<Color> color)
+    public readonly Theme WithBackgroundColor(StateDependent<Color> color)
     {
         var copy = this;
         copy.Background.SetColor(color);
         return copy;
     }
 
-    public Theme WithForegroundColor(StateDependent<Color> color)
+    public readonly Theme WithForegroundColor(StateDependent<Color> color)
     {
         var copy = this;
         copy.Foreground.SetColor(color);
         return copy;
     }
 
-    public Theme WithBackgroundTexture(IReadableTexture tex, ImageMode mode)
+    public readonly Theme WithBackgroundTexture(IReadableTexture tex, ImageMode mode)
     {
         var copy = this;
         copy.Background.SetTexture(tex, mode);
         return copy;
     }
 
-    public Theme WithForegroundTexture(IReadableTexture tex, ImageMode mode)
+    public readonly Theme WithForegroundTexture(IReadableTexture tex, ImageMode mode)
     {
         var copy = this;
         copy.Foreground.SetTexture(tex, mode);
@@ -68,25 +70,18 @@ public struct Theme
 
     public void ApplyScaling(float scale)
     {
+        if (wasScaled)
+            return;
+        wasScaled = true;
+
         ScrollbarWidth *= scale;
         FocusBoxSize *= scale;
         FocusBoxWidth *= scale;
         Padding = (int)(Padding * scale);
         Rounding *= scale;
 
-        WindowTitleBarHeight.Default *= scale;
-        if (WindowTitleBarHeight.Hover.HasValue) WindowTitleBarHeight.Hover *= scale;
-        if (WindowTitleBarHeight.Triggered.HasValue) WindowTitleBarHeight.Triggered *= scale;
-        if (WindowTitleBarHeight.Active.HasValue) WindowTitleBarHeight.Active *= scale;
-
-        OutlineWidth.Default = (int)(OutlineWidth.Default * scale);
-        if (OutlineWidth.Hover.HasValue) OutlineWidth.Hover = (int)(OutlineWidth.Hover * scale);
-        if (OutlineWidth.Triggered.HasValue) OutlineWidth.Triggered = (int)(OutlineWidth.Triggered * scale);
-        if (OutlineWidth.Active.HasValue) OutlineWidth.Active = (int)(OutlineWidth.Active * scale);
-
-        FontSize.Default = (int)(FontSize.Default * scale);
-        if (FontSize.Hover.HasValue) FontSize.Hover = (int)(FontSize.Hover * scale);
-        if (FontSize.Triggered.HasValue) FontSize.Triggered = (int)(FontSize.Triggered * scale);
-        if (FontSize.Active.HasValue) FontSize.Active = (int)(FontSize.Active * scale);
+        WindowTitleBarHeight.Scale(scale);
+        OutlineWidth.Scale(scale);
+        FontSize.Scale(scale);
     }
 }

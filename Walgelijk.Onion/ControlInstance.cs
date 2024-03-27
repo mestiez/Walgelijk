@@ -103,7 +103,7 @@ public class ControlInstance
     /// <summary>
     /// List of visual animations to apply to this control
     /// </summary>
-    public readonly AnimationCollection Animations = new();
+    public readonly AnimationAggregate Animations = new();
 
     /// <summary>
     /// Control-specific theme
@@ -150,10 +150,13 @@ public class ControlInstance
         Identity = id;
     }
 
-    public float TimeSinceStateChange => Game.Main.State.Time.SecondsSinceSceneChangeUnscaled - LastStateChangeTime;
+    public float TimeSinceStateChange => Onion.Clock - LastStateChangeTime;
 
-    public float GetTransitionProgress(float secondsSinceSceneChangeUnscaled) => Utilities.Clamp((secondsSinceSceneChangeUnscaled - LastStateChangeTime) / Onion.Animation.DefaultDurationSeconds);
-    public float GetTransitionProgress() => Utilities.Clamp(TimeSinceStateChange / Onion.Animation.DefaultDurationSeconds);
+    public float GetTransitionProgress(float secondsSinceSceneChangeUnscaled) 
+        => Utilities.Clamp((secondsSinceSceneChangeUnscaled - LastStateChangeTime) / Onion.Animation.DefaultDurationSeconds);
+
+    public float GetTransitionProgress() 
+        => Utilities.Clamp(TimeSinceStateChange / Onion.Animation.DefaultDurationSeconds);
 }
 
 [Flags]

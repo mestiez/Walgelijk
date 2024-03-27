@@ -205,7 +205,7 @@ public class ControlTree
                     drawBounds.BottomLeft);
 
                 Draw.Colour = Colors.Transparent;
-                Draw.OutlineColour = Onion.Theme.Base.FocusBoxColour.WithAlpha(Utilities.MapRange(1, 0, 0.6f, 1, Easings.Cubic.In(focusAnimationProgress)));
+                Draw.OutlineColour = Onion.Theme.Base.FocusBoxColour.WithAlpha(Utilities.MapRange(1, 0, 0.6f, 1, Onion.Animation.Easing.In(focusAnimationProgress)));
                 Draw.OutlineWidth = Onion.Theme.Base.FocusBoxWidth;
                 Draw.Quad(inst.Rects.Rendered.Expand(expand), 0, Onion.Theme.Base.Rounding + expand);
                 Draw.OutlineWidth = 0;

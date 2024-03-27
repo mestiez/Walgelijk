@@ -35,7 +35,7 @@ public class Input
     private float lastClickTime;
     private Configuration Config => Onion.Configuration;
 
-    public void Update(in InputState state, float dt, float time)
+    public void Update(in InputState state, float dt)
     {
         MousePosition = state.WindowMousePosition;
         MouseDelta = state.WindowMouseDelta;
@@ -47,10 +47,10 @@ public class Input
         DoubleClicked = false;
         if (MousePrimaryRelease)
         {
-            if (time - lastClickTime < Config.DoubleClickTimeWindow.TotalSeconds)
+            if (Onion.Clock - lastClickTime < Config.DoubleClickTimeWindow.TotalSeconds)
                 DoubleClicked = true;
             else
-                lastClickTime = time;
+                lastClickTime = Onion.Clock;
         }
 
         rawScrollDelta = Vector2.Zero;

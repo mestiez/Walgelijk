@@ -55,33 +55,34 @@ public readonly struct Dropdown<T> : IControl
         var (instance, node) = Onion.Tree.Start(IdGen.Create(nameof(Dropdown<ValueType>).GetHashCode(), identity, site), new Dropdown<ValueType>(values, arrow));
         bool result = false;
         var dropdownRect = new Rect();
+        bool showScrollbars = true;
         if (currentStates.TryGetValue(instance.Identity, out var currentState))
-            dropdownRect = currentState.DropdownRect;
-
-        if (instance.IsTriggered)
         {
-            float height = instance.Rects.ComputedGlobal.Height;
-
-            Onion.Layout.Height(dropdownRect.Height).FitContainer(1, null).Move(instance.Theme.Padding, height + instance.Theme.Padding).Overflow(false, true);
-            Onion.Theme.SetAll(instance.Theme).ShowScrollbars(false).Once(); //TODO global scaling issue
-            Onion.Tree.Start(instance.Identity + 38, new ScrollView(true, false));
-
-            for (int i = 0; i < values.Count; i++)
+            dropdownRect = currentState.DropdownRect;
+            showScrollbars = currentState.TimeSinceTriggered > Onion.Animation.DefaultDurationSeconds;
+            if (instance.IsTriggered)
             {
-                Onion.Layout.Move(0, i * height);
-                Onion.Layout.Height(height);
-                Onion.Layout.FitWidth(false);
-                Onion.Layout.CenterHorizontal();
-                Onion.Theme.SetAll(instance.Theme).OutlineWidth(0).Once();
-                Onion.Animation.Add(new MoveInAnimation(instance.Rects.ComputedGlobal.GetCenter()));
-                if (Button.Click(values[i]?.ToString() ?? "???", i + instance.Identity))
-                {
-                    result = true;
-                    selectedIndex = i;
-                }
-            }
+                float height = instance.Rects.ComputedGlobal.Height / Onion.GlobalScale;
 
-            Onion.Tree.End();
+                Onion.Layout.Height(dropdownRect.Height).FitContainer(1, null).StickLeft().StickTop().Move(0, height).Overflow(false, true);
+                if (!showScrollbars)
+                    Onion.Theme.SetAll(instance.Theme).ShowScrollbars(false).Once(); //TODO global scaling issue
+                Onion.Tree.Start(instance.Identity + 31468, new ScrollView(true, false));
+
+                for (int i = 0; i < values.Count; i++)
+                {
+                    Onion.Layout.Move(0, i * height).Height(height).FitWidth(false).CenterHorizontal();
+                    Onion.Theme.SetAll(instance.Theme).OutlineWidth(0).Once();
+                    Onion.Animation.Add(new MoveInAnimation(instance.Rects.ComputedGlobal.GetCenter()));
+                    if (Button.Click(values[i]?.ToString() ?? "???", i + instance.Identity))
+                    {
+                        result = true;
+                        selectedIndex = i;
+                    }
+                }
+
+                Onion.Tree.End();
+            }
         }
 
         Onion.Tree.End();
@@ -150,9 +151,11 @@ public readonly struct Dropdown<T> : IControl
             var dropdownRect = new Rect(computedGlobal.MinX, computedGlobal.MaxY, computedGlobal.MaxX, computedGlobal.MaxY);
             var dropdownRectTargetHeight = instance.Rects.Rendered.Height * Values.Count + p.Theme.Padding * 2;
 
-            dropdownRectTargetHeight *= Easings.Quad.Out(Utilities.Clamp(currentState.TimeSinceTriggered / MathF.Max(float.Epsilon, Onion.Animation.DefaultDurationSeconds)));
-            dropdownRectTargetHeight = MathF.Min(dropdownRectTargetHeight, ((Game.Main.Window.Height - p.Theme.Padding * 2) - computedGlobal.MaxY));
+            //dropdownRectTargetHeight /= Onion.GlobalScale;
+
+            dropdownRectTargetHeight *= Onion.Animation.Easing.Out(Utilities.Clamp(currentState.TimeSinceTriggered / MathF.Max(float.Epsilon, Onion.Animation.DefaultDurationSeconds)));
             dropdownRect.MaxY += dropdownRectTargetHeight;
+            dropdownRect.MaxY = float.Min(Game.Main.Window.Height, dropdownRect.MaxY);
 
             if (instance.Rects.DrawBounds.HasValue)
                 instance.Rects.DrawBounds = instance.Rects.DrawBounds.Value.StretchToContain(dropdownRect);
@@ -190,10 +193,10 @@ public readonly struct Dropdown<T> : IControl
         Draw.ImageMode = fg.ImageMode;
         Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
         Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
-
+        anim.AnimateColour(ref Draw.OutlineColour, t);
         anim.AnimateRect(ref instance.Rects.Rendered, t);
         var arrowRect = new Rect(
-            0,0, 
+            0, 0,
             instance.Rects.Rendered.Height, instance.Rects.Rendered.Height)
             .Translate(instance.Rects.Rendered.BottomLeft)
             .Translate(instance.Rects.Rendered.Width - instance.Rects.Rendered.Height, 0);

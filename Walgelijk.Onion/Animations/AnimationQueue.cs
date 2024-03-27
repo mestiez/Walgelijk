@@ -26,6 +26,8 @@ public class AnimationQueue
 
     public void DoNotAnimate() => ForceNoAnimation = true;
 
+    public IEasing Easing = new IEasing.Cubic();
+
     public void Process(ControlInstance inst)
     {
         if (!ForceNoAnimation)

@@ -85,6 +85,12 @@ public class Navigator
         }
     }
 
+    /// <summary>
+    /// This event is dispatched when a control's state is changed (on hover, focus, click, etc.)
+    /// Provides the control ID and new state
+    /// </summary>
+    public static event Action<int, ControlState>? OnStateChange;
+
     internal int? ScrollbarOverride;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -94,7 +100,7 @@ public class Navigator
             return;
 
         if (currentId != null && Onion.Tree.Instances.TryGetValue(currentId.Value, out var old) && old is not null)
-            old.LastStateChangeTime = Game.Main.State.Time.SecondsSinceSceneChangeUnscaled;
+            old.LastStateChangeTime = Onion.Clock;
 
         if (!newId.HasValue || !Onion.Tree.Instances.TryGetValue(newId.Value, out var inst) || inst is null)
             return;
@@ -102,7 +108,9 @@ public class Navigator
         if (!inst.Muted)
             Onion.PlaySound(s);
 
-        inst.LastStateChangeTime = Game.Main.State.Time.SecondsSinceSceneChangeUnscaled;
+        OnStateChange?.Invoke(inst.Identity, s);
+
+        inst.LastStateChangeTime = Onion.Clock;
     }
 
     public bool IsBeingUsed =>

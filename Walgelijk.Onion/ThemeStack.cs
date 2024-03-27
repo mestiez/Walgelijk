@@ -72,6 +72,13 @@ public class ThemeStack
     /// </summary>
     public void Once() => onlyApplyToNextControl = true;
 
+    public void Push(ThemePush f)
+    {
+        Next = f(GetChanges());
+    }
+
+    public delegate Theme ThemePush(Theme theme);
+
     internal void ApplyTo(ControlInstance inst)
     {
         if (Next.HasValue)

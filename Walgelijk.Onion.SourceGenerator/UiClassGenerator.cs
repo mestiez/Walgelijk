@@ -57,7 +57,7 @@ namespace Walgelijk.Onion.SourceGenerator
 
             var members = themeClass.GetMembers();
 
-            return members.OfType<IFieldSymbol>();
+            return members.OfType<IFieldSymbol>().Where(t => t.DeclaredAccessibility == Accessibility.Public);
         }
 
         private void GenerateThemeExtensionClass(GeneratorExecutionContext context)

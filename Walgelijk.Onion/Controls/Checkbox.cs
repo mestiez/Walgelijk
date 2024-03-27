@@ -56,6 +56,7 @@ public readonly struct Checkbox : IControl
         Draw.ImageMode = fg.ImageMode;
         Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
         Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
+        anim.AnimateColour(ref Draw.OutlineColour, t);
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
 

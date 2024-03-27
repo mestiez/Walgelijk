@@ -63,7 +63,7 @@ public readonly struct ImageButton : IControl
         Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
 
         anim.AnimateRect(ref instance.Rects.Rendered, t);
-
+        anim.AnimateColour(ref Draw.OutlineColour, t);
         anim.AnimateColour(ref Draw.Colour, t);
         Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
 

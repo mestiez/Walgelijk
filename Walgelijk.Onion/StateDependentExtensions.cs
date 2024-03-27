@@ -4,6 +4,34 @@ namespace Walgelijk.Onion;
 
 public static class StateDependentExtensions
 {
+    public static void Scale(this ref StateDependent<float> app, float scale)
+    {
+        app.Default *= scale;
+
+        if (app.Hover.HasValue) 
+            app.Hover *= scale;
+
+        if (app.Triggered.HasValue) 
+            app.Triggered *= scale;
+
+        if (app.Active.HasValue) 
+            app.Active *= scale;
+    }   
+    
+    public static void Scale(this ref StateDependent<int> app, float scale)
+    {
+        app.Default = (int)(app.Default * scale);
+
+        if (app.Hover.HasValue)
+            app.Hover = (int)(app.Hover * scale);
+
+        if (app.Triggered.HasValue)
+            app.Triggered = (int)(app.Triggered * scale);
+
+        if (app.Active.HasValue)
+            app.Active = (int)(app.Active * scale);
+    }
+
     public static void SetColor(this ref StateDependent<Appearance> app, StateDependent<Color> color)
     {
         app.Default.Color = color.Default;

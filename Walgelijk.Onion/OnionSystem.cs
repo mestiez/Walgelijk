@@ -16,6 +16,8 @@ public class OnionSystem : Walgelijk.System
 
     public override void Update()
     {
+        Onion.Clock = Time.SecondsSinceLoadUnscaled;
+
         if (Onion.ForceClearCache)
         {
             Onion.ForceClearCache = false;
@@ -30,7 +32,7 @@ public class OnionSystem : Walgelijk.System
 
         // process
         Onion.Tree.Process(Time.DeltaTimeUnscaled);
-        Onion.Input.Update(Input, Time.DeltaTime, Time.SecondsSinceLoadUnscaled);
+        Onion.Input.Update(Input, Time.DeltaTime);
         Onion.Navigator.Process(Onion.Input, Time.DeltaTimeUnscaled);
 
         // next frame

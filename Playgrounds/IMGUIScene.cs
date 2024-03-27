@@ -3,9 +3,11 @@ using System.Numerics;
 using Walgelijk;
 using Walgelijk.Imgui;
 using Walgelijk.Onion;
+using Walgelijk.Onion.Animations;
 using Walgelijk.Onion.Controls;
 using Walgelijk.Onion.Decorators;
 using Walgelijk.SimpleDrawing;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using Button = Walgelijk.Onion.Controls.Button;
 
 namespace Playgrounds;
@@ -30,6 +32,7 @@ public struct IMGUIScene : ISceneCreator
             OrthographicSize = 1,
             ClearColour = new Color("#550055")
         });
+        Onion.Animation.Easing = new EaseOutBack();
         game.UpdateRate = 144;
         Draw.CacheTextMeshes = -1;
         return scene;
@@ -137,7 +140,7 @@ Deserves kindness and love, a smile on their face";
 
         private void ThemeTest()
         {
-            Ui.Layout.Size(800,512);
+            Ui.Layout.Size(800, 512);
             Ui.StartDragWindow("Theme stack");
             {
                 Ui.Layout.FitContainer(1, 1, false).VerticalLayout();
@@ -156,7 +159,7 @@ Deserves kindness and love, a smile on their face";
                     Ui.Button("Button C");
 
                     Ui.Theme.Text(Colors.Cyan);
-                    Ui.Label("Ui.Theme.Text(Colors.Cyan);");   
+                    Ui.Label("Ui.Theme.Text(Colors.Cyan);");
 
                     Ui.Label("I should be cyan");
 
@@ -477,6 +480,36 @@ Deserves kindness and love, a smile on their face";
     }
 }
 
+public readonly struct EaseOutBack : IEasing
+{
+    public float In(float x)
+    {
+        const float c1 = 1.70158f;
+        const float c3 = c1 + 1;
+
+        return c3 * x * x * x - c1 * x * x;
+    }
+
+    public float InOut(float x)
+    {
+        const float c1 = 1.70158f;
+        const float c2 = c1 * 1.525f;
+
+        return x < 0.5
+          ? (float.Pow(2 * x, 2) * ((c2 + 1) * 2 * x - c2)) / 2
+          : (float.Pow(2 * x - 2, 2) * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2;
+    }
+
+    public float Out(float x)
+    {
+        const float c1 = 1.70158f;
+        const float c3 = c1 + 1;
+
+        float x1s = (x - 1) * (x - 1);
+
+        return 1 + c3 * (x1s * (x - 1)) + c1 * x1s;
+    }
+}
 
 public readonly struct HoverCrosshairDecorator : IDecorator
 {

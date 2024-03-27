@@ -29,6 +29,8 @@ public static class Onion
 
     public static bool Initialised { get; private set; }
 
+    public static float Clock = 0;
+
     public static readonly Hook OnClear = new();
     internal static bool ForceClearCache = false;
 

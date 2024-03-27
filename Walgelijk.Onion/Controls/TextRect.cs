@@ -44,11 +44,15 @@ public readonly struct TextRect : IControl
         var t = node.GetAnimationTime();
         var anim = instance.Animations;
 
+        if (!anim.ShouldRenderText(t))
+            return;
+
         instance.Rects.Rendered = instance.Rects.ComputedGlobal;
 
         Draw.Font = p.Theme.Font;
         Draw.Colour = p.Theme.Text[p.Instance.State];
         anim.AnimateColour(ref Draw.Colour, t);
+        anim.AnimateRect(ref instance.Rects.Rendered, t);
 
         Vector2 pivot = instance.Rects.Rendered.GetCenter();
 

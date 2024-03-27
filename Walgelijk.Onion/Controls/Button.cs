@@ -43,15 +43,17 @@ public readonly struct Button : IControl
         Draw.OutlineColour = p.Theme.OutlineColour[instance.State];
         Draw.OutlineWidth = p.Theme.OutlineWidth[instance.State];
 
+        anim.AnimateColour(ref Draw.OutlineColour, t);
         anim.AnimateRect(ref instance.Rects.Rendered, t);
-
         anim.AnimateColour(ref Draw.Colour, t);
+
         Draw.Quad(instance.Rects.Rendered, 0, p.Theme.Rounding);
         Draw.ResetTexture();
 
         Draw.Font = p.Theme.Font;
         Draw.Colour = p.Theme.Text[instance.State];
         anim.AnimateColour(ref Draw.Colour, t);
+
         if (anim.ShouldRenderText(t))
         {
             var ratio = instance.Rects.Rendered.Area / instance.Rects.ComputedGlobal.Area;

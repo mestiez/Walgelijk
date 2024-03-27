@@ -161,8 +161,6 @@ public class Node
     {
         /* TODO
          * Horizontal scrollbar
-         * Scrollbar proper focus & raycast
-         * Dropdown has issues with it
          */
 
         if (p.Instance.Theme.ShowScrollbars && p.Instance.CaptureFlags.HasFlag(CaptureFlags.Scroll))
@@ -197,12 +195,25 @@ public class Node
                     Game.Main.Window.CursorStack.SetCursor(DefaultCursor.Pointer);
                     Draw.Colour = Utilities.Lerp(Draw.Colour, p.Instance.Theme.Accent.Default, 0.2f);
                 }
+
+                var t = p.Node.GetAnimationTime();
+                p.Instance.Animations.AnimateRect(ref scrollbarRect, t);
+                p.Instance.Animations.AnimateRect(ref trackerRect, t);
+                p.Instance.Animations.AnimateColour(ref Draw.Colour, t);
+
                 Draw.Quad(scrollbarRect, 0, p.Instance.Theme.Rounding);
+
                 Draw.Colour = p.Instance.Theme.Accent.Default;
-                Draw.Quad(trackerRect.Expand(-padding), 0, p.Instance.Theme.Rounding);
+                p.Instance.Animations.AnimateColour(ref Draw.Colour, t);
+                Draw.Quad(trackerRect.Expand(-float.Min(padding, scrollbarRect.Width / 2.5f)), 0, p.Instance.Theme.Rounding);
 
                 if (Onion.Navigator.ScrollbarOverride == scrollbarId)
                 {
+                    if (Onion.Input.DoubleClicked)
+                    {
+                        p.Instance.InnerScrollOffset.Y = -((Onion.Input.MousePosition.Y - scrollbarRect.MinY) - trackerRect.Height / 2) / ratio;
+                    }
+
                     if (Onion.Input.MousePrimaryHeld)
                         p.Instance.InnerScrollOffset.Y -= Onion.Input.MouseDelta.Y / ratio;
 

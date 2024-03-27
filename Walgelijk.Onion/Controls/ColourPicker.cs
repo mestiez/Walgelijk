@@ -97,6 +97,7 @@ void main()
     hsv.z = uv.y;
 
     color = vec4(fromHsv(hsv.x, hsv.y, hsv.z), 1);
+    color.a = tint.a;
     //color = tint * vertexColor * texture(mainTex, uv);
 }"
 ));
@@ -292,23 +293,26 @@ void main()
         if (!EditableAlpha)
             Draw.Colour.A = 1;
         anim.AnimateColour(ref Draw.Colour, t);
+        Draw.Colour = Colors.White.WithAlpha(Draw.Colour.A);
         Draw.Quad(previewBox, 0, p.Theme.Rounding);
 
         Draw.ResetTexture();
         Draw.Colour = pickedColour.Color with { A = pickedColour.SelectedHue };
         anim.AnimateColour(ref Draw.Colour, t);
+        Draw.Colour = Colors.White.WithAlpha(Draw.Colour.A);
         Draw.Material = hsBox;
         Draw.Quad(svRect);
 
         Draw.ResetMaterial();
         Draw.Texture = rainbowTexture;
-        Draw.Colour = Colors.White;
         anim.AnimateColour(ref Draw.Colour, t);
+        Draw.Colour = Colors.White.WithAlpha(Draw.Colour.A);
         Draw.Quad(hueRect);
         Draw.ResetTexture();
 
         Draw.Colour = Vector4.One - value.Color;
         Draw.Colour.A = 1;
+        anim.AnimateColour(ref Draw.Colour, t);
 
         const float triangleSize = 8;
         var hueBarY = Utilities.MapRange(0, 1, hueRect.MinY, hueRect.MaxY, value.SelectedHue);

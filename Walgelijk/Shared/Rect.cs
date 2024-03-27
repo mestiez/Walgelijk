@@ -262,6 +262,17 @@ public struct Rect : IEquatable<Rect>
     {
         return new Rect(GetCenter(), GetSize() * scale);
     }
+    
+    /// <summary>
+    /// This will return a copy of this rectangle scaled in each direction by the given value ranging, 1 meaning 100%
+    /// </summary>
+    public readonly Rect Scale(float x, float y)
+    {
+        var v = GetSize();
+        v.X *= x;
+        v.Y *= y;
+        return new Rect(GetCenter(), v);
+    }
 
     /// <summary>
     /// Return the rectangle that represents the intersection between this rectangle and the given rectangle
