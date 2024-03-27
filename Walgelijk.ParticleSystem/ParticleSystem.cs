@@ -96,7 +96,7 @@ public class ParticleSystem : Walgelijk.System
 
                 particles.RawParticleArray[i] = particle;
             }
-        };
+        }
     }
 
     private void RenderParticleSystem(ParticlesComponent particles, TransformComponent transform)

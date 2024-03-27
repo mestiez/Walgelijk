@@ -151,7 +151,7 @@ internal static class BmFontReader
     {
         string target = name + "=";
 
-        int index = line.IndexOf(target);
+        int index = line.IndexOf(target, StringComparison.InvariantCulture);
         if (index == -1)
         {
             Logger.Warn($"Cannot find font metadata variable \"{name}\" for \"{currentlyLoadingPath}\"", nameof(BmFontReader));

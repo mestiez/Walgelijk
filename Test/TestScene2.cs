@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Walgelijk;
@@ -63,7 +64,7 @@ public struct TestScene2
             Draw.Order = new RenderOrder(350, 0);
             Draw.ScreenSpace = true;
             Draw.Colour = Colors.Red;
-            Draw.Text(Audio.GetTime(streamTest).ToString(), new Vector2(32, 32), Vector2.One);
+            Draw.Text(Audio.GetTime(streamTest).ToString(CultureInfo.CurrentCulture), new Vector2(32, 32), Vector2.One);
             Draw.Colour = Colors.Purple;
 
             visualiser.Update(Audio, Time.DeltaTime);

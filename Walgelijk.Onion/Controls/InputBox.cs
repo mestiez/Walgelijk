@@ -76,7 +76,7 @@ public readonly struct InputBox : IControl
 
                 if (range.HasValue)
                     value = Utilities.Clamp(value, range.Value.Min, range.Value.Max);
-                instance.Name = value.ToString();
+                instance.Name = value.ToString(CultureInfo.CurrentCulture);
                 return true;
             }
 

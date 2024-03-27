@@ -410,7 +410,7 @@ Deserves kindness and love, a smile on their face";
                 }
                 Ui.StartDragWindow(textBoxContent, ref WindowsOpen[i], i);
                 {
-                    layout.FitContainer().StickTop().StickLeft().Scale(0, Onion.Theme.Base.Padding).Overflow(false, true); ;
+                    layout.FitContainer().StickTop().StickLeft().Scale(0, Onion.Theme.Base.Padding).Overflow(false, true);
                     //Ui.Theme.Padding(0).Once();
                     Ui.StartScrollView(false, i);
                     {

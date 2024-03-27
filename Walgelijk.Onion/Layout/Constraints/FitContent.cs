@@ -18,8 +18,8 @@ public readonly struct FitContent : IConstraint
         var adjustmentHeight = p.Instance.Rects.InnerContentRectAdjustment.W - p.Instance.Rects.InnerContentRectAdjustment.Y;
 
         if (Width)
-            p.Instance.Rects.Intermediate.Width = p.Instance.Rects.ComputedChildContentSize.X - adjustmentWidth; ;
+            p.Instance.Rects.Intermediate.Width = p.Instance.Rects.ComputedChildContentSize.X - adjustmentWidth;
         if (Height)
-            p.Instance.Rects.Intermediate.Height = p.Instance.Rects.ComputedChildContentSize.Y - adjustmentHeight; ;
+            p.Instance.Rects.Intermediate.Height = p.Instance.Rects.ComputedChildContentSize.Y - adjustmentHeight;
     }
 }

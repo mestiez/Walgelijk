@@ -105,7 +105,7 @@ public struct BatchRendererScene : ISceneCreator
 
                 sprite.Texture = MathF.Sin(item.Position.X * 0.02f + Time.SecondsSinceLoad) > 0
                     ? bee
-                    : icon; ;
+                    : icon;
 
                 var delta = item.Position - mpos;
                 var dist = delta.Length();

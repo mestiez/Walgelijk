@@ -5480,6 +5480,16 @@
             Currently active scene
             </summary>
         </member>
+        <member name="M:Walgelijk.Game.TrySetCachedScene(Walgelijk.SceneId@)">
+            <summary>
+            If the scene ID is found in the cache, it is made active. Returns true if found, false if not.
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Game.SceneCache">
+            <summary>
+            The scene cache keeps <see cref="F:Walgelijk.ScenePersistence.Persist"/> scenes in memory
+            </summary>
+        </member>
         <member name="P:Walgelijk.Game.RenderQueue">
             <summary>
             Returns the <see cref="T:Walgelijk.RenderQueue"/> that belongs to <see cref="P:Walgelijk.Game.Window"/>

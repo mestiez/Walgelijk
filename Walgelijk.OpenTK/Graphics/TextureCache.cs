@@ -112,12 +112,11 @@ public class TextureCache : Cache<IReadableTexture, LoadedTexture>
     {
         var wrap = (int)TypeConverter.Convert(raw.WrapMode);
         var maxFilter = (int)TypeConverter.Convert(raw.FilterMode);
-        var mipmapFilter = (int)TextureMinFilter.LinearMipmapLinear;
+        const int mipmapFilter = (int)TextureMinFilter.LinearMipmapLinear;
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, wrap);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, wrap);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, raw.GenerateMipmaps ? mipmapFilter : maxFilter);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, maxFilter); ;
-
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, maxFilter);
     }
 
     private static void SetTextureData(byte[] data, IReadableTexture raw)

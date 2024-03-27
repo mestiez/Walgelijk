@@ -360,7 +360,7 @@ public class TextMeshGenerator
                 pos + o,
                 new Vector2(glyph.TextureRect.MinX + glyph.TextureRect.Width * xFactor, glyph.TextureRect.MaxY - glyph.TextureRect.Height * yFactor),
                 color
-                ); ;
+                );
 
             return vertex;
         }
