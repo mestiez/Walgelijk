@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace Walgelijk;
 
 /// <summary>
 /// Event that can be dispatched and listened to
 /// </summary>
-public class Hook<T>
+public class Hook<T> : IAdditionOperators<Hook<T>, Action<T>, Hook<T>>
 {
     private readonly List<Action<T>> listeners = new();
 
@@ -55,12 +56,30 @@ public class Hook<T>
     /// Amount of listeners
     /// </summary>
     public int ListenerCount => listeners.Count;
+
+    /// <summary>
+    /// Add new listener
+    /// </summary>
+    public static Hook<T> operator +(Hook<T> l, Action<T> listener)
+    {
+        l.AddListener(listener);
+        return l;
+    }
+
+    /// <summary>
+    /// Remove listener
+    /// </summary>
+    public static Hook<T> operator -(Hook<T> l, Action<T> listener)
+    {
+        l.RemoveListener(listener);
+        return l;
+    }
 }
 
 /// <summary>
 /// Event that can be dispatched and listened to
 /// </summary>
-public class Hook
+public class Hook : IAdditionOperators<Hook, Action, Hook>
 {
     private readonly List<Action> listeners = new();
 
@@ -109,4 +128,22 @@ public class Hook
     /// Amount of listeners
     /// </summary>
     public int ListenerCount => listeners.Count;
+
+    /// <summary>
+    /// Add new listener
+    /// </summary>
+    public static Hook operator +(Hook l, Action listener)
+    {
+        l.AddListener(listener);
+        return l;
+    }
+
+    /// <summary>
+    /// Remove listener
+    /// </summary>
+    public static Hook operator -(Hook l, Action listener)
+    {
+        l.RemoveListener(listener);
+        return l;
+    }
 }

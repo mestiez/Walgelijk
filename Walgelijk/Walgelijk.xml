@@ -346,6 +346,11 @@
             Beep sound
             </summary>
         </member>
+        <member name="M:Walgelijk.Sound.Finalize">
+            <summary>
+            Calls <see cref="M:Walgelijk.AudioRenderer.DisposeOf(Walgelijk.Sound)"/>
+            </summary>
+        </member>
         <member name="T:Walgelijk.SoundState">
             <summary>
             States that a sound can be in
@@ -1257,9 +1262,24 @@
             Game this scene belongs to
             </summary>
         </member>
-        <member name="F:Walgelijk.Scene.ShouldBeDisposedOnSceneChange">
+        <member name="F:Walgelijk.Scene.Id">
             <summary>
-            Should the game dispose of this scene when it is made inactive by setting <see cref="P:Walgelijk.Game.Scene"/> to something else?
+            Globally unique ID for this scene
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Scene.ScenePersistence">
+            <summary>
+            Determines behaviour when this scene is switched away by <see cref="P:Walgelijk.Scene.Game"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.#ctor(Walgelijk.Game,Walgelijk.SceneId)">
+            <summary>
+            Create scene for a <see cref="P:Walgelijk.Scene.Game"/> without setting it as the active scene
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.#ctor(Walgelijk.SceneId)">
+            <summary>
+            Create scene without an attached game. This can cause issues when a <see cref="T:Walgelijk.System"/> expects a game
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.#ctor(Walgelijk.Game)">
@@ -1270,6 +1290,11 @@
         <member name="M:Walgelijk.Scene.#ctor">
             <summary>
             Create scene without an attached game. This can cause issues when a <see cref="T:Walgelijk.System"/> expects a game
+            </summary>
+        </member>
+        <member name="E:Walgelijk.Scene.OnActive">
+            <summary>
+            Fired when this scene is made active
             </summary>
         </member>
         <member name="E:Walgelijk.Scene.OnCreateEntity">
@@ -1453,6 +1478,21 @@
         <member name="M:Walgelijk.Scene.Dispose">
             <summary>
             Unload all entities and components in the scene.
+            </summary>
+        </member>
+        <member name="T:Walgelijk.SceneCache">
+            <summary>
+            A dictionary for scenes used by <see cref="T:Walgelijk.Game"/>
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ScenePersistence.Dispose">
+            <summary>
+            Dispose the scene and remove it from the scene cache
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ScenePersistence.Persist">
+            <summary>
+            Keep the scene in memory
             </summary>
         </member>
         <member name="T:Walgelijk.SingleInstanceAttribute">
@@ -5556,6 +5596,16 @@
             Amount of listeners
             </summary>
         </member>
+        <member name="M:Walgelijk.Hook`1.op_Addition(Walgelijk.Hook{`0},System.Action{`0})">
+            <summary>
+            Add new listener
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Hook`1.op_Subtraction(Walgelijk.Hook{`0},System.Action{`0})">
+            <summary>
+            Remove listener
+            </summary>
+        </member>
         <member name="T:Walgelijk.Hook">
             <summary>
             Event that can be dispatched and listened to
@@ -5589,6 +5639,16 @@
         <member name="P:Walgelijk.Hook.ListenerCount">
             <summary>
             Amount of listeners
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Hook.op_Addition(Walgelijk.Hook,System.Action)">
+            <summary>
+            Add new listener
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Hook.op_Subtraction(Walgelijk.Hook,System.Action)">
+            <summary>
+            Remove listener
             </summary>
         </member>
         <member name="T:Walgelijk.NameGenerator">

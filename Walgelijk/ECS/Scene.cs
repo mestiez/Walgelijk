@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Walgelijk;
+
 /// <summary>
 /// Stores and manages components and systems
 /// </summary>
@@ -15,9 +16,14 @@ public sealed class Scene : IDisposable
     public Game Game { get; internal set; }
 
     /// <summary>
-    /// Should the game dispose of this scene when it is made inactive by setting <see cref="Game.Scene"/> to something else?
+    /// Globally unique ID for this scene
     /// </summary>
-    public bool ShouldBeDisposedOnSceneChange = false;
+    public readonly SceneId Id;
+
+    /// <summary>
+    /// Determines behaviour when this scene is switched away by <see cref="Game"/>
+    /// </summary>
+    public ScenePersistence ScenePersistence = ScenePersistence.Dispose;
 
     private readonly IEntityCollection entities = new BasicEntityCollection();
     private readonly IComponentCollection components = new FilterComponentCollection();
@@ -28,9 +34,29 @@ public sealed class Scene : IDisposable
     /// <summary>
     /// Create scene for a <see cref="Game"/> without setting it as the active scene
     /// </summary>
+    public Scene(Game game, SceneId id)
+    {
+        Game = game;
+        Id = id;
+        systems = new BasicSystemCollection(this);
+    }
+
+    /// <summary>
+    /// Create scene without an attached game. This can cause issues when a <see cref="System"/> expects a game
+    /// </summary>
+    public Scene(SceneId id)
+    {
+        systems = new BasicSystemCollection(this);
+        Id = id;
+    }
+
+    /// <summary>
+    /// Create scene for a <see cref="Game"/> without setting it as the active scene
+    /// </summary>
     public Scene(Game game)
     {
         Game = game;
+        Id = Guid.NewGuid().ToString();
         systems = new BasicSystemCollection(this);
     }
 
@@ -40,7 +66,13 @@ public sealed class Scene : IDisposable
     public Scene()
     {
         systems = new BasicSystemCollection(this);
+        Id = Guid.NewGuid().ToString();
     }
+
+    /// <summary>
+    /// Fired when this scene is made active
+    /// </summary>
+    public event Action? OnActive;
 
     /// <summary>
     /// Fired when an entity is created and registered
@@ -90,7 +122,7 @@ public sealed class Scene : IDisposable
     /// Try to retrieve a system
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TryGetSystem(Type type, [NotNullWhen(true)] out System? system) 
+    public bool TryGetSystem(Type type, [NotNullWhen(true)] out System? system)
         => systems.TryGet(type, out system);
 
     /// <summary>
@@ -314,6 +346,11 @@ public sealed class Scene : IDisposable
             Game.State.Time.DeltaTime = 0;
     }
 
+    internal void Activate()
+    {
+        OnActive?.Invoke();
+    }
+
     /// <summary>
     /// Renders all systems that implement rendering code. This is typically handled by the window implementation
     /// </summary>
@@ -346,6 +383,7 @@ public sealed class Scene : IDisposable
         components.Dispose();
 
         Disposed = true;
+        Game.SceneCache.Remove(Id); // if you move this line one line up, you will probably cause a stack overflow 
     }
 
     //TODO voeg manier to om meerdere componenten te krijgen per keer

@@ -17,7 +17,7 @@ namespace Walgelijk
         /// <returns></returns>
         public static Scene CreateScene(IReadableTexture? background, Logo[] logos, Action onEnd, Transition transition = Transition.Cut, bool canSkip = true)
         {
-            Scene scene = new Scene();
+            var scene = new Scene();
 
             var splash = scene.CreateEntity();
             scene.AttachComponent(splash, new SplashScreenComponent

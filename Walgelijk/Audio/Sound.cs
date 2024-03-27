@@ -67,4 +67,13 @@ public class Sound
     /// Beep sound
     /// </summary>
     public static readonly Sound Beep = new Sound(FixedAudioData.Beep, false, null);
+
+    /// <summary>
+    /// Calls <see cref="AudioRenderer.DisposeOf(Sound)"/>
+    /// </summary>
+    ~Sound()
+    {
+        // TODO this is kind of hacky
+        Game.Main.AudioRenderer.DisposeOf(this);
+    }
 }

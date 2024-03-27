@@ -7,16 +7,24 @@ using Walgelijk.Onion.Animations;
 using Walgelijk.Onion.Controls;
 using Walgelijk.Onion.Decorators;
 using Walgelijk.SimpleDrawing;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Button = Walgelijk.Onion.Controls.Button;
 
 namespace Playgrounds;
 
 public struct IMGUIScene : ISceneCreator
 {
+    private static readonly SceneId id = nameof(IMGUIScene);
+
     public Scene Load(Game game)
     {
-        var scene = new Scene(game);
+        if (game.SceneCache.TryGet(id, out var scene))
+        {
+            game.Scene = scene;
+            return scene;
+        }
+
+        scene = new Scene(game, id);
+        scene.ScenePersistence = ScenePersistence.Persist;
         Gui.SetCursorStack = false;
         //game.Compositor.Flags = RenderTextureFlags.HDR;
         scene.AddSystem(new TransformSystem());
@@ -32,9 +40,15 @@ public struct IMGUIScene : ISceneCreator
             OrthographicSize = 1,
             ClearColour = new Color("#550055")
         });
-        Onion.Animation.Easing = new EaseOutBack();
-        game.UpdateRate = 144;
-        Draw.CacheTextMeshes = -1;
+
+        scene.OnActive += () =>
+        {
+            Onion.Theme.Base = new Theme();
+            Onion.Animation.Easing = new EaseOutBack();
+            Draw.CacheTextMeshes = -1;
+            game.UpdateRate = 144;
+        };
+
         return scene;
     }
 

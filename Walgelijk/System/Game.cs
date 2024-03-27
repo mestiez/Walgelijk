@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
 
 namespace Walgelijk;
 
@@ -48,24 +45,57 @@ public class Game
             if (value != null && value.Disposed)
                 throw new Exception("This scene has been disposed and can no longer be used");
 
-            if (scene != null && scene.ShouldBeDisposedOnSceneChange)
-                scene.Dispose();
+            if (scene != null)
+            {
+                switch (scene.ScenePersistence)
+                {
+                    default:
+                    case ScenePersistence.Dispose:
+                        scene.Dispose();
+                        break;
+                    case ScenePersistence.Persist:
+                        if (!SceneCache.Has(scene.Id))
+                            SceneCache.Add(scene);
+                        break;
+                }
+            }
 
             State.Time.SecondsSinceSceneChange = 0;
             var previous = scene;
             scene = value;
+
             if (scene != null)
             {
                 State.Time.DeltaTime = 0;
                 scene.Game = this;
                 scene.HasBeenLoadedAlready = true;
-                Logger.Log("Scene changed", nameof(Game));
+
+                scene.Activate();
+
+                Logger.Log("Scene changed");
             }
-            else Logger.Log("Scene set to null", nameof(Game));
 
             OnSceneChange?.Dispatch((previous, scene));
         }
     }
+
+    /// <summary>
+    /// If the scene ID is found in the cache, it is made active. Returns true if found, false if not.
+    /// </summary>
+    public bool TrySetCachedScene(in SceneId id)
+    {
+        if (SceneCache.TryGet(id, out var scene))
+        {
+            Scene = scene;
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// The scene cache keeps <see cref="ScenePersistence.Persist"/> scenes in memory
+    /// </summary>
+    public SceneCache SceneCache { get; } = new();
 
     /// <summary>
     /// Returns the <see cref="Walgelijk.RenderQueue"/> that belongs to <see cref="Window"/>

@@ -40,7 +40,7 @@ public struct Utilities
     /// Get the fractional component
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Fract(float p) => p - MathF.Truncate(p);
+    public static float Fract(float p) => p - float.Truncate(p);
 
     /// <summary>
     /// Linearly interpolate between two angles in degrees
@@ -55,10 +55,7 @@ public struct Utilities
     /// Linearly interpolate between two floats
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Lerp(float a, float b, float t)
-    {
-        return a * (1 - t) + b * t;
-    }
+    public static float Lerp(float a, float b, float t) => float.Lerp(a, b, t);
 
 
     /// <summary>
@@ -179,7 +176,7 @@ public struct Utilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Clamp(float x, float min = 0, float max = 1)
     {
-        return MathF.Max(min, MathF.Min(x, max));
+        return float.Max(min, float.Min(x, max));
     }
 
     /// <summary>
@@ -189,7 +186,7 @@ public struct Utilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Clamp(int x, int min = 0, int max = 1)
     {
-        return Math.Max(min, Math.Min(x, max));
+        return int.Max(min, int.Min(x, max));
     }
 
     /// <summary>
@@ -198,7 +195,7 @@ public struct Utilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Mod(float a, float b)
     {
-        return a - MathF.Floor(a / b) * b;
+        return a - float.Floor(a / b) * b;
     }
 
     /// <summary>
@@ -284,7 +281,7 @@ public struct Utilities
     public static Vector2 AngleToVector(float degrees)
     {
         float rad = degrees * DegToRad;
-        return new Vector2(MathF.Cos(rad), MathF.Sin(rad));
+        return new Vector2(float.Cos(rad), float.Sin(rad));
     }
 
     /// <summary>
@@ -294,7 +291,7 @@ public struct Utilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float VectorToAngle(Vector2 vector)
     {
-        return MathF.Atan2(vector.Y, vector.X) * RadToDeg;
+        return float.Atan2(vector.Y, vector.X) * RadToDeg;
     }
 
     /// <summary>
@@ -304,8 +301,8 @@ public struct Utilities
     public static Vector2 RotatePoint(Vector2 point, float degrees, Vector2 origin = default)
     {
         float radians = degrees * DegToRad;
-        float cos = MathF.Cos(radians);
-        float sin = MathF.Sin(radians);
+        float cos = float.Cos(radians);
+        float sin = float.Sin(radians);
         float x = point.X - origin.X;
         float y = point.Y - origin.Y;
         float rotatedX = x * cos - y * sin;
@@ -355,7 +352,7 @@ public struct Utilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static (Vector2 newPosition, Vector2 newVelocity) ApplyAcceleration(Vector2 acceleration, Vector2 currentPos, Vector2 currentVelocity, float deltaTime, float dampening = 1)
     {
-        currentVelocity *= MathF.Pow(1 - dampening, deltaTime);
+        currentVelocity *= float.Pow(1 - dampening, deltaTime);
 
         var newVel = deltaTime * acceleration + currentVelocity;
         var newPos = 0.5f * acceleration * deltaTime * deltaTime + currentVelocity * deltaTime + currentPos;
@@ -375,7 +372,7 @@ public struct Utilities
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static (float newPosition, float newVelocity) ApplyAcceleration(float acceleration, float currentPos, float currentVelocity, float deltaTime, float dampening = 1)
     {
-        currentVelocity *= MathF.Pow(1 - dampening, deltaTime);
+        currentVelocity *= float.Pow(1 - dampening, deltaTime);
 
         var newVel = deltaTime * acceleration + currentVelocity;
         var newPos = 0.5f * acceleration * deltaTime * deltaTime + currentVelocity * deltaTime + currentPos;
@@ -393,7 +390,7 @@ public struct Utilities
             return 0;
         if (float.IsNaN(deltaTime) || float.IsInfinity(deltaTime))
             return 1;
-        var v = Clamp(1 - MathF.Pow(1 - lerpFactor, deltaTime), 0, 1);
+        var v = Clamp(1 - float.Pow(1 - lerpFactor, deltaTime), 0, 1);
         return float.IsNaN(v) ? 0 : v;
     }
 
@@ -408,7 +405,7 @@ public struct Utilities
         var t = deltaTime * speed;
         var v = (targetPosition - pastTargetPosition) / t;
         var f = pastPosition - pastTargetPosition + v;
-        return NanFallback(targetPosition - v + f * MathF.Exp(-t));
+        return NanFallback(targetPosition - v + f * float.Exp(-t));
     }
 
     /// <summary>
@@ -437,7 +434,7 @@ public struct Utilities
         var t = deltaTime * speed;
         var v = (targetPosition - pastTargetPosition) / t;
         var f = pastPosition - pastTargetPosition + v;
-        return NanFallback(targetPosition - v + f * MathF.Exp(-t));
+        return NanFallback(targetPosition - v + f * float.Exp(-t));
     }
 
     /// <summary>
@@ -451,7 +448,7 @@ public struct Utilities
         var t = deltaTime * speed;
         var v = (targetPosition - pastTargetPosition) / t;
         var f = pastPosition - pastTargetPosition + v;
-        return NanFallback(targetPosition - v + f * MathF.Exp(-t));
+        return NanFallback(targetPosition - v + f * float.Exp(-t));
     }
 
     /// <summary>
@@ -465,7 +462,7 @@ public struct Utilities
         var t = deltaTime * speed;
         var v = (targetPosition - pastTargetPosition) / t;
         var f = pastPosition - pastTargetPosition + v;
-        return NanFallback(targetPosition - v + f * MathF.Exp(-t));
+        return NanFallback(targetPosition - v + f * float.Exp(-t));
     }
 
     /// <summary>
@@ -479,7 +476,7 @@ public struct Utilities
         var t = deltaTime * speed;
         var v = (DeltaAngle(pastTargetPosition, targetPosition)) / t;
         var f = DeltaAngle(pastTargetPosition, pastPosition) + v;
-        return NanFallback(targetPosition - v + f * MathF.Exp(-t));
+        return NanFallback(targetPosition - v + f * float.Exp(-t));
     }
 
     /// <summary>
@@ -565,13 +562,13 @@ public struct Utilities
     /// Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Snap(float x, float snapSize) => MathF.Round(x / snapSize) * snapSize;
+    public static float Snap(float x, float snapSize) => float.Round(x / snapSize) * snapSize;
 
     /// <summary>
     /// Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int Snap(int x, int snapSize) => (int)(MathF.Round(x / snapSize) * snapSize);
+    public static int Snap(int x, int snapSize) => (int)(float.Round(x / snapSize) * snapSize);
 
     /// <summary>
     /// Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
@@ -612,21 +609,21 @@ public struct Utilities
         {
             color.X = 255;
             color.Y = temp;
-            color.Y = 99.4708025861f * MathF.Log(color.Y) - 161.1195681661f;
+            color.Y = 99.4708025861f * float.Log(color.Y) - 161.1195681661f;
             if (temp <= 19)
                 color.Z = 0;
             else
             {
                 color.Z = temp - 10;
-                color.Z = 138.5177312231f * MathF.Log(color.Z) - 305.0447927307f;
+                color.Z = 138.5177312231f * float.Log(color.Z) - 305.0447927307f;
             }
         }
         else
         {
             color.X = temp - 60;
-            color.X = 329.698727446f * MathF.Pow(color.X, -0.1332047592f);
+            color.X = 329.698727446f * float.Pow(color.X, -0.1332047592f);
             color.Y = temp - 60;
-            color.Y = 288.1221695283f * MathF.Pow(color.Y, -0.0755148492f);
+            color.Y = 288.1221695283f * float.Pow(color.Y, -0.0755148492f);
             color.Z = 255f;
         }
 
