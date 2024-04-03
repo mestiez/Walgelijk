@@ -26,7 +26,7 @@ public static class TextureLoader
     /// <summary>
     /// Loads texture from file
     /// </summary>
-    public static Texture FromFile(string path, bool flipY = true, bool generateMipMaps = false)
+    public static Texture FromFile(string path, bool flipY = true, bool? generateMipMaps = null)
     {
         if (File.Exists(path))
         {
@@ -40,7 +40,7 @@ public static class TextureLoader
                 try
                 {
                     var img = item.Decode(File.ReadAllBytes(path), flipY);
-                    t = new Texture(img.Width, img.Height, img.Colors, generateMipMaps, false);
+                    t = new Texture(img.Width, img.Height, img.Colors, generateMipMaps ?? Settings.GenerateMipMaps, false);
                     t.FilterMode = Settings.FilterMode;
                     t.WrapMode = Settings.WrapMode;
                     return t;
@@ -77,7 +77,7 @@ public static class TextureLoader
     /// <summary>
     /// Loads texture from file
     /// </summary>
-    public static Texture FromBytes(ReadOnlySpan<byte> bytes, bool flipY = true, bool generateMipMaps = false)
+    public static Texture FromBytes(ReadOnlySpan<byte> bytes, bool flipY = true, bool? generateMipMaps = null)
     {
         foreach (var item in Decoders)
         {
@@ -89,7 +89,7 @@ public static class TextureLoader
             try
             {
                 var img = item.Decode(bytes, flipY);
-                t = new Texture(img.Width, img.Height, img.Colors, generateMipMaps, false);
+                t = new Texture(img.Width, img.Height, img.Colors, generateMipMaps ?? Settings.GenerateMipMaps, false);
                 t.FilterMode = Settings.FilterMode;
                 t.WrapMode = Settings.WrapMode;
                 return t;
@@ -134,6 +134,11 @@ public struct ImportSettings
     /// The HDR flag value by default. <b>This is not applicable currently because the decoder can't read HDRIs yet</b>
     /// </summary>
     public bool HDR;
+
+    /// <summary>
+    /// Whether or not to generate mip maps by default
+    /// </summary>
+    public bool GenerateMipMaps;
 }
 
 /// <summary>

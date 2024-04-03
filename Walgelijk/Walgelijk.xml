@@ -2152,12 +2152,12 @@
             List of image decoders. This list is walked through for every image that is loaded, from top to bottom. You can manipulate this list in any way you like.
             </summary>
         </member>
-        <member name="M:Walgelijk.TextureLoader.FromFile(System.String,System.Boolean,System.Boolean)">
+        <member name="M:Walgelijk.TextureLoader.FromFile(System.String,System.Boolean,System.Nullable{System.Boolean})">
             <summary>
             Loads texture from file
             </summary>
         </member>
-        <member name="M:Walgelijk.TextureLoader.FromBytes(System.ReadOnlySpan{System.Byte},System.Boolean,System.Boolean)">
+        <member name="M:Walgelijk.TextureLoader.FromBytes(System.ReadOnlySpan{System.Byte},System.Boolean,System.Nullable{System.Boolean})">
             <summary>
             Loads texture from file
             </summary>
@@ -2180,6 +2180,11 @@
         <member name="F:Walgelijk.ImportSettings.HDR">
             <summary>
             The HDR flag value by default. <b>This is not applicable currently because the decoder can't read HDRIs yet</b>
+            </summary>
+        </member>
+        <member name="F:Walgelijk.ImportSettings.GenerateMipMaps">
+            <summary>
+            Whether or not to generate mip maps by default
             </summary>
         </member>
         <member name="T:Walgelijk.IImageDecoder">

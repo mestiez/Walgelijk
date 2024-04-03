@@ -19,16 +19,13 @@ public static class FontMaterialCreator
     /// <returns></returns>
     public static Material CreateFor(Font font)
     {
-        switch (font.Rendering)
+        return font.Rendering switch
         {
-            case FontRendering.Bitmap:
-                return CreateBitmapFontMaterial(font.Page);
-            case FontRendering.SDF:
-                return CreateSDFMaterial(font.Page);
-            case FontRendering.MSDF:
-                return CreateMSDFMaterial(font.Page);
-        }
-        throw new ArgumentException("Invalid FontRendering value: only Bitmap, SDF, and MSDF are supported by this function");
+            FontRendering.Bitmap => CreateBitmapFontMaterial(font.Page),
+            FontRendering.SDF => CreateSDFMaterial(font.Page),
+            FontRendering.MSDF => CreateMSDFMaterial(font.Page),
+            _ => throw new ArgumentException("Invalid FontRendering value: only Bitmap, SDF, and MSDF are supported by this function"),
+        };
     }
 
     /// <summary>

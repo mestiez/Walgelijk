@@ -34,7 +34,8 @@ public readonly struct TextRect : IControl
     public void OnProcess(in ControlParams p)
     {
         p.Instance.CaptureFlags = CaptureFlags.None;
-        p.Instance.Rects.DrawBounds = p.Instance.Rects.ComputedGlobal;
+        p.Instance.Rects.Rendered = p.Instance.Rects.ComputedGlobal;
+        p.Instance.Rects.DrawBounds = p.Instance.Rects.Rendered;
     }
 
     public void OnRender(in ControlParams p)
