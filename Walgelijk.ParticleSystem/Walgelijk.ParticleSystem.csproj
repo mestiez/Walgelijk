@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Version>0.2.30</Version>
+    <Version>0.2.31</Version>
     <DebugType>embedded</DebugType>
     <Authors>mestiez</Authors>
     <Company>Studio Minus</Company>
