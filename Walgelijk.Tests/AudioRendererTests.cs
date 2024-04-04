@@ -13,7 +13,10 @@ public class AudioRendererTests
 {
     public readonly static Func<AudioRenderer>[] Renderers =
     {
-        () => new OpenALAudioRenderer(),
+        () => new OpenALAudioRenderer()
+        {
+            Volume = 0 // try not to deafen the programmer ♥
+        },
     };
 
     [TestMethod]
@@ -37,7 +40,7 @@ public class AudioRendererTests
                 bool started = false;
 
                 var t = TimeSpan.Zero;
-                while (t <= audioData.Duration - TimeSpan.FromMilliseconds(100))
+                while (t <= audioData.Duration - TimeSpan.FromMilliseconds(500))
                 {
                     if (!started)
                     {

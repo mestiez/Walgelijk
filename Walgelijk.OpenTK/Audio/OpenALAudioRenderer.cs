@@ -435,6 +435,7 @@ public class OpenALAudioRenderer : AudioRenderer
         if (audioData != null)
         {
             audioData.DisposeLocalCopy();
+
             if (audioData is FixedAudioData fixedAudioData)
                 AudioObjects.FixedBuffers.Unload(fixedAudioData);
 
@@ -447,10 +448,7 @@ public class OpenALAudioRenderer : AudioRenderer
     public override void DisposeOf(Sound sound)
     {
         if (sound != null)
-        {
             AudioObjects.Sources.Unload(sound);
-            Resources.Unload(sound);
-        }
     }
 
     public override void SetAudioDevice(string device)

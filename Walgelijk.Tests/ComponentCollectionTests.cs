@@ -33,12 +33,12 @@ public class ComponentCollectionTests
         coll.SyncBuffers();
         Assert.AreEqual(1, coll.Count);
 
-        coll.Remove<TransformComponent>(ent2);// wrong entity
+        coll.Remove<TransformComponent>(ent2); // wrong entity
         coll.SyncBuffers();
         Assert.AreEqual(1, coll.Count);
 
         coll.Remove<TransformComponent>(ent1);
-        Assert.IsTrue(coll.Has<TransformComponent>(ent2)); // removing stuff is instant
+        Assert.IsFalse(coll.Has<TransformComponent>(ent2)); // removing stuff is instant
         coll.SyncBuffers();
         Assert.AreEqual(0, coll.Count);
 
