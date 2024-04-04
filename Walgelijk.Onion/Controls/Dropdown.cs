@@ -240,7 +240,10 @@ public readonly struct Dropdown<T> : IControl
 
     private string GetValue(int selectedIndex)
     {
-        return Values.Count > selectedIndex ? (Values[selectedIndex]?.ToString() ?? "NULL") : "OutOfBounds";
+        if (Values.Count == 0)
+            return "OutOfBounds";
+
+        return (selectedIndex < Values.Count && selectedIndex >= 0) ? (Values[selectedIndex]?.ToString() ?? "NULL") : "OutOfBounds";
     }
 
     public void OnEnd(in ControlParams p)
