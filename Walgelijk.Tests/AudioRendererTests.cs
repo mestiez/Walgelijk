@@ -40,7 +40,7 @@ public class AudioRendererTests
                 bool started = false;
 
                 var t = TimeSpan.Zero;
-                while (t <= audioData.Duration - TimeSpan.FromMilliseconds(500))
+                while (t <= audioData.Duration - TimeSpan.FromMilliseconds(100))
                 {
                     if (!started)
                     {
