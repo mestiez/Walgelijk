@@ -1,9 +1,0 @@
-{
-  "DisplayName": "English",
-  "Culture": "en-GB",
-  "Table": {
-    "greeting": "Hello! This is a greeting :)",
-    "solitary": "I only exist in English",
-    "advert": "english-asset.png"
-  }
-}

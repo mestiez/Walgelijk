@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 using Walgelijk;
-using Walgelijk.Imgui;
+using Walgelijk.Onion;
 using Walgelijk.ParticleSystem;
 
 namespace Tests;
@@ -150,7 +150,7 @@ public class SystemCollectionTests
             coll.Add(new DebugCameraSystem());
         });
 
-        coll.Add(new GuiSystem());
+        coll.Add(new OnionSystem());
 
         Assert.ThrowsException<Exception>(() => // exceeded capacity
         {

@@ -50,6 +50,12 @@ public readonly struct TextRect : IControl
 
         instance.Rects.Rendered = instance.Rects.ComputedGlobal;
 
+        if (instance.Rects.Rendered.Width <= float.Epsilon)
+            return;
+
+        if (instance.Rects.Rendered.Height <= float.Epsilon)
+            return;
+
         Draw.Font = p.Theme.Font;
         Draw.Colour = p.Theme.Text[p.Instance.State];
         anim.AnimateColour(ref Draw.Colour, t);

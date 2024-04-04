@@ -1,6 +1,5 @@
 ﻿using System.Numerics;
 using Walgelijk;
-using Walgelijk.Imgui;
 using Walgelijk.Physics;
 using Walgelijk.SimpleDrawing;
 
@@ -11,7 +10,6 @@ public struct PhysicsTestScene : ISceneCreator
     public Scene Load(Game game)
     {
         var scene = new Scene(game);
-        Gui.SetCursorStack = false;
         scene.AddSystem(new PhysicsSystem());
         scene.AddSystem(new PhysicsDebugSystem());
         scene.AddSystem(new TransformSystem());

@@ -1,7 +1,6 @@
 ﻿using System.Data;
 using System.Numerics;
 using Walgelijk;
-using Walgelijk.Imgui;
 using Walgelijk.Onion;
 using Walgelijk.Onion.Animations;
 using Walgelijk.Onion.Controls;
@@ -25,10 +24,8 @@ public struct IMGUIScene : ISceneCreator
 
         scene = new Scene(game, id);
         scene.ScenePersistence = ScenePersistence.Persist;
-        Gui.SetCursorStack = false;
         //game.Compositor.Flags = RenderTextureFlags.HDR;
         scene.AddSystem(new TransformSystem());
-        scene.AddSystem(new GuiSystem());
         scene.AddSystem(new OnionSystem());
         scene.AddSystem(new IMGUITestSystem());
         scene.AddSystem(new CameraSystem() { ExecutionOrder = -1 });
