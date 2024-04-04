@@ -64,8 +64,6 @@ public readonly struct ScrollView : IControl
             }
         }
 
-        //TODO pseudo controls interactivity (scrollbars)
-
         //if (p.Instance.Rects.ChildContent.Height > p.Instance.Rects.Intermediate.Height)
         //{
         //    float height = p.Instance.Rects.Intermediate.Height * p.Instance.Rects.Intermediate.Height / p.Instance.Rects.ChildContent.Height;

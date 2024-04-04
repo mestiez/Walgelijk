@@ -5819,6 +5819,44 @@
             Unloads everything
             </summary>
         </member>
+        <member name="T:Walgelijk.RoutineScheduler">
+            <summary>
+            Routines are like Unity coroutines.<br></br>
+            These are <b>NOT</b> threads.<br></br>
+            They're not async or parallel, but instead ran on the main thread.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.RoutineScheduler.Start(System.Collections.Generic.IEnumerator{Walgelijk.IRoutineCommand})">
+            <summary>
+            Start a routine.
+            </summary>
+            <param name="task"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.RoutineScheduler.Stop(Walgelijk.Routine)">
+            <summary>
+            Stop a routine.
+            </summary>
+            <param name="routine"></param>
+        </member>
+        <member name="M:Walgelijk.RoutineScheduler.StopAll">
+            <summary>
+            Stop any and all routines.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.RoutineScheduler.IsOngoing(Walgelijk.Routine)">
+            <summary>
+            Is this routine running?
+            </summary>
+            <param name="routine"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.RoutineScheduler.StepRoutines(System.Single)">
+            <summary>
+            Runs all the routines.
+            </summary>
+            <param name="dt"></param>
+        </member>
         <member name="T:Walgelijk.Selection.ISelectable">
             <summary>
             Guarantees a selectable object

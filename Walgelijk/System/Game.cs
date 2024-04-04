@@ -233,6 +233,7 @@ public class Game
                 State.Time.Interpolation = (float)(accumulator / fixedUpdateInterval);
 
                 Scene?.UpdateSystems();
+                RoutineScheduler.StepRoutines(scaledDt);
             }
 
             SetWindowWorldBounds();

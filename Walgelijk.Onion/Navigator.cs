@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Collections;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Walgelijk.SimpleDrawing;
@@ -130,7 +131,7 @@ public class Navigator
     private int sortedByDepthCount = 0;
     private int alwaysOnTopCounter = 0;
 
-    private readonly Dictionary<int, float> highlightControls = new();
+    private readonly Dictionary<int, float> highlightControls = [];
 
     public void Process(Input input, float dt)
     {
@@ -187,9 +188,17 @@ public class Navigator
 #if DEBUG
         if (Game.Main.State.Input.IsKeyReleased(Key.F4))
         {
-            float d = 1;
-            foreach (var id in RaycastAll(input.MousePosition.X, input.MousePosition.Y, CaptureFlags.Hover))
-                HighlightControl(id, 5 / (d *= 2));
+            var v = RaycastAll(input.MousePosition.X, input.MousePosition.Y, CaptureFlags.Hover);
+            RoutineScheduler.Start(routine());
+            IEnumerator<IRoutineCommand> routine()
+            {
+                foreach (var id in v)
+                {
+                    HighlightControl(id, 0.5f);
+                    yield return new RoutineDelay(0.1f);
+                }
+            }
+
         }
 #endif
     }

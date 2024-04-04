@@ -6,6 +6,7 @@ using Walgelijk.Onion.Layout;
 
 namespace Walgelijk.Onion;
 
+
 public static class Onion
 {
     public static readonly LayoutQueue Layout = new();
@@ -17,6 +18,8 @@ public static class Onion
     public static readonly AnimationQueue Animation = new();
     public static readonly DecoratorQueue Decorators = new();
     public static readonly ThemeStack Theme = new();
+
+    //public static readonly PseudoControls PseudoControls = new();
 
     public static Sound? HoverSound;
     public static Sound? ActiveSound = new(BuiltInAssets.Click, false, null);
@@ -100,3 +103,9 @@ public static class Onion
         }
     }
 }
+
+//public class PseudoControls
+//{
+//    public delegate void ScrollbarDrawing(in ControlParams p, in Rect background, in Rect tracker);
+//    public ScrollbarDrawing? DrawScrollbar;
+//}

@@ -33,6 +33,8 @@ public struct Theme
 
     public bool ShowScrollbars = true;
     public float ScrollbarWidth = 16;
+    public StateDependent<Color> ScrollbarTracker = new(new Color(0xcc820a), new Color(0xcc820a).Brightness(1.2f), new Color(0xcc820a).Brightness(0.9f));
+    public StateDependent<Color> ScrollbarBackground = new Color(0x151122).Brightness(2f);
 
     private bool wasScaled = false;
 
