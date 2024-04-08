@@ -49,42 +49,41 @@ public readonly struct TextRect : IControl
             return;
 
         instance.Rects.Rendered = instance.Rects.ComputedGlobal;
-
-        if (instance.Rects.Rendered.Width <= float.Epsilon)
-            return;
-
-        if (instance.Rects.Rendered.Height <= float.Epsilon)
-            return;
+        bool hide = instance.Rects.Rendered.Area <= float.Epsilon;
 
         Draw.Font = p.Theme.Font;
         Draw.Colour = p.Theme.Text[p.Instance.State];
-        anim.AnimateColour(ref Draw.Colour, t);
-        anim.AnimateRect(ref instance.Rects.Rendered, t);
-
-        Vector2 pivot = instance.Rects.Rendered.GetCenter();
-
-        switch (horizontal)
-        {
-            case HorizontalTextAlign.Left:
-                pivot.X = instance.Rects.Rendered.MinX + p.Theme.Padding;
-                break;
-            case HorizontalTextAlign.Right:
-                pivot.X = instance.Rects.Rendered.MaxX - p.Theme.Padding;
-                break;
-        }
-
-        switch (vertical)
-        {
-            case VerticalTextAlign.Top:
-                pivot.Y = instance.Rects.Rendered.MinY + p.Theme.Padding;
-                break;
-            case VerticalTextAlign.Bottom:
-                pivot.Y = instance.Rects.Rendered.MaxY - p.Theme.Padding;
-                break;
-        }
-
         int wrapWidth = (int)instance.Rects.ComputedGlobal.Width - p.Theme.Padding * 2;
-        Draw.Text(instance.Name, pivot, Vector2.One, horizontal, vertical, wrapWidth);
+
+        if (!hide)
+        {
+            anim.AnimateColour(ref Draw.Colour, t);
+            anim.AnimateRect(ref instance.Rects.Rendered, t);
+
+            Vector2 pivot = instance.Rects.Rendered.GetCenter();
+
+            switch (horizontal)
+            {
+                case HorizontalTextAlign.Left:
+                    pivot.X = instance.Rects.Rendered.MinX + p.Theme.Padding;
+                    break;
+                case HorizontalTextAlign.Right:
+                    pivot.X = instance.Rects.Rendered.MaxX - p.Theme.Padding;
+                    break;
+            }
+
+            switch (vertical)
+            {
+                case VerticalTextAlign.Top:
+                    pivot.Y = instance.Rects.Rendered.MinY + p.Theme.Padding;
+                    break;
+                case VerticalTextAlign.Bottom:
+                    pivot.Y = instance.Rects.Rendered.MaxY - p.Theme.Padding;
+                    break;
+            }
+            Draw.Text(instance.Name, pivot, Vector2.One, horizontal, vertical, wrapWidth);
+        }
+
         instance.PreferredHeight = Draw.CalculateTextHeight(instance.Name, wrapWidth) + p.Theme.Padding * 2;
     }
 
