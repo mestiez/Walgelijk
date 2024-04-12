@@ -166,7 +166,7 @@ public class OpenALAudioRenderer : AudioRenderer
         }
     }
 
-    public override FixedAudioData LoadSound(string path)
+    public override FixedAudioData LoadSound(Stream stream)
     {
         var ext = path.AsSpan()[path.LastIndexOf('.')..];
         AudioFileData data;
@@ -183,14 +183,14 @@ public class OpenALAudioRenderer : AudioRenderer
         }
         catch (Exception e)
         {
-            throw new AggregateException($"Failed to load audio file: {path}", e);
+            throw new AggregateException($"Failed to load audio file: {stream}", e);
         }
 
         var audio = new FixedAudioData(data.Data, data.SampleRate, data.NumChannels, data.SampleCount);
         return audio;
     }
 
-    public override StreamAudioData LoadStream(string path)
+    public override StreamAudioData LoadStream(Stream stream)
     {
         var ext = path.AsSpan()[path.LastIndexOf('.')..];
         AudioFileData data;

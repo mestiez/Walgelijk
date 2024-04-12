@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using NVorbis;
 
 namespace Walgelijk.OpenTK;
@@ -10,6 +11,11 @@ public class OggAudioStream : IAudioStream
     public OggAudioStream(string path)
     {
         reader = new VorbisReader(path);
+    } 
+    
+    public OggAudioStream(Stream source)
+    {
+        reader = new VorbisReader(source, true);
     }
 
     public long Position
