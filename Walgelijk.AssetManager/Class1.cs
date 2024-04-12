@@ -1,5 +1,8 @@
-﻿using System.IO.Compression;
+﻿using Newtonsoft.Json;
+using System.IO.Compression;
 using System.Security.Cryptography;
+using System.Text;
+using Walgelijk;
 
 namespace Walgelijk.AssetManager;
 
@@ -29,38 +32,91 @@ namespace Walgelijk.AssetManager;
  *  - Game Engine Architecture 3rd Edition, ch 7
  */
 
-public static class AssetPackageBuilder
+public static class AssetPackageUtils
 {
-    public void Build(DirectoryInfo directory, Stream output)
+    /* AssetPackage structure:
+     * 
+     * 📁 root
+     *  | 📁 assets 
+     *  |  | ~ all assets go here
+     *  | 📁 metadata
+     *  |  | ~ every asset has a corresponding .meta file, which contains
+     *  |  |   a kv map of properties such as file size, mime type, tags, etc.
+     *  | 📃 guid_table.txt
+     *  | 📃 package.json
+     */
+
+    public static void Build(string id, DirectoryInfo directory, Stream output)
     {
+        const string assetRoot = "assets/";
         using var archive = new ZipArchive(output, ZipArchiveMode.Create, true);
+        var guidsIntermediate = new HashSet<int>();
+        var guidTable = new StringBuilder();
 
-        ProcessDirectory(directory, "/");
+        var package = new AssetPackageMetadata
+        {
+            Id = id
+        };
 
-        void ProcessDirectory(DirectoryInfo info, string currentPath)
+        ProcessDirectory(directory, assetRoot);
+
+        void ProcessDirectory(DirectoryInfo info, string target)
         {
 #if DEBUG
-            global::System.Diagnostics.Debug.Assert(currentPath.EndsWith('/'));
+            global::System.Diagnostics.Debug.Assert(target.EndsWith('/'));
 #endif
             foreach (var childFile in info.GetFiles("*", SearchOption.TopDirectoryOnly))
             {
-                var e = archive.CreateEntry(currentPath + childFile.Name, CompressionLevel.Fastest);
-                using var s = e.Open();
+                var path = target + childFile.Name;
 
-                using var fileStream = childFile.OpenRead();
-                fileStream.CopyTo(s);
+                var resourcePath = Path.GetRelativePath(assetRoot, path).Replace('\\', '/').ToLowerInvariant().Trim();
+                var id = new AssetId(resourcePath);
+                if (!guidsIntermediate.Add(id.Internal))
+                    throw new Exception($"Resource at \"{resourcePath}\" collides with another resource.");
 
-                s.Dispose();
-                fileStream.Dispose();
+                // create and write entry
+                {
+                    var e = archive.CreateEntry(path, CompressionLevel.Fastest);
+                    using var s = e.Open();
+                    using var fileStream = childFile.OpenRead();
+                    fileStream.CopyTo(s);
+                }
+
+                // write guid to table
+                guidTable.AppendLine(id.Internal.ToString());
+                guidTable.AppendLine(resourcePath);
+
+                package.Count++;
+
+                Console.WriteLine("Processed {0} entries", package.Count);
             }
 
             foreach (var childDir in info.GetDirectories("*", SearchOption.TopDirectoryOnly))
-            {
-                ProcessDirectory(info, currentPath + childDir.Name + '/');
-            }
+                ProcessDirectory(childDir, target + childDir.Name + '/');
+        }
+
+        {
+            var guidTableEntry = archive.CreateEntry("guid_table.txt");
+            using var s = guidTableEntry.Open();
+            s.Write(Encoding.UTF8.GetBytes(guidTable.ToString()));
+            s.Dispose();
+        }
+
+        {
+            var packageJsonEntry = archive.CreateEntry("package.json");
+            using var s = new StreamWriter(packageJsonEntry.Open(), Encoding.UTF8, leaveOpen: false);
+            s.WriteLine(JsonConvert.SerializeObject(package));
+            s.Dispose();
         }
     }
 }
+
+public struct AssetPackageMetadata
+{
+    public required string Id;
+    public int Count;
+}
+
 
 public class AssetPackage : IDisposable
 {
@@ -82,11 +138,12 @@ public class AssetPackage : IDisposable
 
     public AssetWrapper Get(int internalId)
     {
-        Archive.GetEntry() // Ja dit kan niet want
-            // die zip archive weet niks van IDs. 
-            // je hebt twee opties:
-            // 1. Geen ZipArchive, zelf binary sequence maken en lezen
-            // 2. Geen integer-IDs, hou het pad bij
+        return default;
+        //Archive.GetEntry() // Ja dit kan niet want
+        // die zip archive weet niks van IDs. 
+        // je hebt twee opties:
+        // 1. Geen ZipArchive, zelf binary sequence maken en lezen
+        // 2. Geen integer-IDs, hou het pad bij
     }
 
     public void Dispose()
@@ -126,7 +183,7 @@ public readonly struct AssetType
 
 public static class AssetTypeLoaders
 {
-    public static readonly Dictionary<AssetType, Func<Stream, object>> Loaders = [];
+    //public static readonly Dictionary<AssetType, Func<Stream, object>> Loaders = [];
 
     static AssetTypeLoaders()
     {
@@ -134,14 +191,14 @@ public static class AssetTypeLoaders
         // zó anders dat er twee verschillende manieren moeten komen
         // om assets te lezen. Hoegadegijdadoen
 
-        Loaders.Add(AssetType.Binary, s => Game.Main.AudioRenderer.LoadStream(s));
+        //Loaders.Add(AssetType.Binary, s => Game.Main.AudioRenderer.LoadStream(s));
     }
 }
 
 /// <summary>
 /// Globally unique ID for an asset
 /// </summary>
-public readonly struct AssetId
+public readonly struct GlobalAssetId
 {
     /// <summary>
     /// Id of the asset package this asset resides in
@@ -151,17 +208,38 @@ public readonly struct AssetId
     /// <summary>
     /// Id of the asset within the asset package <see cref="External"/>
     /// </summary>
-    public readonly int Internal;
+    public readonly AssetId Internal;
 
-    public AssetId(string assetPackage, string path)
+    public GlobalAssetId(string assetPackage, string path)
     {
         External = Hashes.MurmurHash1(assetPackage);
+        Internal = new(path);
+    }
+
+    public GlobalAssetId(int external, int @internal)
+    {
+        External = external;
+        Internal = new(@internal);
+    }
+}
+
+/// <summary>
+/// Locally unique ID for an asset
+/// </summary>
+public readonly struct AssetId
+{
+    /// <summary>
+    /// Id of the asset within the asset package
+    /// </summary>
+    public readonly int Internal;
+
+    public AssetId(string path)
+    {
         Internal = Hashes.MurmurHash1(path);
     }
 
-    public AssetId(int external, int @internal)
+    public AssetId(int @internal)
     {
-        External = external;
         Internal = @internal;
     }
 }

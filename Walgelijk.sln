@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Playgrounds", "Playgrounds\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.Localisation", "Walgelijk.Localisation\Walgelijk.Localisation.csproj", "{A21BDC35-81DA-4F03-AA96-AD0F3897EC50}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{E26A57FD-C51A-48B9-B83D-551DD928230F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{E26A57FD-C51A-48B9-B83D-551DD928230F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{4A17549A-1B5D-466D-B432-B517EAFDACD9}"
 EndProject
@@ -35,7 +35,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.Prism", "Walgelij
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.FontGenerator", "Walgelijk.FontGenerator\Walgelijk.FontGenerator.csproj", "{A2E97299-9B71-4F6F-BA56-2837D40F3D63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Walgelijk.AssetManager", "Walgelijk.AssetManager\Walgelijk.AssetManager.csproj", "{6A4DF306-57CA-4852-BD0F-1484FF933361}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walgelijk.AssetManager", "Walgelijk.AssetManager\Walgelijk.AssetManager.csproj", "{6A4DF306-57CA-4852-BD0F-1484FF933361}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{EE04B794-4BCA-428B-8C93-363F857AA97C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Walgelijk.AssetPackageBuilder", "Walgelijk.AssetPackageBuilder\Walgelijk.AssetPackageBuilder.csproj", "{A0B71460-9B7F-4474-8381-E0BECC3E526F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,6 +107,10 @@ Global
 		{6A4DF306-57CA-4852-BD0F-1484FF933361}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A4DF306-57CA-4852-BD0F-1484FF933361}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A4DF306-57CA-4852-BD0F-1484FF933361}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0B71460-9B7F-4474-8381-E0BECC3E526F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0B71460-9B7F-4474-8381-E0BECC3E526F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0B71460-9B7F-4474-8381-E0BECC3E526F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0B71460-9B7F-4474-8381-E0BECC3E526F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -121,8 +129,9 @@ Global
 		{D2564EF7-BC85-40C5-BA5D-75FA5CECCBF1} = {4A17549A-1B5D-466D-B432-B517EAFDACD9}
 		{6C888B54-342D-4539-917E-D55FC4552E60} = {4A17549A-1B5D-466D-B432-B517EAFDACD9}
 		{88F47ECE-9510-4809-B59A-A63228A9A40F} = {4A17549A-1B5D-466D-B432-B517EAFDACD9}
-		{A2E97299-9B71-4F6F-BA56-2837D40F3D63} = {4A17549A-1B5D-466D-B432-B517EAFDACD9}
+		{A2E97299-9B71-4F6F-BA56-2837D40F3D63} = {EE04B794-4BCA-428B-8C93-363F857AA97C}
 		{6A4DF306-57CA-4852-BD0F-1484FF933361} = {4A17549A-1B5D-466D-B432-B517EAFDACD9}
+		{A0B71460-9B7F-4474-8381-E0BECC3E526F} = {EE04B794-4BCA-428B-8C93-363F857AA97C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A0C7120A-E478-452E-B3C7-B869E44F9230}

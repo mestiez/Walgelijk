@@ -193,12 +193,12 @@
         </member>
         <member name="M:Walgelijk.AudioRenderer.LoadSound(System.String)">
             <summary>
-            Load an sound from file at once
+            Load an sound from a file at once
             </summary>
         </member>
         <member name="M:Walgelijk.AudioRenderer.LoadStream(System.String)">
             <summary>
-            Load a streaming sound from file
+            Load a streaming sound from a file
             </summary>
         </member>
         <member name="M:Walgelijk.AudioRenderer.Release">

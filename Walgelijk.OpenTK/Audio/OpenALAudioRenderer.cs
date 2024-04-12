@@ -166,7 +166,7 @@ public class OpenALAudioRenderer : AudioRenderer
         }
     }
 
-    public override FixedAudioData LoadSound(Stream stream)
+    public override FixedAudioData LoadSound(string path)
     {
         var ext = path.AsSpan()[path.LastIndexOf('.')..];
         AudioFileData data;
@@ -183,19 +183,17 @@ public class OpenALAudioRenderer : AudioRenderer
         }
         catch (Exception e)
         {
-            throw new AggregateException($"Failed to load audio file: {stream}", e);
+            throw new AggregateException($"Failed to load audio file: {path}", e);
         }
 
         var audio = new FixedAudioData(data.Data, data.SampleRate, data.NumChannels, data.SampleCount);
         return audio;
     }
 
-    public override StreamAudioData LoadStream(Stream stream)
+    public override StreamAudioData LoadStream(string path)
     {
         var ext = path.AsSpan()[path.LastIndexOf('.')..];
         AudioFileData data;
-
-        IAudioStream stream;
 
         if (ext.Equals(".ogg", StringComparison.InvariantCultureIgnoreCase))
         {

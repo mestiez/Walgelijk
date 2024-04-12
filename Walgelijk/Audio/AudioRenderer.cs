@@ -143,24 +143,14 @@ public abstract class AudioRenderer
     public abstract float GetTime(Sound sound);
 
     /// <summary>
-    /// Load an sound from a stream at once
-    /// </summary>
-    public abstract FixedAudioData LoadSound(Stream stream);
-
-    /// <summary>
     /// Load an sound from a file at once
     /// </summary>
-    public FixedAudioData LoadSound(string path) => LoadSound(File.OpenRead(path));
-
-    /// <summary>
-    /// Load a streaming sound from a stream
-    /// </summary>
-    public abstract StreamAudioData LoadStream(Stream stream);
+    public abstract FixedAudioData LoadSound(string path);
 
     /// <summary>
     /// Load a streaming sound from a file
     /// </summary>
-    public StreamAudioData LoadStream(string path) => LoadStream(File.OpenRead(path));
+    public abstract StreamAudioData LoadStream(string path);
 
     /// <summary>
     /// Release all resources used by the audio engine
