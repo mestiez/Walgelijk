@@ -1,8 +1,4 @@
-﻿using System.Security.Cryptography;
-using Walgelijk;
-
-
-/* -- Asset manager system --
+﻿/* -- Asset manager system --
  * 
  * What I need:
  * - Retrieve asset
@@ -28,17 +24,18 @@ using Walgelijk;
  *  - Game Engine Architecture 3rd Edition, ch 7
  */
 
-
 namespace Walgelijk.AssetManager;
 
-public interface IAssetDeserialiser
+public static class AssetDeserialisers
 {
-    public bool IsCandidate(Stream stream, string mimeType);
+    //public static readonly Dictionary<AssetType, Func<Stream, object>> Loaders = [];
 
-    public object Deserialise(Stream stream, string mimeType);
-}
+    static AssetDeserialisers()
+    {
+        // Een asset kan fixed of streaming zijn en deze twee types zijn
+        // zó anders dat er twee verschillende manieren moeten komen
+        // om assets te lezen. Hoegadegijdadoen
 
-public interface IAssetDeserialiser<T> : IAssetDeserialiser
-{
-    public T Deserialise(Stream stream, string mimeType);
+        //Loaders.Add(AssetType.Binary, s => Game.Main.AudioRenderer.LoadStream(s));
+    }
 }

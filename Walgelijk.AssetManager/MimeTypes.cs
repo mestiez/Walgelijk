@@ -3,7 +3,7 @@
 // Forked from WatsonWebserver.Lite
 public class MimeTypes
 {
-    private static readonly IDictionary<string, string> data = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+    private static readonly Dictionary<string, string> data = new(StringComparer.InvariantCultureIgnoreCase)
     {
         { ".323", "text/h323" },
         { ".3g2", "video/3gpp2" },
@@ -581,14 +581,22 @@ public class MimeTypes
         { ".z", "application/x-compress" },
         { ".zip", "application/zip" },
         // modified from here
+        { ".qoi", "image/qoi" },
         { ".avif", "image/avif" },
         { ".webp", "image/webp" },
         { ".apng", "image/png" },
+        { ".ogg", "audio/ogg" },
+        { ".opus", "audio/opus" },
+        { ".frag", "application/glsl" },
+        { ".vert", "application/glsl" },
+        { ".fnt", "font/bmfont" },
+        { ".wf", "font/walgelijk" },
+        { ".waa", "application/x-bzip" },
     };
 
     public static string GetFromExtension(string extension)
     {
-        if (string.IsNullOrEmpty("extension"))
+        if (string.IsNullOrEmpty(extension))
             return "application/octet-stream";
 
         if (!extension.StartsWith('.'))

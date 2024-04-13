@@ -1,8 +1,4 @@
-﻿using System.Security.Cryptography;
-using Walgelijk;
-
-
-/* -- Asset manager system --
+﻿/* -- Asset manager system --
  * 
  * What I need:
  * - Retrieve asset
@@ -28,17 +24,25 @@ using Walgelijk;
  *  - Game Engine Architecture 3rd Edition, ch 7
  */
 
-
 namespace Walgelijk.AssetManager;
 
-public interface IAssetDeserialiser
+/// <summary>
+/// Locally unique ID for an asset
+/// </summary>
+public readonly struct AssetId
 {
-    public bool IsCandidate(Stream stream, string mimeType);
+    /// <summary>
+    /// Id of the asset within the asset package
+    /// </summary>
+    public readonly int Internal;
 
-    public object Deserialise(Stream stream, string mimeType);
-}
+    public AssetId(string path)
+    {
+        Internal = Hashes.MurmurHash1(path);
+    }
 
-public interface IAssetDeserialiser<T> : IAssetDeserialiser
-{
-    public T Deserialise(Stream stream, string mimeType);
+    public AssetId(int @internal)
+    {
+        Internal = @internal;
+    }
 }

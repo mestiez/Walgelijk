@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-using Walgelijk;
-
+﻿namespace Walgelijk.AssetManager;
 
 /* -- Asset manager system --
  * 
@@ -28,17 +26,10 @@ using Walgelijk;
  *  - Game Engine Architecture 3rd Edition, ch 7
  */
 
-
-namespace Walgelijk.AssetManager;
-
-public interface IAssetDeserialiser
+public struct AssetMetadata
 {
-    public bool IsCandidate(Stream stream, string mimeType);
-
-    public object Deserialise(Stream stream, string mimeType);
-}
-
-public interface IAssetDeserialiser<T> : IAssetDeserialiser
-{
-    public T Deserialise(Stream stream, string mimeType);
+    public long Size;
+    public bool Streamable;
+    public string? MimeType;
+    public string[]? Tags;
 }
