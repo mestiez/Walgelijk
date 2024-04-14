@@ -95,5 +95,16 @@ melee 0.2";
         var hash = Crc32.HashToUInt32(Encoding.UTF8.GetBytes(str));
         var expectedHash = 0x7603F444u;
         Assert.AreEqual(expectedHash, hash);
+
+        Assert.AreSame(package.Load<string>("data/convars.txt"), str);
     }
+
+    // TODO test the following:
+    // - async loading
+    // - concurrent loading
+    // - weird edge cases (unloading while loading)
+    // - multiple candidates
+    // - streaming
+    // - disposing
+    // - lifetime stuff
 }

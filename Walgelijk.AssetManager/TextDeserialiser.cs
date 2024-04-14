@@ -16,3 +16,4 @@ public class TextDeserialiser : IAssetDeserialiser
         return reader.ReadToEnd();
     }
 }
+

@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Text;
@@ -13,6 +12,8 @@ public class AssetPackage : IDisposable
 
     private Dictionary<int, string> guidTable = [];
     private AssetFolder hierarchyRoot = new("/");
+
+    private Dictionary<AssetId, object> cache = [];
 
     public AssetPackage(ZipArchive archive)
     {
@@ -120,18 +121,34 @@ public class AssetPackage : IDisposable
         throw new Exception($"Asset {id.Internal} does not exist.");
     }
 
-    public T Load<T>(in string path)
-    {
-        return Load<T>(new AssetId(path));
-    }
+    public T Load<T>(in string path) => Load<T>(new AssetId(path));
 
     public T Load<T>(in AssetId id)
     {
-        return AssetDeserialisers.Load<T>(GetAsset(id));
+        if (cache.TryGetValue(id, out var obj))
+        {
+            if (obj is T t)
+                return t;
+            else
+                throw new Exception($"Asset {id.Internal} was previously loaded as type {obj.GetType()}, this does not match the requested type {typeof(T)}");
+        }
+        var a = AssetDeserialisers.Load<T>(GetAsset(id)) 
+            ?? throw new NullReferenceException($"Deserialising asset {id.Internal} returns null");
+        cache.Add(id, a);
+        return a;
     }
 
     public void Dispose()
     {
+        foreach (var v in cache.Values)
+        {
+            if (v is IDisposable a)
+                a.Dispose();
+            else if (v is IAsyncDisposable b)
+                Task.Run(b.DisposeAsync).RunSynchronously();
+        }
+
+        cache.Clear();
         Archive.Dispose();
     }
 
@@ -214,7 +231,6 @@ public class AssetPackage : IDisposable
             parent.Folders = [.. parent.Folders.Append(created)];
         return created;
     }
-
 
     private class AssetFolder
     {
