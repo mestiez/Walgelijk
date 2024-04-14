@@ -33,12 +33,12 @@ namespace Walgelijk.AssetManager;
 
 public interface IAssetDeserialiser
 {
-    public bool IsCandidate(Stream stream, string mimeType);
+    public bool IsCandidate(in AssetMetadata assetMetadata);
 
-    public object Deserialise(Stream stream, string mimeType);
+    public object Deserialise(Stream stream, in AssetMetadata assetMetadata);
 }
 
 public interface IAssetDeserialiser<T> : IAssetDeserialiser
 {
-    public T Deserialise(Stream stream, string mimeType);
+    public T Deserialise(Stream stream, in AssetMetadata assetMetadata);
 }

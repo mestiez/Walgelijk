@@ -28,14 +28,9 @@ namespace Walgelijk.AssetManager;
 
 public static class AssetDeserialisers
 {
-    //public static readonly Dictionary<AssetType, Func<Stream, object>> Loaders = [];
+    private static HashSet<IAssetDeserialiser> Deserialisers = [];
 
     static AssetDeserialisers()
     {
-        // Een asset kan fixed of streaming zijn en deze twee types zijn
-        // zó anders dat er twee verschillende manieren moeten komen
-        // om assets te lezen. Hoegadegijdadoen
-
-        //Loaders.Add(AssetType.Binary, s => Game.Main.AudioRenderer.LoadStream(s));
     }
 }

@@ -24,11 +24,14 @@
  *  - Game Engine Architecture 3rd Edition, ch 7
  */
 
+using Newtonsoft.Json;
+
 namespace Walgelijk.AssetManager;
 
 /// <summary>
 /// Locally unique ID for an asset
 /// </summary>
+[JsonConverter(typeof(AssetIdConverter))]
 public readonly struct AssetId
 {
     /// <summary>
@@ -44,5 +47,20 @@ public readonly struct AssetId
     public AssetId(int @internal)
     {
         Internal = @internal;
+    }
+}
+
+public class AssetIdConverter : JsonConverter<AssetId>
+{
+    public override AssetId ReadJson(JsonReader reader, Type objectType, AssetId existingValue, bool hasExistingValue, JsonSerializer serializer)
+    {
+        string s = reader.Value?.ToString() ?? throw new Exception("Invalid AssetID. Only integers are accepted.");
+
+        return new AssetId(int.Parse(s));
+    }
+
+    public override void WriteJson(JsonWriter writer, AssetId value, JsonSerializer serializer)
+    {
+        writer.WriteValue(value.Internal.ToString());
     }
 }

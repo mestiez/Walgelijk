@@ -51,6 +51,26 @@ public static class AssetPackageUtils
         return path.Trim().ToString().Replace('\\', '/');
     }
 
+    public static void AssertPathValidity(ReadOnlySpan<char> path)
+    {
+        if (path.Length != path.Trim().Length)
+            throw new Exception("Paths cannot have trailing or leading whitespace");
+
+        for (int i = 0; i < path.Length; i++)
+        {
+            var c = path[i];
+
+            if (c == '\\')
+                throw new Exception("Backslashes are illegal");
+
+            if (c == ':')
+                throw new Exception("Colons are illegal");
+
+            if (!char.IsAscii(c))
+                throw new Exception($"Illegal character {c}. Only ASCII is allowed in paths");
+        }
+    }
+
     public static void Build(string id, DirectoryInfo directory, Stream output, CompressionLevel compressionLevel = CompressionLevel.NoCompression)
     {
         const string assetRoot = "assets/";
@@ -128,6 +148,7 @@ public static class AssetPackageUtils
                 var path = p.Key;
                 var set = p.Value;
                 s.WriteLine(path);
+                s.WriteLine(set.Count);
                 foreach (var asset in set)
                     s.WriteLine("\t{0}", asset.Internal);
             }
@@ -158,6 +179,8 @@ public static class AssetPackageUtils
                 if (!guidsIntermediate.Add(id.Internal))
                     throw new Exception($"Resource at \"{resourcePath}\" collides with another resource.");
 
+                var contentHash = global::System.IO.Hashing.XxHash3.Hash(File.ReadAllBytes(childFile.FullName));
+
                 assets.Add(new IntermediateAsset
                 {
                     Id = id,
@@ -167,12 +190,15 @@ public static class AssetPackageUtils
                     MetadataPath = metadataRoot + resourcePath + ".json",
                     Metadata = new AssetMetadata
                     {
+                        Id = id,
+                        Path = resourcePath,
                         MimeType = MimeTypes.GetFromExtension(childFile.Extension),
                         Size = childFile.Length,
                         Streamable = false,
+                        XXH3 = string.Join(null, contentHash.Select(static b => b.ToString("x2"))),
                         Tags = []
                     }
-                });
+                }) ;
 
                 package.Count++;
             }

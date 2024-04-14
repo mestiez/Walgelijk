@@ -15,6 +15,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Walgelijk.AssetManager\Walgelijk.AssetManager.csproj" />
     <ProjectReference Include="..\Walgelijk.Localisation\Walgelijk.Localisation.csproj" />
     <ProjectReference Include="..\Walgelijk.Onion\Walgelijk.Onion.csproj" />
     <ProjectReference Include="..\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />
@@ -23,6 +24,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="24bitwave.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="base.waa">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="machine_blaster-01.wav">

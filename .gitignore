@@ -527,3 +527,4 @@ obj/
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,csharp,dotnetcore
 build.bat
 Playgrounds/console_session.txt
+Walgelijk.Tests/base.waa
