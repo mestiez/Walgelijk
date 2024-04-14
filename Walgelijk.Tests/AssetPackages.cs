@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
+using System.IO.Hashing;
 using System.Linq;
 using System.Text;
 using Walgelijk.AssetManager;
@@ -81,5 +82,18 @@ melee 0.2";
         using var actual = new StreamReader(asset.Stream.Value, encoding: Encoding.UTF8, leaveOpen: false);
 
         Assert.AreEqual(expectedContent, actual.ReadToEnd());
+    }
+
+    [TestMethod]
+    public void Deserialise()
+    {
+        using var package = AssetPackage.Load(validPackage);
+
+        var str = package.Load<string>("data/convars.txt");
+        Assert.IsNotNull(str);
+
+        var hash = Crc32.HashToUInt32(Encoding.UTF8.GetBytes(str));
+        var expectedHash = 0x7603F444u;
+        Assert.AreEqual(expectedHash, hash);
     }
 }

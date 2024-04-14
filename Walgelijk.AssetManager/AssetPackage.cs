@@ -4,33 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Text;
 
-
-/* -- Asset manager system --
- * 
- * What I need:
- * - Retrieve asset
- * - Query assets (e.g get all assets of type, in set, with tag, whatever the fuck)
- * - Cross-platform paths
- * - Reference counting / lifetime
- * - Mod support
- * - Stream support
- * - Async
- * - Develop using files, create package on build
- * - Loading packages
- * - Unloading packages
- * - Having multiple packages loaded at once
- * 
- * Proposed API:
- * - static AssetPackage.Load(string path)
- *      - Integrates with Resources.Load<AssetPackage>(string path)
- * - AssetPackage.Dispose()
- * - AssetPackage.Query()
- * - AssetPackage.Id
- * 
- * Resources:
- *  - Game Engine Architecture 3rd Edition, ch 7
- */
-
 namespace Walgelijk.AssetManager;
 
 public class AssetPackage : IDisposable
@@ -154,7 +127,7 @@ public class AssetPackage : IDisposable
 
     public T Load<T>(in AssetId id)
     {
-        return default;
+        return AssetDeserialisers.Load<T>(GetAsset(id));
     }
 
     public void Dispose()
@@ -327,6 +300,9 @@ public class StreamSegment : Stream
     }
 }
 
+/// <summary>
+/// Struct that provides objects to access asset data
+/// </summary>
 public record struct Asset
 {
     public AssetMetadata Metadata;
