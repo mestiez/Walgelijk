@@ -1,9 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NVorbis;
+using System;
 using System.IO;
 using System.IO.Hashing;
 using System.Linq;
 using System.Text;
+using Walgelijk;
 using Walgelijk.AssetManager;
+using Walgelijk.OpenTK;
 
 namespace Tests;
 
@@ -85,7 +89,7 @@ melee 0.2";
     }
 
     [TestMethod]
-    public void Deserialise()
+    public void SimpleDeserialise()
     {
         using var package = AssetPackage.Load(validPackage);
 
@@ -99,6 +103,36 @@ melee 0.2";
         Assert.AreSame(package.Load<string>("data/convars.txt"), str);
     }
 
+    [TestMethod]
+    public void StreamDeserialise()
+    {
+        using var reference = new VorbisReader("splitmek.ogg");
+
+        using var package = AssetPackage.Load(validPackage);
+
+        AssetDeserialisers.Register(new TestStreamAudioDeserialiser());
+
+        var audio = package.Load<StreamAudioData>("sounds/music/splitmek.ogg");
+        Assert.IsNotNull(audio);
+        Assert.AreEqual(reference.Channels, audio.ChannelCount);
+        Assert.AreEqual(reference.SampleRate, audio.SampleRate);
+        Assert.AreEqual(reference.TotalSamples, audio.SampleCount);
+
+        var source = audio.InputSourceFactory();
+        var buffer = new float[1024];
+        var referenceBuffer = new float[1024];
+        while (true)
+        {
+            int c = source.ReadSamples(buffer);
+            int rC = reference.ReadSamples(referenceBuffer);
+            Assert.AreEqual(rC, c);
+            if (c == 0)
+                break;
+
+            Assert.IsTrue(buffer.AsSpan(0, c).SequenceEqual(referenceBuffer.AsSpan(0, rC)));
+        }
+    }
+
     // TODO test the following:
     // - async loading
     // - concurrent loading
@@ -107,4 +141,23 @@ melee 0.2";
     // - streaming
     // - disposing
     // - lifetime stuff
+}
+
+public class TestStreamAudioDeserialiser : IAssetDeserialiser
+{
+    public Type ReturningType => typeof(StreamAudioData);
+
+    public bool IsCandidate(in AssetMetadata assetMetadata)
+    {
+        return
+            assetMetadata.MimeType.Equals("audio/vorbis", StringComparison.InvariantCultureIgnoreCase) ||
+            assetMetadata.MimeType.Equals("audio/ogg", StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    public object Deserialise(Stream stream, in AssetMetadata assetMetadata)
+    {
+        using var reader = new VorbisReader(stream, false);
+        var data = VorbisFileReader.ReadMetadata(reader);
+        return new StreamAudioData(() => new OggAudioStream(stream), data.SampleRate, data.NumChannels, data.SampleCount);
+    }
 }

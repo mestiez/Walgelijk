@@ -1,10 +1,11 @@
-﻿namespace Walgelijk.AssetManager;
+﻿using System.Collections.Concurrent;
+
+namespace Walgelijk.AssetManager;
 
 public static class AssetDeserialisers
 {
-    private static HashSet<IAssetDeserialiser> Deserialisers = [];
-
-    private static Dictionary<Type, List<IAssetDeserialiser>> byType = [];
+    private readonly static ConcurrentBag<IAssetDeserialiser> deserialisers = [];
+    private readonly static ConcurrentDictionary<Type, List<IAssetDeserialiser>> byType = [];
 
     static AssetDeserialisers()
     {
@@ -13,7 +14,7 @@ public static class AssetDeserialisers
 
     public static void Register(IAssetDeserialiser d)
     {
-        Deserialisers.Add(d);
+        deserialisers.Add(d);
         var set = byType.Ensure(d.ReturningType);
         set.Add(d);
     }

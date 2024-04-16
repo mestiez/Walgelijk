@@ -45,6 +45,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="$(ProjectDir)resources\**" CopyToOutputDirectory="Always" />
+    <None Update="splitmek.ogg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="stereo_microsoft.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

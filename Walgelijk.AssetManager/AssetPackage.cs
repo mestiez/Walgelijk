@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Text;
@@ -10,15 +12,17 @@ public class AssetPackage : IDisposable
     public readonly AssetPackageMetadata Metadata;
     public readonly ZipArchive Archive;
 
-    private Dictionary<int, string> guidTable = [];
-    private AssetFolder hierarchyRoot = new("/");
+    private readonly ImmutableDictionary<int, string> guidTable;
+    private readonly AssetFolder hierarchyRoot = new("/");
 
-    private Dictionary<AssetId, object> cache = [];
+    private readonly ConcurrentDictionary<AssetId, object> cache = [];
 
     public AssetPackage(ZipArchive archive)
     {
         if (archive.Mode != ZipArchiveMode.Read)
             throw new Exception("The provided archive must be loaded in Read only mode");
+
+        var guidTable = new Dictionary<int, string>();
 
         Archive = archive;
 
@@ -49,6 +53,8 @@ public class AssetPackage : IDisposable
 
                 guidTable.Add(id, path);
             }
+
+            this.guidTable = guidTable.ToImmutableDictionary();
         }
 
         // read hierarchy
@@ -134,7 +140,8 @@ public class AssetPackage : IDisposable
         }
         var a = AssetDeserialisers.Load<T>(GetAsset(id)) 
             ?? throw new NullReferenceException($"Deserialising asset {id.Internal} returns null");
-        cache.Add(id, a);
+        if (!cache.TryAdd(id, a))
+            throw new Exception("");
         return a;
     }
 
