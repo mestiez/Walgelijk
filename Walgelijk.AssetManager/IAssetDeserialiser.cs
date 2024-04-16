@@ -6,5 +6,5 @@ public interface IAssetDeserialiser
 
     Type ReturningType { get; }
 
-    object Deserialise(Stream stream, in AssetMetadata assetMetadata);
+    object Deserialise(Lazy<Stream> stream, in AssetMetadata assetMetadata);
 }

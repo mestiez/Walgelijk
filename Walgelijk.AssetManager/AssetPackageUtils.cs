@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System.IO.Compression;
+using System.Formats.Tar;
 using System.Text;
 
 namespace Walgelijk.AssetManager;
@@ -71,12 +71,13 @@ public static class AssetPackageUtils
         }
     }
 
-    public static void Build(string id, DirectoryInfo directory, Stream output, CompressionLevel compressionLevel = CompressionLevel.NoCompression)
+    public static void Build(string id, DirectoryInfo directory, Stream output)
     {
         const string assetRoot = "assets/";
         const string metadataRoot = "metadata/";
 
-        using var archive = new ZipArchive(output, ZipArchiveMode.Create, true);
+
+        using var archive = new TarWriter(output, TarEntryFormat.Pax, true);
         var guidsIntermediate = new HashSet<int>();
         var guidTable = new StringBuilder();
         var hierarchyMap = new Dictionary<string, List<AssetId>>();
@@ -100,18 +101,16 @@ public static class AssetPackageUtils
 
             // create and write entry
             {
-                var e = archive.CreateEntry(asset.ArchivePath, compressionLevel);
-                using var s = e.Open();
-                using var fileStream = file.OpenRead();
-                fileStream.CopyTo(s);
+                var e = new PaxTarEntry(TarEntryType.RegularFile, asset.ArchivePath);
+                e.DataStream = file.OpenRead();
+                archive.WriteEntry(e);
             }
 
             // write metadata entry
             {
-                var e = archive.CreateEntry(asset.MetadataPath, compressionLevel);
-                using var s = e.Open();
-                var json = JsonConvert.SerializeObject(asset.Metadata);
-                s.Write(Encoding.UTF8.GetBytes(json));
+                var e = new PaxTarEntry(TarEntryType.RegularFile, asset.MetadataPath);
+                e.DataStream = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(asset.Metadata)));
+                archive.WriteEntry(e);
             }
 
             // write guid to table
@@ -132,37 +131,39 @@ public static class AssetPackageUtils
 
         // write guid_table.txt
         {
-            var guidTableEntry = archive.CreateEntry("guid_table.txt");
-            using var s = guidTableEntry.Open();
-            s.Write(Encoding.UTF8.GetBytes(guidTable.ToString()));
-            s.Dispose();
+            var guidTableEntry = new PaxTarEntry(TarEntryType.RegularFile, "guid_table.txt");
+            guidTableEntry.DataStream = new MemoryStream(Encoding.UTF8.GetBytes(guidTable.ToString()), true);
+            archive.WriteEntry(guidTableEntry);
+            Console.WriteLine($"guid_table.txt written {guidTableEntry.Length}");
         }
 
         // write hierarchy.txt
         {
-            var hierarchyEntry = archive.CreateEntry("hierarchy.txt");
-            using var s = new StreamWriter(hierarchyEntry.Open(), Encoding.UTF8, leaveOpen: false);
-
+            var hierarchyEntry = new PaxTarEntry(TarEntryType.RegularFile, "hierarchy.txt");
+            var s = new StringBuilder();
             foreach (var p in hierarchyMap)
             {
                 var path = p.Key;
                 var set = p.Value;
-                s.WriteLine(path);
-                s.WriteLine(set.Count);
+                s.AppendLine(path);
+                s.AppendLine(set.Count.ToString());
                 foreach (var asset in set)
-                    s.WriteLine("\t{0}", asset.Internal);
+                    s.AppendFormat("\t{0}\n", asset.Internal);
             }
-
-            s.Dispose();
+            hierarchyEntry.DataStream = new MemoryStream(Encoding.UTF8.GetBytes(s.ToString()));
+            archive.WriteEntry(hierarchyEntry);
+            Console.WriteLine($"hierarchy.txt written {hierarchyEntry.Length}");
         }
 
         // write package.json
         {
-            var packageJsonEntry = archive.CreateEntry("package.json");
-            using var s = new StreamWriter(packageJsonEntry.Open(), Encoding.UTF8, leaveOpen: false);
-            s.WriteLine(JsonConvert.SerializeObject(package));
-            s.Dispose();
+            var packageJsonEntry = new PaxTarEntry(TarEntryType.RegularFile, "package.json");
+            packageJsonEntry.DataStream = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(package)));
+            archive.WriteEntry(packageJsonEntry);
+            Console.WriteLine($"package.json written {packageJsonEntry.Length}");
         }
+
+        archive.Dispose();
 
         void ProcessDirectory(DirectoryInfo info, string target)
         {

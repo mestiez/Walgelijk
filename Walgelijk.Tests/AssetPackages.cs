@@ -1,10 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestPlatform.PlatformAbstractions.Interfaces;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NVorbis;
 using System;
 using System.IO;
 using System.IO.Hashing;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Walgelijk;
 using Walgelijk.AssetManager;
 using Walgelijk.OpenTK;
@@ -104,6 +106,96 @@ melee 0.2";
     }
 
     [TestMethod]
+    public async Task AsyncDeserialise()
+    {
+        using var package = AssetPackage.Load(validPackage);
+        var str = "invalid";
+
+        await Task.Run(() =>
+        {
+            str = package.Load<string>("data/dj.txt");
+            Assert.IsNotNull(str);
+
+            var hash = Crc32.HashToUInt32(Encoding.UTF8.GetBytes(str));
+            var expectedHash = 0x0744E487u;
+            Assert.AreEqual(expectedHash, hash);
+
+        });
+
+        Assert.AreSame(package.Load<string>("data/dj.txt"), str);
+    }
+
+    [TestMethod]
+    public void ConcurrentUniqueDeserialise()
+    {
+        using var package = AssetPackage.Load(validPackage);
+
+        var str1 = "invalid1";
+        var str2 = "invalid2";
+
+        Task.WaitAll(
+            Task.Run(() =>
+            {
+                str1 = package.Load<string>("data/dj.txt");
+                Assert.IsNotNull(str1);
+
+                var hash = Crc32.HashToUInt32(Encoding.UTF8.GetBytes(str1));
+                var expectedHash = 0x0744E487u;
+                Assert.AreEqual(expectedHash, hash);
+
+            }),
+            Task.Run(() =>
+            {
+                str2 = package.Load<string>("data/convars.txt");
+                Assert.IsNotNull(str2);
+
+                var hash = Crc32.HashToUInt32(Encoding.UTF8.GetBytes(str2));
+                var expectedHash = 0x7603F444u;
+                Assert.AreEqual(expectedHash, hash);
+
+            })
+        );
+
+        Assert.AreSame(package.Load<string>("data/dj.txt"), str1);
+        Assert.AreSame(package.Load<string>("data/convars.txt"), str2);
+    }
+
+    [TestMethod]
+    public void ConcurrentIdenticalDeserialise()
+    {
+        using var package = AssetPackage.Load(validPackage);
+
+        var str1 = "invalid1";
+        var str2 = "invalid2";
+
+        Task.WaitAll(
+            Task.Run(() =>
+            {
+                str1 = package.Load<string>("data/dj.txt");
+                Assert.IsNotNull(str1);
+
+                var hash = Crc32.HashToUInt32(Encoding.UTF8.GetBytes(str1));
+                var expectedHash = 0x0744E487u;
+                Assert.AreEqual(expectedHash, hash);
+
+            }),
+            Task.Run(() =>
+            {
+                str2 = package.Load<string>("data/dj.txt");
+                Assert.IsNotNull(str2);
+
+                var hash = Crc32.HashToUInt32(Encoding.UTF8.GetBytes(str2));
+                var expectedHash = 0x0744E487u;
+                Assert.AreEqual(expectedHash, hash);
+
+            })
+        );
+
+        Assert.AreSame(package.Load<string>("data/dj.txt"), str1);
+        Assert.AreSame(str1, str2);
+    }
+
+    [TestMethod]
     public void StreamDeserialise()
     {
         using var reference = new VorbisReader("splitmek.ogg");
@@ -118,7 +210,7 @@ melee 0.2";
         Assert.AreEqual(reference.SampleRate, audio.SampleRate);
         Assert.AreEqual(reference.TotalSamples, audio.SampleCount);
 
-        var source = audio.InputSourceFactory();
+        using var source = audio.InputSourceFactory();
         var buffer = new float[1024];
         var referenceBuffer = new float[1024];
         while (true)
@@ -134,11 +226,8 @@ melee 0.2";
     }
 
     // TODO test the following:
-    // - async loading
-    // - concurrent loading
     // - weird edge cases (unloading while loading)
     // - multiple candidates
-    // - streaming
     // - disposing
     // - lifetime stuff
 }
@@ -154,10 +243,14 @@ public class TestStreamAudioDeserialiser : IAssetDeserialiser
             assetMetadata.MimeType.Equals("audio/ogg", StringComparison.InvariantCultureIgnoreCase);
     }
 
-    public object Deserialise(Stream stream, in AssetMetadata assetMetadata)
+    public object Deserialise(Lazy<Stream> stream, in AssetMetadata assetMetadata)
     {
-        using var reader = new VorbisReader(stream, false);
+        var s = stream.Value; // TODO this stream will remain in memory because many different audio streamers might need to access it. keep a reference count or something
+        using var reader = new VorbisReader(s, false);
         var data = VorbisFileReader.ReadMetadata(reader);
-        return new StreamAudioData(() => new OggAudioStream(stream), data.SampleRate, data.NumChannels, data.SampleCount);
+        reader.Dispose();
+        Assert.IsTrue(s.CanRead);
+        Assert.IsTrue(s.CanSeek);
+        return new StreamAudioData(() => new OggAudioStream(s), data.SampleRate, data.NumChannels, data.SampleCount);
     }
 }

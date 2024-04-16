@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using System.Formats.Tar;
 using System.IO.Compression;
 using System.Text;
 
@@ -10,33 +11,41 @@ namespace Walgelijk.AssetManager;
 public class AssetPackage : IDisposable
 {
     public readonly AssetPackageMetadata Metadata;
-    public readonly ZipArchive Archive;
+    public readonly TarReader Archive;
 
     private readonly ImmutableDictionary<int, string> guidTable;
     private readonly AssetFolder hierarchyRoot = new("/");
 
     private readonly ConcurrentDictionary<AssetId, object> cache = [];
+    private readonly ConcurrentDictionary<string, TarEntry> entries = [];
 
-    public AssetPackage(ZipArchive archive)
+    private readonly SemaphoreSlim assetReadingLock = new(0);
+
+    public AssetPackage(Stream input)
     {
-        if (archive.Mode != ZipArchiveMode.Read)
-            throw new Exception("The provided archive must be loaded in Read only mode");
-
         var guidTable = new Dictionary<int, string>();
+        var archive = Archive = new TarReader(input, false);
 
-        Archive = archive;
+        while (true)
+        {
+            var e = archive.GetNextEntry();
+            if (e == null)
+                break;
+
+            entries.TryAdd(e.Name, e);
+        }
 
         // read metadata
         {
-            var metadataEntry = archive.GetEntry("package.json") ?? throw new Exception("Archive has no package.json. This asset package is invalid");
-            using var e = new StreamReader(metadataEntry.Open(), encoding: Encoding.UTF8, leaveOpen: false);
+            var metadataEntry = getEntry("package.json") ?? throw new Exception("Archive has no package.json. This asset package is invalid");
+            using var e = new StreamReader(metadataEntry.DataStream!, encoding: Encoding.UTF8, leaveOpen: false);
             Metadata = JsonConvert.DeserializeObject<AssetPackageMetadata>(e.ReadToEnd());
         }
 
         // read guid table
         {
-            var guidTableEntry = archive.GetEntry("guid_table.txt") ?? throw new Exception("Archive has no guid_table.txt. This asset package is invalid.");
-            using var e = new StreamReader(guidTableEntry.Open(), encoding: Encoding.UTF8, leaveOpen: false);
+            var guidTableEntry = getEntry("guid_table.txt") ?? throw new Exception("Archive has no guid_table.txt. This asset package is invalid.");
+            using var e = new StreamReader(guidTableEntry.DataStream!, encoding: Encoding.UTF8, leaveOpen: false);
 
             while (true)
             {
@@ -59,8 +68,8 @@ public class AssetPackage : IDisposable
 
         // read hierarchy
         {
-            var hierarchtEntry = archive.GetEntry("hierarchy.txt") ?? throw new Exception("Archive has no hierarchy.txt. This asset package is invalid.");
-            using var e = new StreamReader(hierarchtEntry.Open(), encoding: Encoding.UTF8, leaveOpen: false);
+            var hierarchtEntry = getEntry("hierarchy.txt") ?? throw new Exception("Archive has no hierarchy.txt. This asset package is invalid.");
+            using var e = new StreamReader(hierarchtEntry.DataStream!, encoding: Encoding.UTF8, leaveOpen: false);
 
             while (true)
             {
@@ -82,7 +91,11 @@ public class AssetPackage : IDisposable
                 }
             }
         }
+
+        assetReadingLock.Release();
     }
+
+    TarEntry getEntry(string path) => entries[path];
 
     private static IEnumerable<AssetId> EnumerateFolder(AssetFolder folder, SearchOption searchOption = SearchOption.TopDirectoryOnly)
     {
@@ -99,7 +112,7 @@ public class AssetPackage : IDisposable
     public IEnumerable<AssetId> EnumerateFolder(ReadOnlySpan<char> path, SearchOption searchOption = SearchOption.TopDirectoryOnly)
     {
         if (TryGetAssetFolder(path, out var folder))
-            return EnumerateFolder(folder);
+            return EnumerateFolder(folder, searchOption);
         throw new Exception($"Path \"{path}\" cannot be found");
     }
 
@@ -107,7 +120,7 @@ public class AssetPackage : IDisposable
     {
         var path = GetAssetPath(id);
 
-        var entry = Archive.GetEntry("assets/" + path);
+        var entry = getEntry("assets/" + path);
         if (entry == null)
             throw new Exception($"Asset {id.Internal} at path \"{path}\" not found. This indicates the archive is malformed.");
         // it is malformed because the guid table is pointing to entries that don't exist
@@ -115,10 +128,9 @@ public class AssetPackage : IDisposable
         return new Asset
         {
             Metadata = GetAssetMetadata(id), // TODO we are doing unnecessary work by calling this function (double GetAssetPath)
-            Stream = new Lazy<Stream>(() => entry.Open()),
+            Stream = new Lazy<Stream>(() => entry.DataStream!),
         };
     }
-
     public string GetAssetPath(in AssetId id)
     {
         if (guidTable.TryGetValue(id.Internal, out var path))
@@ -131,18 +143,26 @@ public class AssetPackage : IDisposable
 
     public T Load<T>(in AssetId id)
     {
-        if (cache.TryGetValue(id, out var obj))
+        assetReadingLock.Wait();
+        try
         {
-            if (obj is T t)
-                return t;
-            else
-                throw new Exception($"Asset {id.Internal} was previously loaded as type {obj.GetType()}, this does not match the requested type {typeof(T)}");
+            if (cache.TryGetValue(id, out var obj))
+            {
+                if (obj is T t)
+                    return t;
+                else
+                    throw new Exception($"Asset {id.Internal} was previously loaded as type {obj.GetType()}, this does not match the requested type {typeof(T)}");
+            }
+            var a = AssetDeserialisers.Load<T>(GetAsset(id))
+                ?? throw new NullReferenceException($"Deserialising asset {id.Internal} returns null");
+            if (!cache.TryAdd(id, a))
+                throw new Exception("");
+            return a;
         }
-        var a = AssetDeserialisers.Load<T>(GetAsset(id)) 
-            ?? throw new NullReferenceException($"Deserialising asset {id.Internal} returns null");
-        if (!cache.TryAdd(id, a))
-            throw new Exception("");
-        return a;
+        finally
+        {
+            assetReadingLock.Release();
+        }
     }
 
     public void Dispose()
@@ -157,24 +177,24 @@ public class AssetPackage : IDisposable
 
         cache.Clear();
         Archive.Dispose();
+        assetReadingLock.Dispose();
     }
 
     public static AssetPackage Load(string path)
     {
         var file = new FileStream(path, FileMode.Open);
-        var archive = new ZipArchive(file, ZipArchiveMode.Read, false);
-        return new AssetPackage(archive);
+        return new AssetPackage(file);
     }
 
     private AssetMetadata GetAssetMetadata(in AssetId id)
     {
         var path = GetAssetPath(id);
-        var entry = Archive.GetEntry("metadata/" + path + ".json");
+        var entry = getEntry("metadata/" + path + ".json");
         if (entry == null)
             throw new Exception($"Asset metadata {id.Internal} at path \"{path}\" not found. This indicates the archive is malformed.");
         // it is malformed because the guid table is pointing to entries that don't exist
 
-        using var reader = new StreamReader(entry.Open(), encoding: Encoding.UTF8, leaveOpen: false);
+        using var reader = new StreamReader(entry.DataStream!, encoding: Encoding.UTF8, leaveOpen: false);
         var json = reader.ReadToEnd();
         return JsonConvert.DeserializeObject<AssetMetadata>(json);
     }

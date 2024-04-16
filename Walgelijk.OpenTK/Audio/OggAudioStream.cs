@@ -15,7 +15,7 @@ public class OggAudioStream : IAudioStream
     
     public OggAudioStream(Stream source)
     {
-        reader = new VorbisReader(source, true);
+        reader = new VorbisReader(source, false);
     }
 
     public long Position

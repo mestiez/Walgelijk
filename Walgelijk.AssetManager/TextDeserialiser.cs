@@ -7,12 +7,12 @@ public class TextDeserialiser : IAssetDeserialiser
 {
     Type IAssetDeserialiser.ReturningType => typeof(string);
 
-    bool IAssetDeserialiser.IsCandidate(in AssetMetadata assetMetadata)
-        => assetMetadata.MimeType.StartsWith("text");
+    bool IAssetDeserialiser.IsCandidate(in AssetMetadata assetMetadata) => true;
 
-    object IAssetDeserialiser.Deserialise(Stream stream, in AssetMetadata assetMetadata)
+    object IAssetDeserialiser.Deserialise(Lazy<Stream> stream, in AssetMetadata assetMetadata)
     {
-        using var reader = new StreamReader(stream, encoding: Encoding.UTF8, leaveOpen: false);
+        using var s = stream.Value;
+        using var reader = new StreamReader(s, encoding: Encoding.UTF8, leaveOpen: false);
         return reader.ReadToEnd();
     }
 }

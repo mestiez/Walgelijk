@@ -27,8 +27,7 @@ public static class AssetDeserialisers
             var candidate = set.FirstOrDefault(d => d.IsCandidate(metadata));
             if (candidate != null)
             {
-                using var stream = asset.Stream.Value;
-                var result = candidate.Deserialise(stream, metadata);
+                var result = candidate.Deserialise(asset.Stream, metadata);
                 if (result is T typed)
                     return typed;
                 else
