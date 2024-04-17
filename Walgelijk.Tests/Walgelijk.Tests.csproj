@@ -29,6 +29,9 @@
     <None Update="base.waa">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="koploper.waa">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="machine_blaster-01.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

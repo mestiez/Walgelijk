@@ -1,11 +1,15 @@
-﻿namespace Walgelijk;
+﻿using System;
+
+namespace Walgelijk;
 
 /// <summary>
 /// Utility struct that provides hashing functions that take a string and return an int
 /// </summary>
 public readonly struct Hashes
 {
-    public static int MurmurHash1(string key)
+    public static int MurmurHash1(string key) => MurmurHash1(key.AsSpan());
+
+    public static int MurmurHash1(ReadOnlySpan<char> key)
     {
         const uint c1 = 0xcc9e2d51;
         const uint c2 = 0x1b873593;

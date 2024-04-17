@@ -10,6 +10,7 @@ public static class AssetDeserialisers
     static AssetDeserialisers()
     {
         Register(new TextDeserialiser());
+        Register(new ByteArrayDeserialiser());
     }
 
     public static void Register(IAssetDeserialiser d)

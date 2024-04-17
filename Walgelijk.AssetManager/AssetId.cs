@@ -16,6 +16,11 @@ public readonly struct AssetId
     public AssetId(string path)
     {
         Internal = Hashes.MurmurHash1(path);
+    }  
+    
+    public AssetId(ReadOnlySpan<char> path)
+    {
+        Internal = Hashes.MurmurHash1(path);
     }
 
     public AssetId(int @internal)

@@ -76,7 +76,6 @@ public static class AssetPackageUtils
         const string assetRoot = "assets/";
         const string metadataRoot = "metadata/";
 
-
         using var archive = new TarWriter(output, TarEntryFormat.Pax, true);
         var guidsIntermediate = new HashSet<int>();
         var guidTable = new StringBuilder();

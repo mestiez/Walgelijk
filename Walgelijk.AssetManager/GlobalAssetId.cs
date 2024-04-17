@@ -24,6 +24,8 @@
  *  - Game Engine Architecture 3rd Edition, ch 7
  */
 
+using System.IO;
+
 namespace Walgelijk.AssetManager;
 
 /// <summary>
@@ -52,4 +54,20 @@ public readonly struct GlobalAssetId
         External = external;
         Internal = new(@internal);
     }
+
+    public GlobalAssetId(ReadOnlySpan<char> formatted)
+    {
+        var sp = formatted.IndexOf(':');
+        if (sp == -1)
+            throw new Exception("Formatted string contains no external ID part");
+
+        External = Hashes.MurmurHash1(formatted[..sp]);
+        Internal = new(formatted[(sp+1)..]);
+    }
+
+    public static implicit operator GlobalAssetId(ReadOnlySpan<char> formatted)
+        => new GlobalAssetId(formatted);
+
+    public static implicit operator GlobalAssetId(string formatted)
+        => new GlobalAssetId(formatted);
 }

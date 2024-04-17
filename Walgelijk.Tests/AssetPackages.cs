@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestPlatform.PlatformAbstractions.Interfaces;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NVorbis;
 using System;
 using System.IO;
@@ -11,7 +10,7 @@ using Walgelijk;
 using Walgelijk.AssetManager;
 using Walgelijk.OpenTK;
 
-namespace Tests;
+namespace Tests.AssetManager;
 
 [TestClass]
 public class AssetPackages

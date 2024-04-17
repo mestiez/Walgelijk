@@ -2,7 +2,6 @@
 
 namespace Walgelijk.AssetManager;
 
-// example deserialiser
 public class TextDeserialiser : IAssetDeserialiser
 {
     Type IAssetDeserialiser.ReturningType => typeof(string);
