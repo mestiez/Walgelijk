@@ -194,7 +194,6 @@ public static class AssetPackageUtils
                         Path = resourcePath,
                         MimeType = MimeTypes.GetFromExtension(childFile.Extension),
                         Size = childFile.Length,
-                        Streamable = false,
                         XXH3 = string.Join(null, contentHash.Select(static b => b.ToString("x2"))),
                         Tags = []
                     }

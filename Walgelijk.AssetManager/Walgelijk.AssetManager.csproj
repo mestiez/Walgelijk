@@ -6,6 +6,7 @@
 		<Nullable>enable</Nullable>
 		<Version>0.2.0</Version>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageIcon>icon.png</PackageIcon>
 		<Authors>mestiez</Authors>
 	</PropertyGroup>
 
@@ -27,6 +28,14 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="icon.png">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 </Project>

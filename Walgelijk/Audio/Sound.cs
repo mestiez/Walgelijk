@@ -74,6 +74,6 @@ public class Sound
     ~Sound()
     {
         // TODO this is kind of hacky
-        Game.Main.AudioRenderer.DisposeOf(this);
+        Game.Main?.AudioRenderer?.DisposeOf(this);
     }
 }

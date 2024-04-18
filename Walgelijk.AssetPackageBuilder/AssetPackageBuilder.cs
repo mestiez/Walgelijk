@@ -23,7 +23,7 @@ public class Program
                 o.Output,
                 o.Force ? FileMode.Create : FileMode.CreateNew);
 
-            AssetPackageUtils.Build(input.Name, input, output);
+            AssetPackageUtils.Build(o.Id ?? input.Name, input, output);
 
             Console.WriteLine("Success. Written to {0}", output.Name);
         });
@@ -39,5 +39,8 @@ public class Program
 
         [Option('f', "Force", Required = false, HelpText = "Will overwrite if true.")]
         public bool Force { get; set; }
+
+        [Option('d', "Id", Required = false, HelpText = "Determines package ID. Falls back to directory name if not provided.")]
+        public string? Id { get; set; }
     }
 }
