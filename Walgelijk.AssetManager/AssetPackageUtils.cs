@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System.Formats.Tar;
+using System.Reflection;
 using System.Text;
 
 namespace Walgelijk.AssetManager;
@@ -76,7 +76,7 @@ public static class AssetPackageUtils
         const string assetRoot = "assets/";
         const string metadataRoot = "metadata/";
 
-        using var archive = new TarWriter(output, TarEntryFormat.Pax, true);
+        using IWriteArchive archive = new TarWriteArchive(output);
         var guidsIntermediate = new HashSet<int>();
         var guidTable = new StringBuilder();
         var hierarchyMap = new Dictionary<string, List<AssetId>>();
@@ -84,7 +84,9 @@ public static class AssetPackageUtils
 
         var package = new AssetPackageMetadata
         {
-            Id = id
+            Id = id,
+            EngineVersion = Assembly.GetAssembly(typeof(Game))!.GetName()!.Version!,
+            FormatVersion = Assembly.GetAssembly(typeof(AssetPackageUtils))!.GetName()!.Version!,
         };
 
         // process root directory
@@ -99,18 +101,14 @@ public static class AssetPackageUtils
             var file = new FileInfo(asset.OriginalPath);
 
             // create and write entry
-            {
-                var e = new PaxTarEntry(TarEntryType.RegularFile, asset.ArchivePath);
-                e.DataStream = file.OpenRead();
-                archive.WriteEntry(e);
-            }
+            archive.WriteEntry(
+                asset.ArchivePath,
+                file.OpenRead());
 
             // write metadata entry
-            {
-                var e = new PaxTarEntry(TarEntryType.RegularFile, asset.MetadataPath);
-                e.DataStream = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(asset.Metadata)));
-                archive.WriteEntry(e);
-            }
+            archive.WriteEntry(
+                asset.MetadataPath,
+                new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(asset.Metadata))));
 
             // write guid to table
             guidTable.AppendLine(asset.Id.Internal.ToString());
@@ -120,9 +118,9 @@ public static class AssetPackageUtils
             var hSet = hierarchyMap.Ensure(NormalisePath(Path.GetDirectoryName(asset.AssetPath)));
             hSet.Add(asset.Id);
 
-            Console.WriteLine("{0}/{1}\t{2}%\t{3}", 
-                i.ToString("D" + (int)(float.Log10(package.Count) + 1)), package.Count, 
-                (int)(float.Floor(i / (float)package.Count * 100)), 
+            Console.WriteLine("{0}/{1}\t{2}%\t{3}",
+                i.ToString("D" + (int)(float.Log10(package.Count) + 1)), package.Count,
+                (int)(float.Floor(i / (float)package.Count * 100)),
                 asset.AssetPath);
 
             i++;
@@ -130,15 +128,12 @@ public static class AssetPackageUtils
 
         // write guid_table.txt
         {
-            var guidTableEntry = new PaxTarEntry(TarEntryType.RegularFile, "guid_table.txt");
-            guidTableEntry.DataStream = new MemoryStream(Encoding.UTF8.GetBytes(guidTable.ToString()), true);
-            archive.WriteEntry(guidTableEntry);
-            Console.WriteLine($"guid_table.txt written {guidTableEntry.Length}");
+            var l = archive.WriteEntry("guid_table.txt", new MemoryStream(Encoding.UTF8.GetBytes(guidTable.ToString()), true));
+            Console.WriteLine($"guid_table.txt written {l}");
         }
 
         // write hierarchy.txt
         {
-            var hierarchyEntry = new PaxTarEntry(TarEntryType.RegularFile, "hierarchy.txt");
             var s = new StringBuilder();
             foreach (var p in hierarchyMap)
             {
@@ -149,17 +144,14 @@ public static class AssetPackageUtils
                 foreach (var asset in set)
                     s.AppendFormat("\t{0}\n", asset.Internal);
             }
-            hierarchyEntry.DataStream = new MemoryStream(Encoding.UTF8.GetBytes(s.ToString()));
-            archive.WriteEntry(hierarchyEntry);
-            Console.WriteLine($"hierarchy.txt written {hierarchyEntry.Length}");
+            var l = archive.WriteEntry("hierarchy.txt", new MemoryStream(Encoding.UTF8.GetBytes(s.ToString())));
+            Console.WriteLine($"hierarchy.txt written {l}");
         }
 
         // write package.json
         {
-            var packageJsonEntry = new PaxTarEntry(TarEntryType.RegularFile, "package.json");
-            packageJsonEntry.DataStream = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(package)));
-            archive.WriteEntry(packageJsonEntry);
-            Console.WriteLine($"package.json written {packageJsonEntry.Length}");
+            var l = archive.WriteEntry("package.json", new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(package))));
+            Console.WriteLine($"package.json written {l}");
         }
 
         archive.Dispose();
@@ -197,7 +189,7 @@ public static class AssetPackageUtils
                         XXH3 = string.Join(null, contentHash.Select(static b => b.ToString("x2"))),
                         Tags = []
                     }
-                }) ;
+                });
 
                 package.Count++;
             }

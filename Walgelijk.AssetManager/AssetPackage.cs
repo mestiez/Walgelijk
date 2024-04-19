@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using System.Formats.Tar;
 using System.Text;
 
 namespace Walgelijk.AssetManager;
@@ -10,13 +9,12 @@ namespace Walgelijk.AssetManager;
 public class AssetPackage : IDisposable
 {
     public readonly AssetPackageMetadata Metadata;
-    public readonly TarReader Archive;
+    public readonly IReadArchive Archive;
 
     private readonly ImmutableDictionary<int, string> guidTable;
     private readonly AssetFolder hierarchyRoot = new("/");
 
     private readonly ConcurrentDictionary<AssetId, object> cache = [];
-    private readonly ConcurrentDictionary<string, TarEntry> entries = [];
 
     private readonly SemaphoreSlim assetReadingLock = new(0);
 
@@ -25,28 +23,19 @@ public class AssetPackage : IDisposable
     public AssetPackage(Stream input)
     {
         var guidTable = new Dictionary<int, string>();
-        var archive = Archive = new TarReader(input, false);
-
-        while (true)
-        {
-            var e = archive.GetNextEntry();
-            if (e == null)
-                break;
-
-            entries.TryAdd(e.Name, e);
-        }
-
+        var archive = new TarReadArchive(input);
+        Archive = archive;
         // read metadata
         {
-            var metadataEntry = GetTarEntryFromCache("package.json") ?? throw new Exception("Archive has no package.json. This asset package is invalid");
-            using var e = new StreamReader(metadataEntry.DataStream!, encoding: Encoding.UTF8, leaveOpen: false);
+            var metadataEntry = archive.GetEntry("package.json") ?? throw new Exception("Archive has no package.json. This asset package is invalid");
+            using var e = new StreamReader(metadataEntry!, encoding: Encoding.UTF8, leaveOpen: false);
             Metadata = JsonConvert.DeserializeObject<AssetPackageMetadata>(e.ReadToEnd());
         }
 
         // read guid table
         {
-            var guidTableEntry = GetTarEntryFromCache("guid_table.txt") ?? throw new Exception("Archive has no guid_table.txt. This asset package is invalid.");
-            using var e = new StreamReader(guidTableEntry.DataStream!, encoding: Encoding.UTF8, leaveOpen: false);
+            var guidTableEntry = archive.GetEntry("guid_table.txt") ?? throw new Exception("Archive has no guid_table.txt. This asset package is invalid.");
+            using var e = new StreamReader(guidTableEntry!, encoding: Encoding.UTF8, leaveOpen: false);
 
             while (true)
             {
@@ -69,8 +58,8 @@ public class AssetPackage : IDisposable
 
         // read hierarchy
         {
-            var hierarchtEntry = GetTarEntryFromCache("hierarchy.txt") ?? throw new Exception("Archive has no hierarchy.txt. This asset package is invalid.");
-            using var e = new StreamReader(hierarchtEntry.DataStream!, encoding: Encoding.UTF8, leaveOpen: false);
+            var hierarchtEntry = archive.GetEntry("hierarchy.txt") ?? throw new Exception("Archive has no hierarchy.txt. This asset package is invalid.");
+            using var e = new StreamReader(hierarchtEntry!, encoding: Encoding.UTF8, leaveOpen: false);
 
             while (true)
             {
@@ -96,8 +85,6 @@ public class AssetPackage : IDisposable
         assetReadingLock.Release();
     }
 
-    private TarEntry GetTarEntryFromCache(string path) => entries[path];
-
     private static IEnumerable<AssetId> EnumerateFolder(AssetFolder folder, SearchOption searchOption = SearchOption.TopDirectoryOnly)
     {
         if (folder.Assets != null)
@@ -120,14 +107,14 @@ public class AssetPackage : IDisposable
     public Asset GetAsset(in AssetId id)
     {
         var path = GetAssetPath(id);
+        var p = "assets/" + path;// TODO we should cache this string concatenation bullshit somewhere
 
-        var entry = GetTarEntryFromCache("assets/" + path); // TODO we should cache this string concatenation bullshit somewhere
-        if (entry == null)
+        if (!Archive.HasEntry(p))
             throw new Exception($"Asset {id.Internal} at path \"{path}\" not found. This indicates the archive is malformed.");
         // it is malformed because the guid table is pointing to entries that don't exist
 
         // TODO we are doing unnecessary work by calling this function (double GetAssetPath)
-        return new Asset(GetAssetMetadata(id), new Lazy<Stream>(() => entry.DataStream!));
+        return new Asset(GetAssetMetadata(id), () => Archive.GetEntry(p)!);
     }
 
     public string GetAssetPath(in AssetId id)
@@ -211,12 +198,12 @@ public class AssetPackage : IDisposable
     private AssetMetadata GetAssetMetadata(in AssetId id)
     {
         var path = GetAssetPath(id);
-        var entry = GetTarEntryFromCache("metadata/" + path + ".json"); // TODO cache string concat
-        if (entry == null)
+        var p = "metadata/" + path + ".json";// TODO cache string concat
+        if (!Archive.HasEntry(p))
             throw new Exception($"Asset metadata {id.Internal} at path \"{path}\" not found. This indicates the archive is malformed.");
         // it is malformed because the guid table is pointing to entries that don't exist
 
-        using var reader = new StreamReader(entry.DataStream!, encoding: Encoding.UTF8, leaveOpen: false);
+        using var reader = new StreamReader(Archive.GetEntry(p)!, encoding: Encoding.UTF8, leaveOpen: false);
         var json = reader.ReadToEnd();
         return JsonConvert.DeserializeObject<AssetMetadata>(json);
     }

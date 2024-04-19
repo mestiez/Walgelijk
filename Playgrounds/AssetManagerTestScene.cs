@@ -25,6 +25,7 @@ public struct AssetManagerTestScene : ISceneCreator
         return scene;
     }
 
+
     public class TestStreamAudioDeserialiser : IAssetDeserialiser
     {
         public Type ReturningType => typeof(StreamAudioData);
@@ -36,13 +37,18 @@ public struct AssetManagerTestScene : ISceneCreator
                 assetMetadata.MimeType.Equals("audio/ogg", StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public object Deserialise(Lazy<Stream> stream, in AssetMetadata assetMetadata)
+        public object Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
         {
-            var s = stream.Value; 
-            using var reader = new VorbisReader(s, false);
+            var temp = Path.GetTempFileName();
+
+            using var s = File.OpenWrite(temp);
+            stream().CopyTo(s);
+            s.Dispose();
+
+            using var reader = new VorbisReader(temp);
             var data = VorbisFileReader.ReadMetadata(reader);
             reader.Dispose();
-            return new StreamAudioData(() => new OggAudioStream(s), data.SampleRate, data.NumChannels, data.SampleCount);
+            return new StreamAudioData(() => new OggAudioStream(temp), data.SampleRate, data.NumChannels, data.SampleCount);
         }
     }
 

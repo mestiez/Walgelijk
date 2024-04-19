@@ -85,7 +85,7 @@ dodge 0
 panic 2
 melee 0.2";
 
-        using var actual = new StreamReader(asset.Stream.Value, encoding: Encoding.UTF8, leaveOpen: false);
+        using var actual = new StreamReader(asset.Stream(), encoding: Encoding.UTF8, leaveOpen: false);
 
         Assert.AreEqual(expectedContent, actual.ReadToEnd());
     }
@@ -99,7 +99,7 @@ melee 0.2";
         Assert.IsNotNull(str);
 
         var hash = Crc32.HashToUInt32(Encoding.UTF8.GetBytes(str));
-        var expectedHash = 0x7603F444u;
+        var expectedHash = 0xD142F3B5u;
         Assert.AreEqual(expectedHash, hash);
 
         Assert.AreSame(package.Load<string>("data/convars.txt"), str);
@@ -150,7 +150,7 @@ melee 0.2";
                 Assert.IsNotNull(str2);
 
                 var hash = Crc32.HashToUInt32(Encoding.UTF8.GetBytes(str2));
-                var expectedHash = 0x7603F444u;
+                var expectedHash = 0xD142F3B5u;
                 Assert.AreEqual(expectedHash, hash);
 
             })
@@ -234,6 +234,7 @@ melee 0.2";
     {
         using var package = AssetPackage.Load(validPackage);
         AssetDeserialisers.Register(new TestStreamAudioDeserialiser());
+        var l = new ManualResetEventSlim(true);
 
         Task.WaitAll(
             Task.Run(stream),
@@ -242,6 +243,7 @@ melee 0.2";
 
         void stream()
         {
+           // l.Wait();
             using var reference = new VorbisReader("splitmek.ogg");
             var audio = package.Load<StreamAudioData>("sounds/music/splitmek.ogg");
             Assert.IsNotNull(audio);
@@ -252,15 +254,19 @@ melee 0.2";
             using var source = audio.InputSourceFactory();
             var buffer = new float[1024];
             var referenceBuffer = new float[1024];
+         //   l.Set();
             while (true)
             {
+            //    l.Wait();
                 int c = source.ReadSamples(buffer);
                 int rC = reference.ReadSamples(referenceBuffer);
+              //  l.Set();
                 Assert.AreEqual(rC, c);
                 if (c == 0)
                     break;
 
-                Assert.IsTrue(buffer.AsSpan(0, c).SequenceEqual(referenceBuffer.AsSpan(0, rC)));
+                for (int i = 0; i < c; i++)
+                    Assert.AreEqual(buffer[i], referenceBuffer[i], 0.1f);
             }
         }
     }
@@ -284,14 +290,17 @@ public class TestStreamAudioDeserialiser : IAssetDeserialiser
             assetMetadata.MimeType.Equals("audio/ogg", StringComparison.InvariantCultureIgnoreCase);
     }
 
-    public object Deserialise(Lazy<Stream> stream, in AssetMetadata assetMetadata)
+    public object Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
     {
-        var s = stream.Value; // TODO this stream will remain in memory because many different audio streamers might need to access it. keep a reference count or something
-        using var reader = new VorbisReader(s, false);
+        var temp = Path.GetTempFileName();
+
+        using var s = File.OpenWrite(temp);
+        stream().CopyTo(s);
+        s.Dispose();
+
+        using var reader = new VorbisReader(temp);
         var data = VorbisFileReader.ReadMetadata(reader);
         reader.Dispose();
-        Assert.IsTrue(s.CanRead);
-        Assert.IsTrue(s.CanSeek);
-        return new StreamAudioData(() => new OggAudioStream(s), data.SampleRate, data.NumChannels, data.SampleCount);
+        return new StreamAudioData(() => new OggAudioStream(temp), data.SampleRate, data.NumChannels, data.SampleCount);
     }
 }

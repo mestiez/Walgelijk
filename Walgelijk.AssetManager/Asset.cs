@@ -6,9 +6,9 @@
 public readonly record struct Asset
 {
     public readonly AssetMetadata Metadata;
-    public readonly Lazy<Stream> Stream;
+    public readonly Func<Stream> Stream;
 
-    public Asset(AssetMetadata metadata, Lazy<Stream> stream)
+    public Asset(AssetMetadata metadata, Func<Stream> stream)
     {
         Metadata = metadata;
         Stream = stream;

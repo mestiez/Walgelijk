@@ -6,9 +6,9 @@ public class ByteArrayDeserialiser : IAssetDeserialiser
 
     bool IAssetDeserialiser.IsCandidate(in AssetMetadata assetMetadata) => true;
 
-    object IAssetDeserialiser.Deserialise(Lazy<Stream> stream, in AssetMetadata assetMetadata)
+    object IAssetDeserialiser.Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
     {
-        using var s = stream.Value;
+        using var s = stream();
         var b = new byte[assetMetadata.Size];
         var i = s.Read(b);
         if (i != assetMetadata.Size)

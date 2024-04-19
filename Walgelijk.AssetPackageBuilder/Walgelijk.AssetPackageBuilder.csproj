@@ -10,7 +10,11 @@
 		<PackageIcon>icon.png</PackageIcon>
 		<ToolCommandName>waapack</ToolCommandName>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Version>0.2.0</Version>
 	</PropertyGroup>
+	<Target Name="PostBuild" Condition="'$(Configuration)'=='Release'" AfterTargets="PostBuildEvent">
+		<Exec Command="dotnet pack -c Release --no-restore --no-build --output &quot;$(SolutionDir)OutputPackages&quot;" />
+	</Target>
 	<ItemGroup>
 		<PackageReference Include="CommandLineParser" Version="2.9.1" />
 	</ItemGroup>
