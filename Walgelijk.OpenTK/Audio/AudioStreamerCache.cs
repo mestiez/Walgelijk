@@ -9,7 +9,7 @@ public class AudioStreamerCache : Cache<AudioStreamerHandle, AudioStreamer>
         return new AudioStreamer(
             raw.SourceHandle, 
             raw.Sound, 
-            raw.Sound.Data as StreamAudioData ?? throw new Exception("OggStreamer created with non streaming audio data source"));
+            raw.Sound.Data as StreamAudioData ?? throw new Exception("AudioStreamer created with non streaming audio data source"));
     }
 
     protected override void DisposeOf(AudioStreamer loaded)

@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Hashing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Walgelijk;
 using Walgelijk.AssetManager;
@@ -197,32 +198,73 @@ melee 0.2";
     [TestMethod]
     public void StreamDeserialise()
     {
-        using var reference = new VorbisReader("splitmek.ogg");
-
         using var package = AssetPackage.Load(validPackage);
-
         AssetDeserialisers.Register(new TestStreamAudioDeserialiser());
 
-        var audio = package.Load<StreamAudioData>("sounds/music/splitmek.ogg");
-        Assert.IsNotNull(audio);
-        Assert.AreEqual(reference.Channels, audio.ChannelCount);
-        Assert.AreEqual(reference.SampleRate, audio.SampleRate);
-        Assert.AreEqual(reference.TotalSamples, audio.SampleCount);
+        for (int i = 0; i < 5; i++)
+            stream();
 
-        using var source = audio.InputSourceFactory();
-        var buffer = new float[1024];
-        var referenceBuffer = new float[1024];
-        while (true)
+        void stream()
         {
-            int c = source.ReadSamples(buffer);
-            int rC = reference.ReadSamples(referenceBuffer);
-            Assert.AreEqual(rC, c);
-            if (c == 0)
-                break;
+            using var reference = new VorbisReader("splitmek.ogg");
+            var audio = package.Load<StreamAudioData>("sounds/music/splitmek.ogg");
+            Assert.IsNotNull(audio);
+            Assert.AreEqual(reference.Channels, audio.ChannelCount);
+            Assert.AreEqual(reference.SampleRate, audio.SampleRate);
+            Assert.AreEqual(reference.TotalSamples, audio.SampleCount);
 
-            Assert.IsTrue(buffer.AsSpan(0, c).SequenceEqual(referenceBuffer.AsSpan(0, rC)));
+            using var source = audio.InputSourceFactory();
+            var buffer = new float[1024];
+            var referenceBuffer = new float[1024];
+            while (true)
+            {
+                int c = source.ReadSamples(buffer);
+                int rC = reference.ReadSamples(referenceBuffer);
+                Assert.AreEqual(rC, c);
+                if (c == 0)
+                    break;
+
+                Assert.IsTrue(buffer.AsSpan(0, c).SequenceEqual(referenceBuffer.AsSpan(0, rC)));
+            }
         }
     }
+
+    [TestMethod]
+    public void ConcurrentStreamDeserialise()
+    {
+        using var package = AssetPackage.Load(validPackage);
+        AssetDeserialisers.Register(new TestStreamAudioDeserialiser());
+
+        Task.WaitAll(
+            Task.Run(stream),
+            Task.Run(stream)
+        );
+
+        void stream()
+        {
+            using var reference = new VorbisReader("splitmek.ogg");
+            var audio = package.Load<StreamAudioData>("sounds/music/splitmek.ogg");
+            Assert.IsNotNull(audio);
+            Assert.AreEqual(reference.Channels, audio.ChannelCount);
+            Assert.AreEqual(reference.SampleRate, audio.SampleRate);
+            Assert.AreEqual(reference.TotalSamples, audio.SampleCount);
+
+            using var source = audio.InputSourceFactory();
+            var buffer = new float[1024];
+            var referenceBuffer = new float[1024];
+            while (true)
+            {
+                int c = source.ReadSamples(buffer);
+                int rC = reference.ReadSamples(referenceBuffer);
+                Assert.AreEqual(rC, c);
+                if (c == 0)
+                    break;
+
+                Assert.IsTrue(buffer.AsSpan(0, c).SequenceEqual(referenceBuffer.AsSpan(0, rC)));
+            }
+        }
+    }
+
 
     // TODO test the following:
     // - weird edge cases (unloading while loading)

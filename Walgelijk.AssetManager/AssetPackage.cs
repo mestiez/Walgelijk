@@ -126,11 +126,8 @@ public class AssetPackage : IDisposable
             throw new Exception($"Asset {id.Internal} at path \"{path}\" not found. This indicates the archive is malformed.");
         // it is malformed because the guid table is pointing to entries that don't exist
 
-        return new Asset
-        {
-            Metadata = GetAssetMetadata(id), // TODO we are doing unnecessary work by calling this function (double GetAssetPath)
-            Stream = new Lazy<Stream>(() => entry.DataStream!),
-        };
+        // TODO we are doing unnecessary work by calling this function (double GetAssetPath)
+        return new Asset(GetAssetMetadata(id), new Lazy<Stream>(() => entry.DataStream!));
     }
 
     public string GetAssetPath(in AssetId id)
@@ -167,6 +164,24 @@ public class AssetPackage : IDisposable
             assetReadingLock.Release();
         }
     }
+
+    public void DisposeOf(in AssetId id)
+    {
+        assetReadingLock.Wait();
+
+        try
+        {
+            if (cache.TryRemove(id, out var obj))
+                if (obj is IDisposable v)
+                    v.Dispose();
+        }
+        finally
+        {
+            assetReadingLock.Release();
+        }
+    }
+
+    public bool TryGetCached(in AssetId id, [NotNullWhen(true)] out object? value) => cache.TryGetValue(id, out value);
 
     public void Dispose()
     {
@@ -208,6 +223,12 @@ public class AssetPackage : IDisposable
 
     private bool TryGetAssetFolder(ReadOnlySpan<char> path, [NotNullWhen(true)] out AssetFolder? folder)
     {
+        if (path.IsEmpty || path == "/")
+        {
+            folder = hierarchyRoot;
+            return true;
+        }
+
         folder = null;
         var navigator = hierarchyRoot;
         ReadOnlySpan<char> current = path;
@@ -243,7 +264,7 @@ public class AssetPackage : IDisposable
 
     private AssetFolder EnsureHierarchyFolder(ReadOnlySpan<char> path)
     {
-        if (path[^1] == '/')
+        if (path.Length > 0 && path[^1] == '/')
             path = path[..^1];
 
         if (TryGetAssetFolder(path, out var folder))

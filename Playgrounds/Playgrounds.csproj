@@ -8,6 +8,7 @@
     <Version>1.0.43</Version>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Walgelijk.AssetManager\Walgelijk.AssetManager.csproj" />
     <ProjectReference Include="..\Walgelijk.Onion\Walgelijk.Onion.csproj" />
     <ProjectReference Include="..\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />
     <ProjectReference Include="..\Walgelijk.ParticleSystem\Walgelijk.ParticleSystem.csproj" />
@@ -30,4 +31,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="waapack -i assets -o assets.waa --Id assets -f&#xD;&#xA;move assets.waa &quot;$(OutDir)assets.waa&quot;" WorkingDirectory="$(ProjectDir)" />
+  </Target>
 </Project>

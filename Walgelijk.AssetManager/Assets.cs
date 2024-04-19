@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using Newtonsoft.Json.Linq;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Walgelijk.AssetManager;
@@ -106,18 +107,51 @@ public static class Assets
     public static bool UnloadPackage(ReadOnlySpan<char> id)
         => UnloadPackage(Hashes.MurmurHash1(id));
 
-    public static T Load<T>(in GlobalAssetId id)
+    public static void AssignLifetime(GlobalAssetId id, ILifetimeOperator lifetimeOperator)
+    {
+        lifetimeOperator.Triggered.AddListener(() => DisposeOf(id));
+    }
+
+    public static void DisposeOf(in GlobalAssetId id)
+    {
+        if (packageRegistry.TryGetValue(id.External, out var assetPackage))
+            assetPackage.DisposeOf(id.Internal);
+    }
+
+    public static AssetWrapper<T> Load<T>(in ReadOnlySpan<char> id) => Load<T>(new GlobalAssetId(id));
+
+    public static AssetWrapper<T> Load<T>(in GlobalAssetId id)
     {
         enumerationLock.Wait();
         try
         {
             if (packageRegistry.TryGetValue(id.External, out var assetPackage))
-                return assetPackage.Load<T>(id.Internal);
+            {
+                var asset = assetPackage.Load<T>(id.Internal);
+                return new AssetWrapper<T>(id, asset);
+            }
             throw new Exception($"Asset package {id.External} not found");
         }
         finally
         {
             enumerationLock.Release();
         }
+    }
+}
+
+public readonly struct AssetWrapper<T> : IDisposable
+{
+    public readonly GlobalAssetId Id;
+    public readonly T Value;
+
+    public AssetWrapper(GlobalAssetId id, T value)
+    {
+        Id = id;
+        Value = value;
+    }
+
+    public void Dispose()
+    {
+        Assets.DisposeOf(Id);
     }
 }

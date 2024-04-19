@@ -27,4 +27,6 @@ public readonly struct AssetId
     {
         Internal = @internal;
     }
+
+    public override string ToString() => Internal.ToString();
 }
