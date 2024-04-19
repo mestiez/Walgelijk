@@ -7,8 +7,10 @@ namespace Walgelijk.AssetManager;
 public static class Assets
 {
     private static readonly ConcurrentDictionary<int, AssetPackage> packageRegistry = [];
-    private static readonly SemaphoreSlim enumerationLock = new(1);
+    private static readonly ConcurrentDictionary<GlobalAssetId, ConcurrentBag<IDisposable>> disposableChain = [];
+    private static readonly ConcurrentDictionary<GlobalAssetId, GlobalAssetId> replacementTable = [];
 
+    private static readonly SemaphoreSlim enumerationLock = new(1);
     private static bool isDisposingPackage = false;
 
     static Assets()
@@ -79,7 +81,7 @@ public static class Assets
         }
     }
 
-    public static bool TryGetPackage(ReadOnlySpan<char> id, [NotNullWhen(true)] out AssetPackage? assetPackage)
+    public static bool TryGetPackage(in ReadOnlySpan<char> id, [NotNullWhen(true)] out AssetPackage? assetPackage)
         => TryGetPackage(Hashes.MurmurHash1(id), out assetPackage);
 
     public static bool UnloadPackage(int id)
@@ -104,54 +106,147 @@ public static class Assets
         }
     }
 
-    public static bool UnloadPackage(ReadOnlySpan<char> id)
+    public static bool UnloadPackage(in ReadOnlySpan<char> id)
         => UnloadPackage(Hashes.MurmurHash1(id));
 
     public static void AssignLifetime(GlobalAssetId id, ILifetimeOperator lifetimeOperator)
     {
-        lifetimeOperator.Triggered.AddListener(() => DisposeOf(id));
+        lifetimeOperator.Triggered.AddListener(() =>
+        {
+            DisposeOf(id);
+        });
     }
 
-    public static void DisposeOf(in GlobalAssetId id)
+    /// <summary>
+    /// Link an <see cref="IDisposable"/> instance to an asset, so that when the asset is disposed, the specified <see cref="IDisposable"/> is disposed as well
+    /// </summary>
+    public static void LinkDisposal(in GlobalAssetId id, IDisposable d)
     {
-        if (packageRegistry.TryGetValue(id.External, out var assetPackage))
-            assetPackage.DisposeOf(id.Internal);
+        var set = disposableChain.Ensure(id);
+        set.Add(d);
     }
 
-    public static AssetWrapper<T> Load<T>(in ReadOnlySpan<char> id) => Load<T>(new GlobalAssetId(id));
-
-    public static AssetWrapper<T> Load<T>(in GlobalAssetId id)
+    /// <summary>
+    /// Add an entry to the replacement table. Note how this will override the existing replacement.
+    /// Note how this will dispose of the original asset.
+    /// </summary>
+    /// <param name="original">The original asset ID - the one that is to be replaced</param>
+    /// <param name="replacement">The substitute ID</param>
+    public static void SetReplacement(in GlobalAssetId original, in GlobalAssetId replacement)
     {
         enumerationLock.Wait();
         try
         {
-            if (packageRegistry.TryGetValue(id.External, out var assetPackage))
-            {
-                var asset = assetPackage.Load<T>(id.Internal);
-                return new AssetWrapper<T>(id, asset);
-            }
-            throw new Exception($"Asset package {id.External} not found");
+            replacementTable.AddOrSet(original, replacement);
+            DisposeOf(original); // we have to dispose the original to force a reload
         }
         finally
         {
             enumerationLock.Release();
         }
     }
-}
 
-public readonly struct AssetWrapper<T> : IDisposable
-{
-    public readonly GlobalAssetId Id;
-    public readonly T Value;
-
-    public AssetWrapper(GlobalAssetId id, T value)
+    /// <summary>
+    /// Clear the set replacement for the given original ID. 
+    /// If any replacements were set using <see cref="SetReplacement(GlobalAssetId, GlobalAssetId)"/>, 
+    /// they will be undone and the asset will refer to itself again.
+    /// Note how this will dispose of the original asset.
+    /// </summary>
+    public static void ClearReplacement(in GlobalAssetId original)
     {
-        Id = id;
-        Value = value;
+        enumerationLock.Wait();
+        try
+        {
+            replacementTable.TryRemove(original, out _);
+            DisposeOf(original);
+        }
+        finally
+        {
+            enumerationLock.Release();
+        }
     }
 
-    public void Dispose()
+    /// <summary>
+    /// Clear all set replacements.
+    /// </summary>
+    public static void ClearReplacements()
     {
-        Assets.DisposeOf(Id);
+        enumerationLock.Wait();
+        try
+        {
+            var keys = replacementTable.Keys.ToArray();
+            replacementTable.Clear();
+            foreach (var k in keys)
+                DisposeOf(k);
+        }
+        finally
+        {
+            enumerationLock.Release();
+        }
+    }
+
+    public static bool HasReplacement(in GlobalAssetId original) => replacementTable.ContainsKey(original);
+
+    /// <summary>
+    /// If the given ID is remapped in the <see cref="replacementTable"/>
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public static GlobalAssetId ApplyReplacement(in GlobalAssetId id)
+    {
+        if (replacementTable.TryGetValue(id, out var replacement))
+            return replacement;
+        return id;
+    }
+
+    /// <summary>
+    /// Dispose the asset
+    /// </summary>
+    /// <param name="id"></param>
+    public static void DisposeOf(GlobalAssetId id)
+    {
+        if (disposableChain.TryRemove(id, out var set))
+            while (set.TryTake(out var d))
+                try
+                {
+                    d.Dispose();
+                }
+                catch (Exception e)
+                {
+                    Logger.Error($"Disposal chain error while disposing {id}: {e}");
+                }
+
+        if (packageRegistry.TryGetValue(id.External, out var assetPackage))
+            assetPackage.DisposeOf(id.Internal);
+    }
+
+    public static AssetWrapper<T> Load<T>(in ReadOnlySpan<char> id) => Load<T>(new GlobalAssetId(id));
+
+    /// <summary>
+    /// Load the asset with the given ID. 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    /// <exception cref="KeyNotFoundException"></exception>
+    public static AssetWrapper<T> Load<T>(GlobalAssetId id)
+    {
+        enumerationLock.Wait();
+
+        var replacementId = ApplyReplacement(id);
+
+        try
+        {
+            if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage))
+            {
+                var asset = assetPackage.Load<T>(replacementId.Internal);
+                return new AssetWrapper<T>(id, asset);
+            }
+            throw new KeyNotFoundException($"Asset package {replacementId.External} not found");
+        }
+        finally
+        {
+            enumerationLock.Release();
+        }
     }
 }

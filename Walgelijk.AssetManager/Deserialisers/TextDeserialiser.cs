@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Walgelijk.AssetManager;
+namespace Walgelijk.AssetManager.Deserialisers;
 
 public class TextDeserialiser : IAssetDeserialiser
 {

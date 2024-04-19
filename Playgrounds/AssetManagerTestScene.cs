@@ -2,6 +2,10 @@
 using System.Numerics;
 using Walgelijk;
 using Walgelijk.AssetManager;
+using Walgelijk.AssetManager.Deserialisers;
+using Walgelijk.CommonAssetDeserialisers;
+using Walgelijk.CommonAssetDeserialisers.Audio;
+using Walgelijk.CommonAssetDeserialisers.Audio.Qoa;
 using Walgelijk.Onion;
 using Walgelijk.OpenTK;
 using Walgelijk.SimpleDrawing;
@@ -12,7 +16,10 @@ public struct AssetManagerTestScene : ISceneCreator
 {
     public Scene Load(Game game)
     {
-        AssetDeserialisers.Register(new TestStreamAudioDeserialiser());
+        AssetDeserialisers.Register(new QoaFixedAudioDeserialiser());
+        AssetDeserialisers.Register(new OggFixedAudioDeserialiser());
+        AssetDeserialisers.Register(new OggStreamAudioDeserialiser());
+        AssetDeserialisers.Register(new WaveFixedAudioDeserialiser());
         Assets.RegisterPackage("assets.waa");
 
         var scene = new Scene(game);
@@ -25,39 +32,14 @@ public struct AssetManagerTestScene : ISceneCreator
         return scene;
     }
 
-
-    public class TestStreamAudioDeserialiser : IAssetDeserialiser
-    {
-        public Type ReturningType => typeof(StreamAudioData);
-
-        public bool IsCandidate(in AssetMetadata assetMetadata)
-        {
-            return
-                assetMetadata.MimeType.Equals("audio/vorbis", StringComparison.InvariantCultureIgnoreCase) ||
-                assetMetadata.MimeType.Equals("audio/ogg", StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        public object Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
-        {
-            var temp = Path.GetTempFileName();
-
-            using var s = File.OpenWrite(temp);
-            stream().CopyTo(s);
-            s.Dispose();
-
-            using var reader = new VorbisReader(temp);
-            var data = VorbisFileReader.ReadMetadata(reader);
-            reader.Dispose();
-            return new StreamAudioData(() => new OggAudioStream(temp), data.SampleRate, data.NumChannels, data.SampleCount);
-        }
-    }
-
     public class TestSystem : Walgelijk.System
     {
         public Sound[] Streams =
         [
             new Sound(Assets.Load<StreamAudioData>("assets:danse_macabre.ogg").Value, loops: true),
             new Sound(Assets.Load<StreamAudioData>("assets:danse_macabre.ogg").Value, loops: true),
+            new Sound(Assets.Load<FixedAudioData>("assets:sting_xp_level_up_orch_01.qoa").Value),
+            new Sound(Assets.Load<FixedAudioData>("assets:sample.wav").Value),
         ];
 
         public override void Update()

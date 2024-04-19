@@ -1,4 +1,4 @@
-﻿namespace Walgelijk.AssetManager;
+﻿namespace Walgelijk.AssetManager.Deserialisers;
 
 public interface IAssetDeserialiser
 {

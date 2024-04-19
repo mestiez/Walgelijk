@@ -1,7 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.IO;
 using System.IO.Hashing;
+using Walgelijk;
 using Walgelijk.AssetManager;
+using Walgelijk.AssetManager.Deserialisers;
 
 namespace Tests.AssetManager;
 
@@ -15,7 +18,7 @@ public class AssetsTests
     public void Init()
     {
         Assert.IsTrue(
-            File.Exists(validPackage1) && File.Exists(validPackage2), 
+            File.Exists(validPackage1) && File.Exists(validPackage2),
             "These tests depend on the test archives, which aren't publicly available");
         Assets.ClearRegistry();
     }
@@ -45,5 +48,125 @@ public class AssetsTests
         Assert.AreEqual(0x78055C57u, Crc32.HashToUInt32(str2.Value));
 
         Assets.ClearRegistry();
+    }
+
+    [TestMethod]
+    public void ExplicitDisposal()
+    {
+        var @base = Assets.RegisterPackage(validPackage1);
+        var koploper = Assets.RegisterPackage(validPackage2);
+
+        using var tex1 = Assets.Load<Texture>("base:textures/door.png");
+        using var tex2 = Assets.Load<Texture>("koploper:textures/bg.png");
+
+        Assert.AreEqual(735, tex1.Value.Width);
+        Assert.AreEqual(1057, tex1.Value.Height);
+
+        Assert.AreEqual(1920, tex2.Value.Width);
+        Assert.AreEqual(1080, tex2.Value.Height);
+
+        Assert.IsTrue(@base.IsCached(tex1.Id.Internal));
+        Assert.IsTrue(koploper.IsCached(tex2.Id.Internal));
+
+        tex1.Dispose();
+        tex2.Dispose();
+
+        Assert.IsFalse(@base.IsCached(tex1.Id.Internal));
+        Assert.IsFalse(koploper.IsCached(tex2.Id.Internal));
+
+        Assets.ClearRegistry();
+    }
+
+    [TestMethod]
+    public void LifetimeOperatorDisposal()
+    {
+        var @base = Assets.RegisterPackage(validPackage1);
+        var koploper = Assets.RegisterPackage(validPackage2);
+
+        using var baseTex = Assets.Load<Texture>("base:textures/door.png");
+        using var koploperTex = Assets.Load<Texture>("koploper:textures/bg.png");
+
+        Assets.AssignLifetime(baseTex.Id, new TimedLifetimeOperator(TimeSpan.FromSeconds(2)));
+
+        Assert.AreEqual(735, baseTex.Value.Width);
+        Assert.AreEqual(1057, baseTex.Value.Height);
+
+        Assert.AreEqual(1920, koploperTex.Value.Width);
+        Assert.AreEqual(1080, koploperTex.Value.Height);
+
+        Assert.IsTrue(@base.IsCached(baseTex.Id.Internal));
+        Assert.IsTrue(koploper.IsCached(koploperTex.Id.Internal));
+
+        // only dispose koploper tex
+        koploperTex.Dispose();
+
+        Assert.IsTrue(@base.IsCached(baseTex.Id.Internal));
+        Assert.IsFalse(koploper.IsCached(koploperTex.Id.Internal));
+
+        // pretend time has passed
+        for (int i = 0; i < 300; i++)
+            RoutineScheduler.StepRoutines(1 / 60f);
+
+        Assert.IsFalse(@base.IsCached(baseTex.Id.Internal));
+        Assert.IsFalse(koploper.IsCached(koploperTex.Id.Internal));
+
+        Assets.ClearRegistry();
+    }
+
+    [TestMethod]
+    public void LinkedDisposal()
+    {
+        var @base = Assets.RegisterPackage(validPackage1);
+        var koploper = Assets.RegisterPackage(validPackage2);
+
+        using var tex1 = Assets.Load<Texture>("base:textures/door.png");
+        using var tex2 = Assets.Load<Texture>("koploper:textures/bg.png");
+
+        Assets.LinkDisposal(tex1.Id, tex2);
+
+        Assert.AreEqual(735, tex1.Value.Width);
+        Assert.AreEqual(1057, tex1.Value.Height);
+
+        Assert.AreEqual(1920, tex2.Value.Width);
+        Assert.AreEqual(1080, tex2.Value.Height);
+
+        Assert.IsTrue(@base.IsCached(tex1.Id.Internal));
+        Assert.IsTrue(koploper.IsCached(tex2.Id.Internal));
+
+        tex1.Dispose(); // only dispose tex1, and then confirm tex2 was also disposed because they are linked
+
+        Assert.IsFalse(@base.IsCached(tex1.Id.Internal));
+        Assert.IsFalse(koploper.IsCached(tex2.Id.Internal));
+
+        Assets.ClearRegistry();
+    }
+
+    [TestMethod]
+    public void ReplacementTable()
+    {
+        var @base = Assets.RegisterPackage(validPackage1);
+        var koploper = Assets.RegisterPackage(validPackage2);
+
+        Assets.SetReplacement("base:textures/door.png", "koploper:textures/bg.png");
+
+        using var tex1 = Assets.Load<Texture>("base:textures/door.png");
+        using var tex2 = Assets.Load<Texture>("koploper:textures/bg.png");
+
+        Assert.AreSame(tex2.Value, tex1.Value);
+
+        Assert.AreEqual(1920, tex2.Value.Width);
+        Assert.AreEqual(1080, tex2.Value.Height);
+
+        Assert.IsFalse(@base.IsCached(tex1.Id.Internal)); // it is false because the asset has been replaced by another package, so the original asset was never loaded
+        Assert.IsTrue(koploper.IsCached(tex2.Id.Internal));
+
+        tex1.Dispose();
+        tex2.Dispose();
+
+        Assert.IsFalse(@base.IsCached(tex1.Id.Internal));
+        Assert.IsFalse(koploper.IsCached(tex2.Id.Internal));
+
+        Assets.ClearRegistry();
+        Assets.ClearReplacements();
     }
 }

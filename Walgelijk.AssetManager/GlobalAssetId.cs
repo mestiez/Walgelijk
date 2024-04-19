@@ -70,4 +70,6 @@ public readonly struct GlobalAssetId
 
     public static implicit operator GlobalAssetId(string formatted)
         => new GlobalAssetId(formatted);
+
+    public override string ToString() => $"{External}:{Internal}";
 }

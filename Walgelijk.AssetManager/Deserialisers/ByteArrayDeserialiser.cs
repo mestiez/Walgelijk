@@ -1,4 +1,6 @@
-﻿namespace Walgelijk.AssetManager;
+﻿using System.Text;
+
+namespace Walgelijk.AssetManager.Deserialisers;
 
 public class ByteArrayDeserialiser : IAssetDeserialiser
 {

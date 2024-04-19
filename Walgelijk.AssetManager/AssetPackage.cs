@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using Walgelijk.AssetManager.Deserialisers;
 
 namespace Walgelijk.AssetManager;
 
@@ -167,6 +168,8 @@ public class AssetPackage : IDisposable
             assetReadingLock.Release();
         }
     }
+
+    public bool IsCached(in AssetId id) => cache.ContainsKey(id);
 
     public bool TryGetCached(in AssetId id, [NotNullWhen(true)] out object? value) => cache.TryGetValue(id, out value);
 
