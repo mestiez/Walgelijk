@@ -1,7 +1,7 @@
 ﻿using Walgelijk.AssetManager;
 using Walgelijk.AssetManager.Deserialisers;
 
-namespace Walgelijk.CommonAssetDeserialisers;
+namespace Walgelijk.CommonAssetDeserialisers.Audio;
 
 
 public class WaveFixedAudioDeserialiser : IAssetDeserialiser
