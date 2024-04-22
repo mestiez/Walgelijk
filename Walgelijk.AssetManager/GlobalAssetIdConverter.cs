@@ -6,7 +6,10 @@ public class GlobalAssetIdConverter : JsonConverter<GlobalAssetId>
 {
     public override GlobalAssetId ReadJson(JsonReader reader, Type objectType, GlobalAssetId existingValue, bool hasExistingValue, JsonSerializer serializer)
     {
-        string s = reader.Value?.ToString() ?? throw new Exception("Invalid GlobalAssetId: null value");
+        string? s = reader.Value?.ToString();
+
+        if (string.IsNullOrWhiteSpace(s))
+            return GlobalAssetId.None;
 
         if (s.Contains(':'))
         {
@@ -29,6 +32,9 @@ public class GlobalAssetIdConverter : JsonConverter<GlobalAssetId>
 
     public override void WriteJson(JsonWriter writer, GlobalAssetId value, JsonSerializer serializer)
     {
-        writer.WriteValue(value.ToString());
+        if (value == GlobalAssetId.None)
+            writer.WriteNull();
+        else
+            writer.WriteValue(value.ToString());
     }
 }

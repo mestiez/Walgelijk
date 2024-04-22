@@ -11,10 +11,13 @@ public static class AssetPackageUtils
      * 📁 root
      *  | 📁 assets 
      *  |  | ~ all assets go here
+     *  |  | the asset folder can contain a .tags file (empty name for entire directory or filename for per file) which
+     *  |  | can determine tags. the same goes for .mimetype files
      *  | 📁 metadata
      *  |  | ~ every asset has a corresponding .meta file, which contains
      *  |  |   a kv map of properties such as file size, mime type, tags, etc.
      *  | 📃 guid_table.txt
+     *  | 📃 tag_table.txt
      *  | 📃 hierarchy.txt
      *  | 📃 package.json
      */
@@ -71,7 +74,7 @@ public static class AssetPackageUtils
         }
     }
 
-    public static void Build(string id, DirectoryInfo directory, Stream output)
+    public static void Build(string id, DirectoryInfo directory, Stream output, IAssetBuilderProcessor? preprocessor = null)
     {
         const string assetRoot = "assets/";
         const string metadataRoot = "metadata/";
@@ -79,7 +82,9 @@ public static class AssetPackageUtils
         using IWriteArchive archive = new TarWriteArchive(output);
         var guidsIntermediate = new HashSet<int>();
         var guidTable = new StringBuilder();
+        var tagTable = new StringBuilder();
         var hierarchyMap = new Dictionary<string, List<AssetId>>();
+        var tagTableMap = new Dictionary<string, List<AssetId>>();
         var assets = new HashSet<IntermediateAsset>();
 
         var package = new AssetPackageMetadata
@@ -132,6 +137,20 @@ public static class AssetPackageUtils
             Console.WriteLine($"guid_table.txt written {l}");
         }
 
+        // write tag_table.txt
+        {
+            foreach (var p in tagTableMap)
+            {
+                tagTable.AppendLine(p.Key);
+                tagTable.AppendLine(p.Value.Count.ToString());
+                foreach (var a in p.Value)
+                    tagTable.AppendLine(a.ToString());
+            }
+
+            var l = archive.WriteEntry("tag_table.txt", new MemoryStream(Encoding.UTF8.GetBytes(tagTable.ToString()), true));
+            Console.WriteLine($"tag_table.txt written {l}");
+        }
+
         // write hierarchy.txt
         {
             var s = new StringBuilder();
@@ -161,17 +180,58 @@ public static class AssetPackageUtils
 #if DEBUG
             global::System.Diagnostics.Debug.Assert(target.EndsWith('/'));
 #endif
+
+            var globalMimeTypeFile = info.EnumerateFiles(".mimetype").FirstOrDefault();
+            var globalTagsFile = info.EnumerateFiles(".tags").FirstOrDefault();
+
+            string? globalMimeType = globalMimeTypeFile == null ? null : File.ReadAllText(globalMimeTypeFile.FullName);
+            string[]? globalTags = globalTagsFile == null ? null : File.ReadAllLines(globalTagsFile.FullName);
+
             foreach (var childFile in info.GetFiles("*", SearchOption.TopDirectoryOnly))
             {
+                if (childFile.Name.EndsWith(".mimetype"))
+                    continue;
+
+                if (childFile.Name.EndsWith(".tags"))
+                    continue;
+
                 var path = target + childFile.Name;
 
                 var resourcePath = NormalisePath(Path.GetRelativePath(assetRoot, path));
                 var id = new AssetId(resourcePath);
 
+                if (id == AssetId.None)
+                    throw new Exception($"Resource at \"{resourcePath}\" generates ID zero. This can be solved by renaming the file, but you really shouldn't be seeing this so it's probably a bug.");
+
                 if (!guidsIntermediate.Add(id.Internal))
                     throw new Exception($"Resource at \"{resourcePath}\" collides with another resource.");
 
+                var mimeTypeFile = info.EnumerateFiles(childFile.Name + ".mimetype").FirstOrDefault();
+                var tagsFile = info.EnumerateFiles(childFile.Name + ".tags").FirstOrDefault();
+
+                string? mimeType = mimeTypeFile == null ? null : File.ReadAllText(mimeTypeFile.FullName);
+                string[] tags = tagsFile == null ? [] : File.ReadAllLines(tagsFile.FullName);
+
+                if (globalTags != null)
+                    tags = [.. tags, .. globalTags];
+
                 var contentHash = global::System.IO.Hashing.XxHash3.Hash(File.ReadAllBytes(childFile.FullName));
+
+                var metadata = new AssetMetadata
+                {
+                    Id = id,
+                    Path = resourcePath,
+                    MimeType = mimeType ?? globalMimeType ?? MimeTypes.GetFromExtension(childFile.Extension),
+                    Size = childFile.Length,
+                    XXH3 = string.Join(null, contentHash.Select(static b => b.ToString("x2"))),
+                    Tags = tags
+                };
+
+                preprocessor?.Process(ref metadata);
+
+                if (metadata.Tags != null)
+                    foreach (var tag in metadata.Tags)
+                        tagTableMap.Ensure(tag).Add(id);
 
                 assets.Add(new IntermediateAsset
                 {
@@ -180,15 +240,7 @@ public static class AssetPackageUtils
                     ArchivePath = path,
                     AssetPath = resourcePath,
                     MetadataPath = metadataRoot + resourcePath + ".json",
-                    Metadata = new AssetMetadata
-                    {
-                        Id = id,
-                        Path = resourcePath,
-                        MimeType = MimeTypes.GetFromExtension(childFile.Extension),
-                        Size = childFile.Length,
-                        XXH3 = string.Join(null, contentHash.Select(static b => b.ToString("x2"))),
-                        Tags = []
-                    }
+                    Metadata = metadata
                 });
 
                 package.Count++;

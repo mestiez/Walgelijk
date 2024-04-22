@@ -16,6 +16,7 @@ public class AssetPackage : IDisposable
     private readonly AssetFolder hierarchyRoot = new("/");
 
     private readonly ConcurrentDictionary<AssetId, object> cache = [];
+    private readonly ConcurrentDictionary<string, AssetId[]> taggedCache = [];
 
     private readonly SemaphoreSlim assetReadingLock = new(0);
 
@@ -59,14 +60,13 @@ public class AssetPackage : IDisposable
 
         // read hierarchy
         {
-            var hierarchtEntry = archive.GetEntry("hierarchy.txt") ?? throw new Exception("Archive has no hierarchy.txt. This asset package is invalid.");
-            using var e = new StreamReader(hierarchtEntry!, encoding: Encoding.UTF8, leaveOpen: false);
+            var hierarchyEntry = archive.GetEntry("hierarchy.txt") ?? throw new Exception("Archive has no hierarchy.txt. This asset package is invalid.");
+            using var e = new StreamReader(hierarchyEntry!, encoding: Encoding.UTF8, leaveOpen: false);
 
             while (true)
             {
                 // TODO error handling
 
-                // read next path
                 var path = e.ReadLine();
 
                 if (path == null)
@@ -74,11 +74,37 @@ public class AssetPackage : IDisposable
 
                 var assetFolder = EnsureHierarchyFolder(path);
                 var count = int.Parse(e.ReadLine()!);
-                assetFolder.Assets = new int[count];
+                assetFolder.Assets = new AssetId[count];
                 for (int i = 0; i < count; i++)
                 {
                     int asset = int.Parse(e.ReadLine()!);
-                    assetFolder.Assets[i] = asset;
+                    assetFolder.Assets[i] = new(asset);
+                }
+            }
+        }
+
+        // read tagged cache
+        {
+            var hierarchtEntry = archive.GetEntry("tag_table.txt") ?? throw new Exception("Archive has no tag_table.txt. This asset package is invalid.");
+            using var e = new StreamReader(hierarchtEntry!, encoding: Encoding.UTF8, leaveOpen: false);
+
+            while (true)
+            {
+                // TODO error handling
+
+                var tag = e.ReadLine();
+
+                if (tag == null)
+                    break;
+
+                var count = int.Parse(e.ReadLine()!);
+                var arr = new AssetId[count];
+                taggedCache.AddOrSet(tag, arr);
+
+                for (int i = 0; i < count; i++)
+                {
+                    int asset = int.Parse(e.ReadLine()!);
+                    arr[i] = new AssetId(asset);
                 }
             }
         }
@@ -90,11 +116,11 @@ public class AssetPackage : IDisposable
     {
         if (folder.Assets != null)
             foreach (var asset in folder.Assets)
-                yield return new AssetId(asset);
+                yield return asset;
 
         if (searchOption == SearchOption.AllDirectories && folder.Folders != null)
             foreach (var c in folder.Folders)
-                foreach (var item in EnumerateFolder(c))
+                foreach (var item in EnumerateFolder(c, searchOption))
                     yield return item;
     }
 
@@ -105,8 +131,18 @@ public class AssetPackage : IDisposable
         throw new Exception($"Path \"{path}\" cannot be found");
     }
 
+    public IEnumerable<AssetId> QueryTags(in string tag)
+    {
+        if (taggedCache.TryGetValue(tag, out var assets))
+            return assets;
+        return [];
+    }
+
     public Asset GetAsset(in AssetId id)
     {
+        if (id.Internal == 0)
+            throw new Exception("Id is None");
+
         var path = GetAssetPath(id);
         var p = "assets/" + path;// TODO we should cache this string concatenation bullshit somewhere
 
@@ -130,6 +166,9 @@ public class AssetPackage : IDisposable
 
     public T Load<T>(in AssetId id)
     {
+        if (id.Internal == 0)
+            throw new Exception("Id is None");
+
         assetReadingLock.Wait();
 
         try
@@ -145,6 +184,25 @@ public class AssetPackage : IDisposable
                 ?? throw new NullReferenceException($"Deserialising asset {id.Internal} returns null");
             if (!cache.TryAdd(id, a))
                 throw new Exception("");
+            return a;
+        }
+        finally
+        {
+            assetReadingLock.Release();
+        }
+    }
+
+    public T LoadNoCache<T>(AssetId id)
+    {
+        if (id.Internal == 0)
+            throw new Exception("Id is None");
+
+        assetReadingLock.Wait();
+
+        try
+        {
+            var a = AssetDeserialisers.Load<T>(GetAsset(id))
+                ?? throw new NullReferenceException($"Deserialising asset {id.Internal} returns null");
             return a;
         }
         finally
@@ -198,7 +256,7 @@ public class AssetPackage : IDisposable
         return new AssetPackage(file);
     }
 
-    private AssetMetadata GetAssetMetadata(in AssetId id)
+    public AssetMetadata GetAssetMetadata(in AssetId id)
     {
         var path = GetAssetPath(id);
         var p = "metadata/" + path + ".json";// TODO cache string concat
@@ -290,7 +348,7 @@ public class AssetPackage : IDisposable
         }
 
         public AssetFolder[]? Folders;
-        public int[]? Assets;
+        public AssetId[]? Assets;
 
         public bool TryGetFolder(ReadOnlySpan<char> name, [NotNullWhen(true)] out AssetFolder? f)
         {

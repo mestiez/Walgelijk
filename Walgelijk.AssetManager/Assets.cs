@@ -111,6 +111,9 @@ public static class Assets
 
     public static void AssignLifetime(GlobalAssetId id, ILifetimeOperator lifetimeOperator)
     {
+        if (id.External == 0)
+            throw new Exception("Id is None");
+
         lifetimeOperator.Triggered.AddListener(() =>
         {
             DisposeOf(id);
@@ -134,6 +137,12 @@ public static class Assets
     /// <param name="replacement">The substitute ID</param>
     public static void SetReplacement(in GlobalAssetId original, in GlobalAssetId replacement)
     {
+        if (original.External == 0)
+            throw new Exception("Id is None");
+
+        if (replacement.External == 0)
+            throw new Exception("Id is None");
+
         enumerationLock.Wait();
         try
         {
@@ -154,6 +163,9 @@ public static class Assets
     /// </summary>
     public static void ClearReplacement(in GlobalAssetId original)
     {
+        if (original.External == 0)
+            throw new Exception("Id is None");
+
         enumerationLock.Wait();
         try
         {
@@ -194,6 +206,9 @@ public static class Assets
     /// <returns></returns>
     public static GlobalAssetId ApplyReplacement(in GlobalAssetId id)
     {
+        if (id.External == 0)
+            throw new Exception("Id is None");
+
         if (replacementTable.TryGetValue(id, out var replacement))
             return replacement;
         return id;
@@ -205,6 +220,9 @@ public static class Assets
     /// <param name="id"></param>
     public static void DisposeOf(GlobalAssetId id)
     {
+        if (id.External == 0)
+            throw new Exception("Id is None");
+
         if (disposableChain.TryRemove(id, out var set))
             while (set.TryTake(out var d))
                 try
@@ -231,11 +249,60 @@ public static class Assets
     /// <exception cref="KeyNotFoundException"></exception>
     public static AssetRef<T> Load<T>(GlobalAssetId id)
     {
+        if (id.External == 0)
+            throw new Exception("Id is None");
+
         var replacementId = ApplyReplacement(id);
 
         if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage))
             return new AssetRef<T>(id);
         throw new KeyNotFoundException($"Asset package {replacementId.External} not found");
+    }
+
+    /// <summary>
+    /// Directly load the data without caching it. 
+    /// Use with caution, as the resulting object will be disconnected from the asset manager
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public static T LoadNoCache<T>(GlobalAssetId id)
+    {
+        if (id.External == 0)
+            throw new Exception("Id is None");
+
+        var replacementId = ApplyReplacement(id);
+
+        if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage))
+            return assetPackage.LoadNoCache<T>(id.Internal);
+        throw new KeyNotFoundException($"Asset package {replacementId.External} not found");
+    }
+
+    public static AssetMetadata GetMetadata(GlobalAssetId id)
+    {
+        if (id.External == 0)
+            throw new Exception("Id is None");
+
+        var replacementId = ApplyReplacement(id);
+
+        if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage))
+            return assetPackage.GetAssetMetadata(id.Internal);
+
+        throw new KeyNotFoundException($"Asset package {replacementId.External} not found");
+    }
+
+    public static IEnumerable<GlobalAssetId> EnumerateFolder(string folder)
+    {
+        foreach (var p in packageRegistry.Values)
+            foreach (var a in p.EnumerateFolder(folder))
+                yield return new GlobalAssetId(p.Metadata.Id, a);
+    }
+
+    public static IEnumerable<GlobalAssetId> QueryTags(string tag)
+    {
+        foreach (var p in packageRegistry.Values)
+            foreach (var a in p.QueryTags(tag))
+                yield return new GlobalAssetId(p.Metadata.Id, a);
     }
 
     internal static T LoadDirect<T>(GlobalAssetId id)

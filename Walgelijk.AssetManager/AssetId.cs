@@ -6,7 +6,7 @@ namespace Walgelijk.AssetManager;
 /// Locally unique ID for an asset
 /// </summary>
 [JsonConverter(typeof(AssetIdConverter))]
-public readonly struct AssetId
+public readonly struct AssetId : IEquatable<AssetId>
 {
     /// <summary>
     /// Id of the asset within the asset package
@@ -29,4 +29,31 @@ public readonly struct AssetId
     }
 
     public override string ToString() => Internal.ToString();
+
+    public override bool Equals(object? obj)
+    {
+        return obj is AssetId id && Equals(id);
+    }
+
+    public bool Equals(AssetId other)
+    {
+        return Internal == other.Internal;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Internal);
+    }
+
+    public static readonly AssetId None = default;
+
+    public static bool operator ==(AssetId left, AssetId right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(AssetId left, AssetId right)
+    {
+        return !(left == right);
+    }
 }

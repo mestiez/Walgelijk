@@ -1,29 +1,4 @@
-﻿/* -- Asset manager system --
- * 
- * What I need:
- * - Retrieve asset
- * - Query assets (e.g get all assets of type, in set, with tag, whatever the fuck)
- * - Cross-platform paths
- * - Reference counting / lifetime
- * - Mod support
- * - Stream support
- * - Async
- * - Develop using files, create package on build
- * - Loading packages
- * - Unloading packages
- * - Having multiple packages loaded at once
- * 
- * Proposed API:
- * - static AssetPackage.Load(string path)
- *      - Integrates with Resources.Load<AssetPackage>(string path)
- * - AssetPackage.Dispose()
- * - AssetPackage.Query()
- * - AssetPackage.Id
- * 
- * Resources:
- *  - Game Engine Architecture 3rd Edition, ch 7
- */
-
+﻿using Newtonsoft.Json;
 using System.IO;
 
 namespace Walgelijk.AssetManager;
@@ -31,7 +6,8 @@ namespace Walgelijk.AssetManager;
 /// <summary>
 /// Globally unique ID for an asset
 /// </summary>
-public readonly struct GlobalAssetId
+[JsonConverter(typeof(GlobalAssetIdConverter))]
+public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
 {
     /// <summary>
     /// Id of the asset package this asset resides in
@@ -55,6 +31,24 @@ public readonly struct GlobalAssetId
         Internal = new(@internal);
     }
 
+    public GlobalAssetId(int external, AssetId @internal)
+    {
+        External = external;
+        Internal = @internal;
+    }
+
+    public GlobalAssetId(string assetPackage, AssetId @internal)
+    {
+        External = Hashes.MurmurHash1(assetPackage);
+        Internal = @internal;
+    }   
+    
+    public GlobalAssetId(string assetPackage, int @internal)
+    {
+        External = Hashes.MurmurHash1(assetPackage);
+        Internal = new(@internal);
+    }
+
     public GlobalAssetId(ReadOnlySpan<char> formatted)
     {
         var sp = formatted.IndexOf(':');
@@ -71,5 +65,33 @@ public readonly struct GlobalAssetId
     public static implicit operator GlobalAssetId(string formatted)
         => new GlobalAssetId(formatted);
 
+    public static bool operator ==(GlobalAssetId left, GlobalAssetId right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(GlobalAssetId left, GlobalAssetId right)
+    {
+        return !(left == right);
+    }
+
     public override string ToString() => $"{External}:{Internal}";
+
+    public override bool Equals(object? obj)
+    {
+        return obj is GlobalAssetId id && Equals(id);
+    }
+
+    public bool Equals(GlobalAssetId other)
+    {
+        return External == other.External &&
+               Internal.Equals(other.Internal);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(External, Internal);
+    }
+
+    public static readonly GlobalAssetId None = default;
 }

@@ -582,6 +582,7 @@ public class MimeTypes
         { ".zip", "application/zip" },
         // modified from here
         { ".qoi", "image/qoi" },
+        { ".qoa", "audio/qoa" },
         { ".avif", "image/avif" },
         { ".webp", "image/webp" },
         { ".apng", "image/png" },
