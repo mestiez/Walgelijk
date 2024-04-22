@@ -4,10 +4,8 @@ using Walgelijk.AssetManager.Deserialisers;
 namespace Walgelijk.CommonAssetDeserialisers.Audio;
 
 
-public class WaveFixedAudioDeserialiser : IAssetDeserialiser
+public class WaveFixedAudioDeserialiser : IAssetDeserialiser<FixedAudioData>
 {
-    public Type ReturningType => typeof(FixedAudioData);
-
     public bool IsCandidate(in AssetMetadata assetMetadata)
     {
         return
@@ -39,7 +37,7 @@ public class WaveFixedAudioDeserialiser : IAssetDeserialiser
         return true;
     }
 
-    public object Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
+    public FixedAudioData Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
     {
         using var input = stream();
         var buffer = new byte[4];

@@ -220,7 +220,7 @@ public static class Assets
             assetPackage.DisposeOf(id.Internal);
     }
 
-    public static AssetWrapper<T> Load<T>(in ReadOnlySpan<char> id) => Load<T>(new GlobalAssetId(id));
+    public static AssetRef<T> Load<T>(in ReadOnlySpan<char> id) => Load<T>(new GlobalAssetId(id));
 
     /// <summary>
     /// Load the asset with the given ID. 
@@ -229,24 +229,21 @@ public static class Assets
     /// <param name="id"></param>
     /// <returns></returns>
     /// <exception cref="KeyNotFoundException"></exception>
-    public static AssetWrapper<T> Load<T>(GlobalAssetId id)
+    public static AssetRef<T> Load<T>(GlobalAssetId id)
     {
-        enumerationLock.Wait();
-
         var replacementId = ApplyReplacement(id);
 
-        try
-        {
-            if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage))
-            {
-                var asset = assetPackage.Load<T>(replacementId.Internal);
-                return new AssetWrapper<T>(id, asset);
-            }
-            throw new KeyNotFoundException($"Asset package {replacementId.External} not found");
-        }
-        finally
-        {
-            enumerationLock.Release();
-        }
+        if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage))
+            return new AssetRef<T>(id);
+        throw new KeyNotFoundException($"Asset package {replacementId.External} not found");
+    }
+
+    internal static T LoadDirect<T>(GlobalAssetId id)
+    {
+        var replacementId = ApplyReplacement(id);
+
+        if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage))
+            return assetPackage.Load<T>(replacementId.Internal);
+        throw new KeyNotFoundException($"Asset package {replacementId.External} not found");
     }
 }

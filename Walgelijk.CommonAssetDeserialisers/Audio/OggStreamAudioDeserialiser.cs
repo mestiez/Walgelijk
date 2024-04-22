@@ -4,10 +4,8 @@ using Walgelijk.AssetManager.Deserialisers;
 
 namespace Walgelijk.CommonAssetDeserialisers.Audio;
 
-public class OggStreamAudioDeserialiser : IAssetDeserialiser
+public class OggStreamAudioDeserialiser : IAssetDeserialiser<StreamAudioData>
 {
-    public Type ReturningType => typeof(StreamAudioData);
-
     public bool IsCandidate(in AssetMetadata assetMetadata)
     {
         return
@@ -15,7 +13,7 @@ public class OggStreamAudioDeserialiser : IAssetDeserialiser
             assetMetadata.MimeType.Equals("audio/ogg", StringComparison.InvariantCultureIgnoreCase);
     }
 
-    public object Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
+    public StreamAudioData Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
     {
         var temp = Path.GetTempFileName();
 

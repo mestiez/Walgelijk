@@ -70,10 +70,9 @@ public class FontFormat
         XHeight = xheight;
     }
 
-    public static FontFormat Load(string path)
+    public static FontFormat Load(Stream input)
     {
-        using var file = new FileStream(path, FileMode.Open, FileAccess.Read);
-        using var zip = new ZipArchive(file, ZipArchiveMode.Read, false);
+        using var zip = new ZipArchive(input, ZipArchiveMode.Read, false);
 
         var atlasEntry = zip.GetEntry("atlas.png") ?? throw new Exception("Archive does not contain an atlas");
         var metaEntry = zip.GetEntry("meta.json") ?? throw new Exception("Archive does not contain metadata");
@@ -98,7 +97,6 @@ public class FontFormat
         var metadata = JsonConvert.DeserializeObject<FontFormat>(json) ?? throw new Exception("Metadata is null");
 
         zip.Dispose();
-        file.Dispose();
 
         var texture = TextureLoader.FromBytes(atlas);
         texture.FilterMode = FilterMode.Linear;

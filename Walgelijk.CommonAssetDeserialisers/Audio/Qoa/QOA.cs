@@ -240,11 +240,9 @@ internal class QOADecoder : QOABase
     public bool IsEnd() => this.PositionSamples >= this.TotalSamples;
 }
 
-public class QoaFixedAudioDeserialiser : IAssetDeserialiser
+public class QoaFixedAudioDeserialiser : IAssetDeserialiser<FixedAudioData>
 {
-    public Type ReturningType => typeof(FixedAudioData);
-
-    public object Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
+    public FixedAudioData Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
     {
         using var s = stream();
         var dec = new QOADecoder(s);

@@ -300,7 +300,7 @@ public class TestStreamAudioDeserialiser : IAssetDeserialiser
         s.Dispose();
 
         using var reader = new VorbisReader(temp);
-        var data = VorbisFileReader.ReadMetadata(reader);
+        var data = global::Walgelijk.OpenTK.VorbisFileReader.ReadMetadata(reader);
         reader.Dispose();
         return new StreamAudioData(() => new OggAudioStream(temp), data.SampleRate, data.NumChannels, data.SampleCount);
     }

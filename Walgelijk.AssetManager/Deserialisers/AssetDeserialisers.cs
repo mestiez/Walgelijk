@@ -10,7 +10,7 @@ public static class AssetDeserialisers
 
     static AssetDeserialisers()
     {
-        Register(new TextDeserialiser());
+        Register(new StringDeserialiser());
         Register(new ByteArrayDeserialiser());
         Register(new TextureDeserialiser());
     }

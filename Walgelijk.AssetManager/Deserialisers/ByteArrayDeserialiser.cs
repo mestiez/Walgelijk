@@ -2,13 +2,11 @@
 
 namespace Walgelijk.AssetManager.Deserialisers;
 
-public class ByteArrayDeserialiser : IAssetDeserialiser
+public class ByteArrayDeserialiser : IAssetDeserialiser<byte[]>
 {
-    Type IAssetDeserialiser.ReturningType => typeof(byte[]);
+    public bool IsCandidate(in AssetMetadata assetMetadata) => true;
 
-    bool IAssetDeserialiser.IsCandidate(in AssetMetadata assetMetadata) => true;
-
-    object IAssetDeserialiser.Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
+    public byte[] Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
     {
         using var s = stream();
         var b = new byte[assetMetadata.Size];

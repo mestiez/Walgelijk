@@ -1,10 +1,8 @@
 ﻿namespace Walgelijk.AssetManager.Deserialisers;
 
-public class TextureDeserialiser : IAssetDeserialiser
+public class TextureDeserialiser : IAssetDeserialiser<Texture>
 {
-    public Type ReturningType => typeof(Texture);
-
-    public object Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
+    public Texture Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
     {
         using var b = stream();
         var buffer = new byte[assetMetadata.Size];

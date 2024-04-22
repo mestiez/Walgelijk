@@ -4,10 +4,8 @@ using Walgelijk.AssetManager.Deserialisers;
 
 namespace Walgelijk.CommonAssetDeserialisers.Audio;
 
-public class OggFixedAudioDeserialiser : IAssetDeserialiser
+public class OggFixedAudioDeserialiser : IAssetDeserialiser<FixedAudioData>
 {
-    public Type ReturningType => typeof(FixedAudioData);
-
     public bool IsCandidate(in AssetMetadata assetMetadata)
     {
         return
@@ -15,7 +13,7 @@ public class OggFixedAudioDeserialiser : IAssetDeserialiser
             assetMetadata.MimeType.Equals("audio/ogg", StringComparison.InvariantCultureIgnoreCase);
     }
 
-    public object Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
+    public FixedAudioData Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
     {
         using var temp = stream();
         using var reader = new VorbisReader(temp);
