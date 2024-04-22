@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace Walgelijk.AssetManager;
 
@@ -21,7 +22,7 @@ public class GlobalAssetIdConverter : JsonConverter<GlobalAssetId>
             if (!int.TryParse(external, out var externalId))
                 externalId = Hashes.MurmurHash1(external);
 
-            if (!int.TryParse(external, out var internalId))
+            if (!int.TryParse(@internal, out var internalId))
                 internalId = Hashes.MurmurHash1(@internal);
 
             return new GlobalAssetId(externalId, internalId);

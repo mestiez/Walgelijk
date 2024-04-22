@@ -26,7 +26,12 @@ public class TarReadArchive : IReadArchive
         reader.Dispose();
     }
 
-    public Stream? GetEntry(string path) => entries[path].DataStream;
+    public Stream? GetEntry(string path)
+    {
+        if (entries.TryGetValue(path,out var entry))
+            return entry.DataStream ?? new MemoryStream();
+        return null;
+    }
 
     public bool HasEntry(string path) => entries.ContainsKey(path);
 }

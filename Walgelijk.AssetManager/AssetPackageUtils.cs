@@ -90,12 +90,13 @@ public static class AssetPackageUtils
         var package = new AssetPackageMetadata
         {
             Id = id,
+            NumericalId = Hashes.MurmurHash1(id),
             EngineVersion = Assembly.GetAssembly(typeof(Game))!.GetName()!.Version!,
             FormatVersion = Assembly.GetAssembly(typeof(AssetPackageUtils))!.GetName()!.Version!,
         };
 
         // process root directory
-        ProcessDirectory(directory, assetRoot);
+        ProcessDirectory(directory, assetRoot, null, null);
 
         Console.WriteLine("Found {0} assets", package.Count);
 
@@ -175,7 +176,7 @@ public static class AssetPackageUtils
 
         archive.Dispose();
 
-        void ProcessDirectory(DirectoryInfo info, string target)
+        void ProcessDirectory(DirectoryInfo info, string target, string? parentMime, string[]? parentTags)
         {
 #if DEBUG
             global::System.Diagnostics.Debug.Assert(target.EndsWith('/'));
@@ -184,8 +185,8 @@ public static class AssetPackageUtils
             var globalMimeTypeFile = info.EnumerateFiles(".mimetype").FirstOrDefault();
             var globalTagsFile = info.EnumerateFiles(".tags").FirstOrDefault();
 
-            string? globalMimeType = globalMimeTypeFile == null ? null : File.ReadAllText(globalMimeTypeFile.FullName);
-            string[]? globalTags = globalTagsFile == null ? null : File.ReadAllLines(globalTagsFile.FullName);
+            string? globalMimeType = globalMimeTypeFile == null ? parentMime : File.ReadAllText(globalMimeTypeFile.FullName);
+            string[]? globalTags = globalTagsFile == null ? parentTags : File.ReadAllLines(globalTagsFile.FullName);
 
             foreach (var childFile in info.GetFiles("*", SearchOption.TopDirectoryOnly))
             {
@@ -247,7 +248,7 @@ public static class AssetPackageUtils
             }
 
             foreach (var childDir in info.GetDirectories("*", SearchOption.TopDirectoryOnly))
-                ProcessDirectory(childDir, target + childDir.Name + '/');
+                ProcessDirectory(childDir, target + childDir.Name + '/', globalMimeType, globalTags);
         }
     }
 }

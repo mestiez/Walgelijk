@@ -24,11 +24,10 @@ public static class Assets
         try
         {
             var assetPackage = Resources.Load<AssetPackage>(path, true);
-            var numerical = Hashes.MurmurHash1(assetPackage.Metadata.Id);
-            if (!packageRegistry.TryAdd(numerical, assetPackage))
+            if (!packageRegistry.TryAdd(assetPackage.Metadata.NumericalId, assetPackage))
             {
                 Resources.Unload(assetPackage);
-                throw new Exception($"Package with id {numerical} already exists");
+                throw new Exception($"Package with id {assetPackage.Metadata.Id} already exists");
             }
             return assetPackage;
         }
@@ -238,6 +237,35 @@ public static class Assets
             assetPackage.DisposeOf(id.Internal);
     }
 
+    public static bool HasAsset(in GlobalAssetId id)
+    {
+        if (packageRegistry.TryGetValue(id.External, out var p))
+            return p.HasAsset(id.Internal);
+        return false;
+    }
+
+    public static bool TryLoad<T>(in ReadOnlySpan<char> id, out AssetRef<T> assetRef) => TryLoad<T>(new GlobalAssetId(id), out assetRef);
+
+    public static bool TryLoad<T>(GlobalAssetId id, out AssetRef<T> assetRef)
+    {
+        if (id.External == 0)
+            throw new Exception("Id is None");
+
+        var replacementId = ApplyReplacement(id);
+
+        if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage))
+        {
+            if (assetPackage.HasAsset(replacementId.Internal))
+            {
+                assetRef = new AssetRef<T>(id);
+                return true;
+            }
+        }
+
+        assetRef = AssetRef<T>.None;
+        return false;
+    }
+
     public static AssetRef<T> Load<T>(in ReadOnlySpan<char> id) => Load<T>(new GlobalAssetId(id));
 
     /// <summary>
@@ -291,18 +319,25 @@ public static class Assets
         throw new KeyNotFoundException($"Asset package {replacementId.External} not found");
     }
 
-    public static IEnumerable<GlobalAssetId> EnumerateFolder(string folder)
+    public static IEnumerable<GlobalAssetId> EnumerateFolder(string folder, SearchOption searchOption = SearchOption.TopDirectoryOnly)
     {
         foreach (var p in packageRegistry.Values)
-            foreach (var a in p.EnumerateFolder(folder))
-                yield return new GlobalAssetId(p.Metadata.Id, a);
+            foreach (var a in p.EnumerateFolder(folder, searchOption))
+                yield return new GlobalAssetId(p.Metadata.NumericalId, a);
+    }
+
+    public static IEnumerable<GlobalAssetId> GetAllAssets()
+    {
+        foreach (var p in packageRegistry.Values)
+            foreach (var a in p.All)
+                yield return new(p.Metadata.NumericalId, a);
     }
 
     public static IEnumerable<GlobalAssetId> QueryTags(string tag)
     {
         foreach (var p in packageRegistry.Values)
             foreach (var a in p.QueryTags(tag))
-                yield return new GlobalAssetId(p.Metadata.Id, a);
+                yield return new GlobalAssetId(p.Metadata.NumericalId, a);
     }
 
     internal static T LoadDirect<T>(GlobalAssetId id)

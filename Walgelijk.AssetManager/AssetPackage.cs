@@ -11,12 +11,14 @@ public class AssetPackage : IDisposable
 {
     public readonly AssetPackageMetadata Metadata;
     public readonly IReadArchive Archive;
+    public readonly ImmutableHashSet<AssetId> All = [];
 
     private readonly ImmutableDictionary<int, string> guidTable;
     private readonly AssetFolder hierarchyRoot = new("/");
 
     private readonly ConcurrentDictionary<AssetId, object> cache = [];
     private readonly ConcurrentDictionary<string, AssetId[]> taggedCache = [];
+    private readonly ConcurrentDictionary<AssetId, AssetMetadata> metadataCache = [];
 
     private readonly SemaphoreSlim assetReadingLock = new(0);
 
@@ -26,6 +28,7 @@ public class AssetPackage : IDisposable
     {
         var guidTable = new Dictionary<int, string>();
         var archive = new TarReadArchive(input);
+        var all = new HashSet<AssetId>();
         Archive = archive;
         // read metadata
         {
@@ -78,15 +81,18 @@ public class AssetPackage : IDisposable
                 for (int i = 0; i < count; i++)
                 {
                     int asset = int.Parse(e.ReadLine()!);
-                    assetFolder.Assets[i] = new(asset);
+                    var b = assetFolder.Assets[i] = new(asset);
+                    all.Add(b);
                 }
             }
         }
 
+        All = [.. all];
+
         // read tagged cache
         {
-            var hierarchtEntry = archive.GetEntry("tag_table.txt") ?? throw new Exception("Archive has no tag_table.txt. This asset package is invalid.");
-            using var e = new StreamReader(hierarchtEntry!, encoding: Encoding.UTF8, leaveOpen: false);
+            var tagTableEntry = archive.GetEntry("tag_table.txt") ?? throw new Exception("Archive has no tag_table.txt. This asset package is invalid.");
+            using var e = new StreamReader(tagTableEntry!, encoding: Encoding.UTF8, leaveOpen: false);
 
             while (true)
             {
@@ -138,6 +144,7 @@ public class AssetPackage : IDisposable
         return [];
     }
 
+
     public Asset GetAsset(in AssetId id)
     {
         if (id.Internal == 0)
@@ -161,6 +168,8 @@ public class AssetPackage : IDisposable
 
         throw new Exception($"Asset {id.Internal} does not exist.");
     }
+
+    public bool HasAsset(in AssetId id) => guidTable.ContainsKey(id.Internal);
 
     public T Load<T>(in string path) => Load<T>(new AssetId(path));
 
@@ -258,6 +267,9 @@ public class AssetPackage : IDisposable
 
     public AssetMetadata GetAssetMetadata(in AssetId id)
     {
+        if (metadataCache.TryGetValue(id, out var value))
+            return value;
+
         var path = GetAssetPath(id);
         var p = "metadata/" + path + ".json";// TODO cache string concat
         if (!Archive.HasEntry(p))
@@ -266,7 +278,9 @@ public class AssetPackage : IDisposable
 
         using var reader = new StreamReader(Archive.GetEntry(p)!, encoding: Encoding.UTF8, leaveOpen: false);
         var json = reader.ReadToEnd();
-        return JsonConvert.DeserializeObject<AssetMetadata>(json);
+        value = JsonConvert.DeserializeObject<AssetMetadata>(json);
+        metadataCache.AddOrSet(id, value);
+        return value;
     }
 
     private bool TryGetAssetFolder(ReadOnlySpan<char> path, [NotNullWhen(true)] out AssetFolder? folder)
