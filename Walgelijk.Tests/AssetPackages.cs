@@ -54,7 +54,7 @@ public class AssetPackages
 
         string[] paths = [
             "textures/ui/levelselect/levels_icon.png",
-            "data/dj.txt",
+            "data/dj.json",
             "sounds/swish/swish-2.wav",
             "shaders/sdf-font.frag",
         ];
@@ -110,20 +110,20 @@ melee 0.2";
     public async Task AsyncDeserialise()
     {
         using var package = AssetPackage.Load(validPackage);
-        var str = "invalid";
+        byte[] str = [];
 
         await Task.Run(() =>
         {
-            str = package.Load<string>("data/dj.txt");
+            str = package.Load<byte[]>("data/dj.json");
             Assert.IsNotNull(str);
 
-            var hash = Crc32.HashToUInt32(Encoding.UTF8.GetBytes(str));
-            var expectedHash = 0x0744E487u;
+            var hash = Crc32.HashToUInt32(str);
+            var expectedHash = 0x93F9269Bu;
             Assert.AreEqual(expectedHash, hash);
 
         });
 
-        Assert.AreSame(package.Load<string>("data/dj.txt"), str);
+        Assert.AreSame(package.Load<byte[]>("data/dj.json"), str);
     }
 
     [TestMethod]
@@ -131,17 +131,17 @@ melee 0.2";
     {
         using var package = AssetPackage.Load(validPackage);
 
-        var str1 = "invalid1";
+        byte[] str1 = [];
         var str2 = "invalid2";
 
         Task.WaitAll(
             Task.Run(() =>
             {
-                str1 = package.Load<string>("data/dj.txt");
+                str1 = package.Load<byte[]>("data/dj.json");
                 Assert.IsNotNull(str1);
 
-                var hash = Crc32.HashToUInt32(Encoding.UTF8.GetBytes(str1));
-                var expectedHash = 0x0744E487u;
+                var hash = Crc32.HashToUInt32(str1);
+                var expectedHash = 0x93F9269Bu;
                 Assert.AreEqual(expectedHash, hash);
 
             }),
@@ -157,7 +157,7 @@ melee 0.2";
             })
         );
 
-        Assert.AreSame(package.Load<string>("data/dj.txt"), str1);
+        Assert.AreSame(package.Load<byte[]>("data/dj.json"), str1);
         Assert.AreSame(package.Load<string>("data/convars.txt"), str2);
     }
 
@@ -172,27 +172,27 @@ melee 0.2";
         Task.WaitAll(
             Task.Run(() =>
             {
-                str1 = package.Load<string>("data/dj.txt");
+                str1 = package.Load<string>("data/dj.json");
                 Assert.IsNotNull(str1);
 
                 var hash = Crc32.HashToUInt32(Encoding.UTF8.GetBytes(str1));
-                var expectedHash = 0x0744E487u;
+                var expectedHash = 0x93F9269Bu;
                 Assert.AreEqual(expectedHash, hash);
 
             }),
             Task.Run(() =>
             {
-                str2 = package.Load<string>("data/dj.txt");
+                str2 = package.Load<string>("data/dj.json");
                 Assert.IsNotNull(str2);
 
                 var hash = Crc32.HashToUInt32(Encoding.UTF8.GetBytes(str2));
-                var expectedHash = 0x0744E487u;
+                var expectedHash = 0x93F9269Bu;
                 Assert.AreEqual(expectedHash, hash);
 
             })
         );
 
-        Assert.AreSame(package.Load<string>("data/dj.txt"), str1);
+        Assert.AreSame(package.Load<string>("data/dj.json"), str1);
         Assert.AreSame(str1, str2);
     }
 

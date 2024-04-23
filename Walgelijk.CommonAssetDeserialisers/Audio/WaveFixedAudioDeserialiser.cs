@@ -94,6 +94,6 @@ public class WaveFixedAudioDeserialiser : IAssetDeserialiser<FixedAudioData>
         if (actuallyRead != dataChunkSize)
             throw new Exception("Input file is not a valid WAVE file: the reported data chunk size does not match the actually read data size");
 
-        return new FixedAudioData(data, sampleRate, numChannels, buffer.Length / 2);
+        return new FixedAudioData(data, sampleRate, numChannels, data.Length / 2);
     }
 }

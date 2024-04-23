@@ -8,4 +8,5 @@ public struct AssetMetadata
     public string MimeType;
     public string[]? Tags;
     public string XXH3;
+    public GlobalAssetId[]? Dependencies;
 }

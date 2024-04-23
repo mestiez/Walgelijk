@@ -2,6 +2,10 @@
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 
+/* Je moet detecteren of een asset een andere asset nodig heeft en als dat zo is moet je die eerder laden
+ * Dit is nodig omdat er een lock is waardoor je niet assets kan laden terwijl je een asset laadt
+ */
+
 namespace Walgelijk.AssetManager;
 
 public static class Assets
@@ -10,7 +14,7 @@ public static class Assets
     private static readonly ConcurrentDictionary<GlobalAssetId, ConcurrentBag<IDisposable>> disposableChain = [];
     private static readonly ConcurrentDictionary<GlobalAssetId, GlobalAssetId> replacementTable = [];
 
-    private static readonly SemaphoreSlim enumerationLock = new(1);
+    private static readonly ReaderWriterLockSlim enumerationLock = new(LockRecursionPolicy.SupportsRecursion);
     private static bool isDisposingPackage = false;
 
     static Assets()
@@ -20,7 +24,7 @@ public static class Assets
 
     public static AssetPackage RegisterPackage(string path)
     {
-        enumerationLock.Wait();
+        enumerationLock.EnterReadLock();
         try
         {
             var assetPackage = Resources.Load<AssetPackage>(path, true);
@@ -33,7 +37,7 @@ public static class Assets
         }
         finally
         {
-            enumerationLock.Release();
+            enumerationLock.ExitReadLock();
         }
     }
 
@@ -44,7 +48,7 @@ public static class Assets
         if (isDisposingPackage)
             throw new InvalidOperationException("The package registry cannot be cleared while disposing a package");
 
-        enumerationLock.Wait();
+        enumerationLock.EnterWriteLock();
         try
         {
             var keys = new Stack<int>(AssetPackages);
@@ -60,7 +64,7 @@ public static class Assets
         }
         finally
         {
-            enumerationLock.Release();
+            enumerationLock.ExitWriteLock();
         }
     }
 
@@ -69,14 +73,14 @@ public static class Assets
         if (isDisposingPackage)
             throw new InvalidOperationException("Packages cannot be retrieved while disposing a package");
 
-        enumerationLock.Wait();
+        enumerationLock.EnterReadLock();
         try
         {
             return packageRegistry.TryGetValue(id, out assetPackage);
         }
         finally
         {
-            enumerationLock.Release();
+            enumerationLock.ExitReadLock();
         }
     }
 
@@ -85,7 +89,7 @@ public static class Assets
 
     public static bool UnloadPackage(int id)
     {
-        enumerationLock.Wait();
+        enumerationLock.EnterWriteLock();
         try
         {
             if (TryGetPackage(id, out var p))
@@ -101,7 +105,7 @@ public static class Assets
         finally
         {
             isDisposingPackage = false;
-            enumerationLock.Release();
+            enumerationLock.ExitWriteLock();
         }
     }
 
@@ -142,16 +146,8 @@ public static class Assets
         if (replacement.External == 0)
             throw new Exception("Id is None");
 
-        enumerationLock.Wait();
-        try
-        {
-            replacementTable.AddOrSet(original, replacement);
-            DisposeOf(original); // we have to dispose the original to force a reload
-        }
-        finally
-        {
-            enumerationLock.Release();
-        }
+        replacementTable.AddOrSet(original, replacement);
+        DisposeOf(original); // we have to dispose the original to force a reload
     }
 
     /// <summary>
@@ -165,16 +161,8 @@ public static class Assets
         if (original.External == 0)
             throw new Exception("Id is None");
 
-        enumerationLock.Wait();
-        try
-        {
-            replacementTable.TryRemove(original, out _);
-            DisposeOf(original);
-        }
-        finally
-        {
-            enumerationLock.Release();
-        }
+        replacementTable.TryRemove(original, out _);
+        DisposeOf(original);
     }
 
     /// <summary>
@@ -182,18 +170,10 @@ public static class Assets
     /// </summary>
     public static void ClearReplacements()
     {
-        enumerationLock.Wait();
-        try
-        {
-            var keys = replacementTable.Keys.ToArray();
-            replacementTable.Clear();
-            foreach (var k in keys)
-                DisposeOf(k);
-        }
-        finally
-        {
-            enumerationLock.Release();
-        }
+        var keys = replacementTable.Keys.ToArray();
+        replacementTable.Clear();
+        foreach (var k in keys)
+            DisposeOf(k);
     }
 
     public static bool HasReplacement(in GlobalAssetId original) => replacementTable.ContainsKey(original);
@@ -347,5 +327,5 @@ public static class Assets
         if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage))
             return assetPackage.Load<T>(replacementId.Internal);
         throw new KeyNotFoundException($"Asset package {replacementId.External} not found");
-    }
+    } 
 }

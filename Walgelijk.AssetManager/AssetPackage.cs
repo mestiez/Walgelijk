@@ -20,12 +20,15 @@ public class AssetPackage : IDisposable
     private readonly ConcurrentDictionary<string, AssetId[]> taggedCache = [];
     private readonly ConcurrentDictionary<AssetId, AssetMetadata> metadataCache = [];
 
-    private readonly SemaphoreSlim assetReadingLock = new(0);
+    private readonly ReaderWriterLockSlim assetReadingLock = new(LockRecursionPolicy.SupportsRecursion);
 
     private bool disposed;
+    private bool isDeserialising;
 
     public AssetPackage(Stream input)
     {
+        assetReadingLock.EnterWriteLock();
+
         var guidTable = new Dictionary<int, string>();
         var archive = new TarReadArchive(input);
         var all = new HashSet<AssetId>();
@@ -115,7 +118,7 @@ public class AssetPackage : IDisposable
             }
         }
 
-        assetReadingLock.Release();
+        assetReadingLock.ExitWriteLock();
     }
 
     private static IEnumerable<AssetId> EnumerateFolder(AssetFolder folder, SearchOption searchOption = SearchOption.TopDirectoryOnly)
@@ -134,7 +137,7 @@ public class AssetPackage : IDisposable
     {
         if (TryGetAssetFolder(path, out var folder))
             return EnumerateFolder(folder, searchOption);
-        throw new Exception($"Path \"{path}\" cannot be found");
+        return [];
     }
 
     public IEnumerable<AssetId> QueryTags(in string tag)
@@ -178,7 +181,9 @@ public class AssetPackage : IDisposable
         if (id.Internal == 0)
             throw new Exception("Id is None");
 
-        assetReadingLock.Wait();
+        assetReadingLock.EnterUpgradeableReadLock();
+
+        var metadata = GetAssetMetadata(id);
 
         try
         {
@@ -189,15 +194,26 @@ public class AssetPackage : IDisposable
                 else
                     throw new Exception($"Asset {id.Internal} was previously loaded as type {obj.GetType()}, this does not match the requested type {typeof(T)}");
             }
-            var a = AssetDeserialisers.Load<T>(GetAsset(id))
-                ?? throw new NullReferenceException($"Deserialising asset {id.Internal} returns null");
-            if (!cache.TryAdd(id, a))
-                throw new Exception("");
-            return a;
+            if (isDeserialising)
+                throw new Exception("Loading unloaded assets during deserialisation is not allowed");
+            assetReadingLock.EnterWriteLock();
+            isDeserialising = true;
+            try
+            {
+                var a = AssetDeserialisers.Load<T>(GetAsset(id)) ?? throw new NullReferenceException($"Deserialising asset {id.Internal} returns null");
+                if (!cache.TryAdd(id, a))
+                    throw new Exception("");
+                return a;
+            }
+            finally
+            {
+                isDeserialising = false;
+                assetReadingLock.ExitWriteLock();
+            }
         }
         finally
         {
-            assetReadingLock.Release();
+            assetReadingLock.ExitUpgradeableReadLock();
         }
     }
 
@@ -206,7 +222,7 @@ public class AssetPackage : IDisposable
         if (id.Internal == 0)
             throw new Exception("Id is None");
 
-        assetReadingLock.Wait();
+        assetReadingLock.EnterWriteLock();
 
         try
         {
@@ -216,13 +232,13 @@ public class AssetPackage : IDisposable
         }
         finally
         {
-            assetReadingLock.Release();
+            assetReadingLock.ExitWriteLock();
         }
     }
 
     public void DisposeOf(in AssetId id)
     {
-        assetReadingLock.Wait();
+        assetReadingLock.EnterWriteLock();
 
         try
         {
@@ -232,7 +248,7 @@ public class AssetPackage : IDisposable
         }
         finally
         {
-            assetReadingLock.Release();
+            assetReadingLock.ExitWriteLock();
         }
     }
 
@@ -352,7 +368,7 @@ public class AssetPackage : IDisposable
     private class AssetFolder
     {
         /// <summary>
-        /// The name of this folder. NOT THE PATH!!
+        /// The name of this folder. NOT THE PATH!
         /// </summary>
         public readonly string Name;
 
