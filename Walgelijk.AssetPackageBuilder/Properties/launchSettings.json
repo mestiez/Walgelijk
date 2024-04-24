@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Walgelijk.AssetPackageBuilder": {
+      "commandName": "Project",
+      "commandLineArgs": "-i resources -f -o base.waa"
+    }
+  }
+}

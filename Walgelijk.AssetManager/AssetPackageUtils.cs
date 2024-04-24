@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Reflection;
 using System.Text;
+using Walgelijk.AssetManager.Archives.Waa;
 
 namespace Walgelijk.AssetManager;
 
@@ -79,7 +80,7 @@ public static class AssetPackageUtils
         const string assetRoot = "assets/";
         const string metadataRoot = "metadata/";
 
-        using IWriteArchive archive = new TarWriteArchive(output);
+        using IWriteArchive archive = new WaaWriteArchive(output);
         var guidsIntermediate = new HashSet<int>();
         var guidTable = new StringBuilder();
         var tagTable = new StringBuilder();
@@ -173,8 +174,6 @@ public static class AssetPackageUtils
             var l = archive.WriteEntry("package.json", new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(package))));
             Console.WriteLine($"package.json written {l}");
         }
-
-        archive.Dispose();
 
         void ProcessDirectory(DirectoryInfo info, string target, string? parentMime, string[]? parentTags)
         {
