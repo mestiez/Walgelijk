@@ -33,7 +33,10 @@ public class SubSeekableFileStream : Stream
         set
         {
             AssertValidBase();
-            BaseStream.Position = value + StartOffset;
+            var p = value + StartOffset;
+            p = long.Max(StartOffset, p);
+            p = long.Min(StartOffset + Length, p);
+            BaseStream.Position = p;
         }
     }
 
@@ -51,7 +54,7 @@ public class SubSeekableFileStream : Stream
         AssertValidBase();
 
         count = int.Min(buffer.Length, count);
-        count = (int)long.Min((Length - Position), count);
+        count = (int)long.Min(Length - Position, count);
         if (count <= 0)
             return 0;
 
@@ -74,6 +77,7 @@ public class SubSeekableFileStream : Stream
                 Position = offset;
                 break;
         }
+
         return Position;
     }
 

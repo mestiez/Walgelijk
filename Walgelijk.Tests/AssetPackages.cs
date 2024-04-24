@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Walgelijk;
 using Walgelijk.AssetManager;
 using Walgelijk.AssetManager.Deserialisers;
+using Walgelijk.CommonAssetDeserialisers;
 using Walgelijk.OpenTK;
 
 namespace Tests.AssetManager;

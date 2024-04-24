@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Walgelijk.AssetManager\Walgelijk.AssetManager.csproj" />
+    <ProjectReference Include="..\Walgelijk.CommonAssetDeserialisers\Walgelijk.CommonAssetDeserialisers.csproj" />
     <ProjectReference Include="..\Walgelijk.Localisation\Walgelijk.Localisation.csproj" />
     <ProjectReference Include="..\Walgelijk.Onion\Walgelijk.Onion.csproj" />
     <ProjectReference Include="..\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />

@@ -8,7 +8,8 @@ public class FontDeserialiser : IAssetDeserialiser<Font>
     public Font Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
     {
         using var s = stream();
-        return FontLoader.LoadWf(s);
+        var wfont = FontLoader.LoadWf(s);
+        return wfont;
     }
 
     public bool IsCandidate(in AssetMetadata m)

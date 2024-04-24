@@ -60,6 +60,10 @@ public class WaaReadArchive : IReadArchive
             int chunkStartIndex = reader.ReadInt32() * Chunk.ChunkSize;
             int chunkCount = reader.ReadInt32();
             long length = reader.ReadInt64();
+
+            if (chunkCount != (int)double.Ceiling(length / (double)Chunk.ChunkSize))
+                throw new Exception("Entry chunk count does not match length");
+
             index.Add(path, new ReadEntry
             {
                 StartOffset = chunkStartIndex + chunkListOffset,

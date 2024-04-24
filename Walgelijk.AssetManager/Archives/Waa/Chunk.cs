@@ -9,8 +9,6 @@ internal struct Chunk
 
     public byte[] Buffer;
 
-    public readonly int Start => ChunkSize * Index;
-
     public Chunk(int index)
     {
         Index = index;
@@ -22,7 +20,7 @@ internal struct Chunk
     {
         if (b.Length > ChunkSize)
             throw new Exception("Written length exceeds bounds");
-
+        
         Array.Clear(Buffer);
         b.CopyTo(Buffer);
 
