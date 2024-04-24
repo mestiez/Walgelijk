@@ -11,15 +11,19 @@ public class WaaReadArchive : IReadArchive
 {
     private readonly ImmutableDictionary<string, ReadEntry> entries;
 
+    public string BaseFile { get; }
+
     private struct ReadEntry
     {
         public int StartOffset;
-        public int Length;
+        public int ChunkCount;
+        public long Length;
     }
 
-    public WaaReadArchive(Stream input)
+    public WaaReadArchive(string file)
     {
-        using var reader = new BinaryReader(input);
+        BaseFile = file;
+        using var reader = new BinaryReader(new FileStream(file, FileMode.Open), Encoding.UTF8, false);
 
         if (!reader.ReadChars(4).SequenceEqual("WALG"))
             throw new Exception("File is not a Waa archive");
@@ -51,7 +55,13 @@ public class WaaReadArchive : IReadArchive
             }
             int chunkStartIndex = reader.ReadInt32();
             int chunkCount = reader.ReadInt32();
-            index.Add(path, (chunkStartIndex, chunkCount));
+            long length = reader.ReadInt64();
+            index.Add(path, new ReadEntry
+            {
+                StartOffset = chunkStartIndex,
+                ChunkCount = chunkCount,
+                Length = length
+            });
         }
 
         entries = index.ToImmutableDictionary();
@@ -61,56 +71,92 @@ public class WaaReadArchive : IReadArchive
     {
         // I was JUST doing this! I have to go to bed though...
         if (entries.TryGetValue(path, out var r))
-        {
-            return new SubSeekableFileStream()
-        }
+            return new SubSeekableFileStream(new FileStream(BaseFile, FileMode.Open), r.StartOffset, r.Length);
+        return null;
     }
 
-    public bool HasEntry(string path)
-    {
-        throw new NotImplementedException();
-    }
+    public bool HasEntry(string path) => entries.ContainsKey(path);
 
     public void Dispose()
     {
-        throw new NotImplementedException();
     }
 }
 
-internal class Entry
+public class SubSeekableFileStream : Stream
 {
-    public int StartIndex;
-    public int ChunkCount;
+    public readonly FileStream BaseStream;
+    private readonly bool leaveOpen;
 
-    public byte[] Data = [];
-}
-
-internal struct Chunk
-{
-    public const int ChunkSize = 512;
-
-    public int Index;
-    public int Length;
-
-    public byte[] Buffer;
-
-    public readonly int Start => ChunkSize * Index;
-
-    public Chunk(int index)
+    public SubSeekableFileStream(FileStream baseStream, int start, long length, bool leaveOpen = false)
     {
-        Index = index;
-        Length = 0;
-        Buffer = new byte[ChunkSize];
+        BaseStream = baseStream;
+        StartOffset = start;
+        Length = length;
+        this.leaveOpen = leaveOpen;
     }
 
-    public void Set(ReadOnlySpan<byte> b)
+    public override bool CanRead => BaseStream.CanRead;
+
+    public override bool CanSeek => BaseStream.CanSeek;
+
+    public override bool CanWrite => false;
+
+    public override long Length { get; }
+
+    public override long Position
     {
-        if (b.Length > ChunkSize)
-            throw new Exception("Written length exceeds bounds");
+        get => BaseStream.Position - StartOffset;
+        set => BaseStream.Position = value + StartOffset;
+    }
 
-        Array.Clear(Buffer);
-        b.CopyTo(Buffer);
+    public int StartOffset { get; }
 
-        Length = b.Length;
+    public override void Flush()
+    {
+        BaseStream.Flush();
+    }
+
+    public override int Read(byte[] buffer, int offset, int count)
+    {
+        count = int.Min(buffer.Length, count);
+        var actualStart = offset + StartOffset;
+        var actualEnd = int.Min(actualStart + count, StartOffset + (int)Length);
+        var actualCount = actualEnd - actualStart;
+
+        return BaseStream.Read(buffer, actualStart, actualCount);
+    }
+
+    public override long Seek(long offset, SeekOrigin origin)
+    {
+        switch (origin)
+        {
+            case SeekOrigin.Current:
+                Position += offset;
+                break;
+            case SeekOrigin.End:
+                Position = Length - offset;
+                break;
+            default:
+                Position = offset;
+                break;
+        }
+        return Position;
+    }
+
+    public override void SetLength(long value)
+    {
+        throw new NotSupportedException();
+    }
+
+    public override void Write(byte[] buffer, int offset, int count)
+    {
+        throw new NotSupportedException();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+        if (!leaveOpen)
+            BaseStream.Dispose();
     }
 }

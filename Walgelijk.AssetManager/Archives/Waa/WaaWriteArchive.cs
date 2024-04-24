@@ -22,7 +22,7 @@ public class WaaWriteArchive : IWriteArchive
         totalWrittenBytes += m.Length;
         entries.Add(path, new Entry
         {
-            Data = m.ToArray(),
+            IntermediateData = m.ToArray(),
         });
         return m.Length;
     }
@@ -44,9 +44,9 @@ public class WaaWriteArchive : IWriteArchive
 
             int startIndex = chunkCursor;
             int i = 0;
-            while (i < entry.Data.Length)
+            while (i < entry.IntermediateData.Length)
             {
-                var segment = entry.Data.AsSpan(i..);
+                var segment = entry.IntermediateData.AsSpan(i..);
                 if (segment.Length > Chunk.ChunkSize)
                     segment = segment[0..Chunk.ChunkSize];
                 i += segment.Length;
@@ -60,7 +60,8 @@ public class WaaWriteArchive : IWriteArchive
             }
 
             entry.StartIndex = startIndex;
-            entry.Data = [];
+            entry.Length = entry.IntermediateData.Length;
+            entry.IntermediateData = [];
         }
 
         this.chunks = [.. chunks];
@@ -75,18 +76,19 @@ public class WaaWriteArchive : IWriteArchive
 
         /* Header format
          * 
-         * 0  - 4    WALG               (magic)
-         * 4  - 12   Total length       (ulong)
-         * 12 - 16   Chunk count        (int32)
-         * 16 - 20   Entry count        (int32)
-         * 20 - 24   Chunk set offset   (int32)
+         * 0    WALG                (magic) 4
+         * 4    Total length        (ulong) 8
+         * 12   Chunk count         (int32) 4
+         * 16   Entry count         (int32) 4
+         * 20   Chunk set offset    (int32) 4
          */
 
         /* Index format
          * 
-         * Key/path until null terminator   (string)
-         * 4 bytes for chunk start index    (int32)
-         * 4 bytes for chunk count          (int32)
+         * Path until null terminator   (string) n
+         * Chunk start index            (int32)  4
+         * Chunk count                  (int32)  4
+         * Length in bytes              (int64)  8
          */
 
         // header data
@@ -103,6 +105,7 @@ public class WaaWriteArchive : IWriteArchive
             file.Write((byte)'\0');
             file.Write(item.Value.StartIndex);
             file.Write(item.Value.ChunkCount);
+            file.Write(item.Value.Length);
         }
 
         var pos = file.BaseStream.Position;
@@ -110,10 +113,8 @@ public class WaaWriteArchive : IWriteArchive
         file.Write((int)pos); // write chunk set offset
         file.BaseStream.Seek(pos, SeekOrigin.Begin);
 
-        // write data
+        // write actual binary data
         foreach (var item in chunks)
-        {
             file.Write(item.Buffer);
-        }
     }
 }

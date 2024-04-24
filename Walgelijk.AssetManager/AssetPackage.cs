@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
+using Walgelijk.AssetManager.Archives.Waa;
 using Walgelijk.AssetManager.Deserialisers;
 
 namespace Walgelijk.AssetManager;
@@ -25,12 +26,12 @@ public class AssetPackage : IDisposable
     private bool disposed;
     private bool isDeserialising;
 
-    public AssetPackage(Stream input)
+    public AssetPackage(string file)
     {
         assetReadingLock.EnterWriteLock();
 
         var guidTable = new Dictionary<int, string>();
-        var archive = new TarReadArchive(input);
+        var archive = new WaaReadArchive(file);
         var all = new HashSet<AssetId>();
         Archive = archive;
         // read metadata
@@ -275,11 +276,7 @@ public class AssetPackage : IDisposable
         disposed = true;
     }
 
-    public static AssetPackage Load(string path)
-    {
-        var file = new FileStream(path, FileMode.Open);
-        return new AssetPackage(file);
-    }
+    public static AssetPackage Load(string path) => new AssetPackage(path);
 
     public AssetMetadata GetAssetMetadata(in AssetId id)
     {

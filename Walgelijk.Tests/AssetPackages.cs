@@ -109,7 +109,7 @@ melee 0.2";
     [TestMethod]
     public async Task AsyncDeserialise()
     {
-        using var package = AssetPackage.Load(validPackage);
+        var package = AssetPackage.Load(validPackage);
         byte[] str = [];
 
         await Task.Run(() =>
@@ -124,6 +124,8 @@ melee 0.2";
         });
 
         Assert.AreSame(package.Load<byte[]>("data/dj.json"), str);
+
+        package.Dispose();
     }
 
     [TestMethod]

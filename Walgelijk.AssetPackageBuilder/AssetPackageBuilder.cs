@@ -8,8 +8,6 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        new WaaReadArchive(new FileStream("base.waa", FileMode.Open));
-
         Parser.Default.ParseArguments<Options>(args).WithParsed(o =>
         {
             o.Output ??= o.Input! + ".waa";
