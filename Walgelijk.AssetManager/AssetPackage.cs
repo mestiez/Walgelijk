@@ -38,7 +38,8 @@ public class AssetPackage : IDisposable
         {
             var metadataEntry = archive.GetEntry("package.json") ?? throw new Exception("Archive has no package.json. This asset package is invalid");
             using var e = new StreamReader(metadataEntry!, encoding: Encoding.UTF8, leaveOpen: false);
-            Metadata = JsonConvert.DeserializeObject<AssetPackageMetadata>(e.ReadToEnd());
+            var json = e.ReadToEnd();
+            Metadata = JsonConvert.DeserializeObject<AssetPackageMetadata>(json);
         }
 
         // read guid table

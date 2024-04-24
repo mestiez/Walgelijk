@@ -83,7 +83,7 @@ public class WaaWriteArchive : IWriteArchive
          * 20   Chunk set offset    (int32) 4
          */
 
-        /* Index format
+        /* Index entry format
          * 
          * Path until null terminator   (string) n
          * Chunk start index            (int32)  4

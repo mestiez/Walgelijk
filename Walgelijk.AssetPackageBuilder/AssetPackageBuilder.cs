@@ -10,6 +10,8 @@ public class Program
     {
         Parser.Default.ParseArguments<Options>(args).WithParsed(o =>
         {
+            // add extracting
+
             o.Output ??= o.Input! + ".waa";
 
             if (!o.Output!.EndsWith(".waa", StringComparison.InvariantCultureIgnoreCase))
@@ -30,8 +32,17 @@ public class Program
         });
     }
 
+    public enum Mode
+    {
+        Extract,
+        Pack
+    }
+
     private class Options
     {
+        [Option('m', "Mode", Required = false, Default = Mode.Pack, HelpText = "Program mode (pack or extract).")]
+        public Mode Mode { get; set; }
+
         [Option('i', "Input", Required = true, HelpText = "Path to input directory.")]
         public string? Input { get; set; }
 

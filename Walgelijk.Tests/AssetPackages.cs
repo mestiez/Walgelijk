@@ -295,15 +295,9 @@ public class TestStreamAudioDeserialiser : IAssetDeserialiser
 
     public object Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
     {
-        var temp = Path.GetTempFileName();
-
-        using var s = File.OpenWrite(temp);
-        stream().CopyTo(s);
-        s.Dispose();
-
-        using var reader = new VorbisReader(temp);
+        using var reader = new VorbisReader(stream(), true);
         var data = global::Walgelijk.OpenTK.VorbisFileReader.ReadMetadata(reader);
         reader.Dispose();
-        return new StreamAudioData(() => new OggAudioStream(temp), data.SampleRate, data.NumChannels, data.SampleCount);
+        return new StreamAudioData(() => new OggAudioStream(stream()), data.SampleRate, data.NumChannels, data.SampleCount);
     }
 }

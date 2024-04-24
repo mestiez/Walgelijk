@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace Walgelijk.AssetManager.Archives.Waa;
 public class WaaReadArchive : IReadArchive
 {
     private readonly ImmutableDictionary<string, ReadEntry> entries;
+    private readonly ConcurrentBag<SubSeekableFileStream> ownedStreams = [];
 
     public string BaseFile { get; }
 
@@ -23,7 +25,7 @@ public class WaaReadArchive : IReadArchive
     public WaaReadArchive(string file)
     {
         BaseFile = file;
-        using var reader = new BinaryReader(new FileStream(file, FileMode.Open), Encoding.UTF8, false);
+        using var reader = new BinaryReader(new FileStream(file, FileMode.Open, FileAccess.Read), Encoding.UTF8, false);
 
         if (!reader.ReadChars(4).SequenceEqual("WALG"))
             throw new Exception("File is not a Waa archive");
@@ -52,13 +54,15 @@ public class WaaReadArchive : IReadArchive
                     pathAcc[pathAccIndex] = b;
 
                 pathAccIndex++;
+                if (pathAccIndex >= pathAcc.Length)
+                    throw new Exception("Path in index exceeds max length of " + pathAcc.Length);
             }
-            int chunkStartIndex = reader.ReadInt32();
+            int chunkStartIndex = reader.ReadInt32() * Chunk.ChunkSize;
             int chunkCount = reader.ReadInt32();
             long length = reader.ReadInt64();
             index.Add(path, new ReadEntry
             {
-                StartOffset = chunkStartIndex,
+                StartOffset = chunkStartIndex + chunkListOffset,
                 ChunkCount = chunkCount,
                 Length = length
             });
@@ -69,9 +73,12 @@ public class WaaReadArchive : IReadArchive
 
     public Stream? GetEntry(string path)
     {
-        // I was JUST doing this! I have to go to bed though...
         if (entries.TryGetValue(path, out var r))
-            return new SubSeekableFileStream(new FileStream(BaseFile, FileMode.Open), r.StartOffset, r.Length);
+        {
+            var s = new SubSeekableFileStream(new FileStream(BaseFile, FileMode.Open, FileAccess.Read), r.StartOffset, r.Length);
+            ownedStreams.Add(s);
+            return s;
+        }
         return null;
     }
 
@@ -79,84 +86,7 @@ public class WaaReadArchive : IReadArchive
 
     public void Dispose()
     {
-    }
-}
-
-public class SubSeekableFileStream : Stream
-{
-    public readonly FileStream BaseStream;
-    private readonly bool leaveOpen;
-
-    public SubSeekableFileStream(FileStream baseStream, int start, long length, bool leaveOpen = false)
-    {
-        BaseStream = baseStream;
-        StartOffset = start;
-        Length = length;
-        this.leaveOpen = leaveOpen;
-    }
-
-    public override bool CanRead => BaseStream.CanRead;
-
-    public override bool CanSeek => BaseStream.CanSeek;
-
-    public override bool CanWrite => false;
-
-    public override long Length { get; }
-
-    public override long Position
-    {
-        get => BaseStream.Position - StartOffset;
-        set => BaseStream.Position = value + StartOffset;
-    }
-
-    public int StartOffset { get; }
-
-    public override void Flush()
-    {
-        BaseStream.Flush();
-    }
-
-    public override int Read(byte[] buffer, int offset, int count)
-    {
-        count = int.Min(buffer.Length, count);
-        var actualStart = offset + StartOffset;
-        var actualEnd = int.Min(actualStart + count, StartOffset + (int)Length);
-        var actualCount = actualEnd - actualStart;
-
-        return BaseStream.Read(buffer, actualStart, actualCount);
-    }
-
-    public override long Seek(long offset, SeekOrigin origin)
-    {
-        switch (origin)
-        {
-            case SeekOrigin.Current:
-                Position += offset;
-                break;
-            case SeekOrigin.End:
-                Position = Length - offset;
-                break;
-            default:
-                Position = offset;
-                break;
-        }
-        return Position;
-    }
-
-    public override void SetLength(long value)
-    {
-        throw new NotSupportedException();
-    }
-
-    public override void Write(byte[] buffer, int offset, int count)
-    {
-        throw new NotSupportedException();
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        base.Dispose(disposing);
-        if (!leaveOpen)
-            BaseStream.Dispose();
+        while (ownedStreams.TryTake(out var t))
+            t.Dispose();
     }
 }
