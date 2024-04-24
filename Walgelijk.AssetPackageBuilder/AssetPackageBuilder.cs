@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using Walgelijk.AssetManager;
+using Walgelijk.AssetManager.Archives.Waa;
 
 namespace Walgelijk.AssetPackageBuilder;
 
@@ -7,6 +8,8 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        new WaaReadArchive(new FileStream("base.waa", FileMode.Open));
+
         Parser.Default.ParseArguments<Options>(args).WithParsed(o =>
         {
             o.Output ??= o.Input! + ".waa";
