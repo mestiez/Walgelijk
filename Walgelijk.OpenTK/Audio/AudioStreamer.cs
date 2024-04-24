@@ -128,13 +128,14 @@ public class AudioStreamer : IDisposable
                         AL.SourcePlay(Source);
                     AlCheck();
                     processed = AL.GetSource(Source, ALGetSourcei.BuffersProcessed);
+                    AlCheck();
                     break;
                 case SoundState.Paused:
                     // if we are requested to pause and the source is still playing, pause
                     if (state == ALSourceState.Playing)
                         AL.SourcePause(Source);
                     AlCheck();
-                    break;
+                    continue;
                 case SoundState.Stopped:
                     // if we are requested to stop and the source isnt stopped, stop
                     if (state is ALSourceState.Playing or ALSourceState.Paused)

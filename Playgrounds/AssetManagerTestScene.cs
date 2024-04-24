@@ -37,7 +37,7 @@ public struct AssetManagerTestScene : ISceneCreator
         public Sound[] Streams =
         [
             new Sound(Assets.Load<StreamAudioData>("assets:danse_macabre.ogg").Value, loops: true),
-            new Sound(Assets.Load<StreamAudioData>("assets:danse_macabre.ogg").Value, loops: true),
+            new Sound(Assets.Load<StreamAudioData>("assets:valve_machiavellian_bach.ogg").Value, loops: true),
             new Sound(Assets.Load<FixedAudioData>("assets:sting_xp_level_up_orch_01.qoa").Value),
             new Sound(Assets.Load<FixedAudioData>("assets:sample.wav").Value),
         ];
