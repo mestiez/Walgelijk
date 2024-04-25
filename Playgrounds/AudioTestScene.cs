@@ -22,8 +22,7 @@ public struct AudioTestScene : ISceneCreator
     {
         private Sound[] OneShot;
 
-        private Sound Streaming = new Sound(Resources.Load<StreamAudioData>("perfect-loop.ogg"), true,
-            new SpatialParams(1, float.PositiveInfinity, 1));
+       // private Sound Streaming = new Sound(Resources.Load<StreamAudioData>("perfect-loop.ogg"), true, new SpatialParams(1, float.PositiveInfinity, 1));
 
         public AudioTestSystem()
         {
@@ -48,13 +47,13 @@ public struct AudioTestScene : ISceneCreator
         {
             var th = Time.SecondsSinceLoad;
             Audio.ListenerOrientation = (new Vector3(1 * MathF.Cos(th), 0, 1 * MathF.Sin(th)), Vector3.UnitY);
-            Audio.SetPosition(Streaming, new Vector3(0, 0, 100));
+            //Audio.SetPosition(Streaming, new Vector3(0, 0, 100));
 
-            if (Input.IsKeyPressed(Key.Q))
-                if (Audio.IsPlaying(Streaming))
-                    Audio.Pause(Streaming);
-                else
-                    Audio.Play(Streaming);
+            //if (Input.IsKeyPressed(Key.Q))
+            //    if (Audio.IsPlaying(Streaming))
+            //        Audio.Pause(Streaming);
+            //    else
+            //        Audio.Play(Streaming);
 
             Draw.Reset();
             Draw.ScreenSpace = true;
@@ -70,12 +69,12 @@ public struct AudioTestScene : ISceneCreator
                     HorizontalTextAlign.Left, VerticalTextAlign.Top);
             }
 
-            var p = Audio.GetTime(Streaming) / (float)Streaming.Data.Duration.TotalSeconds;
+            //var p = Audio.GetTime(Streaming) / (float)Streaming.Data.Duration.TotalSeconds;
 
-            Draw.Colour = Colors.Gray.Brightness(0.5f);
-            Draw.Quad(new Rect(30, 100, 30 + 500, 120));
-            Draw.Colour = Colors.Cyan;
-            Draw.Quad(new Rect(30, 100, 30 + 500 * p, 120).Expand(-2));
+            //Draw.Colour = Colors.Gray.Brightness(0.5f);
+            //Draw.Quad(new Rect(30, 100, 30 + 500, 120));
+            //Draw.Colour = Colors.Cyan;
+            //Draw.Quad(new Rect(30, 100, 30 + 500 * p, 120).Expand(-2));
         }
     }
 }

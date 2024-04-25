@@ -28,6 +28,8 @@ public class SourceCache : Cache<Sound, SourceHandle>
 
     internal static SourceHandle CreateSourceFor(Sound sound)
     {
+        ALUtils.CheckError();
+
         switch (sound.Data)
         {
             case FixedAudioData fixedData:

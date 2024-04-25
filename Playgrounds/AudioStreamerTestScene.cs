@@ -31,18 +31,23 @@ public struct AudioStreamerTestScene : ISceneCreator
             public int SampleRate = 44100;
             public long Position { get; set; }
 
+            private double acc = 0;
+
             public int ReadSamples(Span<float> buffer)
             {
+
                 // Position = 0;
                 for (int i = 0; i < buffer.Length; i++)
                 {
-                    double time = Position / (double)SampleRate;
-                    var v = double.Sin(time * 250.0 * double.Tau);
-                  
+                    var f = Utilities.MapRange(0, Walgelijk.Game.Main.Window.Height, 50.0, 450.0, Walgelijk.Game.Main.State.Input.WindowMousePosition.Y);
+                    var v = double.Sin(acc * double.Tau);
+
                     buffer[i] = (float)v;
-                    
+
                     Position++;
                     TimePosition += TimeSpan.FromSeconds(1.0 / SampleRate);
+
+                    acc += 1 / (double)SampleRate * f;
                 }
 
                 return buffer.Length;

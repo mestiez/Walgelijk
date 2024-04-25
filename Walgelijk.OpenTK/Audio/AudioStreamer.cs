@@ -116,7 +116,14 @@ public class AudioStreamer : IDisposable
         {
             Thread.Sleep(8);
 
+            if (!AL.IsSource(Source))
+            {
+                this.Dispose();
+                break;
+            }
+
             var state = Source.GetALState();
+            AlCheck();
             var processed = AL.GetSource(Source, ALGetSourcei.BuffersProcessed);
             AlCheck();
 

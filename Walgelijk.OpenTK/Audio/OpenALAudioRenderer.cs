@@ -253,6 +253,7 @@ public class OpenALAudioRenderer : AudioRenderer
         AudioTrack? track = null)
     {
         worldPosition *= SpatialMultiplier;
+
         var source = SourceCache.CreateSourceFor(sound);
 
         AL.Source(source, ALSourceb.Looping, false);
@@ -282,7 +283,15 @@ public class OpenALAudioRenderer : AudioRenderer
         if (!canPlayAudio || sound.Data == null || (track?.Muted ?? false))
             return;
         UpdateIfRequired(sound, out _);
-        CreateTempSource(sound, volume, default, pitch, track ?? sound.Track);
+
+        try
+        {
+            CreateTempSource(sound, volume, default, pitch, track ?? sound.Track);
+        }
+        catch (Exception e)
+        {
+            Logger.Warn(e);
+        }
     }
 
     public override void PlayOnce(Sound sound, Vector3 worldPosition, float volume = 1, float pitch = 1,
@@ -299,7 +308,15 @@ public class OpenALAudioRenderer : AudioRenderer
         UpdateIfRequired(sound, out _);
         if (!sound.SpatialParams.HasValue)
             Logger.Warn("Attempt to play a non-spatial sound in space!");
-        CreateTempSource(sound, volume, worldPosition, pitch, track ?? sound.Track);
+
+        try
+        {
+            CreateTempSource(sound, volume, worldPosition, pitch, track ?? sound.Track);
+        }
+        catch (Exception e)
+        {
+            Logger.Warn(e);
+        }
     }
 
     public override void Stop(Sound sound)
@@ -629,25 +646,25 @@ public class OpenALAudioRenderer : AudioRenderer
         switch (sound.Data)
         {
             case StreamAudioData:
-            {
-                var streamer = AudioObjects.AudioStreamers.Load(new AudioStreamerHandle(source, sound));
-                int i = 0;
-                foreach (var item in streamer.TakeLastPlayed(arr.Length))
-                    arr[i++] = item;
-                return i;
-            }
+                {
+                    var streamer = AudioObjects.AudioStreamers.Load(new AudioStreamerHandle(source, sound));
+                    int i = 0;
+                    foreach (var item in streamer.TakeLastPlayed(arr.Length))
+                        arr[i++] = item;
+                    return i;
+                }
             case FixedAudioData fixedData:
-            {
-                const int amount = 1024;
-                float progress = GetTime(sound) / (float)sound.Data.Duration.TotalSeconds;
-                int total = fixedData.Data.Length - amount;
-                int cursor = Utilities.Clamp((int)(total * progress), 0, fixedData.Data.Length);
-                int maxReturnSize = fixedData.Data.Length - cursor;
-                var section = fixedData.Data.AsSpan(cursor, Math.Min(arr.Length, Math.Min(maxReturnSize, amount)));
-                for (int i = 0; i < section.Length; i++)
-                    arr[i] = Utilities.MapRange(0, byte.MaxValue, -1, 1, arr[i]);
-                return section.Length;
-            }
+                {
+                    const int amount = 1024;
+                    float progress = GetTime(sound) / (float)sound.Data.Duration.TotalSeconds;
+                    int total = fixedData.Data.Length - amount;
+                    int cursor = Utilities.Clamp((int)(total * progress), 0, fixedData.Data.Length);
+                    int maxReturnSize = fixedData.Data.Length - cursor;
+                    var section = fixedData.Data.AsSpan(cursor, Math.Min(arr.Length, Math.Min(maxReturnSize, amount)));
+                    for (int i = 0; i < section.Length; i++)
+                        arr[i] = Utilities.MapRange(0, byte.MaxValue, -1, 1, arr[i]);
+                    return section.Length;
+                }
             default:
                 return 0;
         }
