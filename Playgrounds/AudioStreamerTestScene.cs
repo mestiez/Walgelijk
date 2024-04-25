@@ -1,18 +1,9 @@
-﻿using NVorbis;
-using System.Numerics;
-using Walgelijk;
-using Walgelijk.AssetManager;
-using Walgelijk.AssetManager.Deserialisers;
-using Walgelijk.CommonAssetDeserialisers;
-using Walgelijk.CommonAssetDeserialisers.Audio;
-using Walgelijk.CommonAssetDeserialisers.Audio.Qoa;
+﻿using Walgelijk;
 using Walgelijk.Onion;
-using Walgelijk.OpenTK;
-using Walgelijk.SimpleDrawing;
 
 namespace Playgrounds;
 
-public struct AssetManagerTestScene : ISceneCreator
+public struct AudioStreamerTestScene : ISceneCreator
 {
     public Scene Load(Game game)
     {
@@ -24,17 +15,45 @@ public struct AssetManagerTestScene : ISceneCreator
         game.FixedUpdateRate = 50;
 
         return scene;
-    } 
+    }
 
-    public class TestSystem : Walgelijk.System 
+    public class TestSystem : Walgelijk.System
     {
         public Sound[] Streams =
         [
-            new Sound(Assets.Load<StreamAudioData>("assets:danse_macabre.ogg").Value, loops: true),
-            new Sound(Assets.Load<StreamAudioData>("assets:valve_machiavellian_bach.ogg").Value, loops: true),
-            new Sound(Assets.Load<FixedAudioData>("assets:sting_xp_level_up_orch_01.qoa").Value),
-            new Sound(Assets.Load<FixedAudioData>("assets:sample.wav").Value),
+            new Sound(Resources.Load<StreamAudioData>("perfect-loop.ogg"), loops: true),
+            new Sound(Resources.Load<StreamAudioData>("mc4.ogg"), loops: false),
+            new Sound(new StreamAudioData(() => new SineWaveStream(), 44100, 1, 441000), loops: false),
         ];
+
+        private class SineWaveStream : IAudioStream
+        {
+            public int SampleRate = 44100;
+            public long Position { get; set; }
+
+            public int ReadSamples(Span<float> buffer)
+            {
+                // Position = 0;
+                for (int i = 0; i < buffer.Length; i++)
+                {
+                    double time = Position / (double)SampleRate;
+                    var v = double.Sin(time * 250.0 * double.Tau);
+                  
+                    buffer[i] = (float)v;
+                    
+                    Position++;
+                    TimePosition += TimeSpan.FromSeconds(1.0 / SampleRate);
+                }
+
+                return buffer.Length;
+            }
+
+            public TimeSpan TimePosition { get; set; }
+
+            public void Dispose()
+            {
+            }
+        }
 
         public override void Update()
         {

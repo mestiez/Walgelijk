@@ -1,6 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Numerics;
 using Walgelijk;
+using Walgelijk.AssetManager.Deserialisers;
+using Walgelijk.AssetManager;
+using Walgelijk.CommonAssetDeserialisers.Audio.Qoa;
+using Walgelijk.CommonAssetDeserialisers.Audio;
 using Walgelijk.Onion.Controls;
 using Walgelijk.OpenTK;
 
@@ -40,7 +44,13 @@ public class Program
         Resources.SetBasePathForType<Texture>("textures");
         Resources.SetBasePathForType<Font>("fonts");
 
-        game.Scene = new AssetManagerTestScene().Load(game);
+        AssetDeserialisers.Register(new QoaFixedAudioDeserialiser());
+        AssetDeserialisers.Register(new OggFixedAudioDeserialiser());
+        AssetDeserialisers.Register(new OggStreamAudioDeserialiser());
+        AssetDeserialisers.Register(new WaveFixedAudioDeserialiser());
+        Assets.RegisterPackage("assets.waa");
+
+        game.Scene = new AudioTestScene().Load(game);
 
 #if DEBUG
         game.DevelopmentMode = true;

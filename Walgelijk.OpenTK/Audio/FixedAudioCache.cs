@@ -8,6 +8,8 @@ internal class FixedAudioCache : Cache<FixedAudioData, BufferHandle>
     {
         var buffer = AL.GenBuffer();
 
+        ALUtils.CheckError("Generate new fixed buffer");
+
         // channel count can only be 1 or 2, as guaranteed by the file reader
         // bits per sample can only be 16 s guaranteed by the same lad
         ALFormat format = raw.ChannelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16;
@@ -18,6 +20,7 @@ internal class FixedAudioCache : Cache<FixedAudioData, BufferHandle>
             using var coll = data.Pin();
             AL.BufferData(buffer, format, coll.Pointer, data.Length, raw.SampleRate);
             coll.Dispose();
+            ALUtils.CheckError("Upload fixed buffer data");
         }
 
         if (raw.DisposeLocalCopyAfterUpload)
@@ -36,6 +39,7 @@ internal class FixedAudioCache : Cache<FixedAudioData, BufferHandle>
                 AL.SourceStop(s);
                 AL.Source(s, ALSourcei.Buffer, 0);
             }
+
         if (!AudioObjects.SourceByBuffer.TryRemove(loaded, out sources))
         {
             Logger.Error("Failed to clear SourceByBuffer dictionary");

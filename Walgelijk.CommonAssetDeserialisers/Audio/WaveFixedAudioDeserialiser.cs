@@ -69,7 +69,7 @@ public class WaveFixedAudioDeserialiser : IAssetDeserialiser<FixedAudioData>
             throw new Exception("Input file is not a valid WAVE file: the sample rate could not be read");
         var sampleRate = BitConverter.ToInt32(buffer, 0);
         if (sampleRate <= 0 || sampleRate > 96000)
-            throw new Exception("Input WAVE file has an invalid sample rate. The sample rate must be greater than 0 and less than or equal to 96000");
+            throw new Exception($"Input WAVE file has an invalid sample rate of ({sampleRate}). The sample rate must be greater than 0 and less than or equal to 96000");
 
         if (input.Read(buffer, 0, 4) != 4)
             throw new Exception("Input file is not a valid WAVE file: byte rate could not be read");

@@ -9,7 +9,7 @@ namespace Walgelijk.OpenTK;
 
 public class OpenALAudioRenderer : AudioRenderer
 {
-    public readonly int MaxTempSourceCount = 256;
+    public readonly int MaxTempSourceCount = 128;
 
     private ALDevice device;
     private ALContext context;
@@ -79,7 +79,7 @@ public class OpenALAudioRenderer : AudioRenderer
         }
     }
 
-    public OpenALAudioRenderer(int maxTempSourceCount = 256)
+    public OpenALAudioRenderer(int maxTempSourceCount = 128)
     {
         MaxTempSourceCount = maxTempSourceCount;
         temporarySources = new(MaxTempSourceCount);
@@ -413,6 +413,8 @@ public class OpenALAudioRenderer : AudioRenderer
                 AL.SourceStop(src);
                 AL.Source(src, ALSourcei.Buffer, 0);
                 AL.DeleteSource(src);
+                if (AL.IsSource(src))
+                    throw new Exception("wtf");
                 temporarySources.ReturnToPool(v);
             }
             else
