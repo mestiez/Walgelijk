@@ -1,4 +1,5 @@
-﻿using Walgelijk.SimpleDrawing;
+﻿using System.Threading.Channels;
+using Walgelijk.SimpleDrawing;
 
 namespace Walgelijk.Onion;
 
@@ -42,10 +43,7 @@ public class ThemeStack
     public void Pop()
     {
         Next = null;
-        if (stack.TryPop(out var l))
-        {
-            //Next = l;
-        }
+        stack.TryPop(out _);
     }
 
     /// <summary>
@@ -72,51 +70,64 @@ public class ThemeStack
     /// </summary>
     public void Once() => onlyApplyToNextControl = true;
 
-    public void Push(ThemePush f)
+    /// <summary>
+    /// Invokes the provided delegate, given the current changes, and applies the returned changes
+    /// </summary>
+    public void SetAll(ThemePush f)
     {
         Next = f(GetChanges());
+    }
+
+    /// <summary>
+    /// When a control is processed, the changes are automatically pushed. However, sometimes you might want to push changes
+    /// manually.
+    /// </summary>
+    public void Push()
+    {
+        if (Next.HasValue && !onlyApplyToNextControl)
+            stack.Push(GetChanges());
+
+        Next = null;
     }
 
     public delegate Theme ThemePush(Theme theme);
 
     internal void ApplyTo(ControlInstance inst)
     {
-        if (Next.HasValue)
-        {
-            stack.Push(Next.Value);
-            Next = null;
-        }
+        var changes = GetChanges();
 
-        inst.Theme = GetChanges();
+        if (Next.HasValue && !onlyApplyToNextControl)
+            stack.Push(changes);
+
+        Next = null;
+
+        inst.Theme = changes;
         inst.Theme.ApplyScaling(Onion.GlobalScale);
-
-        if (onlyApplyToNextControl)
-            Pop();
 
         onlyApplyToNextControl = false;
     }
 
     public ThemeStack BackgroundColor(StateDependent<Color> color)
     {
-        Next = (Next ?? Peek() ?? Base).WithBackgroundColor(color);
+        Next = GetChanges().WithBackgroundColor(color);
         return this;
     }
 
     public ThemeStack ForegroundColor(StateDependent<Color> color)
     {
-        Next = (Next ?? Peek() ?? Base).WithForegroundColor(color);
+        Next = GetChanges().WithForegroundColor(color);
         return this;
     }
 
     public ThemeStack BackgroundTexture(IReadableTexture tex, ImageMode mode = default)
     {
-        Next = (Next ?? Peek() ?? Base).WithBackgroundTexture(tex, mode);
+        Next = GetChanges().WithBackgroundTexture(tex, mode);
         return this;
     }
 
     public ThemeStack ForegroundTexture(IReadableTexture tex, ImageMode mode = default)
     {
-        Next = (Next ?? Peek() ?? Base).WithForegroundTexture(tex, mode);
+        Next = GetChanges().WithForegroundTexture(tex, mode);
         return this;
     }
 }

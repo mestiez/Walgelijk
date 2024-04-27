@@ -2118,24 +2118,11 @@
         <member name="T:Walgelijk.QOIDecoder">
             <summary>Decoder of the "Quite OK Image" (QOI) format.</summary>
         </member>
-        <member name="M:Walgelijk.QOIDecoder.Decode(System.ReadOnlySpan{System.Byte}@,System.Int32)">
+        <member name="M:Walgelijk.QOIDecoder.Decode(System.ReadOnlySpan{System.Byte}@,System.Int32,System.Boolean@,System.Int32@,System.Int32@,System.Int32[]@)">
             <summary>Decodes the given QOI file contents.</summary>
             <remarks>Returns <see langword="true" /> if decoded successfully.</remarks>
             <param name="encoded">QOI file contents. Only the first <c>encodedSize</c> bytes are accessed.</param>
             <param name="encodedSize">QOI file length.</param>
-        </member>
-        <member name="P:Walgelijk.QOIDecoder.Width">
-            <summary>Returns the width of the decoded image in pixels.</summary>
-        </member>
-        <member name="P:Walgelijk.QOIDecoder.Height">
-            <summary>Returns the height of the decoded image in pixels.</summary>
-        </member>
-        <member name="P:Walgelijk.QOIDecoder.HasAlpha">
-            <summary>Returns the information about the alpha channel from the file header.</summary>
-        </member>
-        <member name="P:Walgelijk.QOIDecoder.IsLinearColorspace">
-            <summary>Returns the color space information from the file header.</summary>
-            <remarks><see langword="false" /> = sRGB with linear alpha channel.<br></br><see langword="true" /> = all channels linear.</remarks>
         </member>
         <member name="T:Walgelijk.TextureLoader">
             <summary>
@@ -3884,6 +3871,34 @@
             Returns every unloaded item ever loaded
             </summary>
         </member>
+        <member name="T:Walgelijk.CircularBuffer`1">
+            <summary>
+            Basic circular buffer implementation
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:Walgelijk.CircularBuffer`1.Capacity">
+            <summary>
+            Total capacity
+            </summary>
+        </member>
+        <member name="P:Walgelijk.CircularBuffer`1.Position">
+            <summary>
+            Current position in the buffer
+            </summary>
+        </member>
+        <member name="M:Walgelijk.CircularBuffer`1.Write(`0)">
+            <summary>
+            Add <paramref name="value"/> to the buffer at <see cref="P:Walgelijk.CircularBuffer`1.Position"/>
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:Walgelijk.CircularBuffer`1.Read">
+            <summary>
+            Take value from the buffer at <see cref="P:Walgelijk.CircularBuffer`1.Position"/>
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:Walgelijk.ClampedArray`1">
             <summary>
             An array with a fixed capacity that keeps track of how many objects were entered;
@@ -4816,7 +4831,7 @@
         </member>
         <member name="M:Walgelijk.Utilities.Mod(System.Single,System.Single)">
             <summary>
-            Modulus
+            Modulus that supports negatives
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.DeltaAngle(System.Single,System.Single)">

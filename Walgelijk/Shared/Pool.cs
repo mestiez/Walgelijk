@@ -2,6 +2,7 @@
 
 namespace Walgelijk;
 
+
 /// <summary>
 /// Abstract class for object pooling
 /// </summary>

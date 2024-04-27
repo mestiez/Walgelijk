@@ -367,6 +367,9 @@ public class TextMeshGenerator
 
         void executeTag(ReadOnlySpan<char> tagContents)
         {
+            if (tagContents.IsEmpty)
+                return;
+
             bool isClosingTag = tagContents[0] == '/';
             if (isClosingTag)
                 tagContents = tagContents[1..];

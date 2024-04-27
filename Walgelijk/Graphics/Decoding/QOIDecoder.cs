@@ -6,33 +6,37 @@ namespace Walgelijk;
 /// <summary>Decoder of the "Quite OK Image" (QOI) format.</summary>
 public class QOIDecoder : IImageDecoder
 {
-    private int width;
-    private int height;
-    private bool alpha;
-    private bool linearColorspace;
-    private int[]? pixels = null;
-    private static readonly int[] index = new int[64];
     private static readonly byte[] magic = "qoif".ToByteArray();
 
     /// <summary>Decodes the given QOI file contents.</summary>
     /// <remarks>Returns <see langword="true" /> if decoded successfully.</remarks>
     /// <param name="encoded">QOI file contents. Only the first <c>encodedSize</c> bytes are accessed.</param>
     /// <param name="encodedSize">QOI file length.</param>
-    private bool Decode(in ReadOnlySpan<byte> encoded, int encodedSize)
+    private bool Decode(in ReadOnlySpan<byte> encoded, int encodedSize, out bool alpha, out int width, out int height, out int[]? pixels)
     {
+        width = 0;
+        height = 0;
+        alpha = false;
+        pixels = [];
+
         if (encoded == null || encodedSize < 23 || encoded[0] != 113 || encoded[1] != 111 || encoded[2] != 105 || encoded[3] != 102)
             return false;
-        int width = encoded[4] << 24 | encoded[5] << 16 | encoded[6] << 8 | encoded[7];
-        int height = encoded[8] << 24 | encoded[9] << 16 | encoded[10] << 8 | encoded[11];
+
+        bool linearColorspace;
+        pixels = null;
+        int[] index = new int[64];
+
+        width = encoded[4] << 24 | encoded[5] << 16 | encoded[6] << 8 | encoded[7];
+        height = encoded[8] << 24 | encoded[9] << 16 | encoded[10] << 8 | encoded[11];
         if (width <= 0 || height <= 0 || height > 2147483647 / width)
             return false;
         switch (encoded[12])
         {
             case 3:
-                this.alpha = false;
+                alpha = false;
                 break;
             case 4:
-                this.alpha = true;
+                alpha = true;
                 break;
             default:
                 return false;
@@ -40,10 +44,10 @@ public class QOIDecoder : IImageDecoder
         switch (encoded[13])
         {
             case 0:
-                this.linearColorspace = false;
+                linearColorspace = false;
                 break;
             case 1:
-                this.linearColorspace = true;
+                linearColorspace = true;
                 break;
             default:
                 return false;
@@ -99,41 +103,27 @@ public class QOIDecoder : IImageDecoder
         }
         if (encodedOffset != encodedSize)
             return false;
-        this.width = width;
-        this.height = height;
         return true;
     }
 
     public DecodedImage Decode(in ReadOnlySpan<byte> bytes, bool flipY)
     {
-        try
+        if (Decode(bytes, bytes.Length, out var alpha, out var width, out var height, out var pixels) && pixels != null)
         {
-            if (Decode(bytes, bytes.Length) && pixels != null)
-            {
-                var colors = new Color[width * height];
+            var colors = new Color[width * height];
 
-                for (int i = 0; i < width * height; i++)
-                {
-                    var v = flipY ? pixels[(i % width) + (height - 1 - i / width) * width] : pixels[i];
-                    colors[i] =
-                        new((byte)((v & 0xFF_00_00) >> 48),
-                            (byte)((v & 0xFF_00) >> 40),
-                            (byte)(v & 0xFF),
-                            (byte)(((uint)v & 0xFF_00_00_00) >> 56));
-                }
-                return new DecodedImage(width, height, colors);
+            for (int i = 0; i < width * height; i++)
+            {
+                var v = flipY ? pixels[(i % width) + (height - 1 - i / width) * width] : pixels[i];
+                colors[i] =
+                    new((byte)((v & 0xFF_00_00) >> 48),
+                        (byte)((v & 0xFF_00) >> 40),
+                        (byte)(v & 0xFF),
+                        (byte)(((uint)v & 0xFF_00_00_00) >> 56));
             }
-            throw new Exception("Image could not be decoded because it isn't valid");
+            return new DecodedImage(width, height, colors);
         }
-        catch (Exception)
-        {
-            throw;
-        }
-        finally
-        {
-            if (pixels != null)
-                ArrayPool<int>.Shared.Return(pixels);
-        }
+        throw new Exception("Image could not be decoded because it isn't valid");
     }
 
     public DecodedImage Decode(in byte[] bytes, int count, bool flipY) => Decode(bytes.AsSpan(0, count), flipY);
@@ -141,17 +131,4 @@ public class QOIDecoder : IImageDecoder
     public bool CanDecode(in string filename) => filename.EndsWith(".qoi", StringComparison.InvariantCultureIgnoreCase);
 
     public bool CanDecode(ReadOnlySpan<byte> raw) => raw.StartsWith(magic);
-
-    /// <summary>Returns the width of the decoded image in pixels.</summary>
-    public int Width => this.width;
-
-    /// <summary>Returns the height of the decoded image in pixels.</summary>
-    public int Height => this.height;
-
-    /// <summary>Returns the information about the alpha channel from the file header.</summary>
-    public bool HasAlpha => this.alpha;
-
-    /// <summary>Returns the color space information from the file header.</summary>
-    /// <remarks><see langword="false" /> = sRGB with linear alpha channel.<br></br><see langword="true" /> = all channels linear.</remarks>
-    public bool IsLinearColorspace => this.linearColorspace;
 }

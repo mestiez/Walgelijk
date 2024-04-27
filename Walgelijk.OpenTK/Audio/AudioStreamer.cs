@@ -39,8 +39,8 @@ public class AudioStreamer : IDisposable
     private readonly short[] shortDataBuffer = new short[BufferSize];
     private readonly float[] rawBuffer = new float[BufferSize];
     private readonly int[] bufferHandles = new int[MaxBufferCount];
-    private readonly ConcurrentQueue<float> playedSamplesBacklog = [];
     private readonly Thread thread;
+    private readonly CircularBuffer<float> recentlyPlayed = new(1024);
 
     private int processedSamples = 0;
 
@@ -93,10 +93,11 @@ public class AudioStreamer : IDisposable
             AL.SourceQueueBuffer(Source, buffer.Handle);
             AlCheck();
 
-            while (playedSamplesBacklog.Count > BufferSize)
-                playedSamplesBacklog.TryDequeue(out _);
-            for (int i = 0; i < readAmount; i++)
-                playedSamplesBacklog.Enqueue(rawBuffer[i]);
+            lock (recentlyPlayed)
+            {
+                for (int i = 0; i < readAmount; i++)
+                    recentlyPlayed.Write(rawBuffer[i]);
+            }
 
             return true;
         }
@@ -238,11 +239,11 @@ public class AudioStreamer : IDisposable
 
     public IEnumerable<float> TakeLastPlayed(int count = 1024)
     {
-        for (int i = 0; i < count; i++)
-            if (playedSamplesBacklog.TryDequeue(out var f))
-                yield return f;
-            else
-                yield break;
+        lock (recentlyPlayed)
+        {
+            for (int i = 0; i < count; i++)
+                yield return recentlyPlayed.Read();
+        }
     }
 
     public class BufferEntry(BufferHandle bufferHandle)

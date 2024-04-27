@@ -20,15 +20,16 @@ public class AssetPackage : IDisposable
     private readonly ConcurrentDictionary<AssetId, object> cache = [];
     private readonly ConcurrentDictionary<string, AssetId[]> taggedCache = [];
     private readonly ConcurrentDictionary<AssetId, AssetMetadata> metadataCache = [];
+    private readonly ConcurrentDictionary<AssetId, SemaphoreSlim> assetReadLocks = [];
 
-    private readonly ReaderWriterLockSlim assetReadingLock = new(LockRecursionPolicy.SupportsRecursion);
+    private readonly ReaderWriterLockSlim packageLock = new(LockRecursionPolicy.SupportsRecursion);
 
     private bool disposed;
-    private bool isDeserialising;
+    private ushort deserialisingCount;
 
     public AssetPackage(string file)
     {
-        assetReadingLock.EnterWriteLock();
+        packageLock.EnterWriteLock();
 
         var guidTable = new Dictionary<int, string>();
         var archive = new WaaReadArchive(file);
@@ -120,7 +121,7 @@ public class AssetPackage : IDisposable
             }
         }
 
-        assetReadingLock.ExitWriteLock();
+        packageLock.ExitWriteLock();
     }
 
     private static IEnumerable<AssetId> EnumerateFolder(AssetFolder folder, SearchOption searchOption = SearchOption.TopDirectoryOnly)
@@ -183,12 +184,22 @@ public class AssetPackage : IDisposable
         if (id.Internal == 0)
             throw new Exception("Id is None");
 
-        assetReadingLock.EnterUpgradeableReadLock();
+        packageLock.EnterReadLock();
 
-        var metadata = GetAssetMetadata(id);
+        SemaphoreSlim? assetSpecificLock = null;
+        lock (assetReadLocks)
+        {
+            if (!assetReadLocks.TryGetValue(id, out assetSpecificLock))
+            {
+                assetSpecificLock = new SemaphoreSlim(1);
+                assetReadLocks.AddOrSet(id, assetSpecificLock);
+            }
+        }
+        assetSpecificLock.Wait();
 
         try
         {
+            var metadata = GetAssetMetadata(id);
             if (cache.TryGetValue(id, out var obj))
             {
                 if (obj is T t)
@@ -196,26 +207,27 @@ public class AssetPackage : IDisposable
                 else
                     throw new Exception($"Asset {id.Internal} was previously loaded as type {obj.GetType()}, this does not match the requested type {typeof(T)}");
             }
-            if (isDeserialising)
-                throw new Exception("Loading unloaded assets during deserialisation is not allowed");
-            assetReadingLock.EnterWriteLock();
-            isDeserialising = true;
+
+            // if (isDeserialising != 0)
+            //     throw new Exception("Loading unloaded assets during deserialisation is not allowed");
+
+            deserialisingCount++;
             try
             {
                 var a = AssetDeserialisers.Load<T>(GetAsset(id)) ?? throw new NullReferenceException($"Deserialising asset {id.Internal} returns null");
                 if (!cache.TryAdd(id, a))
-                    throw new Exception("");
+                    throw new Exception("Recently loaded asset already exists in cache... ");
                 return a;
             }
             finally
             {
-                isDeserialising = false;
-                assetReadingLock.ExitWriteLock();
+                deserialisingCount--;
             }
         }
         finally
         {
-            assetReadingLock.ExitUpgradeableReadLock();
+            packageLock.ExitReadLock();
+            assetSpecificLock.Release();
         }
     }
 
@@ -224,7 +236,7 @@ public class AssetPackage : IDisposable
         if (id.Internal == 0)
             throw new Exception("Id is None");
 
-        assetReadingLock.EnterWriteLock();
+        packageLock.EnterReadLock();
 
         try
         {
@@ -234,13 +246,13 @@ public class AssetPackage : IDisposable
         }
         finally
         {
-            assetReadingLock.ExitWriteLock();
+            packageLock.ExitReadLock();
         }
     }
 
     public void DisposeOf(in AssetId id)
     {
-        assetReadingLock.EnterWriteLock();
+        packageLock.EnterWriteLock();
 
         try
         {
@@ -250,7 +262,7 @@ public class AssetPackage : IDisposable
         }
         finally
         {
-            assetReadingLock.ExitWriteLock();
+            packageLock.ExitWriteLock();
         }
     }
 
@@ -263,6 +275,9 @@ public class AssetPackage : IDisposable
         if (disposed)
             return;
 
+        foreach (var item in assetReadLocks)
+            item.Value.Dispose();
+
         foreach (var v in cache.Values)
         {
             if (v is IDisposable a)
@@ -271,9 +286,10 @@ public class AssetPackage : IDisposable
                 Task.Run(b.DisposeAsync).RunSynchronously();
         }
 
+        assetReadLocks.Clear();
         cache.Clear();
         Archive.Dispose();
-        assetReadingLock.Dispose();
+        packageLock.Dispose();
         disposed = true;
     }
 
@@ -281,25 +297,38 @@ public class AssetPackage : IDisposable
 
     public AssetMetadata GetAssetMetadata(in AssetId id)
     {
-        if (metadataCache.TryGetValue(id, out var value))
+        lock (metadataCache)
+        {
+            if (metadataCache.TryGetValue(id, out var value))
+                return value;
+
+            var path = GetAssetPath(id);
+            var p = "metadata/" + path + ".json";// TODO cache string concat
+            if (!Archive.HasEntry(p))
+                throw new Exception($"Asset metadata {id.Internal} at path \"{path}\" not found. This indicates the archive is malformed.");
+            // it is malformed because the guid table is pointing to entries that don't exist
+
+            using var reader = new StreamReader(Archive.GetEntry(p)!, encoding: Encoding.UTF8, leaveOpen: false);
+            var json = reader.ReadToEnd();
+            value = JsonConvert.DeserializeObject<AssetMetadata>(json);
+            metadataCache.AddOrSet(id, value);
             return value;
+        }
+    }
 
-        var path = GetAssetPath(id);
-        var p = "metadata/" + path + ".json";// TODO cache string concat
-        if (!Archive.HasEntry(p))
-            throw new Exception($"Asset metadata {id.Internal} at path \"{path}\" not found. This indicates the archive is malformed.");
-        // it is malformed because the guid table is pointing to entries that don't exist
-
-        using var reader = new StreamReader(Archive.GetEntry(p)!, encoding: Encoding.UTF8, leaveOpen: false);
-        var json = reader.ReadToEnd();
-        value = JsonConvert.DeserializeObject<AssetMetadata>(json);
-        metadataCache.AddOrSet(id, value);
-        return value;
+    public IEnumerable<string> GetFoldersIn(ReadOnlySpan<char> path)
+    {
+        if (TryGetAssetFolder(path, out var folder))
+            if (folder.Folders != null)
+                return folder.Folders.Select(static s => s.Name);
+        return [];
     }
 
     private bool TryGetAssetFolder(ReadOnlySpan<char> path, [NotNullWhen(true)] out AssetFolder? folder)
     {
-        if (path.IsEmpty || path == "/")
+        path = path.Trim('/');
+
+        if (path.IsEmpty)
         {
             folder = hierarchyRoot;
             return true;
@@ -348,7 +377,7 @@ public class AssetPackage : IDisposable
 
         var l = path.LastIndexOf('/');
 
-        AssetFolder? parent = null;
+        AssetFolder? parent;
 
         if (l == -1)
             parent = hierarchyRoot;

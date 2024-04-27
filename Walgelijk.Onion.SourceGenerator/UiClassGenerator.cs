@@ -100,7 +100,7 @@ namespace Walgelijk.Onion.SourceGenerator
 
                     sourceBuilder.AppendLine($"\tpublic static ThemeStack {member.Name}(this ThemeStack q, {member.Type} {argumentName})");
                     sourceBuilder.AppendLine($"\t{{");
-                    sourceBuilder.AppendLine($"\t\tq.Next = (q.Next ?? q.Peek() ?? q.Base).With{member.Name}({argumentName});");
+                    sourceBuilder.AppendLine($"\t\tq.Next = q.GetChanges().With{member.Name}({argumentName});");
                     sourceBuilder.AppendLine($"\t\treturn q;");
                     sourceBuilder.AppendLine($"\t}}");
                     sourceBuilder.AppendLine();

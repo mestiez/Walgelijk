@@ -190,7 +190,7 @@ public struct Utilities
     }
 
     /// <summary>
-    /// Modulus
+    /// Modulus that supports negatives
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Mod(float a, float b)

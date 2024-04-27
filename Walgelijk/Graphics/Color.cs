@@ -259,7 +259,7 @@ public struct Color : IEquatable<Color>
     public readonly Color Saturation(float multiplier)
     {
         multiplier = MathF.Max(0, multiplier);
-        return new Vector4(Vector3.Lerp(RGB, new((R + G + B) / 3f), multiplier), A);
+        return new Vector4(Vector3.Lerp(new((R + G + B) / 3f), RGB, multiplier), A);
     }
 
     public static bool operator ==(Color left, Color right)

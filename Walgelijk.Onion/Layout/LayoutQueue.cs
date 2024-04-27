@@ -121,12 +121,29 @@ public class LayoutQueue
     /// <summary>
     /// Maintain a certain aspect ratio
     /// </summary>
-    public LayoutQueue AspectRatio(float heightOverWidth, Layout.AspectRatio.Behaviour behaviour = Layout.AspectRatio.Behaviour.Grow) => EnqueueConstraint(new AspectRatio(heightOverWidth, behaviour));
+    public LayoutQueue AspectRatio(float heightOverWidth, Layout.AspectRatio.Behaviour behaviour = Layout.AspectRatio.Behaviour.Grow) 
+        => EnqueueConstraint(new AspectRatio(heightOverWidth, behaviour));  
+    
+    /// <summary>
+    /// Maintain a square aspect ratio
+    /// </summary>
+    public LayoutQueue Square(AspectRatio.Behaviour behaviour = Layout.AspectRatio.Behaviour.Grow) 
+        => EnqueueConstraint(new AspectRatio(1, behaviour));
 
     /// <summary>
     /// Offset the size by adding the given values to the width and height respectively
     /// </summary>
     public LayoutQueue Scale(float w, float h) => EnqueueConstraint(new OffsetSize(w, h));
+
+    /// <summary>
+    /// Inflate the control in all directions from the center
+    /// </summary>
+    public LayoutQueue Inflate(float s) => EnqueueConstraint(new Inflate(s, s));  
+    
+    /// <summary>
+    /// Inflate the control in all directions from the center
+    /// </summary>
+    public LayoutQueue Inflate(float w, float h) => EnqueueConstraint(new Inflate(w, h));
 
     /// <summary>
     /// Stick to the left of parent
