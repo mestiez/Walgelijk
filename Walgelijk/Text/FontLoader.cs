@@ -12,19 +12,26 @@ namespace Walgelijk;
 /// </summary>
 public static class FontLoader
 {
-    public static Font Load(string p)
+    public static Font LoadFromFile(string p)
     {
         using var file = File.OpenRead(p);
         var ext = Path.GetExtension(p).ToLowerInvariant();
 
-        switch (ext)
+        return ext switch
         {
-            case ".fnt": return BmFontReader.LoadFromMetadata(p);
-            case ".wf": return LoadWf(file);
-            case ".ttf": throw new Exception("TrueType font files need to be packed into a .wf file by Walgelijk.FontGenerator before being loaded");
-            default:
-                throw new Exception("Could not detect format for given font file: " + p);
-        }
+            ".fnt" => BmFontReader.LoadFromMetadata(file, TextureLoader.FromFile(Path.ChangeExtension(p, ".png"), false), p),
+            ".wf" => LoadWf(file),
+            ".ttf" => throw new Exception("TrueType font files need to be packed into a .wf file by Walgelijk.FontGenerator before being loaded"),
+            _ => throw new Exception("Could not detect format for given font file: " + p),
+        };
+    }
+
+    public static Font LoadBm(Stream input, Texture page)
+    {
+        var name = input?.ToString() ?? "NULL??";
+        if (input is FileStream fs)
+            name = fs.Name;
+        return BmFontReader.LoadFromMetadata(input, page, name);
     }
 
     public static Font LoadWf(Stream input)

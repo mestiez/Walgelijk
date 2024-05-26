@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 
 namespace Walgelijk;
@@ -46,6 +47,7 @@ public class DebugConsoleUi : IDisposable
 
     private readonly Line[] lines = new Line[256];
     private readonly FilterIcon[] filterButtons;
+    private int? resizeDragOffset;
 
     private class Line
     {
@@ -92,13 +94,13 @@ public class DebugConsoleUi : IDisposable
         mat.SetUniform("mainTex", Texture.White);
         mat.SetUniform("bgTex", Texture.White);
 
-        filterButtons = new FilterIcon[]
-        {
+        filterButtons =
+        [
             new FilterIcon(DebugConsoleAssets.InfoIcon, ConsoleMessageType.Info, new Color(240, 240, 240) ),
             new FilterIcon(DebugConsoleAssets.AlertIcon, ConsoleMessageType.Error, new Color(1, 0.25f, 0.1f) ),
             new FilterIcon(DebugConsoleAssets.AlertIcon, ConsoleMessageType.Warning, new Color(1, 0.7f, 0.2f) ),
             new FilterIcon(DebugConsoleAssets.DebugIcon, ConsoleMessageType.Debug, new Color(0.8f, 0.2f, 1) ),
-        };
+        ];
 
         for (int i = 0; i < lines.Length; i++)
             lines[i] = new Line();
@@ -126,7 +128,7 @@ public class DebugConsoleUi : IDisposable
 
         ParseLines();
 
-        flashTime = Utilities.Clamp(flashTime - game.State.Time.DeltaTimeUnscaled);
+        flashTime = Utilities.Clamp(flashTime - game.State.Time.DeltaTimeUnscaled * 1.5f);
 
         animationProgress = Utilities.Clamp(animationProgress + dt);
         dropdownOffset = (int)(animationProgress * EffectiveHeight - EffectiveHeight);
@@ -151,6 +153,43 @@ public class DebugConsoleUi : IDisposable
             if (input.IsButtonPressed(MouseButton.Left) && hover)
                 debugConsole.Filter ^= filterButtons[i].MessageType;
         }
+
+        if (debugConsole.IsActive)
+        {
+            if (float.Abs(input.WindowMousePosition.Y - filterBoxRect.MaxY) < 8)
+            {
+                game.Window.CursorStack.SetCursor(DefaultCursor.VerticalResize);
+
+                if (!resizeDragOffset.HasValue && input.IsButtonPressed(MouseButton.Left))
+                    resizeDragOffset = (Height - (int)input.WindowMousePosition.Y);
+            }
+
+            if (resizeDragOffset.HasValue)
+            {
+                game.Window.CursorStack.SetCursor(DefaultCursor.VerticalResize);
+
+                Height = (int)Utilities.Snap(resizeDragOffset.Value + input.WindowMousePosition.Y, LineHeight);
+                Height = int.Clamp(Height, 60, game.Window.Height);
+
+                if (!input.IsButtonHeld(MouseButton.Left))
+                    resizeDragOffset = null;
+            }
+
+            if (filterBoxRect.ContainsPoint(input.WindowMousePosition) &&
+                filterButtons.Any(r => r.Rect.ContainsPoint(input.WindowMousePosition)))
+                game.Window.CursorStack.SetCursor(DefaultCursor.Pointer);
+
+            if (inputBoxRect.ContainsPoint(input.WindowMousePosition))
+                game.Window.CursorStack.SetCursor(DefaultCursor.Text);
+
+            if (resizeDragOffset.HasValue)
+                game.Window.CursorStack.SetCursor(DefaultCursor.VerticalResize);
+        }
+        else
+            resizeDragOffset = null;
+
+        if (debugConsole.IsActive)
+            game.Window.CursorAppearance = game.Window.CursorStack.ProcessRequests();
     }
 
     public void Render(IGraphics graphics)
@@ -242,6 +281,7 @@ public class DebugConsoleUi : IDisposable
                 {
                     VisibleLineCount++;
                     lineIndex++;
+
                     if (lineIndex >= lines.Length)
                         return;
                 }

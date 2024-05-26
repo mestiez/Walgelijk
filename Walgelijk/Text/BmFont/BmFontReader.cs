@@ -1,71 +1,90 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace Walgelijk.BmFont;
 
 internal static class BmFontReader
 {
-    private static string currentlyLoadingPath = "";
+    private static string currentlyLoadingPath = "???";
+    private static readonly Mutex mutex = new();
 
-    public static Font LoadFromMetadata(string metadataPath)
+    public static Font LoadFromMetadata(Stream input, Texture page, string debugName)
     {
-        Logger.Log("Loading font from " + metadataPath);
-
-        currentlyLoadingPath = metadataPath;
-
-        string[] text = File.ReadAllLines(metadataPath);
-
-        Font font = new Font();
-
-        var info = GetInfo(text);
-
-        AssignInfoToFont(font, info);
-
-        ParsePages(metadataPath, font, info);
-        ParseGlyphs(text, font, info);
-        ParseKernings(text, font, info);
-
-        var xheight = 0f;
-        var capheight = 0f;
-        int c1 = 0,c2 = 0;
-        foreach (var item in font.Glyphs)
+        mutex.WaitOne(); // this thing is not thread safe. honestly this whole BM font thing should be eradicated from the codebase anyway
+        try
         {
-            if (!char.IsLetter(item.Key))
-                continue;
+            currentlyLoadingPath = debugName ?? "???";
 
-            if (char.IsLower(item.Key))
+            using var reader = new StreamReader(input);
+
+            var lines = new List<string>();
+            while (true)
             {
-                xheight += item.Value.GeometryRect.Height;
-                c1++;
+                var line = reader.ReadLine();
+                if (line == null)
+                    break;
+                lines.Add(line);
             }
-            else
+            var text = lines.ToArray();
+
+            Font font = new Font();
+
+            var info = GetInfo(text);
+
+            AssignInfoToFont(font, info);
+
+            ParsePages(font, info, page);
+            ParseGlyphs(text, font, info);
+            ParseKernings(text, font, info);
+
+            var xheight = 0f;
+            var capheight = 0f;
+            int c1 = 0, c2 = 0;
+            foreach (var item in font.Glyphs)
             {
-                capheight += item.Value.GeometryRect.Height;
-                c2++;
+                if (!char.IsLetter(item.Key))
+                    continue;
+
+                if (char.IsLower(item.Key))
+                {
+                    xheight += item.Value.GeometryRect.Height;
+                    c1++;
+                }
+                else
+                {
+                    capheight += item.Value.GeometryRect.Height;
+                    c2++;
+                }
             }
+
+            xheight /= c1;
+            font.XHeight = (int)xheight;
+
+            capheight /= c2;
+            font.CapHeight = (int)capheight;
+
+            foreach (var key in font.Glyphs.Keys)
+            {
+                var x = font.Glyphs[key];
+                font.Glyphs[key] = new Glyph(
+                    key,
+                    x.Advance,
+                    x.GeometryRect.Translate(0, -font.XHeight / 2),
+                    x.TextureRect
+                );
+            }
+
+            font.Material = FontMaterialCreator.CreateFor(font);
+            return font;
         }
-
-        xheight /= c1;
-        font.XHeight = (int)xheight;
-
-        capheight /= c2;
-        font.CapHeight = (int)capheight;
-
-        foreach (var key in font.Glyphs.Keys)
+        finally
         {
-            var x = font.Glyphs[key];
-            font.Glyphs[key] = new Glyph(
-                key,
-                x.Advance,
-                x.GeometryRect.Translate(0, -font.XHeight / 2),
-                x.TextureRect
-            );
+            mutex.ReleaseMutex();
         }
-
-        font.Material = FontMaterialCreator.CreateFor(font);
-        return font;
     }
 
     private static void AssignInfoToFont(Font font, BmFontInfo info)
@@ -78,7 +97,7 @@ internal static class BmFontReader
         font.Rendering = info.Smooth ? FontRendering.SDF : FontRendering.Bitmap;
     }
 
-    private static void ParsePages(string metadataPath, in Font font, BmFontInfo info)
+    private static void ParsePages(in Font font, BmFontInfo info, Texture page)
     {
         var filterMode = info.Smooth ? FilterMode.Linear : FilterMode.Nearest;
 
@@ -86,15 +105,16 @@ internal static class BmFontReader
         if (info.PageCount != 1)
             throw new Exception("Only fonts with 1 page are supported");
 
-        string path = Path.Combine(Path.GetDirectoryName(metadataPath) ?? string.Empty, info.PagePaths[0]);
-        var tex = Texture.Load(path, false);
-        tex.FilterMode = filterMode;
-        font.Page = tex;
+        //string path = Path.Combine(Path.GetDirectoryName(metadataPath) ?? string.Empty, info.PagePaths[0]);
+        //var tex = Texture.Load(path, false);
+        page.FilterMode = filterMode;
+        page.NeedsUpdate = true;
+        font.Page = page;
     }
 
     private static void ParseKernings(string[] text, in Font font, BmFontInfo info)
     {
-        font.Kernings = new Dictionary<KerningPair, Kerning>();
+        font.Kernings = [];
 
         var kerningLines = GetLines("kerning ", text);
         for (int i = 0; i < info.KerningCount; i++)
@@ -113,7 +133,7 @@ internal static class BmFontReader
     private static void ParseGlyphs(string[] text, in Font font, BmFontInfo info)
     {
         var atlasSize = font.Page.Size;
-        font.Glyphs = new Dictionary<char, Glyph>();
+        font.Glyphs = [];
         var charLines = GetLines("char ", text);
         for (int i = 0; i < info.GlyphCount; i++)
         {

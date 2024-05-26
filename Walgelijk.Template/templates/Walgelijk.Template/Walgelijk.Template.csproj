@@ -8,11 +8,11 @@
     <Version>1.0.9</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Walgelijk" Version="0.19.2" />
-    <PackageReference Include="Walgelijk.Onion" Version="0.4.26" />
-    <PackageReference Include="Walgelijk.OpenTK" Version="0.16.1" />
-    <PackageReference Include="Walgelijk.ParticleSystem" Version="0.2.24" />
-    <PackageReference Include="Walgelijk.SimpleDrawing" Version="1.25.1" />
+    <PackageReference Include="Walgelijk" Version="*" />
+    <PackageReference Include="Walgelijk.Onion" Version="*" />
+    <PackageReference Include="Walgelijk.OpenTK" Version="*" />
+    <PackageReference Include="Walgelijk.ParticleSystem" Version="*" />
+    <PackageReference Include="Walgelijk.SimpleDrawing" Version="*" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(ProjectDir)resources\**" CopyToOutputDirectory="Always" />

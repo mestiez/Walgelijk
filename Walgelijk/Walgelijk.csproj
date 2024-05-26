@@ -7,7 +7,7 @@
     <RepositoryUrl>https://github.com/mestiez/Walgelijk</RepositoryUrl>
     <Company>Studio Minus</Company>
     <Authors>mestiez</Authors>
-    <Version>0.23.6</Version>
+    <Version>0.24.0</Version>
     <Description>2D game engine</Description>
     <PackageIcon>icon.png</PackageIcon>
     <Nullable>enable</Nullable>
@@ -33,7 +33,7 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
-    <PackageReference Include="System.Drawing.Common" Version="8.0.4" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.5" />
     <PackageReference Include="TextCopy" Version="6.2.1" />
   </ItemGroup>
   <ItemGroup>
@@ -45,14 +45,6 @@
     <None Include="icon.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="resources\fonts\roboto mono.fnt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="resources\fonts\roboto mono.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>

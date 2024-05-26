@@ -61,7 +61,11 @@ public struct Drawing : IEquatable<Drawing>
     /// <summary>
     /// Roundness, if applicable
     /// </summary>
-    public float Roundness;
+    public float Roundness;    
+    /// <summary>
+    /// The closer to 1, the more the shader assumes a circular mesh
+    /// </summary>
+    public float CircleMorph;
     /// <summary>
     /// Outline width, if applicable
     /// </summary>
@@ -165,6 +169,7 @@ public struct Drawing : IEquatable<Drawing>
         hashCode.Add(Transformation);
         hashCode.Add(BlendMode);
         hashCode.Add(Roundness);
+        hashCode.Add(CircleMorph);
         hashCode.Add(OutlineWidth);
         hashCode.Add(ScreenSpace);
         hashCode.Add(Color);
@@ -200,6 +205,7 @@ public struct Drawing : IEquatable<Drawing>
                Transformation.Equals(other.Transformation) &&
                BlendMode == other.BlendMode &&
                Roundness.Equals(other.Roundness) &&
+               CircleMorph.Equals(other.CircleMorph) &&
                OutlineWidth.Equals(other.OutlineWidth) &&
                ScreenSpace == other.ScreenSpace &&
                Color.Equals(other.Color) &&

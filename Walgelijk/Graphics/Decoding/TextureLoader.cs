@@ -74,6 +74,13 @@ public static class TextureLoader
         //return FromImageSharpImage(image, flipY, generateMipMaps);
     }
 
+    public static Texture FromStream(Stream input, bool flipY = true, bool? generateMipMaps = null)
+    {
+        using var reader = new MemoryStream();
+        input.CopyTo(reader);
+        return FromBytes(reader.ToArray(), flipY, generateMipMaps);
+    }
+
     /// <summary>
     /// Loads texture from file
     /// </summary>

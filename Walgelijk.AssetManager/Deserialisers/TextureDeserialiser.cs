@@ -16,3 +16,11 @@ public class TextureDeserialiser : IAssetDeserialiser<Texture>
         return TextureLoader.Decoders.Any(d => d.CanDecode(p));
     }
 }
+
+///// <summary>
+///// Deserialiser for sound objects, which 
+///// </summary>
+//public class SoundDeserialiser : IAssetDeserialiser<Sound>
+//{
+
+//}

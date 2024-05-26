@@ -8,7 +8,7 @@
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
     <PackAsTool>True</PackAsTool>
     <ToolCommandName>wfont</ToolCommandName>
-    <Version>1.2.11</Version>
+    <Version>1.3.1</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageIcon>icon.png</PackageIcon>
     <Description>Tool to turn font files into archives that can be read by Walgelijk</Description>
@@ -38,14 +38,32 @@
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="brotlicommon.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="brotlidec.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="bz2.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="charset.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="freetype.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="icon.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+    <None Update="libpng16.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="msdf-atlas-gen.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="zlib1.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

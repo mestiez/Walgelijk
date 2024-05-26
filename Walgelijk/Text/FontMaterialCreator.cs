@@ -8,9 +8,9 @@ namespace Walgelijk;
 /// </summary>
 public static class FontMaterialCreator
 {
-    public static readonly Shader BitmapShader = new(ShaderDefaults.WorldSpaceVertex, BitmapFragmentShader);
-    public static readonly Shader SdfShader = new(ShaderDefaults.WorldSpaceVertex, SdfFragmentShader);
-    public static readonly Shader MsdfShader = new(ShaderDefaults.WorldSpaceVertex, MsdfFragmentShader);
+    public static readonly Shader BitmapShader = new(BuiltInShaders.WorldSpaceVertex, BuiltInShaders.Text.BitmapFragment);
+    public static readonly Shader SdfShader = new(BuiltInShaders.WorldSpaceVertex, BuiltInShaders.Text.SdfFragment);
+    public static readonly Shader MsdfShader = new(BuiltInShaders.WorldSpaceVertex, BuiltInShaders.Text.MsdfFragment);
 
     /// <summary>
     /// Create a material for a given font
@@ -67,78 +67,5 @@ public static class FontMaterialCreator
         return mat;
     }
 
-    public const string BitmapFragmentShader =
-@"#version 330 core
 
-in vec2 uv;
-in vec4 vertexColor;
-
-out vec4 color;
-
-uniform sampler2D mainTex;
-uniform vec4 tint;
-
-void main()
-{
-    vec4 tex = texture(mainTex, uv);
-    color = vertexColor * tint;
-    color.a = min(tex.r, min(tex.g, min(tex.b, min(tex.a, color.a))));
-}
-";
-
-    public const string SdfFragmentShader =
-@"#version 330 core
-
-in vec2 uv;
-in vec4 vertexColor;
-
-out vec4 color;
-
-uniform sampler2D mainTex;
-uniform float thickness;
-uniform float softness;
-uniform vec4 tint;
-
-void main()
-{
-    vec4 tex = texture(mainTex, uv);
-    float t = clamp(1-thickness, 0, 1);
-
-    float delta = fwidth(tex.a) / 2 + softness;
-    tex.a = smoothstep(t - delta, t + delta , tex.a);
-    color = vec4(vertexColor.rgb, vertexColor.a * tex.a) * tint;
-}
-";
-
-    public const string MsdfFragmentShader =
-@"#version 330 core
-
-in vec2 uv;
-in vec4 vertexColor;
-
-out vec4 color;
-
-uniform sampler2D mainTex;
-uniform vec4 tint;
-uniform float pxRange = 2;
-
-float median(float r, float g, float b) 
-{
-    return max(min(r, g), min(max(r, g), b));
-}
-
-float screenPxRange() {
-    vec2 unitRange = vec2(pxRange)/vec2(textureSize(mainTex, 0));
-    vec2 screenTexSize = vec2(1.0)/fwidth(uv);
-    return max(0.5*dot(unitRange, screenTexSize), 1.0);
-}
-
-void main() {
-    vec3 msd = texture(mainTex, uv).rgb;
-    float sd = median(msd.r, msd.g, msd.b);
-    float screenPxDistance = screenPxRange()*(sd - 0.5);
-    float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
-    color = vec4(vertexColor.rgb, opacity * vertexColor.a) * tint;
-}
-";
 }

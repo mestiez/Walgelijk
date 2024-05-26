@@ -1867,6 +1867,11 @@
             Overwrite blend mode (disables blending)
             </summary>
         </member>
+        <member name="T:Walgelijk.BuiltInShaders">
+            <summary>
+            Contains all raw built-in shader code used by the engine. These can be changed before a <see cref="T:Walgelijk.Game"/> instance is created
+            </summary>
+        </member>
         <member name="T:Walgelijk.Color">
             <summary>
             Colour with 4 floating point components ranging from 0-1
@@ -3143,7 +3148,7 @@
             Useful values for shader related business 
             </summary>
         </member>
-        <member name="F:Walgelijk.ShaderDefaults.TexturedFragment">
+        <member name="P:Walgelijk.ShaderDefaults.TexturedFragment">
             <summary>
             Default fragment shader code
             </summary>

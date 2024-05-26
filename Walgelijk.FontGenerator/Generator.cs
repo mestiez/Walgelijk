@@ -113,7 +113,7 @@ public class Generator
         var processPath = Path.Combine(execDir, "msdf-atlas-gen");
         var charsetPath = Path.Combine(execDir, "charset.txt");
         process.StartInfo = new ProcessStartInfo(processPath,
-            $"-font \"{FontFile.FullName}\" -size {FontSize} -charset \"{charsetPath}\" -format png -pots -imageout \"{intermediateImageOut}\" -json \"{intermediateMetadataOut}\"")
+            $"-font \"{FontFile.FullName}\" -type msdf -outerempadding 0.1 -size {FontSize} -charset \"{charsetPath}\" -format png -potr -imageout \"{intermediateImageOut}\" -json \"{intermediateMetadataOut}\"")
         {
             RedirectStandardError = true
         };

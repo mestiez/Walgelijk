@@ -45,8 +45,11 @@ public struct TextureGeneratorScene : ISceneCreator
 
         public override void Render()
         {
-            Draw.ResetTexture();
+            Draw.Reset();
             Draw.ScreenSpace = true;
+
+            Draw.OutlineWidth = Utilities.MapRange(-1, 1, 0, 10, float.Sin(Time * 4));
+            Draw.OutlineColour = Colors.Black;
 
             int maxPerRow = (int)MathF.Min(textures.Length, Window.Size.X / 128);
 
@@ -60,6 +63,11 @@ public struct TextureGeneratorScene : ISceneCreator
                     row(textures.AsSpan(rowIndex * maxPerRow, Math.Min(maxPerRow, textures.Length - rowIndex * maxPerRow)), rowIndex, rowCount);
                 }
             }
+
+            Draw.Colour = Draw.OutlineColour;
+            Draw.Colour.A = 0;
+            Draw.ResetTexture();
+            Draw.Circle(Window.Size / 2, new System.Numerics.Vector2(100, 350));
 
             void row(Span<Texture> span, int rowIndex, int rowCount)
             {

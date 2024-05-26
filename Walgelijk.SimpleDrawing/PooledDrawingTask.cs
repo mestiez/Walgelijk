@@ -78,6 +78,7 @@ namespace Walgelijk.SimpleDrawing
                         material.SetUniform(DrawingMaterialCreator.MainTexUniform, Drawing.Texture ?? Texture.White);
                         material.SetUniform(DrawingMaterialCreator.ScaleUniform, new Vector2(MathF.Abs(Drawing.Scale.X), MathF.Abs(Drawing.Scale.Y)));
                         material.SetUniform(DrawingMaterialCreator.RoundednessUniform, Drawing.Roundness);
+                        material.SetUniform(DrawingMaterialCreator.CircleUniform, Drawing.CircleMorph);
                         material.SetUniform(DrawingMaterialCreator.OutlineWidthUniform, Drawing.OutlineWidth);
                         material.SetUniform(DrawingMaterialCreator.OutlineColourUniform, Drawing.OutlineColour);
                         material.SetUniform(DrawingMaterialCreator.TintUniform, Drawing.Color);

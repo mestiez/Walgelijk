@@ -141,6 +141,8 @@ public class DebugConsole : ILogger, IDisposable
             if (oldCursorPos != CursorPosition)
                 UI.CaretBlinkTime = 0;
 
+            CursorPosition = Utilities.Clamp(CursorPosition, 0, CurrentInput?.Length ?? 0);
+
             foreach (var c in Input.TextEntered)
             {
                 bool isEmpty = string.IsNullOrWhiteSpace(CurrentInput);
@@ -156,7 +158,7 @@ public class DebugConsole : ILogger, IDisposable
                             historyInputBackup = null;
                             CommandProcessor.Execute(CurrentInput!, this);
                             CurrentInput = string.Empty;
-                            UI.Flash(Colors.White.WithAlpha(0.2f));
+                            UI.Flash(Colors.White.WithAlpha(0.1f));
                         }
                         return;
                     case '\u007F': // delete

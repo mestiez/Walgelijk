@@ -58,7 +58,7 @@ public class AudioWaveWorldComponent : Component, IDisposable
         }
         Width = width;
         Height = height;
-
+         
         var mt = new Material(new Shader(
             File.ReadAllText("resources/shaders/instanced-worldspace-vertex.vert"),
             File.ReadAllText("resources/shaders/textured-fragment.frag")
