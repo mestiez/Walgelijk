@@ -50,7 +50,7 @@ public class Program
         AssetDeserialisers.Register(new WaveFixedAudioDeserialiser());
         Assets.RegisterPackage("assets.waa");
 
-        game.Scene = new TextureGeneratorScene().Load(game);
+        game.Scene = new PlmpegScene().Load(game);
 
 #if DEBUG
         game.DevelopmentMode = true;

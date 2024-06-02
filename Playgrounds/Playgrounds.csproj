@@ -14,6 +14,7 @@
     <ProjectReference Include="..\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />
     <ProjectReference Include="..\Walgelijk.ParticleSystem\Walgelijk.ParticleSystem.csproj" />
     <ProjectReference Include="..\Walgelijk.Physics\Walgelijk.Physics.csproj" />
+    <ProjectReference Include="..\Walgelijk.PLMPEG\Walgelijk.PLMPEG.csproj" />
     <ProjectReference Include="..\Walgelijk.Prism\Walgelijk.Prism.csproj" />
     <ProjectReference Include="..\Walgelijk.SimpleDrawing\Walgelijk.SimpleDrawing.csproj" />
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
@@ -25,10 +26,16 @@
     <PackageReference Include="NAudio" Version="2.2.1" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="cursed.mpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="resources\fonts\roboto mono.fnt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="resources\fonts\roboto mono.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="sodium_chloride.mpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
