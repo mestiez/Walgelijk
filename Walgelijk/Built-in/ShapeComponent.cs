@@ -28,6 +28,11 @@
         public bool Visible { get; set; } = true;
 
         /// <summary>
+        /// Sets the "tint" uniform before rendering. If null, does nothing.
+        /// </summary>
+        public Color? Color { get; set; }
+
+        /// <summary>
         /// Apply horizontal flip
         /// </summary>
         public bool HorizontalFlip { get; set; } = false;

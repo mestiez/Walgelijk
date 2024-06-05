@@ -15,7 +15,11 @@ public class SpriteRenderTask : IRenderTask
     /// <summary>
     /// The uniform to set to the sprite texture
     /// </summary>
-    public string MainTextureUniform = "mainTex";
+    public string MainTextureUniform = "mainTex"; 
+    /// <summary>
+    /// The uniform to set to the sprite texture
+    /// </summary>
+    public string TintUniform = "tint";
     /// <summary>
     /// The matrix to transform the vertices with
     /// </summary>
@@ -28,6 +32,10 @@ public class SpriteRenderTask : IRenderTask
     /// Should the task set the view matrix to <see cref="Matrix4x4.Identity"/> 
     /// </summary>
     public bool ScreenSpace;
+    /// <summary>
+    /// Sets the <see cref="TintUniform"/> uniform before rendering. If null, does nothing.
+    /// </summary>
+    public Color? Color { get; set; }
 
     /// <summary>
     /// Create a sprite render task
@@ -69,6 +77,8 @@ public class SpriteRenderTask : IRenderTask
     {
         graphics.CurrentTarget.ModelMatrix = new Matrix4x4(ModelMatrix);
         Material.SetUniform(MainTextureUniform, Texture);
+        if (Color.HasValue)
+            Material.SetUniform(TintUniform, Color.Value);
         graphics.Draw(PrimitiveMeshes.CenteredQuad, Material);
     }
 }

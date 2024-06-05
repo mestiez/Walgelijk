@@ -33,6 +33,8 @@ public class ShapeRendererSystem : System
         else
             sprite.RenderTask.ModelMatrix = transform.LocalToWorldMatrix;
 
+        sprite.RenderTask.Color = sprite.Color;
+
         RenderQueue.Add(sprite.RenderTask, sprite.RenderOrder);
     }
 
@@ -53,6 +55,8 @@ public class ShapeRendererSystem : System
         }
         else
             shape.RenderTask.ModelMatrix = transform.LocalToWorldMatrix;
+
+        shape.RenderTask.Color = shape.Color;
 
         RenderQueue.Add(shape.RenderTask, shape.RenderOrder);
     }
