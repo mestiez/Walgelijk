@@ -1307,6 +1307,11 @@
             Fired when this scene is made active
             </summary>
         </member>
+        <member name="E:Walgelijk.Scene.OnInactive">
+            <summary>
+            Fired when this scene is made inactive
+            </summary>
+        </member>
         <member name="E:Walgelijk.Scene.OnCreateEntity">
             <summary>
             Fired when an entity is created and registered

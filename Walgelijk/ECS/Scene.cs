@@ -72,7 +72,12 @@ public sealed class Scene : IDisposable
     /// <summary>
     /// Fired when this scene is made active
     /// </summary>
-    public event Action? OnActive;
+    public event Action? OnActive; 
+    
+    /// <summary>
+    /// Fired when this scene is made inactive
+    /// </summary>
+    public event Action? OnInactive;
 
     /// <summary>
     /// Fired when an entity is created and registered
@@ -349,6 +354,11 @@ public sealed class Scene : IDisposable
     internal void Activate()
     {
         OnActive?.Invoke();
+    }
+
+    internal void Deactivate()
+    {
+        OnInactive?.Invoke();
     }
 
     /// <summary>
