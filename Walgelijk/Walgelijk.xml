@@ -1792,6 +1792,16 @@
             Run post rendering code
             </summary>
         </member>
+        <member name="M:Walgelijk.System.OnActivate">
+            <summary>
+            Invoked when the scene becomes active
+            </summary>
+        </member>
+        <member name="M:Walgelijk.System.OnDeactivate">
+            <summary>
+            Invoked when the scene becomes inactive
+            </summary>
+        </member>
         <member name="T:Walgelijk.AttributeType">
             <summary>
             Possible vertex attribute types

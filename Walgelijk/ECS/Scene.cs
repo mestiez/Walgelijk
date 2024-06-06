@@ -72,8 +72,8 @@ public sealed class Scene : IDisposable
     /// <summary>
     /// Fired when this scene is made active
     /// </summary>
-    public event Action? OnActive; 
-    
+    public event Action? OnActive;
+
     /// <summary>
     /// Fired when this scene is made inactive
     /// </summary>
@@ -354,11 +354,17 @@ public sealed class Scene : IDisposable
     internal void Activate()
     {
         OnActive?.Invoke();
+        foreach (var s in systems)
+            if (s.Enabled)
+                s.OnActivate();
     }
 
     internal void Deactivate()
     {
         OnInactive?.Invoke();
+        foreach (var s in systems)
+            if (s.Enabled)
+                s.OnDeactivate();
     }
 
     /// <summary>

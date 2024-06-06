@@ -1,4 +1,6 @@
-﻿namespace Walgelijk
+﻿using System;
+
+namespace Walgelijk
 {
     /// <summary>
     /// Holds game logic
@@ -116,5 +118,15 @@
         /// Run post rendering code
         /// </summary>
         public virtual void PostRender() { }
+
+        /// <summary>
+        /// Invoked when the scene becomes active
+        /// </summary>
+        public virtual void OnActivate() { }  
+        
+        /// <summary>
+        /// Invoked when the scene becomes inactive
+        /// </summary>
+        public virtual void OnDeactivate() { }
     }
 }

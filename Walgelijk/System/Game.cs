@@ -48,7 +48,6 @@ public class Game
             if (scene != null)
             {
                 scene.Deactivate();
-
                 switch (scene.ScenePersistence)
                 {
                     default:
