@@ -10,6 +10,10 @@ namespace Walgelijk.AssetManager;
 
 public static class Assets
 {
+    public static IEnumerable<int> AssetPackages => packageRegistry.Keys;
+    public static readonly Hook OnAssetPackageRegistered = new();
+    public static readonly Hook OnAssetPackageDeregistered = new();
+
     private static readonly ConcurrentDictionary<int, AssetPackage> packageRegistry = [];
     private static readonly ConcurrentDictionary<GlobalAssetId, ConcurrentBag<IDisposable>> disposableChain = [];
     private static readonly ConcurrentDictionary<GlobalAssetId, GlobalAssetId> replacementTable = [];
@@ -33,6 +37,29 @@ public static class Assets
                 Resources.Unload(assetPackage);
                 throw new Exception($"Package with id {assetPackage.Metadata.Id} already exists");
             }
+
+            OnAssetPackageRegistered.Dispatch();
+
+            return assetPackage;
+        }
+        finally
+        {
+            enumerationLock.ExitReadLock();
+        }
+    }   
+    
+    public static AssetPackage RegisterPackage(AssetPackage assetPackage)
+    {
+        enumerationLock.EnterReadLock();
+        try
+        {
+            if (!packageRegistry.TryAdd(assetPackage.Metadata.NumericalId, assetPackage))
+            {
+                throw new Exception($"Package with id {assetPackage.Metadata.Id} already exists");
+            }
+
+            OnAssetPackageRegistered.Dispatch();
+
             return assetPackage;
         }
         finally
@@ -40,8 +67,6 @@ public static class Assets
             enumerationLock.ExitReadLock();
         }
     }
-
-    public static IEnumerable<int> AssetPackages => packageRegistry.Keys;
 
     public static void ClearRegistry()
     {
@@ -58,8 +83,10 @@ public static class Assets
                 {
                     Resources.Unload(p);
                     p.Dispose();
+
                 }
             }
+            OnAssetPackageRegistered.Dispatch();
             packageRegistry.Clear();
         }
         finally
@@ -97,6 +124,9 @@ public static class Assets
                 isDisposingPackage = true;
                 Resources.Unload(p);
                 p.Dispose();
+
+                OnAssetPackageDeregistered.Dispatch();
+
                 return true;
             }
             else
@@ -327,5 +357,5 @@ public static class Assets
         if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage))
             return assetPackage.Load<T>(replacementId.Internal);
         throw new KeyNotFoundException($"Asset package {replacementId.External} not found");
-    } 
+    }
 }
