@@ -285,6 +285,19 @@ public sealed class Scene : IDisposable
         components.Remove<T>(entity);
     }
 
+    /// <summary>
+    /// Detach a component from an entity and sync the buffers immediately.
+    /// So if you call <see cref="DetachComponentImmediate{T}(Entity)"/> and then
+    /// <see cref="HasComponent{T}(Entity)"/> in the same frame/tick, 
+    /// <see cref="HasComponent{T}(Entity)"/> will return the correct value.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DetachComponentImmediate<T>(Entity entity) where T : Component
+    {
+        DetachComponent<T>(entity);
+        SyncBuffers();
+    }
+
     public bool HasTag(Entity entity, Tag tag) => entities.HasTag(entity, tag);
     public bool ClearTag(Entity entity) => entities.ClearTag(entity);
     public void SetTag(Entity entity, Tag tag) => entities.SetTag(entity, tag);
