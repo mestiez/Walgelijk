@@ -1322,6 +1322,11 @@
             Fired when an entity is created and registered
             </summary>
         </member>
+        <member name="E:Walgelijk.Scene.OnRemovedEntity">
+            <summary>
+            Fired when an entity is removed
+            </summary>
+        </member>
         <member name="E:Walgelijk.Scene.OnAttachComponent">
             <summary>
             Fired when a component is attached to an entity
@@ -4958,6 +4963,11 @@
         <member name="M:Walgelijk.Utilities.RandomHue(System.Single,System.Single,System.Single)">
             <summary>
             Returns a colour with a random hue
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Utilities.RandomVector2">
+            <summary>
+            Returns a random Vector2 (x,y ranged -1.0f through 1.0f)
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.Clamp(System.Single,System.Single,System.Single)">
