@@ -18,7 +18,7 @@ uniform vec4 tint = vec4(1,1,1,1);
 
 void main()
 {
-    color = vertexColor * texture(mainTex, uv) * tint;
+    color = vertexColor * texture(mainTex, uv);
 }";
 
     public static string WorldSpaceVertex =

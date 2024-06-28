@@ -52,6 +52,6 @@ namespace Walgelijk
         /// <summary>
         /// Default shader. Renders vertex colours and textures.
         /// </summary>
-        public static readonly Shader Default = new(ShaderDefaults.WorldSpaceVertex, ShaderDefaults.TexturedFragment);
+        public static readonly Shader Default = new(BuiltInShaders.WorldSpaceVertex, BuiltInShaders.TexturedFragment);
     }
 }
