@@ -35,7 +35,6 @@ public class DebugConsoleUi : IDisposable
     private readonly Material mat;
     private readonly VertexBuffer textMesh;
     private readonly TextMeshGenerator textMeshGenerator = new();
-    //private readonly char[] lineBuffer = new char[MaxLineSize];
     private float animationProgress = 0;
     private int dropdownOffset;
     private Color flashColour;
@@ -45,7 +44,7 @@ public class DebugConsoleUi : IDisposable
     private Rect inputBoxRect;
     private Rect filterBoxRect;
 
-    private readonly Line[] lines = new Line[256];
+    private readonly Line[] lines = new Line[1024];
     private readonly FilterIcon[] filterButtons;
     private int? resizeDragOffset;
 
@@ -236,6 +235,7 @@ public class DebugConsoleUi : IDisposable
         int lineIndex = 0;
         var b = debugConsole.GetBuffer();
         int width = 0;
+        var charWidth = (int)textMeshGenerator.Font.Glyphs['x'].Advance;
 
         for (int i = 0; i < b.Length; i++)
         {
@@ -243,28 +243,36 @@ public class DebugConsoleUi : IDisposable
             var line = lines[lineIndex];
             bool shouldEndLine = false;
 
-            if (line.Buffer.Count + 1 >= line.Buffer.Capacity)
-                break;
-
-            switch (c)
+            if (i == b.Length - 1)
             {
-                case '\n':
-                    shouldEndLine = true;
-                    line.Complete = true;
-                    break;
-                default:
-                    if (!char.IsControl(c))
-                    {
-                        width += (int)textMeshGenerator.Font.Glyphs['x'].Advance;
-                        line.Buffer.Add(c);
-
-                        if (width > backgroundRect.Width - Padding * 4 && debugConsole.PassesFilter(debugConsole.DetectMessageType(line.Buffer.AsSpan().Trim())))
+                line.Complete = true;
+                shouldEndLine = true;
+            }
+            else
+            {
+                switch (c)
+                {
+                    case '\n':
+                        shouldEndLine = true;
+                        line.Complete = true;
+                        break;
+                    default:
+                        if (!char.IsControl(c))
                         {
-                            line.Complete = false;
-                            shouldEndLine = true;
+                            if (width + charWidth > backgroundRect.Width - Padding * 3 && debugConsole.PassesFilter(debugConsole.DetectMessageType(line.Buffer.AsSpan().Trim())))
+                            {
+                                line.Complete = false;
+                                shouldEndLine = true;
+                                i--;
+                            }
+                            else if (line.Buffer.Count < line.Buffer.Capacity)
+                            {
+                                width += charWidth;
+                                line.Buffer.Add(c);
+                            }
                         }
-                    }
-                    break;
+                        break;
+                }
             }
 
             if (shouldEndLine)
