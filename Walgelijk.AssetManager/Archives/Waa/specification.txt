@@ -1,0 +1,42 @@
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│ ■ WALGELIJK ASSET ARCHIVE (WAA) v0.11.2                                             │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│ A WAA file is a read-only, uncompressed asset pack format created solely for the    │
+│ Walgelijk game engine. Its purpose is to provide fast asset retrieval and loading,  │
+│ multiple asset types, while supporting multiple concurrent read streams.            │
+│ ─────────────────────────────────────────────────────────────────────────────────── │
+│ The file starts with a 24-byte header, followed by the asset index and data chunks. │
+│                                                                                     │
+│ ■ HEADER                                                                            │
+│                                                                                     │
+│ POSITION │ DATA              │ TYPE   │ SIZE                                        │
+│ ─────────┼───────────────────┼────────┼──────                                       │
+│ 0        │ WALG              │ magic  │ 4                                           │
+│ 4        │ Total size        │ uint64 │ 8                                           │
+│ 12       │ Chunk count       │ int32  │ 4                                           │
+│ 16       │ Entry count       │ int32  │ 4                                           │
+│ 20       │ Chunks offset     │ int32  │ 4                                           │
+│                                                                                     │
+│ The "chunks offset" is the position at which the chunk data starts.                 │
+│                                                                                     │
+│ ■ ASSET INDEX                                                                       │
+│                                                                                     │
+│ The index countains "entry count" entries, each of which has the following          │
+│ structure. Position is relative to the start of each entry.                         │
+│                                                                                     │
+│ POSITION │ DATA              │ TYPE   │ SIZE                                        │
+│ ─────────┼───────────────────┼────────┼──────                                       │
+│ 0        │ Path until null   │ string │ n                                           │
+│ n        │ Chunk start index │ int32  │ 4                                           │
+│ n+4      │ Chunk count       │ int32  │ 4                                           │
+│ n+8      │ Length in bytes   │ int64  │ 8                                           │
+│                                                                                     │
+│ The "chunk start index" is the index of the first data chunk for this asset.        │
+│                                                                                     │
+│ ■ CHUNKS                                                                            │
+│                                                                                     │
+│ Following the index, we get the actual binary data in chunks of size 512.           │
+│ To convert from chunk index to file position:                                       │
+│                                                                                     │
+│ chunks_offset + 512 * i                                                             │
+└─────────────────────────────────────────────────────────────────────────────────────┘
