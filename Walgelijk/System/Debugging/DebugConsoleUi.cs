@@ -263,7 +263,8 @@ public class DebugConsoleUi : IDisposable
                             {
                                 line.Complete = false;
                                 shouldEndLine = true;
-                                i--;
+                                if (width > charWidth)
+                                    i--;
                             }
                             else if (line.Buffer.Count < line.Buffer.Capacity)
                             {
