@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 /* Je moet detecteren of een asset een andere asset nodig heeft en als dat zo is moet je die eerder laden
@@ -119,12 +120,11 @@ public static class Assets
         enumerationLock.EnterWriteLock();
         try
         {
-            if (TryGetPackage(id, out var p))
+            if (TryGetPackage(id, out var p) && packageRegistry.Remove(id, out _))
             {
                 isDisposingPackage = true;
                 Resources.Unload(p);
                 p.Dispose();
-
                 OnAssetPackageDeregistered.Dispatch();
 
                 return true;
