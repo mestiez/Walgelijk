@@ -77,6 +77,11 @@ public static class AssetPackageUtils
 
     public static void Build(string id, DirectoryInfo directory, Stream output, IAssetBuilderProcessor? preprocessor = null)
     {
+        Build(id, directory, output, preprocessor == null ? null : [preprocessor]);
+    }
+
+    public static void Build(string id, DirectoryInfo directory, Stream output, IAssetBuilderProcessor[]? preprocessors = null)
+    {
         const string assetRoot = "assets/";
         const string metadataRoot = "metadata/";
 
@@ -201,7 +206,7 @@ public static class AssetPackageUtils
                 var id = new AssetId(resourcePath);
 
                 if (id == AssetId.None)
-                    throw new Exception($"Resource at \"{resourcePath}\" generates ID zero. This can be solved by renaming the file, but you really shouldn't be seeing this so it's probably a bug.");
+                    throw new Exception($"Resource at \"{resourcePath}\" generates reserved ID zero. This can be solved by renaming the file, but you really shouldn't be seeing this so it's probably a bug.");
 
                 if (!guidsIntermediate.Add(id.Internal))
                     throw new Exception($"Resource at \"{resourcePath}\" collides with another resource.");
@@ -215,7 +220,8 @@ public static class AssetPackageUtils
                 if (globalTags != null)
                     tags = [.. tags, .. globalTags];
 
-                var contentHash = global::System.IO.Hashing.XxHash3.Hash(File.ReadAllBytes(childFile.FullName));
+                var contentData = File.ReadAllBytes(childFile.FullName);
+                var contentHash = global::System.IO.Hashing.XxHash3.Hash(contentData);
 
                 var metadata = new AssetMetadata
                 {
@@ -227,7 +233,19 @@ public static class AssetPackageUtils
                     Tags = tags
                 };
 
-                preprocessor?.Process(ref metadata);
+                if (preprocessors != null)
+                {
+                    var readonlyData = contentData.AsSpan();
+                    foreach (var p in preprocessors)
+                        try
+                        {
+                            p?.Process(ref metadata, readonlyData);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.Error.WriteLine("Asset builder processor {0} threw an exception {1}", p.GetType(), e);
+                        }
+                }
 
                 if (metadata.Tags != null)
                     foreach (var tag in metadata.Tags)
