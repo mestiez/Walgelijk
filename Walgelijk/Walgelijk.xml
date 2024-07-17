@@ -1464,6 +1464,14 @@
             Detach a component from an entity
             </summary>
         </member>
+        <member name="M:Walgelijk.Scene.DetachComponentImmediate``1(Walgelijk.Entity)">
+            <summary>
+            Detach a component from an entity and sync the buffers immediately.
+            So if you call <see cref="M:Walgelijk.Scene.DetachComponentImmediate``1(Walgelijk.Entity)"/> and then
+            <see cref="M:Walgelijk.Scene.HasComponent``1(Walgelijk.Entity)"/> in the same frame/tick, 
+            <see cref="M:Walgelijk.Scene.HasComponent``1(Walgelijk.Entity)"/> will return the correct value.
+            </summary>
+        </member>
         <member name="M:Walgelijk.Scene.UpdateSystems">
             <summary>
             Executes all systems

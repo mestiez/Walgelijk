@@ -80,7 +80,7 @@ public static class AssetPackageUtils
         Build(id, directory, output, preprocessor == null ? null : [preprocessor]);
     }
 
-    public static void Build(string id, DirectoryInfo directory, Stream output, IAssetBuilderProcessor[]? preprocessors = null)
+    public static void Build(string id, DirectoryInfo directory, Stream output, IAssetBuilderProcessor[]? preprocessors)
     {
         const string assetRoot = "assets/";
         const string metadataRoot = "metadata/";
