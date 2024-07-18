@@ -14,7 +14,7 @@ public class AssetPackage : IDisposable
     public readonly IReadArchive Archive;
     public readonly ImmutableHashSet<AssetId> All = [];
 
-    private readonly ImmutableDictionary<int, string> guidTable;
+    private readonly ImmutableDictionary<AssetId, string> guidTable;
     private readonly AssetFolder hierarchyRoot = new("/");
 
     private readonly ConcurrentDictionary<AssetId, object> cache = [];
@@ -31,7 +31,7 @@ public class AssetPackage : IDisposable
     {
         packageLock.EnterWriteLock();
 
-        var guidTable = new Dictionary<int, string>();
+        var guidTable = new Dictionary<AssetId, string>();
         var archive = new WaaReadArchive(file);
         var all = new HashSet<AssetId>();
         Archive = archive;
@@ -41,6 +41,20 @@ public class AssetPackage : IDisposable
             using var e = new StreamReader(metadataEntry!, encoding: Encoding.UTF8, leaveOpen: false);
             var json = e.ReadToEnd();
             Metadata = JsonConvert.DeserializeObject<AssetPackageMetadata>(json);
+
+            if (Metadata.FormatVersion <= new Version("12.0.0"))
+            {
+                // older version uses a different metadata format
+
+                var oldTemplate = new
+                {
+                    Id = string.Empty,
+                    NumericalId = 0
+                };
+                var old = JsonConvert.DeserializeAnonymousType(json, oldTemplate) ?? throw new Exception("Invalid package metadata. Rebuild please!");
+                Metadata.Id = new PackageId(old.NumericalId);
+                Metadata.Name = old.Id;
+            }
         }
 
         // read guid table
@@ -54,14 +68,14 @@ public class AssetPackage : IDisposable
                 if (idLine == null)
                     break;
 
-                if (!AssetId.TryParse(idLine, out var assetId))
+                if (!AssetId.TryParse(idLine.Trim(), out var assetId))
                     throw new Exception($"Id {idLine} is not a valid asset ID");
 
                 var path = e.ReadLine() ?? throw new Exception($"Invalid GUID table: id {idLine} is missing path");
 
                 AssetPackageUtils.AssertPathValidity(path);
 
-                guidTable.Add(assetId.Internal, path);
+                guidTable.Add(assetId, path);
             }
 
             this.guidTable = guidTable.ToImmutableDictionary();
@@ -148,10 +162,9 @@ public class AssetPackage : IDisposable
         return [];
     }
 
-
     public Asset GetAsset(in AssetId id)
     {
-        if (id.Internal == 0)
+        if (id == AssetId.None)
             throw new Exception("Id is None");
 
         var path = GetAssetPath(id);
@@ -167,13 +180,13 @@ public class AssetPackage : IDisposable
 
     public string GetAssetPath(in AssetId id)
     {
-        if (guidTable.TryGetValue(id.Internal, out var path))
+        if (guidTable.TryGetValue(id, out var path))
             return path;
 
         throw new Exception($"Asset {id.Internal} does not exist.");
     }
 
-    public bool HasAsset(in AssetId id) => guidTable.ContainsKey(id.Internal);
+    public bool HasAsset(in AssetId id) => guidTable.ContainsKey(id);
 
     public T Load<T>(in string path) => Load<T>(new AssetId(path));
 

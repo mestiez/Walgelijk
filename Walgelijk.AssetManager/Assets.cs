@@ -11,11 +11,11 @@ namespace Walgelijk.AssetManager;
 
 public static class Assets
 {
-    public static IEnumerable<int> AssetPackages => packageRegistry.Keys;
+    public static IEnumerable<PackageId> AssetPackages => packageRegistry.Keys;
     public static readonly Hook OnAssetPackageRegistered = new();
     public static readonly Hook OnAssetPackageDeregistered = new();
 
-    private static readonly ConcurrentDictionary<int, AssetPackage> packageRegistry = [];
+    private static readonly ConcurrentDictionary<PackageId, AssetPackage> packageRegistry = [];
     private static readonly ConcurrentDictionary<GlobalAssetId, ConcurrentBag<IDisposable>> disposableChain = [];
     private static readonly ConcurrentDictionary<GlobalAssetId, GlobalAssetId> replacementTable = [];
 
@@ -33,7 +33,7 @@ public static class Assets
         try
         {
             var assetPackage = Resources.Load<AssetPackage>(path, true);
-            if (!packageRegistry.TryAdd(assetPackage.Metadata.NumericalId, assetPackage))
+            if (!packageRegistry.TryAdd(assetPackage.Metadata.Id, assetPackage))
             {
                 Resources.Unload(assetPackage);
                 throw new Exception($"Package with id {assetPackage.Metadata.Id} already exists");
@@ -54,7 +54,7 @@ public static class Assets
         enumerationLock.EnterReadLock();
         try
         {
-            if (!packageRegistry.TryAdd(assetPackage.Metadata.NumericalId, assetPackage))
+            if (!packageRegistry.TryAdd(assetPackage.Metadata.Id, assetPackage))
             {
                 throw new Exception($"Package with id {assetPackage.Metadata.Id} already exists");
             }
@@ -77,7 +77,7 @@ public static class Assets
         enumerationLock.EnterWriteLock();
         try
         {
-            var keys = new Stack<int>(AssetPackages);
+            var keys = new Stack<PackageId>(AssetPackages);
             while (keys.TryPop(out var id))
             {
                 if (packageRegistry.TryGetValue(id, out var p))
@@ -96,7 +96,7 @@ public static class Assets
         }
     }
 
-    public static bool TryGetPackage(int id, [NotNullWhen(true)] out AssetPackage? assetPackage)
+    public static bool TryGetPackage(PackageId id, [NotNullWhen(true)] out AssetPackage? assetPackage)
     {
         if (isDisposingPackage)
             throw new InvalidOperationException("Packages cannot be retrieved while disposing a package");
@@ -113,9 +113,9 @@ public static class Assets
     }
 
     public static bool TryGetPackage(in ReadOnlySpan<char> id, [NotNullWhen(true)] out AssetPackage? assetPackage)
-        => TryGetPackage(Hashes.MurmurHash1(id), out assetPackage);
+        => TryGetPackage(new(id), out assetPackage);
 
-    public static bool UnloadPackage(int id)
+    public static bool UnloadPackage(PackageId id)
     {
         enumerationLock.EnterWriteLock();
         try
@@ -139,12 +139,11 @@ public static class Assets
         }
     }
 
-    public static bool UnloadPackage(in ReadOnlySpan<char> id)
-        => UnloadPackage(Hashes.MurmurHash1(id));
+    public static bool UnloadPackage(in ReadOnlySpan<char> id) => UnloadPackage(new(id));
 
     public static void AssignLifetime(GlobalAssetId id, ILifetimeOperator lifetimeOperator)
     {
-        if (id.External == 0)
+        if (id == GlobalAssetId.None)
             throw new Exception("Id is None");
 
         lifetimeOperator.Triggered.AddListener(() =>
@@ -170,11 +169,11 @@ public static class Assets
     /// <param name="replacement">The substitute ID</param>
     public static void SetReplacement(in GlobalAssetId original, in GlobalAssetId replacement)
     {
-        if (original.External == 0)
-            throw new Exception("Id is None");
+        if (original.External == PackageId.None)
+            throw new Exception("Original package ID is None");
 
-        if (replacement.External == 0)
-            throw new Exception("Id is None");
+        if (replacement.External == PackageId.None)
+            throw new Exception("Replacement package ID is None");
 
         replacementTable.AddOrSet(original, replacement);
         DisposeOf(original); // we have to dispose the original to force a reload
@@ -188,7 +187,7 @@ public static class Assets
     /// </summary>
     public static void ClearReplacement(in GlobalAssetId original)
     {
-        if (original.External == 0)
+        if (original.External == PackageId.None)
             throw new Exception("Id is None");
 
         replacementTable.TryRemove(original, out _);
@@ -215,7 +214,7 @@ public static class Assets
     /// <returns></returns>
     public static GlobalAssetId ApplyReplacement(in GlobalAssetId id)
     {
-        if (id.External == 0)
+        if (id.External == PackageId.None)
             throw new Exception("Id is None");
 
         if (replacementTable.TryGetValue(id, out var replacement))
@@ -229,7 +228,7 @@ public static class Assets
     /// <param name="id"></param>
     public static void DisposeOf(GlobalAssetId id)
     {
-        if (id.External == 0)
+        if (id.External == PackageId.None)
             throw new Exception("Id is None");
 
         if (disposableChain.TryRemove(id, out var set))
@@ -258,7 +257,7 @@ public static class Assets
 
     public static bool TryLoad<T>(GlobalAssetId id, out AssetRef<T> assetRef)
     {
-        if (id.External == 0)
+        if (id.External == PackageId.None)
             throw new Exception("Id is None");
 
         var replacementId = ApplyReplacement(id);
@@ -287,7 +286,7 @@ public static class Assets
     /// <exception cref="KeyNotFoundException"></exception>
     public static AssetRef<T> Load<T>(GlobalAssetId id)
     {
-        if (id.External == 0)
+        if (id.External == PackageId.None)
             throw new Exception("Id is None");
 
         var replacementId = ApplyReplacement(id);
@@ -306,7 +305,7 @@ public static class Assets
     /// <returns></returns>
     public static T LoadNoCache<T>(GlobalAssetId id)
     {
-        if (id.External == 0)
+        if (id.External == PackageId.None)
             throw new Exception("Id is None");
 
         var replacementId = ApplyReplacement(id);
@@ -318,7 +317,7 @@ public static class Assets
 
     public static AssetMetadata GetMetadata(GlobalAssetId id)
     {
-        if (id.External == 0)
+        if (id.External == PackageId.None)
             throw new Exception("Id is None");
 
         var replacementId = ApplyReplacement(id);
@@ -333,21 +332,21 @@ public static class Assets
     {
         foreach (var p in packageRegistry.Values)
             foreach (var a in p.EnumerateFolder(folder, searchOption))
-                yield return new GlobalAssetId(p.Metadata.NumericalId, a);
+                yield return new GlobalAssetId(p.Metadata.Id, a);
     }
 
     public static IEnumerable<GlobalAssetId> GetAllAssets()
     {
         foreach (var p in packageRegistry.Values)
             foreach (var a in p.All)
-                yield return new(p.Metadata.NumericalId, a);
+                yield return new(p.Metadata.Id, a);
     }
 
     public static IEnumerable<GlobalAssetId> QueryTags(string tag)
     {
         foreach (var p in packageRegistry.Values)
             foreach (var a in p.QueryTags(tag))
-                yield return new GlobalAssetId(p.Metadata.NumericalId, a);
+                yield return new GlobalAssetId(p.Metadata.Id, a);
     }
 
     internal static T LoadDirect<T>(GlobalAssetId id)

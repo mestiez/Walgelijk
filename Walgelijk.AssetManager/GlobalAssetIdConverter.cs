@@ -20,8 +20,8 @@ public class GlobalAssetIdConverter : JsonConverter<GlobalAssetId>
             var external = s[..index];
             var @internal = s[(index + 1)..];
 
-            if (!int.TryParse(external, out var externalId) && !int.TryParse(external, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out externalId))
-                externalId = Hashes.MurmurHash1(external);
+            if (!PackageId.TryParse(external, out var externalId))
+                externalId = new PackageId(external);
 
             if (!AssetId.TryParse(@internal, out var internalId))
                 internalId = new AssetId(@internal);

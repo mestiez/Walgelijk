@@ -28,8 +28,8 @@ public class AssetsTests
         var @base = Assets.RegisterPackage(validPackage1);
         var koploper = Assets.RegisterPackage(validPackage2);
 
-        Assert.AreEqual("base", @base.Metadata.Id);
-        Assert.AreEqual("koploper", @koploper.Metadata.Id);
+        Assert.AreEqual("base", @base.Metadata.Name);
+        Assert.AreEqual("koploper", @koploper.Metadata.Name);
 
         Assets.ClearRegistry();
     }

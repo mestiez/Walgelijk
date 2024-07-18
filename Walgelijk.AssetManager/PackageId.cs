@@ -5,33 +5,33 @@ namespace Walgelijk.AssetManager;
 /// <summary>
 /// Locally unique ID for an asset
 /// </summary>
-[JsonConverter(typeof(AssetIdConverter))]
-public readonly struct AssetId : IEquatable<AssetId>
+[JsonConverter(typeof(PackageIdConverter))]
+public readonly struct PackageId : IEquatable<PackageId>
 {
     /// <summary>
-    /// Id of the asset within the asset package
+    /// Id of the asset package
     /// </summary>
-    public readonly int Internal;
+    public readonly int External;
 
-    public AssetId(string path)
+    public PackageId(string name)
     {
-        Internal = IdUtil.Hash(path);
-    }  
-    
-    public AssetId(ReadOnlySpan<char> path)
-    {
-        Internal = IdUtil.Hash(path);
+        External = IdUtil.Hash(name);
     }
 
-    public AssetId(int @internal)
+    public PackageId(ReadOnlySpan<char> name)
     {
-        Internal = @internal;
+        External = IdUtil.Hash(name);
+    }
+
+    public PackageId(int numerical)
+    {
+        External = numerical;
     }
 
     /// <summary>
     /// Parses a formatted string. This function takes a stringified ID, <b>not a path</b>.
     /// </summary>
-    public static AssetId Parse(ReadOnlySpan<char> id)
+    public static PackageId Parse(ReadOnlySpan<char> id)
     {
         if (TryParse(id, out var asset))
             return asset;
@@ -42,7 +42,7 @@ public readonly struct AssetId : IEquatable<AssetId>
     /// <summary>
     /// Parses a formatted string. This function takes a stringified ID, <b>not a path</b>.
     /// </summary>
-    public static AssetId Parse(string id)
+    public static PackageId Parse(string id)
     {
         return Parse(id.AsSpan());
     }
@@ -50,11 +50,11 @@ public readonly struct AssetId : IEquatable<AssetId>
     /// <summary>
     /// Parses a formatted string. This function takes a stringified ID, <b>not a path</b>.
     /// </summary>
-    public static bool TryParse(ReadOnlySpan<char> id, out AssetId asset)
+    public static bool TryParse(ReadOnlySpan<char> id, out PackageId asset)
     {
         if (IdUtil.TryConvert(id, out var i))
         {
-            asset = new AssetId(i);
+            asset = new PackageId(i);
             return true;
         }
 
@@ -62,31 +62,31 @@ public readonly struct AssetId : IEquatable<AssetId>
         return false;
     }
 
-    public override string ToString() => IdUtil.Convert(Internal);
+    public override string ToString() => IdUtil.Convert(External);
 
     public override bool Equals(object? obj)
     {
         return obj is AssetId id && Equals(id);
     }
 
-    public bool Equals(AssetId other)
+    public bool Equals(PackageId other)
     {
-        return Internal == other.Internal;
+        return External == other.External;
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Internal);
+        return HashCode.Combine(External);
     }
 
-    public static readonly AssetId None = default;
+    public static readonly PackageId None = default;
 
-    public static bool operator ==(AssetId left, AssetId right)
+    public static bool operator ==(PackageId left, PackageId right)
     {
         return left.Equals(right);
     }
 
-    public static bool operator !=(AssetId left, AssetId right)
+    public static bool operator !=(PackageId left, PackageId right)
     {
         return !(left == right);
     }

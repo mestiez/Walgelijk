@@ -12,7 +12,7 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
     /// <summary>
     /// Id of the asset package this asset resides in
     /// </summary>
-    public readonly int External;
+    public readonly PackageId External;
 
     /// <summary>
     /// Id of the asset within the asset package <see cref="External"/>
@@ -21,32 +21,20 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
 
     public GlobalAssetId(string assetPackage, string path)
     {
-        External = Hashes.MurmurHash1(assetPackage);
+        External = new(assetPackage);
         Internal = new(path);
     }
 
     public GlobalAssetId(int external, int @internal)
     {
-        External = external;
+        External = new(external);
         Internal = new(@internal);
     }
 
-    public GlobalAssetId(int external, AssetId @internal)
+    public GlobalAssetId(PackageId external, AssetId @internal)
     {
         External = external;
         Internal = @internal;
-    }
-
-    public GlobalAssetId(string assetPackage, AssetId @internal)
-    {
-        External = Hashes.MurmurHash1(assetPackage);
-        Internal = @internal;
-    }   
-    
-    public GlobalAssetId(string assetPackage, int @internal)
-    {
-        External = Hashes.MurmurHash1(assetPackage);
-        Internal = new(@internal);
     }
 
     public GlobalAssetId(ReadOnlySpan<char> formatted)
@@ -58,7 +46,7 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
         if (index == -1)
             throw new Exception("Formatted string contains no external ID part");
 
-        External = Hashes.MurmurHash1(external);
+        External = new(external);
         Internal = new(@internal);
     }
 
@@ -78,7 +66,7 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
         return !(left == right);
     }
 
-    public override string ToString() => $"{External:X2}:{Internal}";
+    public override string ToString() => $"{External}:{Internal}";
 
     public override bool Equals(object? obj)
     {
@@ -87,7 +75,7 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
 
     public bool Equals(GlobalAssetId other)
     {
-        return External == other.External &&
+        return External.Equals(other.External) &&
                Internal.Equals(other.Internal);
     }
 
@@ -96,5 +84,5 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
         return HashCode.Combine(External, Internal);
     }
 
-    public static readonly GlobalAssetId None = default;
+    public static readonly GlobalAssetId None = new(PackageId.None, AssetId.None);
 }

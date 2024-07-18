@@ -1,5 +1,4 @@
-﻿
-namespace Walgelijk.AssetManager;
+﻿namespace Walgelijk.AssetManager;
 
 /// <summary>
 /// Struct that provides objects to access asset data

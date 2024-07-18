@@ -85,7 +85,7 @@ public static class AssetPackageUtils
         const string assetRoot = "assets/";
         const string metadataRoot = "metadata/";
 
-        using IWriteArchive archive = new WaaWriteArchive(output);
+        using var archive = new WaaWriteArchive(output);
         var guidsIntermediate = new HashSet<int>();
         var guidTable = new StringBuilder();
         var tagTable = new StringBuilder();
@@ -95,8 +95,8 @@ public static class AssetPackageUtils
 
         var package = new AssetPackageMetadata
         {
-            Id = id,
-            NumericalId = Hashes.MurmurHash1(id),
+            Name = id,
+            Id = new(id),
             EngineVersion = Assembly.GetAssembly(typeof(Game))!.GetName()!.Version!,
             FormatVersion = Assembly.GetAssembly(typeof(AssetPackageUtils))!.GetName()!.Version!,
         };
@@ -229,7 +229,7 @@ public static class AssetPackageUtils
                     Path = resourcePath,
                     MimeType = mimeType ?? globalMimeType ?? MimeTypes.GetFromExtension(childFile.Extension),
                     Size = childFile.Length,
-                    XXH3 = string.Join(null, contentHash.Select(static b => b.ToString("x2"))),
+                    XXH3 = string.Join(null, contentHash.Select(static b => b.ToString("X2"))),
                     Tags = tags
                 };
 
