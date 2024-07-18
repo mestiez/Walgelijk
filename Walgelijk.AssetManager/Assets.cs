@@ -35,7 +35,10 @@ public static class Assets
             var assetPackage = Resources.Load<AssetPackage>(path, true);
             if (!packageRegistry.TryAdd(assetPackage.Metadata.Id, assetPackage))
             {
-                Resources.Unload(assetPackage);
+                //Resources.Unload(assetPackage);
+                // I am not sure if we should unload the package from the resource cache
+                // because it's possible that it was loaded succesfully previously
+                // TODO maybe check if it was already loaded, and only unload if not?
                 throw new Exception($"Package with id {assetPackage.Metadata.Id} already exists");
             }
 

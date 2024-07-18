@@ -3,7 +3,7 @@
 namespace Walgelijk.AssetManager;
 
 /// <summary>
-/// Locally unique ID for an asset
+/// Globally unique ID for an asset package
 /// </summary>
 [JsonConverter(typeof(PackageIdConverter))]
 public readonly struct PackageId : IEquatable<PackageId>
@@ -33,8 +33,8 @@ public readonly struct PackageId : IEquatable<PackageId>
     /// </summary>
     public static PackageId Parse(ReadOnlySpan<char> id)
     {
-        if (TryParse(id, out var asset))
-            return asset;
+        if (TryParse(id, out var package))
+            return package;
 
         throw new Exception($"{id} is not a valid ID");
     }
@@ -50,15 +50,15 @@ public readonly struct PackageId : IEquatable<PackageId>
     /// <summary>
     /// Parses a formatted string. This function takes a stringified ID, <b>not a path</b>.
     /// </summary>
-    public static bool TryParse(ReadOnlySpan<char> id, out PackageId asset)
+    public static bool TryParse(ReadOnlySpan<char> id, out PackageId package)
     {
         if (IdUtil.TryConvert(id, out var i))
         {
-            asset = new PackageId(i);
+            package = new PackageId(i);
             return true;
         }
 
-        asset = default;
+        package = default;
         return false;
     }
 
@@ -66,7 +66,7 @@ public readonly struct PackageId : IEquatable<PackageId>
 
     public override bool Equals(object? obj)
     {
-        return obj is AssetId id && Equals(id);
+        return obj is PackageId id && Equals(id);
     }
 
     public bool Equals(PackageId other)
