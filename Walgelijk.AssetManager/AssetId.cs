@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Globalization;
 
 namespace Walgelijk.AssetManager;
 
@@ -28,7 +29,32 @@ public readonly struct AssetId : IEquatable<AssetId>
         Internal = @internal;
     }
 
-    public override string ToString() => Internal.ToString();
+    public static AssetId Parse(ReadOnlySpan<char> id)
+    {
+        if (TryParse(id, out var asset))
+            return asset;
+
+        throw new Exception($"{id} is not a valid ID");
+    }
+
+    public static AssetId Parse(string id)
+    {
+        return Parse(id.AsSpan());
+    }
+
+    public static bool TryParse(ReadOnlySpan<char> id, out AssetId asset)
+    {
+        if (int.TryParse(id, out var i) || int.TryParse(id, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out i))
+        {
+            asset = new AssetId(i);
+            return true;
+        }
+
+        asset = default;
+        return false;
+    }
+
+    public override string ToString() => Internal.ToString("X2");
 
     public override bool Equals(object? obj)
     {

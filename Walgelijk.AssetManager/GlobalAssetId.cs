@@ -51,12 +51,15 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
 
     public GlobalAssetId(ReadOnlySpan<char> formatted)
     {
-        var sp = formatted.IndexOf(':');
-        if (sp == -1)
+        var index = formatted.IndexOf(':');
+
+        var external = formatted[..index];
+        var @internal = formatted[(index + 1)..];
+        if (index == -1)
             throw new Exception("Formatted string contains no external ID part");
 
-        External = Hashes.MurmurHash1(formatted[..sp]);
-        Internal = new(formatted[(sp+1)..]);
+        External = Hashes.MurmurHash1(external);
+        Internal = new(@internal);
     }
 
     public static implicit operator GlobalAssetId(ReadOnlySpan<char> formatted)
@@ -75,7 +78,7 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
         return !(left == right);
     }
 
-    public override string ToString() => $"{External}:{Internal}";
+    public override string ToString() => $"{External:X2}:{Internal}";
 
     public override bool Equals(object? obj)
     {

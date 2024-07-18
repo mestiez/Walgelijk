@@ -41,8 +41,8 @@ public class AssetPackages
 
         var content = package.EnumerateFolder("textures/ui/levelselect/").ToArray();
         AssetId[] expected = [
-            new(1397134492),
-            new(1971289920)
+            new(0x5346949C),
+            new(0x757F7F40)
         ];
 
         Assert.IsTrue(expected.SequenceEqual(content), "read content does not match expected content");
@@ -297,7 +297,7 @@ public class TestStreamAudioDeserialiser : IAssetDeserialiser
     public object Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
     {
         using var reader = new VorbisReader(stream(), true);
-        var data = global::Walgelijk.OpenTK.VorbisFileReader.ReadMetadata(reader);
+        var data = VorbisFileReader.ReadMetadata(reader);
         reader.Dispose();
         return new StreamAudioData(() => new OggAudioStream(stream()), data.SampleRate, data.NumChannels, data.SampleCount);
     }

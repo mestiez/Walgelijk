@@ -12,7 +12,7 @@ public static class AssetPackageUtils
      * 📁 root
      *  | 📁 assets 
      *  |  | ~ all assets go here
-     *  |  | the asset folder can contain a .tags file (empty name for entire directory or filename for per file) which
+     *  |  | the asset folder can contain *.tags files (empty name for entire directory or filename for per file) which
      *  |  | can determine tags. the same goes for .mimetype files
      *  | 📁 metadata
      *  |  | ~ every asset has a corresponding .meta file, which contains
@@ -123,7 +123,7 @@ public static class AssetPackageUtils
                 new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(asset.Metadata))));
 
             // write guid to table
-            guidTable.AppendLine(asset.Id.Internal.ToString());
+            guidTable.AppendLine(asset.Id.ToString());
             guidTable.AppendLine(asset.AssetPath);
 
             // write guid to table
@@ -168,7 +168,7 @@ public static class AssetPackageUtils
                 s.AppendLine(path);
                 s.AppendLine(set.Count.ToString());
                 foreach (var asset in set)
-                    s.AppendFormat("\t{0}\n", asset.Internal);
+                    s.AppendFormat("\t{0}\n", asset.ToString());
             }
             var l = archive.WriteEntry("hierarchy.txt", new MemoryStream(Encoding.UTF8.GetBytes(s.ToString())));
             Console.WriteLine($"hierarchy.txt written {l}");

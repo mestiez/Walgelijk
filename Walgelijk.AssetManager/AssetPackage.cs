@@ -86,9 +86,8 @@ public class AssetPackage : IDisposable
                 assetFolder.Assets = new AssetId[count];
                 for (int i = 0; i < count; i++)
                 {
-                    int asset = int.Parse(e.ReadLine()!);
-                    var b = assetFolder.Assets[i] = new(asset);
-                    all.Add(b);
+                    var asset = assetFolder.Assets[i] = AssetId.Parse(e.ReadLine()!);
+                    all.Add(asset);
                 }
             }
         }
@@ -115,8 +114,7 @@ public class AssetPackage : IDisposable
 
                 for (int i = 0; i < count; i++)
                 {
-                    int asset = int.Parse(e.ReadLine()!);
-                    arr[i] = new AssetId(asset);
+                    arr[i] = AssetId.Parse(e.ReadLine()!);
                 }
             }
         }

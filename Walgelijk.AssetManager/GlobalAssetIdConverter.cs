@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using System.Globalization;
 
 namespace Walgelijk.AssetManager;
 
@@ -19,11 +20,11 @@ public class GlobalAssetIdConverter : JsonConverter<GlobalAssetId>
             var external = s[..index];
             var @internal = s[(index + 1)..];
 
-            if (!int.TryParse(external, out var externalId))
+            if (!int.TryParse(external, out var externalId) && !int.TryParse(external, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out externalId))
                 externalId = Hashes.MurmurHash1(external);
 
-            if (!int.TryParse(@internal, out var internalId))
-                internalId = Hashes.MurmurHash1(@internal);
+            if (!AssetId.TryParse(@internal, out var internalId))
+                internalId = new AssetId(@internal);
 
             return new GlobalAssetId(externalId, internalId);
         }
