@@ -40,9 +40,11 @@ public class AssetPackage : IDisposable
             var metadataEntry = archive.GetEntry("package.json") ?? throw new Exception("Archive has no package.json. This asset package is invalid");
             using var e = new StreamReader(metadataEntry!, encoding: Encoding.UTF8, leaveOpen: false);
             var json = e.ReadToEnd();
+            /// YOU NEED AN INTERMEDIARY FORMAT
+            /// FUCKING JSON!!! FUCK!!!!!!!!!!!
             Metadata = JsonConvert.DeserializeObject<AssetPackageMetadata>(json);
 
-            if (Metadata.FormatVersion <= new Version("12.0.0"))
+            if (Metadata.FormatVersion < new Version("14.0.0"))
             {
                 // older version uses a different metadata format
 
