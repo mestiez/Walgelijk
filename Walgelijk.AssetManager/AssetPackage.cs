@@ -57,6 +57,11 @@ public class AssetPackage : IDisposable
                 Metadata.Id = new PackageId(old.NumericalId);
                 Metadata.Name = old.Id;
             }
+
+            if (Metadata.Id == PackageId.None)
+            {
+                throw new Exception("Package ID is None");
+            }
         }
 
         // read guid table
