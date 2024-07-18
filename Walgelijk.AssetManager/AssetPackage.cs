@@ -54,14 +54,14 @@ public class AssetPackage : IDisposable
                 if (idLine == null)
                     break;
 
-                if (!int.TryParse(idLine, out var id))
-                    throw new Exception($"Id {idLine} is not an integer");
+                if (!AssetId.TryParse(idLine, out var assetId))
+                    throw new Exception($"Id {idLine} is not a valid asset ID");
 
                 var path = e.ReadLine() ?? throw new Exception($"Invalid GUID table: id {idLine} is missing path");
 
                 AssetPackageUtils.AssertPathValidity(path);
 
-                guidTable.Add(id, path);
+                guidTable.Add(assetId.Internal, path);
             }
 
             this.guidTable = guidTable.ToImmutableDictionary();
