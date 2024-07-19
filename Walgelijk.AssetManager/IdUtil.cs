@@ -13,25 +13,24 @@ public static class IdUtil
             return result;
 
         throw new ArgumentException($"Given ID \"{a}\" is invalid");
-    }  
-    
+    }
+
     public static bool TryConvert(ReadOnlySpan<char> a, out int result)
     {
-        return int.TryParse(a, NumberStyles.Integer, CultureInfo.InvariantCulture, out result) 
-            || int.TryParse(a, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out result);
-    } 
-    
+        return int.TryParse(a, NumberStyles.Integer, CultureInfo.InvariantCulture, out result);
+    }
+
     public static string Convert(int a)
     {
         if (TryConvert(a, out var result))
             return result;
 
         throw new ArgumentException($"Given ID \"{a}\" is invalid");
-    }  
-    
+    }
+
     public static bool TryConvert(int a, out string result)
     {
-        result = a.ToString("X2", CultureInfo.InvariantCulture);
+        result = a.ToString("D", CultureInfo.InvariantCulture);
         return true;
     }
 }

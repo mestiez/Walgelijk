@@ -21,7 +21,7 @@
 │                                                                                     │
 │ ■ ASSET INDEX                                                                       │
 │                                                                                     │
-│ The index countains "entry count" entries, each of which has the following          │
+│ The index contains "entry count" entries, each of which has the following           │
 │ structure. Position is relative to the start of each entry.                         │
 │                                                                                     │
 │ POSITION │ DATA              │ TYPE   │ SIZE                                        │
