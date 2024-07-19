@@ -44,7 +44,7 @@ public class AssetPackage : IDisposable
             /// FUCKING JSON!!! FUCK!!!!!!!!!!!
             Metadata = JsonConvert.DeserializeObject<AssetPackageMetadata>(json);
 
-            if (Metadata.FormatVersion < new Version("14.0.0"))
+            if (Metadata.FormatVersion.Minor < 14)
             {
                 // older version uses a different metadata format
 

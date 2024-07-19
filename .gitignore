@@ -528,3 +528,4 @@ obj/
 build.bat
 Playgrounds/console_session.txt
 *.waa
+/Walgelijk.Tests/new_base.waa

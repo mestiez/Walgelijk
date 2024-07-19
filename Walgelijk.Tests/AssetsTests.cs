@@ -10,7 +10,7 @@ namespace Tests.AssetManager;
 [TestClass]
 public class AssetsTests
 {
-    const string validPackage1 = "base.waa";
+    const string validPackage1 = "new_base.waa";
     const string validPackage2 = "koploper.waa";
 
     [TestInitialize]
@@ -43,6 +43,7 @@ public class AssetsTests
         using var str1 = Assets.Load<byte[]>("base:shaders/sdf-font.frag");
         using var str2 = Assets.Load<byte[]>("koploper:paths/safe.json");
 
+        // check content match
         Assert.AreEqual(0x2CB81DDBu, Crc32.HashToUInt32(str1.Value));
         Assert.AreEqual(0x78055C57u, Crc32.HashToUInt32(str2.Value));
 
