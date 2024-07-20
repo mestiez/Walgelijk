@@ -7,22 +7,6 @@ namespace Walgelijk.AssetManager;
 
 public static class AssetPackageUtils
 {
-    /* AssetPackage structure:
-     * 
-     * 📁 root
-     *  | 📁 assets 
-     *  |  | ~ all assets go here
-     *  |  | the asset folder can contain *.tags files (empty name for entire directory or filename for per file) which
-     *  |  | can determine tags. the same goes for .mimetype files
-     *  | 📁 metadata
-     *  |  | ~ every asset has a corresponding .meta file, which contains
-     *  |  |   a kv map of properties such as file size, mime type, tags, etc.
-     *  | 📃 guid_table.txt
-     *  | 📃 tag_table.txt
-     *  | 📃 hierarchy.txt
-     *  | 📃 package.json
-     */
-
     private struct IntermediateAsset
     {
         public AssetId Id;
@@ -206,10 +190,10 @@ public static class AssetPackageUtils
                 var id = new AssetId(resourcePath);
 
                 if (id == AssetId.None)
-                    throw new Exception($"Resource at \"{resourcePath}\" generates reserved ID zero. This can be solved by renaming the file, but you really shouldn't be seeing this so it's probably a bug.");
+                    throw new Exception($"Resource at \"{resourcePath}\" generates reserved ID zero. This may be solved by renaming the file, but you really shouldn't be seeing this so it's probably a bug.");
 
                 if (!guidsIntermediate.Add(id.Internal))
-                    throw new Exception($"Resource at \"{resourcePath}\" collides with another resource.");
+                    throw new Exception($"Resource at \"{resourcePath}\" collides with another resource. Rename or relocate.");
 
                 var mimeTypeFile = info.EnumerateFiles(childFile.Name + ".mimetype").FirstOrDefault();
                 var tagsFile = info.EnumerateFiles(childFile.Name + ".tags").FirstOrDefault();

@@ -1,0 +1,75 @@
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│ ■ WALGELIJK ASSET PACKAGE v0.15.0                                                   │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│ The asset package is a structure of files within an asset archive. This could be    │
+│ any archive format, but is typically a Walgelijk Asset Archive (WAA). An asset      │
+│ package contains all assets, metadata about assets, information to help query       │
+│ assets, and metadata about the package itself.                                      │
+│ ─────────────────────────────────────────────────────────────────────────────────── │
+│                                  ╭────────────────╮                                 │
+│                                  │  ARCHIVE ROOT  │                                 │
+│                                  ╰──────┬─┬─┬─────╯                                 │
+│                      ╭──────────────────╯ │ ╰─────────────────╮                     │
+│              ╭───────┴────────╮  ╭────────┴───────╮           │                     │
+│              │     assets     │  │    metadata    │   /tag_table.txt                │
+│              ╰────────────────╯  ╰────────────────╯   /guid_table.txt               │
+│               This folder         This is a           /hierarchy.txt                │
+│               contains all        "shadow" of the     /package.json                 │
+│               assets exactly      assets folder.                                    │
+│               as they were        The original                                      │
+│               when the package    folder structure                                  │
+│               was built.          is preserved,                                     │
+│                                   but each file is                                  │
+│               The structure of    replaced with a                                   │
+│               the original        JSON file. It is                                  │
+│               exported folder     a KV map of                                       │
+│               is also             properties such                                   │
+│               preserved.          as file size,                                     │
+│                                   mime type, tags,                                  │
+│                                   etc.                                              │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│ ■ ROOT FILES                                                                        │
+│ ┌──────────────────────────┐ ┌──────────────────────────┐ ┌───────────────────────┐ │
+│ │      tag_table.txt       │ │      guid_table.txt      │ │     hierarchy.txt     │ │
+│ ├──────────────────────────┤ ├──────────────────────────┤ ├───────────────────────┤ │
+│ │A list of all tags and all│ │Every asset and their ID  │ │Every directory path   │ │
+│ │associated assets.        │ │stored as a sequence.     │ │followed by a list of  │ │
+│ │Formatted as a sequence.  │ │                          │ │the assets it contains.│ │
+│ ├──────────────────────────┤ ├──────────────────────────┤ ├───────────────────────┤ │
+│ │{tag}\n                   │ │{asset ID}\n              │ │{path}\n               │ │
+│ │{length}\n                │ │{path}\n                  │ │{length}\n             │ │
+│ │[asset IDs]\n             │ │                          │ │[asset IDs]\n          │ │
+│ └──────────────────────────┘ └──────────────────────────┘ └───────────────────────┘ │
+│ ┌─────────────────────────────────────────────────────────────────────────────────┐ │
+│ │                                  package.json                                   │ │
+│ ├───────────────────────────────────────────────┬─────────────────────────────────┤ │
+│ │Package metadata in JSON format.               │              EXAMPLE            │ │
+│ │                                               │ {                               │ │
+│ │"Id", integer ID as a string                   │  "Id": "-989834013",            │ │
+│ │"Name", string ID                              │  "Name": "base",                │ │
+│ │"Count", total amount of assets                │  "Count": 1837,                 │ │
+│ │"FormatVersion", version of the package format │  "FormatVersion": "0.14.1.0",   │ │
+│ │"EngineVersion", version of the game engine    │  "EngineVersion": "0.24.6.0"    │ │
+│ │                                               │ }                               │ │
+│ └───────────────────────────────────────────────┴─────────────────────────────────┘ │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│ ■ TAGS                                                                              │
+│ Tags can be applied to individual assets or entire folders using *.tags files. For  │
+│ any file X, if file X.tags is found, each of its lines will be applied as tags to   │
+│ X. Additionally, if a folder contains a ".tags" file (empty name), each line of its │
+│ contents will be applied to all assets in the folder and its subfolders.            │
+├──────────────────────────────────────────────────┬──────────────────────────────────┤
+│ ■ ASSET METADATA                                 │              EXAMPLE             │
+│ The /metadata folder contains a shadow copy, as  │ {                                │
+│ mentioned previously. Every asset has a          │  "Id": "28793189",               │
+│ corresponding JSON file, named after the         │  "Path": "audio/music/menu.ogg", │
+│ original file (e.g star.png.json).               │  "Size": 25382,                  │
+│                                                  │  "MimeType": "audio/ogg",        │
+│ "Id", integer ID as a string                     │  "Tags": [                       │
+│ "Path", path to asset from /assets folder        │      "music"                     │
+│ "Size", byte count                               │  ],                              │
+│ "MimeType", mime type of the asset derived from  │  "XXH3": "3B11B257578D749E"      │
+│             the extension and custom processors  │ }                                │
+│ "Tags", array of tags this asset has             │                                  │
+│ "XXH3", asset content hash in hexadecimal        │                                  │
+└──────────────────────────────────────────────────┴──────────────────────────────────┘

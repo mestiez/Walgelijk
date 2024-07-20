@@ -1,5 +1,5 @@
 ┌─────────────────────────────────────────────────────────────────────────────────────┐
-│ ■ WALGELIJK ASSET ARCHIVE (WAA) v0.11.2                                             │
+│ ■ WALGELIJK ASSET ARCHIVE (WAA) v1.0.0                                              │
 ├─────────────────────────────────────────────────────────────────────────────────────┤
 │ A WAA file is a read-only, uncompressed asset pack format created solely for the    │
 │ Walgelijk game engine. Its purpose is to provide fast asset retrieval and loading,  │
