@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.IO;
 
 namespace Walgelijk.AssetManager;
@@ -67,6 +68,13 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
     }
 
     public override string ToString() => $"{External}:{Internal}";
+
+    public string ToNamedString()
+    {
+        if (Assets.TryGetMetadata(this, out var asset) && Assets.TryGetPackage(External, out var package))
+            return $"{package.Metadata.Name}:{asset.Path}";
+        return ToString();
+    }
 
     public override bool Equals(object? obj)
     {

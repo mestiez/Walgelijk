@@ -34,7 +34,7 @@ public readonly struct AssetRef<T> : IDisposable, IEquatable<AssetRef<T>>
         return !(left == right);
     }
 
-    public override string ToString() => Id.ToString();
+    public override string ToString() => Id.ToNamedString();
 
     public override bool Equals(object? obj)
     {

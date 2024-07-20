@@ -5,7 +5,7 @@ internal class MediaBuffer<T>
     private readonly T[] Buffer;
 
     private long writeCursor, readCursor;
-    private Mutex bufferLock = new();
+    private readonly Mutex bufferLock = new();
 
     public long WriteCursorWrapped => writeCursor % Buffer.Length;
     public long ReadCursorWrapped => readCursor % Buffer.Length; 

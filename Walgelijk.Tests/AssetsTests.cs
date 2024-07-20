@@ -10,7 +10,7 @@ namespace Tests.AssetManager;
 [TestClass]
 public class AssetsTests
 {
-    const string validPackage1 = "new_base.waa";
+    const string validPackage1 = "base.waa";
     const string validPackage2 = "koploper.waa";
 
     [TestInitialize]

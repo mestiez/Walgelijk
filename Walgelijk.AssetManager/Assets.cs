@@ -50,8 +50,8 @@ public static class Assets
         {
             enumerationLock.ExitReadLock();
         }
-    }   
-    
+    }
+
     public static AssetPackage RegisterPackage(AssetPackage assetPackage)
     {
         enumerationLock.EnterReadLock();
@@ -323,12 +323,28 @@ public static class Assets
         if (id.External == PackageId.None)
             throw new Exception("Id is None");
 
+        if (TryGetMetadata(id, out var m))
+            return m;
+
+        throw new KeyNotFoundException($"Asset package {id.External} not found");
+    }
+
+    public static bool TryGetMetadata(GlobalAssetId id, out AssetMetadata metadata)
+    {
+        if (id.External == PackageId.None)
+            throw new Exception("Id is None");
+
         var replacementId = ApplyReplacement(id);
 
-        if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage))
-            return assetPackage.GetAssetMetadata(id.Internal);
+        if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage) 
+            && assetPackage.HasAsset(id.Internal))
+        {
+            metadata = assetPackage.GetAssetMetadata(id.Internal);
+            return true;
+        }
 
-        throw new KeyNotFoundException($"Asset package {replacementId.External} not found");
+        metadata = default;
+        return false;
     }
 
     public static IEnumerable<GlobalAssetId> EnumerateFolder(string folder, SearchOption searchOption = SearchOption.TopDirectoryOnly)

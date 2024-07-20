@@ -37,6 +37,6 @@ public class GlobalAssetIdConverter : JsonConverter<GlobalAssetId>
         if (value == GlobalAssetId.None)
             writer.WriteNull();
         else
-            writer.WriteValue(value.ToString());
+            writer.WriteValue(value.ToNamedString());
     }
 }

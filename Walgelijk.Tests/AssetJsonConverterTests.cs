@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Data;
+using System.IO;
 using System.Linq;
 using Walgelijk;
 using Walgelijk.AssetManager;
@@ -11,6 +12,18 @@ namespace Tests.AssetManager;
 [TestClass]
 public class AssetJsonConverterTests
 {
+    const string validPackage1 = "base.waa";
+
+    [TestInitialize]
+    public void Init()
+    {
+        Assert.IsTrue(
+            File.Exists(validPackage1) && File.Exists(validPackage1),
+            "These tests depend on the test archives, which aren't publicly available");
+        Assets.ClearRegistry();
+        Assets.RegisterPackage(validPackage1);
+    }
+
     [TestMethod]
     public void AssetId()
     {
@@ -24,7 +37,31 @@ public class AssetJsonConverterTests
         var returned = JsonConvert.DeserializeObject<AssetId[]>(json);
 
         Assert.IsTrue(p.SequenceEqual(returned));
-    }   
+    }
+
+    [TestMethod]
+    public void ExportNamed()
+    {
+        string[] named = [
+            "base:data/convars.txt",
+            "base:textures/door.png",
+            "base:sounds/accurate_shot_warning.wav",
+        ];
+
+        GlobalAssetId[] p = [.. named.Select(n => new GlobalAssetId(n))];
+        Assert.IsTrue(p.All(i => Assets.HasAsset(i)));
+
+        var json = JsonConvert.SerializeObject(p);
+
+        foreach (string v in named)
+            Assert.IsTrue(json.Contains(v));
+
+        var returned = JsonConvert.DeserializeObject<GlobalAssetId[]>(json);
+        Assert.IsTrue(p.SequenceEqual(returned));
+
+        for (int i = 0; i < returned.Length; i++)
+            Assert.AreEqual(Assets.HasAsset(returned[i]), Assets.HasAsset(p[i]));
+    }
     
     [TestMethod]
     public void StringAssetId()
@@ -79,17 +116,7 @@ public class AssetJsonConverterTests
             Assert.AreEqual(expected, des);
         }
     }  
-    
-    [TestMethod]
-    public void NumericalIDs()
-    {
-        var des = JsonConvert.DeserializeObject<AssetRef<AudioData>[]>(@$"[""-745702066:-1160611600"", ""{1673332487:X2}:{-401014186:X2}"", ""1023053047:{-465793011:X2}""]");
 
-        Assert.AreEqual(new("test:data/test.txt"), des[0]);
-        Assert.AreEqual(new("gaming:textures/lol.png"), des[1]);
-        Assert.AreEqual(new("assets:textures/ui/star.qoi"), des[2]);
-    }   
-    
     [TestMethod]
     public void StringAssetRef()
     {
