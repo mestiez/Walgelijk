@@ -40,11 +40,14 @@ public class AssetsTests
         Assets.RegisterPackage(validPackage1);
         Assets.RegisterPackage(validPackage2);
 
-        using var str1 = Assets.Load<byte[]>("base:shaders/sdf-font.frag");
+        using var str1 = Assets.Load<byte[]>("base:shaders/red.frag");
         using var str2 = Assets.Load<byte[]>("koploper:paths/safe.json");
 
+        Assert.AreEqual(str1, Assets.Load<byte[]>("shaders/red.frag")); // we gotta check if the auto-find asset package thing works
+        Assert.AreEqual(str2, Assets.Load<byte[]>("paths/safe.json"));
+
         // check content match
-        Assert.AreEqual(0x2CB81DDBu, Crc32.HashToUInt32(str1.Value));
+        Assert.AreEqual(0xC6F82BF0u, Crc32.HashToUInt32(str1.Value));
         Assert.AreEqual(0x78055C57u, Crc32.HashToUInt32(str2.Value));
 
         Assets.ClearRegistry();

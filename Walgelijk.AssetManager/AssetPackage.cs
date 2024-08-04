@@ -182,7 +182,7 @@ public class AssetPackage : IDisposable
         // it is malformed because the guid table is pointing to entries that don't exist
 
         // TODO we are doing unnecessary work by calling this function (double GetAssetPath)
-        return new Asset(GetAssetMetadata(id), () => Archive.GetEntry(p)!);
+        return new Asset(GetMetadata(id), () => Archive.GetEntry(p)!);
     }
 
     public string GetAssetPath(in AssetId id)
@@ -217,7 +217,7 @@ public class AssetPackage : IDisposable
 
         try
         {
-            var metadata = GetAssetMetadata(id);
+            var metadata = GetMetadata(id);
             if (cache.TryGetValue(id, out var obj))
             {
                 if (obj is T t)
@@ -313,7 +313,7 @@ public class AssetPackage : IDisposable
 
     public static AssetPackage Load(string path) => new AssetPackage(path);
 
-    public AssetMetadata GetAssetMetadata(in AssetId id)
+    public AssetMetadata GetMetadata(in AssetId id)
     {
         lock (metadataCache)
         {

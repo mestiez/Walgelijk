@@ -30,9 +30,6 @@
 		<None Update="base.waa">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-		<None Update="new_base.waa">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
 		<None Update="koploper.waa">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>

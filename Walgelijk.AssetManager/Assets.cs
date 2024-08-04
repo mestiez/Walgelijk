@@ -15,6 +15,7 @@ public static class Assets
     public static readonly Hook OnAssetPackageRegistered = new();
     public static readonly Hook OnAssetPackageDeregistered = new();
 
+    private static readonly List<PackageId> sortedPackages = [];
     private static readonly ConcurrentDictionary<PackageId, AssetPackage> packageRegistry = [];
     private static readonly ConcurrentDictionary<GlobalAssetId, ConcurrentBag<IDisposable>> disposableChain = [];
     private static readonly ConcurrentDictionary<GlobalAssetId, GlobalAssetId> replacementTable = [];
@@ -30,46 +31,51 @@ public static class Assets
     public static AssetPackage RegisterPackage(string path)
     {
         enumerationLock.EnterReadLock();
-        try
-        {
-            var assetPackage = Resources.Load<AssetPackage>(path, true);
-            if (!packageRegistry.TryAdd(assetPackage.Metadata.Id, assetPackage))
+        lock (sortedPackages)
+            try
             {
-                //Resources.Unload(assetPackage);
-                // I am not sure if we should unload the package from the resource cache
-                // because it's possible that it was loaded succesfully previously
-                // TODO maybe check if it was already loaded, and only unload if not?
-                throw new Exception($"Package with id {assetPackage.Metadata.Id} already exists");
+                var assetPackage = Resources.Load<AssetPackage>(path, true);
+                if (!packageRegistry.TryAdd(assetPackage.Metadata.Id, assetPackage))
+                {
+                    //Resources.Unload(assetPackage);
+                    // I am not sure if we should unload the package from the resource cache
+                    // because it's possible that it was loaded succesfully previously
+                    // TODO maybe check if it was already loaded, and only unload if not?
+                    throw new Exception($"Package with id {assetPackage.Metadata.Id} already exists");
+                }
+
+                sortedPackages.Insert(0, assetPackage.Metadata.Id);
+
+                OnAssetPackageRegistered.Dispatch();
+
+                return assetPackage;
             }
-
-            OnAssetPackageRegistered.Dispatch();
-
-            return assetPackage;
-        }
-        finally
-        {
-            enumerationLock.ExitReadLock();
-        }
+            finally
+            {
+                enumerationLock.ExitReadLock();
+            }
     }
 
     public static AssetPackage RegisterPackage(AssetPackage assetPackage)
     {
         enumerationLock.EnterReadLock();
-        try
-        {
-            if (!packageRegistry.TryAdd(assetPackage.Metadata.Id, assetPackage))
+        lock (sortedPackages)
+            try
             {
-                throw new Exception($"Package with id {assetPackage.Metadata.Id} already exists");
+                if (!packageRegistry.TryAdd(assetPackage.Metadata.Id, assetPackage))
+                {
+                    throw new Exception($"Package with id {assetPackage.Metadata.Id} already exists");
+                }
+
+                sortedPackages.Insert(0, assetPackage.Metadata.Id);
+                OnAssetPackageRegistered.Dispatch();
+
+                return assetPackage;
             }
-
-            OnAssetPackageRegistered.Dispatch();
-
-            return assetPackage;
-        }
-        finally
-        {
-            enumerationLock.ExitReadLock();
-        }
+            finally
+            {
+                enumerationLock.ExitReadLock();
+            }
     }
 
     public static void ClearRegistry()
@@ -78,26 +84,24 @@ public static class Assets
             throw new InvalidOperationException("The package registry cannot be cleared while disposing a package");
 
         enumerationLock.EnterWriteLock();
-        try
-        {
-            var keys = new Stack<PackageId>(AssetPackages);
-            while (keys.TryPop(out var id))
+        lock (sortedPackages)
+            try
             {
-                if (packageRegistry.TryGetValue(id, out var p))
-                {
-                    Resources.Unload(p);
-                    p.Dispose();
-
-                }
+                var keys = new Stack<PackageId>(AssetPackages);
+                while (keys.TryPop(out var id))
+                    if (packageRegistry.TryGetValue(id, out var p))
+                        Resources.Unload(p);
+                OnAssetPackageRegistered.Dispatch();
+                packageRegistry.Clear();
+                sortedPackages.Clear();
             }
-            OnAssetPackageRegistered.Dispatch();
-            packageRegistry.Clear();
-        }
-        finally
-        {
-            enumerationLock.ExitWriteLock();
-        }
+            finally
+            {
+                enumerationLock.ExitWriteLock();
+            }
     }
+
+    public static AssetPackage GetPackage(PackageId id) => packageRegistry[id];
 
     public static bool TryGetPackage(PackageId id, [NotNullWhen(true)] out AssetPackage? assetPackage)
     {
@@ -121,25 +125,24 @@ public static class Assets
     public static bool UnloadPackage(PackageId id)
     {
         enumerationLock.EnterWriteLock();
-        try
-        {
-            if (TryGetPackage(id, out var p) && packageRegistry.Remove(id, out _))
+        lock (sortedPackages)
+            try
             {
-                isDisposingPackage = true;
-                Resources.Unload(p);
-                p.Dispose();
-                OnAssetPackageDeregistered.Dispatch();
-
-                return true;
+                if (TryGetPackage(id, out var p) && packageRegistry.Remove(id, out _) && sortedPackages.Remove(id))
+                {
+                    isDisposingPackage = true;
+                    Resources.Unload(p);
+                    OnAssetPackageDeregistered.Dispatch();
+                    return true;
+                }
+                else
+                    return false;
             }
-            else
-                return false;
-        }
-        finally
-        {
-            isDisposingPackage = false;
-            enumerationLock.ExitWriteLock();
-        }
+            finally
+            {
+                isDisposingPackage = false;
+                enumerationLock.ExitWriteLock();
+            }
     }
 
     public static bool UnloadPackage(in ReadOnlySpan<char> id) => UnloadPackage(new(id));
@@ -256,7 +259,32 @@ public static class Assets
         return false;
     }
 
-    public static bool TryLoad<T>(in ReadOnlySpan<char> id, out AssetRef<T> assetRef) => TryLoad<T>(new GlobalAssetId(id), out assetRef);
+    public static bool HasAsset(in AssetId id)
+    {
+        foreach (var item in packageRegistry.Values)
+            if (item.HasAsset(id))
+                return true;
+        return false;
+    }
+
+    public static bool TryLoad<T>(in ReadOnlySpan<char> id, out AssetRef<T> assetRef)
+    {
+        if (id.Contains(':'))
+            return TryLoad<T>(new GlobalAssetId(id), out assetRef);
+
+        return TryLoad<T>(new AssetId(id), out assetRef);
+    }
+
+    public static bool TryLoad<T>(AssetId assetId, out AssetRef<T> assetRef)
+    {
+        lock (sortedPackages)
+            foreach (var packageId in sortedPackages)
+                if (packageRegistry[packageId].HasAsset(assetId))
+                    return TryLoad<T>(new GlobalAssetId(packageId, assetId), out assetRef);
+
+        assetRef = default;
+        return false;
+    }
 
     public static bool TryLoad<T>(GlobalAssetId id, out AssetRef<T> assetRef)
     {
@@ -278,7 +306,12 @@ public static class Assets
         return false;
     }
 
-    public static AssetRef<T> Load<T>(in ReadOnlySpan<char> id) => Load<T>(new GlobalAssetId(id));
+    public static AssetRef<T> Load<T>(in ReadOnlySpan<char> id)
+    {
+        if (id.Contains(':'))
+            return Load<T>(new GlobalAssetId(id));
+        return Load<T>(new AssetId(id));
+    }
 
     /// <summary>
     /// Load the asset with the given ID. 
@@ -300,6 +333,22 @@ public static class Assets
     }
 
     /// <summary>
+    /// Load the asset with the given ID. Walks through each registered asset package in <see cref="AssetPackages"/> in reverse order (LIFO) and returns the first find.
+    /// </summary>
+    public static AssetRef<T> Load<T>(AssetId assetId)
+    {
+        if (assetId == AssetId.None)
+            throw new Exception("Id is None");
+
+        lock (sortedPackages)
+            foreach (var packageId in sortedPackages)
+                if (packageRegistry[packageId].HasAsset(assetId))
+                    return Load<T>(new GlobalAssetId(packageId, assetId));
+
+        throw new KeyNotFoundException($"Asset {assetId} not found in any package");
+    }
+
+    /// <summary>
     /// Directly load the data without caching it. 
     /// Use with caution, as the resulting object will be disconnected from the asset manager
     /// </summary>
@@ -315,7 +364,24 @@ public static class Assets
 
         if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage))
             return assetPackage.LoadNoCache<T>(id.Internal);
+
         throw new KeyNotFoundException($"Asset package {replacementId.External} not found");
+    }
+
+    /// <summary>
+    /// Directly load the data without caching it. 
+    /// Use with caution, as the resulting object will be disconnected from the asset manager
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public static T LoadNoCache<T>(AssetId assetId)
+    {
+        lock (sortedPackages)
+            foreach (var packageId in sortedPackages)
+                if (packageRegistry[packageId].HasAsset(assetId))
+                    return LoadNoCache<T>(new GlobalAssetId(packageId, assetId));
+        throw new KeyNotFoundException($"Asset {assetId} not found in any package");
     }
 
     public static AssetMetadata GetMetadata(GlobalAssetId id)
@@ -329,6 +395,15 @@ public static class Assets
         throw new KeyNotFoundException($"Asset package {id.External} not found");
     }
 
+    public static AssetMetadata GetMetadata(AssetId assetId)
+    {
+        lock (sortedPackages)
+            foreach (var packageId in sortedPackages)
+                if (packageRegistry[packageId].HasAsset(assetId))
+                    return GetMetadata(new GlobalAssetId(packageId, assetId));
+        throw new KeyNotFoundException($"Asset {assetId} not found in any package");
+    }
+
     public static bool TryGetMetadata(GlobalAssetId id, out AssetMetadata metadata)
     {
         if (id.External == PackageId.None)
@@ -336,10 +411,10 @@ public static class Assets
 
         var replacementId = ApplyReplacement(id);
 
-        if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage) 
+        if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage)
             && assetPackage.HasAsset(id.Internal))
         {
-            metadata = assetPackage.GetAssetMetadata(id.Internal);
+            metadata = assetPackage.GetMetadata(id.Internal);
             return true;
         }
 
@@ -347,6 +422,20 @@ public static class Assets
         return false;
     }
 
+    public static bool TryGetMetadata(AssetId assetId, out AssetMetadata metadata)
+    {
+        lock (sortedPackages)
+            foreach (var packageId in sortedPackages)
+                if (packageRegistry[packageId].HasAsset(assetId))
+                    return TryGetMetadata(new GlobalAssetId(packageId, assetId), out metadata);
+
+        metadata = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Enumerates the folder for every package and returns all assets found
+    /// </summary>
     public static IEnumerable<GlobalAssetId> EnumerateFolder(string folder, SearchOption searchOption = SearchOption.TopDirectoryOnly)
     {
         foreach (var p in packageRegistry.Values)

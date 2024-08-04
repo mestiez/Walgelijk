@@ -66,6 +66,9 @@ public static class AssetPackageUtils
 
     public static void Build(string id, DirectoryInfo directory, Stream output, IAssetBuilderProcessor[]? preprocessors)
     {
+        if (id.Contains(':'))
+            throw new Exception("Package ID may not contain a colon");
+
         const string assetRoot = "assets/";
         const string metadataRoot = "metadata/";
 

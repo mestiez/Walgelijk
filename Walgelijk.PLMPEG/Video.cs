@@ -52,10 +52,9 @@ public class Video : IDisposable, IAudioStream, IReadableTexture
 
         plm = NativeBinding.Plm.CreateWithFilename("sodium_chloride.mpg") ?? throw new Exception("Failed to initialise PLM buffer");
         plm.Loop = true;
+
         //plm = NativeBinding.Plm.CreateWithBuffer(baseStream, true) ?? throw new Exception("Failed to initialise PLM buffer");
-
         //plm.SetAudioDecodeCallback(OnAudioDecode);
-
         //plm.SetVideoDecodeCallback(OnVideoDecode);
 
         Sound = new(new StreamAudioData(() => this, plm.SampleRate, 2, (long)(plm.SampleRate * plm.Duration)));
