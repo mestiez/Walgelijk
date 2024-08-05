@@ -21,7 +21,6 @@ public static class Assets
     private static readonly ConcurrentDictionary<GlobalAssetId, GlobalAssetId> replacementTable = [];
 
     private static readonly ReaderWriterLockSlim enumerationLock = new(LockRecursionPolicy.SupportsRecursion);
-    private static bool isDisposingPackage = false;
 
     static Assets()
     {
@@ -80,17 +79,10 @@ public static class Assets
 
     public static void ClearRegistry()
     {
-        if (isDisposingPackage)
-            throw new InvalidOperationException("The package registry cannot be cleared while disposing a package");
-
         enumerationLock.EnterWriteLock();
         lock (sortedPackages)
             try
             {
-                var keys = new Stack<PackageId>(AssetPackages);
-                while (keys.TryPop(out var id))
-                    if (packageRegistry.TryGetValue(id, out var p))
-                        Resources.Unload(p);
                 OnAssetPackageRegistered.Dispatch();
                 packageRegistry.Clear();
                 sortedPackages.Clear();
@@ -105,9 +97,6 @@ public static class Assets
 
     public static bool TryGetPackage(PackageId id, [NotNullWhen(true)] out AssetPackage? assetPackage)
     {
-        if (isDisposingPackage)
-            throw new InvalidOperationException("Packages cannot be retrieved while disposing a package");
-
         enumerationLock.EnterReadLock();
         try
         {
@@ -130,8 +119,6 @@ public static class Assets
             {
                 if (TryGetPackage(id, out var p) && packageRegistry.Remove(id, out _) && sortedPackages.Remove(id))
                 {
-                    isDisposingPackage = true;
-                    Resources.Unload(p);
                     OnAssetPackageDeregistered.Dispatch();
                     return true;
                 }
@@ -140,7 +127,6 @@ public static class Assets
             }
             finally
             {
-                isDisposingPackage = false;
                 enumerationLock.ExitWriteLock();
             }
     }
