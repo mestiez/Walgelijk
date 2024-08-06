@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using System.Globalization;
+﻿using Newtonsoft.Json;
 
 namespace Walgelijk.AssetManager;
 
@@ -12,11 +10,10 @@ public class GlobalAssetIdConverter : JsonConverter<GlobalAssetId>
 
         if (string.IsNullOrWhiteSpace(s))
             return GlobalAssetId.None;
+        var index = s.IndexOf(':');
 
-        if (s.Contains(':'))
+        if (index != -1)
         {
-            var index = s.IndexOf(':');
-
             var external = s[..index];
             var @internal = s[(index + 1)..];
 
@@ -29,7 +26,14 @@ public class GlobalAssetIdConverter : JsonConverter<GlobalAssetId>
             return new GlobalAssetId(externalId, internalId);
         }
         else
-            throw new Exception("Invalid GlobalAssetId: no delimiter. A global asset ID is formatted like so: \"external:internal\"");
+        {
+            // agnostic ID
+
+            if (!AssetId.TryParse(s, out var internalId))
+                internalId = new AssetId(s);
+
+            return new GlobalAssetId(internalId);
+        }
     }
 
     public override void WriteJson(JsonWriter writer, GlobalAssetId value, JsonSerializer serializer)

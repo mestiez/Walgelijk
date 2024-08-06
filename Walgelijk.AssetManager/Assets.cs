@@ -357,8 +357,6 @@ public static class Assets
     /// <summary>
     /// Resolve agnosticism and throw if not found
     /// </summary>
-    /// <param name="id"></param>
-    /// <exception cref="Exception"></exception>
     internal static void Validate(ref GlobalAssetId id)
     {
         if (id.IsAgnostic)

@@ -4,11 +4,13 @@ namespace Walgelijk.AssetManager;
 
 public class AssetRefConverter : JsonConverter
 {
+    private static readonly GlobalAssetIdConverter gc = new();
+
     public override bool CanConvert(Type objectType) => objectType == typeof(AssetRef<>);
 
     public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
     {
-        var s = new GlobalAssetIdConverter().ReadJson(reader, objectType, default, false, serializer);
+        var s = gc.ReadJson(reader, objectType, default, false, serializer);
 
         return Activator.CreateInstance(objectType, s);
     }

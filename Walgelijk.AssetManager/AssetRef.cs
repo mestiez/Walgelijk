@@ -18,6 +18,9 @@ public readonly struct AssetRef<T> : IDisposable, IEquatable<AssetRef<T>>
         Assets.DisposeOf(Id);
     }
 
+    /// <summary>
+    /// Returns false if the ID is none
+    /// </summary>
     public bool IsValid => Id != GlobalAssetId.None;
 
     public static AssetRef<T> None => new AssetRef<T>(GlobalAssetId.None);
