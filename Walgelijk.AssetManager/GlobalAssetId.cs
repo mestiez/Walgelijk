@@ -20,6 +20,11 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
     /// </summary>
     public readonly AssetId Internal;
 
+    /// <summary>
+    /// True if the package ID was not supplied, meaning this ID is package-agnostic.
+    /// </summary>
+    public bool IsAgnostic => External == PackageId.None;
+
     public GlobalAssetId(string assetPackage, string path)
     {
         External = new(assetPackage);
@@ -36,19 +41,30 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
     {
         External = external;
         Internal = @internal;
+    }   
+    
+    public GlobalAssetId(AssetId @internal)
+    {
+        External = PackageId.None;
+        Internal = @internal;
     }
 
     public GlobalAssetId(ReadOnlySpan<char> formatted)
     {
         var index = formatted.IndexOf(':');
-
-        var external = formatted[..index];
-        var @internal = formatted[(index + 1)..];
         if (index == -1)
-            throw new Exception("Formatted string contains no external ID part");
+        {
+            External = PackageId.None;
+            Internal = new AssetId(formatted);
+        }
+        else
+        {
+            var external = formatted[..index];
+            var @internal = formatted[(index + 1)..];
 
-        External = new(external);
-        Internal = new(@internal);
+            External = new(external);
+            Internal = new(@internal);
+        }
     }
 
     public static implicit operator GlobalAssetId(ReadOnlySpan<char> formatted)
@@ -67,12 +83,18 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
         return !(left == right);
     }
 
-    public override string ToString() => $"{External}:{Internal}";
+    public override string ToString() => IsAgnostic ? Internal.ToString() : $"{External}:{Internal}";
 
     public string ToNamedString()
     {
-        if (Assets.TryGetMetadata(this, out var asset) && Assets.TryGetPackage(External, out var package))
+        var id = this;
+
+        if (IsAgnostic)
+            Assets.TryFindFirst(Internal, out id);
+
+        if (Assets.TryGetMetadata(id, out var asset) && Assets.TryGetPackage(id.External, out var package))
             return $"{package.Metadata.Name}:{asset.Path}";
+
         return ToString();
     }
 
@@ -90,6 +112,16 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
     public override int GetHashCode()
     {
         return HashCode.Combine(External, Internal);
+    }
+
+    /// <summary>
+    /// If this ID is agnostic, resolve the agnosticism (<see cref="Assets.FindFirst"/>).
+    /// </summary>
+    public GlobalAssetId ResolveExternal()
+    {
+        if (IsAgnostic && Assets.TryFindFirst(Internal, out var a))
+            return a;
+        return this;
     }
 
     public static readonly GlobalAssetId None = new(PackageId.None, AssetId.None);

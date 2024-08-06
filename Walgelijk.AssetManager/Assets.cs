@@ -18,7 +18,6 @@ public static class Assets
     private static readonly List<PackageId> sortedPackages = [];
     private static readonly ConcurrentDictionary<PackageId, AssetPackage> packageRegistry = [];
     private static readonly ConcurrentDictionary<GlobalAssetId, ConcurrentBag<IDisposable>> disposableChain = [];
-    private static readonly ConcurrentDictionary<GlobalAssetId, GlobalAssetId> replacementTable = [];
 
     private static readonly ReaderWriterLockSlim enumerationLock = new(LockRecursionPolicy.SupportsRecursion);
 
@@ -135,8 +134,7 @@ public static class Assets
 
     public static void AssignLifetime(GlobalAssetId id, ILifetimeOperator lifetimeOperator)
     {
-        if (id == GlobalAssetId.None)
-            throw new Exception("Id is None");
+        Validate(ref id);
 
         lifetimeOperator.Triggered.AddListener(() =>
         {
@@ -147,71 +145,12 @@ public static class Assets
     /// <summary>
     /// Link an <see cref="IDisposable"/> instance to an asset, so that when the asset is disposed, the specified <see cref="IDisposable"/> is disposed as well
     /// </summary>
-    public static void LinkDisposal(in GlobalAssetId id, IDisposable d)
+    public static void LinkDisposal(GlobalAssetId id, IDisposable d)
     {
+        Validate(ref id);
+
         var set = disposableChain.Ensure(id);
         set.Add(d);
-    }
-
-    /// <summary>
-    /// Add an entry to the replacement table. Note how this will override the existing replacement.
-    /// Note how this will dispose of the original asset.
-    /// </summary>
-    /// <param name="original">The original asset ID - the one that is to be replaced</param>
-    /// <param name="replacement">The substitute ID</param>
-    public static void SetReplacement(in GlobalAssetId original, in GlobalAssetId replacement)
-    {
-        if (original.External == PackageId.None)
-            throw new Exception("Original package ID is None");
-
-        if (replacement.External == PackageId.None)
-            throw new Exception("Replacement package ID is None");
-
-        replacementTable.AddOrSet(original, replacement);
-        DisposeOf(original); // we have to dispose the original to force a reload
-    }
-
-    /// <summary>
-    /// Clear the set replacement for the given original ID. 
-    /// If any replacements were set using <see cref="SetReplacement(GlobalAssetId, GlobalAssetId)"/>, 
-    /// they will be undone and the asset will refer to itself again.
-    /// Note how this will dispose of the original asset.
-    /// </summary>
-    public static void ClearReplacement(in GlobalAssetId original)
-    {
-        if (original.External == PackageId.None)
-            throw new Exception("Id is None");
-
-        replacementTable.TryRemove(original, out _);
-        DisposeOf(original);
-    }
-
-    /// <summary>
-    /// Clear all set replacements.
-    /// </summary>
-    public static void ClearReplacements()
-    {
-        var keys = replacementTable.Keys.ToArray();
-        replacementTable.Clear();
-        foreach (var k in keys)
-            DisposeOf(k);
-    }
-
-    public static bool HasReplacement(in GlobalAssetId original) => replacementTable.ContainsKey(original);
-
-    /// <summary>
-    /// If the given ID is remapped in the <see cref="replacementTable"/>
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public static GlobalAssetId ApplyReplacement(in GlobalAssetId id)
-    {
-        if (id.External == PackageId.None)
-            throw new Exception("Id is None");
-
-        if (replacementTable.TryGetValue(id, out var replacement))
-            return replacement;
-        return id;
     }
 
     /// <summary>
@@ -220,8 +159,7 @@ public static class Assets
     /// <param name="id"></param>
     public static void DisposeOf(GlobalAssetId id)
     {
-        if (id.External == PackageId.None)
-            throw new Exception("Id is None");
+        Validate(ref id);
 
         if (disposableChain.TryRemove(id, out var set))
             while (set.TryTake(out var d))
@@ -238,14 +176,16 @@ public static class Assets
             assetPackage.DisposeOf(id.Internal);
     }
 
-    public static bool HasAsset(in GlobalAssetId id)
+    public static bool HasAsset(GlobalAssetId id)
     {
+        Validate(ref id);
+
         if (packageRegistry.TryGetValue(id.External, out var p))
             return p.HasAsset(id.Internal);
         return false;
     }
 
-    public static bool HasAsset(in AssetId id)
+    public static bool HasAsset(AssetId id)
     {
         foreach (var item in packageRegistry.Values)
             if (item.HasAsset(id))
@@ -253,35 +193,18 @@ public static class Assets
         return false;
     }
 
-    public static bool TryLoad<T>(in ReadOnlySpan<char> id, out AssetRef<T> assetRef)
-    {
-        if (id.Contains(':'))
-            return TryLoad<T>(new GlobalAssetId(id), out assetRef);
-
-        return TryLoad<T>(new AssetId(id), out assetRef);
-    }
-
     public static bool TryLoad<T>(AssetId assetId, out AssetRef<T> assetRef)
     {
-        lock (sortedPackages)
-            foreach (var packageId in sortedPackages)
-                if (packageRegistry[packageId].HasAsset(assetId))
-                    return TryLoad<T>(new GlobalAssetId(packageId, assetId), out assetRef);
-
-        assetRef = default;
-        return false;
+        return TryLoad(FindFirst(assetId), out assetRef);
     }
 
     public static bool TryLoad<T>(GlobalAssetId id, out AssetRef<T> assetRef)
     {
-        if (id.External == PackageId.None)
-            throw new Exception("Id is None");
+        Validate(ref id);
 
-        var replacementId = ApplyReplacement(id);
-
-        if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage))
+        if (packageRegistry.TryGetValue(id.External, out var assetPackage))
         {
-            if (assetPackage.HasAsset(replacementId.Internal))
+            if (assetPackage.HasAsset(id.Internal))
             {
                 assetRef = new AssetRef<T>(id);
                 return true;
@@ -290,13 +213,6 @@ public static class Assets
 
         assetRef = AssetRef<T>.None;
         return false;
-    }
-
-    public static AssetRef<T> Load<T>(in ReadOnlySpan<char> id)
-    {
-        if (id.Contains(':'))
-            return Load<T>(new GlobalAssetId(id));
-        return Load<T>(new AssetId(id));
     }
 
     /// <summary>
@@ -308,31 +224,17 @@ public static class Assets
     /// <exception cref="KeyNotFoundException"></exception>
     public static AssetRef<T> Load<T>(GlobalAssetId id)
     {
-        if (id.External == PackageId.None)
-            throw new Exception("Id is None");
+        Validate(ref id);
 
-        var replacementId = ApplyReplacement(id);
-
-        if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage))
+        if (packageRegistry.TryGetValue(id.External, out var assetPackage))
             return new AssetRef<T>(id);
-        throw new KeyNotFoundException($"Asset package {replacementId.External} not found");
+        throw new KeyNotFoundException($"Asset package {id.External} not found");
     }
 
     /// <summary>
     /// Load the asset with the given ID. Walks through each registered asset package in <see cref="AssetPackages"/> in reverse order (LIFO) and returns the first find.
     /// </summary>
-    public static AssetRef<T> Load<T>(AssetId assetId)
-    {
-        if (assetId == AssetId.None)
-            throw new Exception("Id is None");
-
-        lock (sortedPackages)
-            foreach (var packageId in sortedPackages)
-                if (packageRegistry[packageId].HasAsset(assetId))
-                    return Load<T>(new GlobalAssetId(packageId, assetId));
-
-        throw new KeyNotFoundException($"Asset {assetId} not found in any package");
-    }
+    public static AssetRef<T> Load<T>(AssetId assetId) => Load<T>(FindFirst(assetId));
 
     /// <summary>
     /// Directly load the data without caching it. 
@@ -343,15 +245,12 @@ public static class Assets
     /// <returns></returns>
     public static T LoadNoCache<T>(GlobalAssetId id)
     {
-        if (id.External == PackageId.None)
-            throw new Exception("Id is None");
+        Validate(ref id);
 
-        var replacementId = ApplyReplacement(id);
-
-        if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage))
+        if (packageRegistry.TryGetValue(id.External, out var assetPackage))
             return assetPackage.LoadNoCache<T>(id.Internal);
 
-        throw new KeyNotFoundException($"Asset package {replacementId.External} not found");
+        throw new KeyNotFoundException($"Asset package {id.External} not found");
     }
 
     /// <summary>
@@ -361,19 +260,11 @@ public static class Assets
     /// <typeparam name="T"></typeparam>
     /// <param name="id"></param>
     /// <returns></returns>
-    public static T LoadNoCache<T>(AssetId assetId)
-    {
-        lock (sortedPackages)
-            foreach (var packageId in sortedPackages)
-                if (packageRegistry[packageId].HasAsset(assetId))
-                    return LoadNoCache<T>(new GlobalAssetId(packageId, assetId));
-        throw new KeyNotFoundException($"Asset {assetId} not found in any package");
-    }
+    public static T LoadNoCache<T>(AssetId assetId) => LoadNoCache<T>(FindFirst(assetId));
 
     public static AssetMetadata GetMetadata(GlobalAssetId id)
     {
-        if (id.External == PackageId.None)
-            throw new Exception("Id is None");
+        Validate(ref id);
 
         if (TryGetMetadata(id, out var m))
             return m;
@@ -381,23 +272,13 @@ public static class Assets
         throw new KeyNotFoundException($"Asset package {id.External} not found");
     }
 
-    public static AssetMetadata GetMetadata(AssetId assetId)
-    {
-        lock (sortedPackages)
-            foreach (var packageId in sortedPackages)
-                if (packageRegistry[packageId].HasAsset(assetId))
-                    return GetMetadata(new GlobalAssetId(packageId, assetId));
-        throw new KeyNotFoundException($"Asset {assetId} not found in any package");
-    }
+    public static AssetMetadata GetMetadata(AssetId assetId) => GetMetadata(FindFirst(assetId));
 
     public static bool TryGetMetadata(GlobalAssetId id, out AssetMetadata metadata)
     {
-        if (id.External == PackageId.None)
-            throw new Exception("Id is None");
+        Validate(ref id);
 
-        var replacementId = ApplyReplacement(id);
-
-        if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage)
+        if (packageRegistry.TryGetValue(id.External, out var assetPackage)
             && assetPackage.HasAsset(id.Internal))
         {
             metadata = assetPackage.GetMetadata(id.Internal);
@@ -410,10 +291,8 @@ public static class Assets
 
     public static bool TryGetMetadata(AssetId assetId, out AssetMetadata metadata)
     {
-        lock (sortedPackages)
-            foreach (var packageId in sortedPackages)
-                if (packageRegistry[packageId].HasAsset(assetId))
-                    return TryGetMetadata(new GlobalAssetId(packageId, assetId), out metadata);
+        if (TryFindFirst(assetId, out var globalId))
+            return TryGetMetadata(globalId, out metadata);
 
         metadata = default;
         return false;
@@ -443,12 +322,49 @@ public static class Assets
                 yield return new GlobalAssetId(p.Metadata.Id, a);
     }
 
+    public static GlobalAssetId FindFirst(AssetId assetId)
+    {
+        if (TryFindFirst(assetId, out var global))
+            return global;
+        throw new Exception($"No package found with asset {assetId}");
+    }
+
+    public static bool TryFindFirst(AssetId assetId, out GlobalAssetId globalId)
+    {
+        lock (sortedPackages)
+            foreach (var packageId in sortedPackages)
+                if (packageRegistry[packageId].HasAsset(assetId))
+                {
+                    globalId = new GlobalAssetId(packageId, assetId);
+                    return true;
+                }
+
+        globalId = default;
+        return false;
+    }
+
     internal static T LoadDirect<T>(GlobalAssetId id)
     {
-        var replacementId = ApplyReplacement(id);
+        Validate(ref id);
 
-        if (packageRegistry.TryGetValue(replacementId.External, out var assetPackage))
-            return assetPackage.Load<T>(replacementId.Internal);
-        throw new KeyNotFoundException($"Asset package {replacementId.External} not found");
+        if (packageRegistry.TryGetValue(id.External, out var assetPackage))
+            return assetPackage.Load<T>(id.Internal);
+        throw new KeyNotFoundException($"Asset package {id.External} not found");
+    }
+
+    internal static T LoadDirect<T>(AssetId id) => LoadDirect<T>(FindFirst(id));
+
+    /// <summary>
+    /// Resolve agnosticism and throw if not found
+    /// </summary>
+    /// <param name="id"></param>
+    /// <exception cref="Exception"></exception>
+    internal static void Validate(ref GlobalAssetId id)
+    {
+        if (id.IsAgnostic)
+            id = id.ResolveExternal();
+
+        if (id.External == PackageId.None)
+            throw new Exception("External ID is none, but asset not found in any package");
     }
 }

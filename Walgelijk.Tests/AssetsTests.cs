@@ -143,33 +143,4 @@ public class AssetsTests
 
         Assets.ClearRegistry();
     }
-
-    [TestMethod]
-    public void ReplacementTable()
-    {
-        var @base = Assets.RegisterPackage(validPackage1);
-        var koploper = Assets.RegisterPackage(validPackage2);
-
-        Assets.SetReplacement("base:textures/door.png", "koploper:textures/bg.png");
-
-        using var tex1 = Assets.Load<Texture>("base:textures/door.png");
-        using var tex2 = Assets.Load<Texture>("koploper:textures/bg.png");
-
-        Assert.AreSame(tex2.Value, tex1.Value);
-
-        Assert.AreEqual(1920, tex2.Value.Width);
-        Assert.AreEqual(1080, tex2.Value.Height);
-
-        Assert.IsFalse(@base.IsCached(tex1.Id.Internal)); // it is false because the asset has been replaced by another package, so the original asset was never loaded
-        Assert.IsTrue(koploper.IsCached(tex2.Id.Internal));
-
-        tex1.Dispose();
-        tex2.Dispose();
-
-        Assert.IsFalse(@base.IsCached(tex1.Id.Internal));
-        Assert.IsFalse(koploper.IsCached(tex2.Id.Internal));
-
-        Assets.ClearRegistry();
-        Assets.ClearReplacements();
-    }
 }
