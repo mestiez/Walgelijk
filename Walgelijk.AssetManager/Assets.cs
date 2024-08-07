@@ -178,9 +178,7 @@ public static class Assets
 
     public static bool HasAsset(GlobalAssetId id)
     {
-        Validate(ref id);
-
-        if (packageRegistry.TryGetValue(id.External, out var p))
+        if (TryValidate(ref id) && packageRegistry.TryGetValue(id.External, out var p))
             return p.HasAsset(id.Internal);
         return false;
     }
@@ -200,9 +198,7 @@ public static class Assets
 
     public static bool TryLoad<T>(GlobalAssetId id, out AssetRef<T> assetRef)
     {
-        Validate(ref id);
-
-        if (packageRegistry.TryGetValue(id.External, out var assetPackage))
+        if (TryValidate(ref id) && packageRegistry.TryGetValue(id.External, out var assetPackage))
         {
             if (assetPackage.HasAsset(id.Internal))
             {
@@ -276,9 +272,7 @@ public static class Assets
 
     public static bool TryGetMetadata(GlobalAssetId id, out AssetMetadata metadata)
     {
-        Validate(ref id);
-
-        if (packageRegistry.TryGetValue(id.External, out var assetPackage)
+        if (TryValidate(ref id) && packageRegistry.TryGetValue(id.External, out var assetPackage)
             && assetPackage.HasAsset(id.Internal))
         {
             metadata = assetPackage.GetMetadata(id.Internal);
@@ -364,5 +358,16 @@ public static class Assets
 
         if (id.External == PackageId.None)
             throw new Exception("External ID is none, but asset not found in any package");
+    }  
+    
+    /// <summary>
+    /// Resolve agnosticism and throw if not found
+    /// </summary>
+    internal static bool TryValidate(ref GlobalAssetId id)
+    {
+        if (id.IsAgnostic)
+            id = id.ResolveExternal();
+
+        return id.External != PackageId.None;
     }
 }
