@@ -28,7 +28,7 @@ public class FixedAudioData : AudioData
 
     public override void DisposeLocalCopy()
     {
-        Data = Array.Empty<byte>();
+        Data = [];
     }
 
     public override ReadOnlyMemory<byte>? GetData() => Data;
