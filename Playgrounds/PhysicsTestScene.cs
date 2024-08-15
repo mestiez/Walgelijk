@@ -51,6 +51,7 @@ public struct PhysicsTestScene : ISceneCreator
     {
         private Vector2 rayOrigin;
         private QueryResult[] buffer = new QueryResult[4];
+        private HashSet<Entity> ignore = [];
 
         public override void FixedUpdate()
         {
@@ -68,6 +69,12 @@ public struct PhysicsTestScene : ISceneCreator
             foreach (var item in Scene.GetAllComponentsOfType<PhysicsBodyComponent>())
             {
                 Draw.TransformMatrix = item.Collider.Transform.LocalToWorldMatrix;
+                Draw.Colour = new Color(245, 70, 199);
+                if (ignore.Contains(item.Entity))
+                {
+                    Draw.Colour.A *= 0.5f;
+                    Draw.Colour.B *= 0.5f;
+                }
                 switch (item.Collider)
                 {
                     case CircleCollider circle:
@@ -88,11 +95,17 @@ public struct PhysicsTestScene : ISceneCreator
             }
 
             Draw.Colour = Colors.Red;
-            if (phys.QueryPoint(Input.WorldMousePosition, ref buffer) > 0)
+            if (phys.QueryPoint(Input.WorldMousePosition, buffer) > 0)
             {
                 Draw.Circle(Input.WorldMousePosition, new Vector2(8));
-
                 Draw.Line(Input.WorldMousePosition, Input.WorldMousePosition + buffer[0].Collider.SampleNormal(Input.WorldMousePosition) * 32, 2);
+
+                if (Input.IsButtonPressed(MouseButton.Middle))
+                {
+                    var e = buffer[0].Entity;
+                    if (!ignore.Remove(e))
+                        ignore.Add(e);
+                }
             }
 
             if (Input.IsButtonPressed(MouseButton.Left))
@@ -103,7 +116,7 @@ public struct PhysicsTestScene : ISceneCreator
                 var rayDir = Vector2.Normalize(Input.WorldMousePosition - rayOrigin);
                 Draw.Colour = Colors.Orange;
 
-                if (phys.Raycast(rayOrigin, rayDir, out var hit))
+                if (phys.Raycast(rayOrigin, rayDir, out var hit, ignore: ignore))
                 {
                     Draw.Line(rayOrigin, hit.Position, 1);
                     Draw.Colour = Colors.Green;

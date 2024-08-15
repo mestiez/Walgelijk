@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace Walgelijk.Physics;
@@ -27,7 +28,7 @@ public class PhysicsSystem : Walgelijk.System
         CalculateCollisionChunks(world, bodies);
     }
 
-    public static int GetChunkComponentFrom(float x, float chunkSize) => (int)MathF.Floor(x / chunkSize);
+    public static int GetChunkComponentFrom(float x, float chunkSize) => (int)float.Floor(x / chunkSize);
 
     public static IntVector2 GetChunkPositionFrom(float x, float y, float chunkSize) => new(GetChunkComponentFrom(x, chunkSize), GetChunkComponentFrom(y, chunkSize));
 
@@ -102,11 +103,11 @@ public class PhysicsSystem : Walgelijk.System
             body.Collider.RecalculateBounds();
             var bounds = body.Collider.Bounds;
 
-            minX = MathF.Min(bounds.MinX, minX);
-            minY = MathF.Min(bounds.MinY, minY);
+            minX = float.Min(bounds.MinX, minX);
+            minY = float.Min(bounds.MinY, minY);
 
-            maxX = MathF.Max(bounds.MaxX, maxX);
-            maxY = MathF.Max(bounds.MaxY, maxY);
+            maxX = float.Max(bounds.MaxX, maxX);
+            maxY = float.Max(bounds.MaxY, maxY);
 
             //DebugDraw.Rectangle(new Vector2(bounds.MinX, bounds.MinY), new Vector2(bounds.Width, bounds.Height), 0, Colors.GreenYellow);
         }
@@ -118,7 +119,7 @@ public class PhysicsSystem : Walgelijk.System
     /// <summary>
     /// Cast a ray from a point to a normalised direction
     /// </summary>
-    public bool Raycast(Vector2 origin, Vector2 direction, out RaycastResult result, float maxDistance = float.MaxValue, uint filter = uint.MaxValue)
+    public bool Raycast(Vector2 origin, Vector2 direction, out RaycastResult result, float maxDistance = float.MaxValue, uint filter = uint.MaxValue, IEnumerable<Entity>? ignore = null)
     {
         result = default;
 
@@ -145,7 +146,7 @@ public class PhysicsSystem : Walgelijk.System
         Vector2 pos = origin;
         if (isOutOfBounds())
         {
-            Vector2 maxEndPoint = origin + normalisedDir * MathF.Min(maxDistance, 100000);
+            Vector2 maxEndPoint = origin + normalisedDir * float.Min(maxDistance, 100000);
             var raySegment = new Geometry.LineSegment(origin.X, origin.Y, maxEndPoint.X, maxEndPoint.Y);
             if (Geometry.TryGetIntersection(raySegment, worldBounds, out var intersection1, out var intersection2))
             {
@@ -158,7 +159,7 @@ public class PhysicsSystem : Walgelijk.System
                 pos.X -= dX / 2;
                 pos.Y -= dY / 2;
 
-                distance = minStep + MathF.Min(d1, d2);
+                distance = minStep + float.Min(d1, d2);
             }
             else return false;
         }
@@ -182,6 +183,9 @@ public class PhysicsSystem : Walgelijk.System
                 float minDistance = float.MaxValue;
                 foreach (var entity in GetBodiesNear(currentChunk, world))
                 {
+                    if (ignore?.Contains(entity) ?? false)
+                        continue;
+
                     if (!Scene.TryGetComponentFrom<PhysicsBodyComponent>(entity, out var bodyComponent) || !bodyComponent.PassesFilter(filter))
                         continue;
 
@@ -236,7 +240,7 @@ public class PhysicsSystem : Walgelijk.System
     /// <summary>
     /// Fills given array with all bodies at the given point and returns the amount (clamped to given array length)
     /// </summary>
-    public int QueryPoint(Vector2 point, ref QueryResult[] results, uint filter = uint.MaxValue)
+    public int QueryPoint(Vector2 point, QueryResult[] results, uint filter = uint.MaxValue, IEnumerable<Entity>? ignore = null)
     {
         if (!Scene.FindAnyComponent<PhysicsWorldComponent>(out var world))
         {
@@ -250,6 +254,9 @@ public class PhysicsSystem : Walgelijk.System
         int i = 0;
         foreach (var entity in GetBodiesNear(chunkpos, world))
         {
+            if (ignore?.Contains(entity) ?? false)
+                continue;
+
             if (!Scene.TryGetComponentFrom<PhysicsBodyComponent>(entity, out var bodyComponent) ||
                 bodyComponent.Collider == null || !bodyComponent.PassesFilter(filter))
                 continue;
@@ -268,7 +275,7 @@ public class PhysicsSystem : Walgelijk.System
     /// <summary>
     /// Fills given array with all bodies at the given circle and returns the amount (clamped to given array length)
     /// </summary>
-    public int QueryCircle(Vector2 center, float radius, ref QueryResult[] results, uint filter = uint.MaxValue)
+    public int QueryCircle(Vector2 center, float radius, QueryResult[] results, uint filter = uint.MaxValue, IEnumerable<Entity>? ignore = null)
     {
         if (!Scene.FindAnyComponent<PhysicsWorldComponent>(out var world))
         {
@@ -293,6 +300,9 @@ public class PhysicsSystem : Walgelijk.System
 
                 foreach (var entity in GetBodiesNear(pos.X, pos.Y, world))
                 {
+                    if (ignore?.Contains(entity) ?? false)
+                        continue;
+
                     if (!Scene.TryGetComponentFrom<PhysicsBodyComponent>(entity, out var bodyComponent) ||
                         bodyComponent.Collider == null || !bodyComponent.PassesFilter(filter))
                         continue;
@@ -325,11 +335,11 @@ public class PhysicsSystem : Walgelijk.System
             return 0;
         }
 
-        var minX = MathF.Min(rectangle.MinX, rectangle.MaxX);
-        var maxX = MathF.Max(rectangle.MinX, rectangle.MaxX);
+        var minX = float.Min(rectangle.MinX, rectangle.MaxX);
+        var maxX = float.Max(rectangle.MinX, rectangle.MaxX);
 
-        var minY = MathF.Min(rectangle.MinY, rectangle.MaxY);
-        var maxY = MathF.Max(rectangle.MinY, rectangle.MaxY);
+        var minY = float.Min(rectangle.MinY, rectangle.MaxY);
+        var maxY = float.Max(rectangle.MinY, rectangle.MaxY);
 
         rectangle = new Rect(minX, minY, maxX, maxY);
 
@@ -338,8 +348,8 @@ public class PhysicsSystem : Walgelijk.System
         var min = GetChunkPositionFrom(minX, maxY + world.ChunkSize, world.ChunkSize);
         var max = GetChunkPositionFrom(maxX + world.ChunkSize, minY, world.ChunkSize);
 
-        for (int x = Math.Min(min.X, max.X); x <= Math.Max(min.X, max.X); x++)
-            for (int y = Math.Min(min.Y, max.Y); y <= Math.Max(min.Y, max.Y); y++)
+        for (int x = int.Min(min.X, max.X); x <= int.Max(min.X, max.X); x++)
+            for (int y = int.Min(min.Y, max.Y); y <= int.Max(min.Y, max.Y); y++)
             {
                 var chunk = new IntVector2(x, y);
                 var pos = new Vector2(x * world.ChunkSize, y * world.ChunkSize);

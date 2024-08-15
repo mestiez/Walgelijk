@@ -50,7 +50,7 @@ public class Program
         AssetDeserialisers.Register(new WaveFixedAudioDeserialiser());
         Assets.RegisterPackage("assets.waa");
 
-        game.Scene = new TransformTestScene().Load(game);
+        game.Scene = new PhysicsTestScene().Load(game);
 
 #if DEBUG
         game.DevelopmentMode = true;
