@@ -68,7 +68,12 @@ public class AudioBuffer : IDisposable
 
     ~AudioBuffer() => Dispose();
 
-    public static AudioBuffer ByHandle(int handle) => byHandle[handle];
+    public static AudioBuffer? ByHandle(int handle)
+    {
+        if (byHandle.TryGetValue(handle, out var b))
+            return b;
+        return null;
+    }
 
     public static AudioBuffer Get(int size, ALFormat format, int sampleRate)
     {

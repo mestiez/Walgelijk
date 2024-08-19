@@ -1,7 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
+using SkiaSharp;
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -331,7 +329,7 @@ public class OpenTKGraphics : IGraphics
                     if (TryGetId(tex, out var id))
                     {
                         using var img = TextureToImage(texture.HDR, texture.Width, texture.Height, id);
-                        img.SaveAsPng(output);
+                        img.Encode(output, SKEncodedImageFormat.Png, 100);
                     }
                 }
                 break;
@@ -339,7 +337,7 @@ public class OpenTKGraphics : IGraphics
                 {
                     if (TryGetId(rt, out var frameBufferId, out var texInts))
                     {
-                        var final = new Image<Rgba32>(rt.Width, rt.Height * (rt.DepthBuffer != null ? 2 : 1));
+                        var final = new SkiaSharp.SKBitmap(rt.Width, rt.Height * (rt.DepthBuffer != null ? 2 : 1));
 
                         int s = rt.Width * rt.Height * 4;
 
@@ -350,10 +348,7 @@ public class OpenTKGraphics : IGraphics
                             GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
                             GL.ReadPixels(0, 0, texture.Width, texture.Height, PixelFormat.Rgba, PixelType.Float, data);
                             var a = BuildImage(texture.Width, texture.Height, data);
-                            final.Mutate(i =>
-                            {
-                                i.DrawImage(a, 1);
-                            });
+                            a.CopyTo(final);
                             a.Dispose();
                         }
                         else
@@ -363,10 +358,7 @@ public class OpenTKGraphics : IGraphics
                             GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
                             GL.ReadPixels(0, 0, texture.Width, texture.Height, PixelFormat.Rgba, PixelType.Float, data);
                             var a = BuildImage(texture.Width, texture.Height, data);
-                            final.Mutate(i =>
-                            {
-                                i.DrawImage(a, 1);
-                            });
+                            a.CopyTo(final);
                             a.Dispose();
                         }
 
@@ -382,47 +374,40 @@ public class OpenTKGraphics : IGraphics
                                 data2[i] = data2[i + 1] = data2[i + 2] = data2[i + 3] = data[i / 4];
 
                             var a = BuildImage(texture.Width, texture.Height, data2);
-                            final.Mutate(i =>
-                            {
-                                i.DrawImage(a, new Point(0, y), 1);
-                            });
+                            a.CopyTo(final);
                             a.Dispose();
                         }
 
-                        final.SaveAsPng(output);
+                        final.Encode(output, SKEncodedImageFormat.Png, 100);
                         final.Dispose();
                     }
                 }
                 break;
         }
 
-        static Image BuildImage<T>(int width, int height, T[] data)
+        static SKBitmap BuildImage<T>(int width, int height, T[] data)
         {
-            var image = new Image<SixLabors.ImageSharp.PixelFormats.Rgba32>(width, height);
-            var frame = image.Frames.RootFrame;
+            var image = new SKBitmap(width, height);
+            var map = new SKPixmap(image.Info, image.GetAddress(0, 0));
+            var buffer = map.GetPixelSpan<byte>();
 
-            Func<int, Rgba32> toColor = data switch
+            int bi = 0;
+
+            switch (data)
             {
-                byte[] b => i => new Rgba32(b[i], b[i + 1], b[i + 2], b[i + 3]),
-                float[] f => i => new Rgba32(f[i], f[i + 1], f[i + 2], f[i + 3]),
-                _ => throw new Exception("Attempt to save a texture with an invalid format: this error is so severe that you should stop programming forever."),
-            };
-            int i = 0;
-            for (int yy = 0; yy < frame.Height; yy++)
-            {
-                int y = (frame.Height - 1 - yy);
-                var pixelRowSpan = frame.PixelBuffer.DangerousGetRowSpan(y);
-                for (int x = 0; x < image.Width; x++)
-                {
-                    pixelRowSpan[x] = toColor(i);
-                    i += 4; // 4 compoments per pixel :)
-                }
+                case byte[] bytes:
+                    bytes.CopyTo(buffer);
+                    break;
+                case float[] floaties:
+                    for (int i = 0; i < floaties.Length; i++)
+                        buffer[i] = (byte)(float.Clamp(floaties[i], 0, 1) * byte.MaxValue);
+                    break;
             }
 
             return image;
         }
 
-        static Image TextureToImage(bool hdr, int w, int h, int id)
+        static SKBitmap TextureToImage(bool hdr, int w, int h, int id)
         {
             int s = w * h * 4;
 

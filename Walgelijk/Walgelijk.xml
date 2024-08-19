@@ -2143,16 +2143,6 @@
             Draw a rectangle
             </summary>
         </member>
-        <member name="T:Walgelijk.ImageSharpDecoder">
-            <summary>
-            Decodes the most common image formats (PNG, JPEG, BMP, etc.)
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ImageSharpDecoder.CopyPixels(SixLabors.ImageSharp.ImageFrame{SixLabors.ImageSharp.PixelFormats.Rgba32},Walgelijk.Color[]@,System.Boolean)">
-            <summary>
-            Copies pixels from <see cref="T:SixLabors.ImageSharp.Image"/> to an array
-            </summary>
-        </member>
         <member name="T:Walgelijk.QOIDecoder">
             <summary>Decoder of the "Quite OK Image" (QOI) format.</summary>
         </member>
@@ -2161,6 +2151,16 @@
             <remarks>Returns <see langword="true" /> if decoded successfully.</remarks>
             <param name="encoded">QOI file contents. Only the first <c>encodedSize</c> bytes are accessed.</param>
             <param name="encodedSize">QOI file length.</param>
+        </member>
+        <member name="T:Walgelijk.SkiaSharpDecoder">
+            <summary>
+            Decodes the most common image formats (PNG, JPEG, BMP, etc.)
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SkiaSharpDecoder.CopyPixels(SkiaSharp.SKBitmap,Walgelijk.Color[]@,System.Boolean)">
+            <summary>
+            Copies pixels from <see cref="T:SkiaSharp.SKBitmap"/> to an array
+            </summary>
         </member>
         <member name="T:Walgelijk.TextureLoader">
             <summary>

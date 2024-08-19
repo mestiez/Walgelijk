@@ -49,11 +49,11 @@ public class Font
     /// <summary>
     /// Glyphs by character
     /// </summary>
-    public Dictionary<char, Glyph> Glyphs { get; internal set; } = new Dictionary<char, Glyph>();
+    public Dictionary<char, Glyph> Glyphs { get; internal set; } = [];
     /// <summary>
     /// Kernings by <see cref="KerningPair"/>
     /// </summary>
-    public Dictionary<KerningPair, Kerning> Kernings { get; internal set; } = new Dictionary<KerningPair, Kerning>();
+    public Dictionary<KerningPair, Kerning> Kernings { get; internal set; } = [];
 
     /// <summary>
     /// Material this font uses. Be aware this may be shared across text. Use <see cref="FontMaterialCreator.CreateFor(Font)"/> to create a new material.
