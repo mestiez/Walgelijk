@@ -1,5 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
-using System.Drawing;
+using OpenTK.Mathematics;
 
 namespace MotionTK;
 
@@ -12,7 +12,7 @@ public class VideoPlayback : Playback<VideoPacket>
     protected TimeSpan _frameTime;
     protected int _skipFrames;
     public uint PlayedFrameCount { get; private set; }
-    public Size Size => DataSource.VideoSize;
+    public Vector2i Size => DataSource.VideoSize;
 
     internal VideoPlayback(DataSource dataSource) : base(dataSource) { }
 
@@ -24,7 +24,7 @@ public class VideoPlayback : Playback<VideoPacket>
 
         TextureHandle = GL.GenTexture();
         GL.BindTexture(TextureTarget.Texture2D, TextureHandle);
-        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, DataSource.VideoSize.Width, DataSource.VideoSize.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, DataSource.VideoSize.X, DataSource.VideoSize.Y, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
@@ -109,7 +109,7 @@ public class VideoPlayback : Playback<VideoPacket>
 
         // update texture
         GL.BindTexture(TextureTarget.Texture2D, TextureHandle);
-        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, DataSource.VideoSize.Width, DataSource.VideoSize.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, packet.RgbaBuffer);
+        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, DataSource.VideoSize.X, DataSource.VideoSize.Y, 0, PixelFormat.Rgba, PixelType.UnsignedByte, packet.RgbaBuffer);
 
         packet.Dispose();
     }

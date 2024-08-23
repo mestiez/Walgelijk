@@ -1,14 +1,12 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Concurrent;
+﻿using HarfBuzzSharp;
+using Newtonsoft.Json;
+using SkiaSharp;
 using System.CommandLine.Rendering;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO.Compression;
 using System.Numerics;
 using System.Reflection;
 using System.Text;
-using System.Text.Unicode;
-using Typography.TextLayout;
 
 namespace Walgelijk.FontGenerator;
 
@@ -141,52 +139,78 @@ public class Generator
     private void GetExtraData(MsdfDataStructs.MsdfGenFont msdfGenFont)
     {
         var gatheredKernings = new HashSet<MsdfDataStructs.MsdfKerning>();
+
         {
             var execDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!;
             var charset = File.ReadAllText(CharsetFile.FullName).Distinct().ToArray();
 
-            var a = new Typography.OpenFont.OpenFontReader();
-            using var s = FontFile.OpenRead();
-            var font = a.Read(s);
-            var plan = new GlyphLayoutPlanCollection().GetPlanOrCreate(font, default);
-            var layout = new GlyphLayout();
-            layout.Typeface = font;
-            var scaling = font.CalculateScaleToPixelFromPointSize(FontSize);
+            using var blob = Blob.FromFile(FontFile.FullName);
+            using var face = new Face(blob, 0);
+            using var font = new HarfBuzzSharp.Font(face);
+            font.SetFunctionsOpenType();
+
+            float scaling = FontSize / (float)face.UnitsPerEm;
 
             int i = 0;
             int totalPairCount = charset.Length * charset.Length;
+            var glyphWidths = new float[2];
+            var glyphBounds = new SKRect[2];
 
             for (int o = 0; o < charset.Length; o++)
                 for (int p = 0; p < charset.Length; p++)
                 {
-                    var codepointA = new Rune(charset[o]).Value;
-                    var codepointB = new Rune(charset[p]).Value;
+                    var a = charset[o];
+                    var b = charset[p];
 
-                    var glyphA = font.GetGlyphIndex(codepointA);
-                    var glyphB = font.GetGlyphIndex(codepointB);
+                    var codepointA = new Rune(a).Value;
+                    var codepointB = new Rune(b).Value;
 
-                    var baseAdvance = font.GetAdvanceWidth(codepointA) + font.GetAdvanceWidth(codepointB);
-                    var properAdvance = layout.LayoutAndMeasureString([charset[o], charset[p]], 0, 2, FontSize).width;
-                    var hackyKerning = (properAdvance - baseAdvance) / (float)font.UnitsPerEm;
+                    if (!font.TryGetGlyph(codepointA, out var glyphA))
+                        continue;
+                    if (!font.TryGetGlyph(codepointB, out var glyphB))
+                        continue;
 
-                    var kerningUnits = font.GetKernDistance(glyphA, glyphB) * scaling;
-                    if (float.Abs(kerningUnits) < float.Abs(hackyKerning))
-                        kerningUnits = hackyKerning;
+                    var k = font.GetHorizontalGlyphKerning(glyphA, glyphB) * scaling;
+
+                    {
+                        using var buffer = new HarfBuzzSharp.Buffer();
+                        buffer.Direction = Direction.LeftToRight;
+                        buffer.Script = Script.Latin;
+                        buffer.Language = new Language("en");
+                        buffer.AddUtf16($"{a}{b}");
+
+                        font.Shape(buffer);
+
+                        var infos = buffer.GetGlyphInfoSpan();
+                        var positions = buffer.GetGlyphPositionSpan();
+
+                        if (positions.Length != 2) // some ligature type shit is going on
+                        {
+                            // we do nothing...
+                        }
+                        else
+                        {
+                            var advance = (positions[0].XAdvance + positions[1].XOffset);
+                            var diff = advance - font.GetHorizontalGlyphAdvance(glyphA);
+                            if (float.Abs(diff) > float.Abs(k))
+                                k = diff * scaling;
+                        }
+                    }
+
+                    if (float.Abs(k) > 0)
+                    {
+                        gatheredKernings.Add(new MsdfDataStructs.MsdfKerning
+                        {
+                            Unicode1 = a,
+                            Unicode2 = b,
+                            Advance = k
+                        });
+                    }
 
                     var ocp = Console.CursorLeft;
                     Console.Write("{0}/{1}", i, totalPairCount);
                     Console.CursorLeft = ocp;
                     i++;
-
-                    if (float.Abs(kerningUnits) > float.Epsilon)
-                    {
-                        gatheredKernings.Add(new MsdfDataStructs.MsdfKerning
-                        {
-                            Unicode1 = charset[o],
-                            Unicode2 = charset[p],
-                            Advance = kerningUnits
-                        });
-                    }
                 }
             Console.WriteLine();
         }
