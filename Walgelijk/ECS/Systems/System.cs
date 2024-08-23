@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 
 namespace Walgelijk
 {
@@ -54,6 +55,11 @@ namespace Walgelijk
         /// Relevant graphics instance
         /// </summary>
         protected IGraphics Graphics => Window.Graphics;
+
+        /// <summary>
+        /// Relevant logging instance
+        /// </summary>
+        protected ILogger Log => Game.Logger;
 
         /// <summary>
         /// The order of execution relative to other systems. The lower, the earlier it gets executed.

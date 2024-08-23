@@ -1745,6 +1745,11 @@
             Relevant graphics instance
             </summary>
         </member>
+        <member name="P:Walgelijk.System.Log">
+            <summary>
+            Relevant logging instance
+            </summary>
+        </member>
         <member name="P:Walgelijk.System.ExecutionOrder">
             <summary>
             The order of execution relative to other systems. The lower, the earlier it gets executed.
@@ -5351,49 +5356,9 @@
             Clear the console
             </summary>
         </member>
-        <member name="T:Walgelijk.ConsoleLogger">
-            <summary>
-            The default logger. Logs to the console.
-            </summary>
-        </member>
-        <member name="T:Walgelijk.DiskLogger">
-            <summary>
-            A disk logger. Logs to the <see cref="F:Walgelijk.DiskLogger.TargetPath"/>
-            </summary>
-        </member>
-        <member name="T:Walgelijk.ILogger">
-            <summary>
-            Interface for basic logging
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ILogger.Debug``1(``0,System.String)">
-            <summary>
-            Debug information
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ILogger.Log``1(``0,System.String)">
-            <summary>
-            Log information
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ILogger.Warn``1(``0,System.String)">
-            <summary>
-            Log a warning
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ILogger.Error``1(``0,System.String)">
-            <summary>
-            Log an error
-            </summary>
-        </member>
         <member name="T:Walgelijk.Logger">
             <summary>
             Access the logging implementation
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Logger.Implementations">
-            <summary>
-            The logging implementation used. Set to <see cref="T:Walgelijk.ConsoleLogger"/> by default
             </summary>
         </member>
         <member name="M:Walgelijk.Logger.Debug``1(``0@,System.String@)">
@@ -5414,31 +5379,6 @@
         <member name="M:Walgelijk.Logger.Error``1(``0@,System.String@)">
             <summary>
             Log an error
-            </summary>
-        </member>
-        <member name="T:Walgelijk.LogLevel">
-            <summary>
-            Levels of logging
-            </summary>
-        </member>
-        <member name="F:Walgelijk.LogLevel.Debug">
-            <summary>
-            Debug messages
-            </summary>
-        </member>
-        <member name="F:Walgelijk.LogLevel.Info">
-            <summary>
-            Informational messages
-            </summary>
-        </member>
-        <member name="F:Walgelijk.LogLevel.Warn">
-            <summary>
-            Warning messages
-            </summary>
-        </member>
-        <member name="F:Walgelijk.LogLevel.Error">
-            <summary>
-            Error messages
             </summary>
         </member>
         <member name="T:Walgelijk.Profiler">
@@ -5629,7 +5569,12 @@
             The maximum amount of fixed updates per frame
             </summary>
         </member>
-        <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window,Walgelijk.AudioRenderer)">
+        <member name="F:Walgelijk.Game.Logger">
+            <summary>
+            The logger for the game, also used by <see cref="F:Walgelijk.Game.Logger"/>
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window,Walgelijk.AudioRenderer,Microsoft.Extensions.Logging.ILogger)">
             <summary>
             Create a game with a window and an optional audio renderer. If the audio renderer is not set, the game won't be able to play any sounds
             </summary>

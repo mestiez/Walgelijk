@@ -6,7 +6,7 @@
     <Authors>mestiez </Authors>
     <Company>Studio Minus</Company>
     <RepositoryUrl>https://github.com/mestiez/Walgelijk</RepositoryUrl>
-    <Version>0.0.21</Version>
+    <Version>0.0.22</Version>
     <Description>NAudio renderer implementation</Description>
     <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>

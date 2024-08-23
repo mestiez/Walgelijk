@@ -328,7 +328,8 @@ public sealed class Scene : IDisposable
         systems.InitialiseNewSystems();
 
         foreach (var system in systems.GetAll())
-            system?.Update();
+            if (system?.Enabled ?? false)
+                system.Update();
     }
 
     /// <summary>
@@ -352,7 +353,8 @@ public sealed class Scene : IDisposable
             Initialise();
 
         foreach (var system in systems.GetAll())
-            system.FixedUpdate();
+            if (system.Enabled)
+                system.FixedUpdate();
     }
 
     /// <summary>
@@ -385,16 +387,19 @@ public sealed class Scene : IDisposable
     /// </summary>
     public void RenderSystems()
     {
-        var s = systems.GetAll();
+        var systems = this.systems.GetAll();
 
-        foreach (var systems in s)
-            systems.PreRender();
+        foreach (var system in systems)
+            if (system.Enabled)
+                system.PreRender();
 
-        foreach (var systems in s)
-            systems.Render();
+        foreach (var system in systems)
+            if (system.Enabled)
+                system.Render();
 
-        foreach (var systems in s)
-            systems.PostRender();
+        foreach (var system in systems)
+            if (system.Enabled)
+                system.PostRender();
     }
 
     /// <summary>

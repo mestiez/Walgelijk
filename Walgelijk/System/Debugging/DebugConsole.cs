@@ -10,7 +10,7 @@ namespace Walgelijk;
 /// <summary>
 /// Class that renders and controls the debug console
 /// </summary>
-public class DebugConsole : ILogger, IDisposable
+public class DebugConsole : IDisposable
 {
     /// <summary>
     /// The key that will toggle the console
@@ -92,7 +92,6 @@ public class DebugConsole : ILogger, IDisposable
         writer.AutoFlush = true;
         UI = new DebugConsoleUi(this);
         sessionHistory = new();
-        Logger.Implementations.Add(this);
 
         // Push the session history into our current history.
         if (sessionHistory.LastSessionCommands != null)
@@ -379,25 +378,5 @@ public class DebugConsole : ILogger, IDisposable
         writer.Dispose();
         stream.Dispose();
         UI.Dispose();
-    }
-
-    public void Debug<T>(T message, string? source = null)
-    {
-        WriteLine(message!.ToString() ?? "NULL", ConsoleMessageType.Debug);
-    }
-
-    public void Log<T>(T message, string? source = null)
-    {
-        WriteLine(message!.ToString() ?? "NULL", ConsoleMessageType.Info);
-    }
-
-    public void Warn<T>(T message, string? source = null)
-    {
-        WriteLine(message!.ToString() ?? "NULL", ConsoleMessageType.Warning);
-    }
-
-    public void Error<T>(T message, string? source = null)
-    {
-        WriteLine(message!.ToString() ?? "NULL", ConsoleMessageType.Error);
     }
 }

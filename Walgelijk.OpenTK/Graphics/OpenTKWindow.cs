@@ -197,8 +197,6 @@ public class OpenTKWindow : Window
 
         inputHandler = new InputHandler(this);
         internalGraphics = new OpenTKGraphics();
-
-        Logger.Log("Graphics API: " + window.API);
     }
 
     public override void Close() => window.Close();

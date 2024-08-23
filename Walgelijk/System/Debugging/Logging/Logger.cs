@@ -1,61 +1,41 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using Microsoft.Extensions.Logging;
 
-namespace Walgelijk
+namespace Walgelijk;
+
+/// <summary>
+/// Access the logging implementation
+/// </summary>
+public static class Logger
 {
     /// <summary>
-    /// Access the logging implementation
+    /// Log information
     /// </summary>
-    public static class Logger
+    public static void Debug<T>(in T message, [global::System.Runtime.CompilerServices.CallerMemberName] in string? source = null)
     {
-        /// <summary>
-        /// The logging implementation used. Set to <see cref="ConsoleLogger"/> by default
-        /// </summary>
-        public static ConcurrentBag<ILogger> Implementations { get; set; } = new ConcurrentBag<ILogger>(new ILogger[] {
-            new ConsoleLogger(),
-        });
+        Game.Main.Logger.LogDebug("{Message} ({Source})", message, source);
+    }
 
-        /// <summary>
-        /// Log information
-        /// </summary>
-        public static void Debug<T>(in T message, [global::System.Runtime.CompilerServices.CallerMemberName] in string? source = null)
-        {
-            foreach (var impl in Implementations)
-                impl.Debug(message, source);
-        }
+    /// <summary>
+    /// Log information
+    /// </summary>
+    public static void Log<T>(in T message, [global::System.Runtime.CompilerServices.CallerMemberName] in string? source = null)
+    {
+        Game.Main.Logger.LogInformation("{Message} ({Source})", message, source);
+    }
 
-        /// <summary>
-        /// Log information
-        /// </summary>
-        public static void Log<T>(in T message, [global::System.Runtime.CompilerServices.CallerMemberName] in string? source = null)
-        {
-            foreach (var impl in Implementations)
-                impl.Log(message, source);
-        }
+    /// <summary>
+    /// Log a warning
+    /// </summary>
+    public static void Warn<T>(in T message, [global::System.Runtime.CompilerServices.CallerMemberName] in string? source = null)
+    {
+        Game.Main.Logger.LogWarning("{Message} ({Source})", message, source);
+    }
 
-        /// <summary>
-        /// Log a warning
-        /// </summary>
-        public static void Warn<T>(in T message, [global::System.Runtime.CompilerServices.CallerMemberName] in string? source = null)
-        {
-            foreach (var impl in Implementations)
-                impl.Warn(message, source);
-        }
-
-        /// <summary>
-        /// Log an error
-        /// </summary>
-        public static void Error<T>(in T message, [global::System.Runtime.CompilerServices.CallerMemberName] in string? source = null)
-        {
-            foreach (var impl in Implementations)
-                impl.Error(message, source);
-        }
-
-        public static void Dispose()
-        {
-            foreach (var impl in Implementations)
-                if (impl != null && impl is IDisposable disp)
-                    disp.Dispose();
-        }
+    /// <summary>
+    /// Log an error
+    /// </summary>
+    public static void Error<T>(in T message, [global::System.Runtime.CompilerServices.CallerMemberName] in string? source = null)
+    {
+        Game.Main.Logger.LogError("{Message} ({Source})", message, source);
     }
 }
