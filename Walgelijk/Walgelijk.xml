@@ -5468,11 +5468,6 @@
             Calculate the amount of cycles to execute
             </summary>
         </member>
-        <member name="T:Walgelijk.IGameLoopEvent">
-            <summary>
-            Receives an update for every game loop cycle
-            </summary>
-        </member>
         <member name="T:Walgelijk.Game">
             <summary>
             The link between the scene and the window
@@ -5692,6 +5687,11 @@
         <member name="M:Walgelijk.Hook.op_Subtraction(Walgelijk.Hook,System.Action)">
             <summary>
             Remove listener
+            </summary>
+        </member>
+        <member name="T:Walgelijk.IGameLoopEvent">
+            <summary>
+            Receives an update for every game loop cycle
             </summary>
         </member>
         <member name="T:Walgelijk.NameGenerator">
