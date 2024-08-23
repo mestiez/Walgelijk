@@ -31,8 +31,8 @@ public class SkiaSharpDecoder : IImageDecoder
         {
             AlphaType = SKAlphaType.Unpremul,
         };
-        using var image = new SKBitmap(codecInfo);
-        codec.GetPixels(image.Info with { ColorType = SKColorType.Rgba8888 }, image.GetPixels());
+        using var image = new SKBitmap(codecInfo with { ColorType = SKColorType.Rgba8888 });
+        codec.GetPixels(image.Info, image.GetPixels());
 
         var colors = new Color[image.Width * image.Height];
         CopyPixels(image, ref colors, flipY);
@@ -48,6 +48,10 @@ public class SkiaSharpDecoder : IImageDecoder
     public static void CopyPixels(SkiaSharp.SKBitmap image, ref Color[] destination, bool flipY = true)
     {
         var pixels = image.GetPixelSpan();
+
+        if (pixels.Length != destination.Length * 4) // 4 components per pixel
+            throw new Exception($"Image pixel format error: expected 4 bytes per pixel, got {pixels.Length / destination.Length}");
+
         int pi = 0;
 
         for (int i = 0; i < destination.Length; i++)
