@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Text;
 using TextCopy;
 
@@ -66,10 +65,10 @@ public class DebugConsole : IDisposable
     private int suggestionIndex;
     private bool disposed = false;
 
-    public string DebugPrefix   = "[DBG]";
-    public string InfoPrefix    = "[INF]";
+    public string DebugPrefix = "[DBG]";
+    public string InfoPrefix = "[INF]";
     public string WarningPrefix = "[WRN]";
-    public string ErrorPrefix   = "[ERR]";
+    public string ErrorPrefix = "[ERR]";
 
     internal const int MaxShownBuffer = 8192;
     internal ReadOnlySpan<byte> GetBuffer()
@@ -84,7 +83,7 @@ public class DebugConsole : IDisposable
     /// Current user input
     /// </summary>
     public string? CurrentInput;
-    
+
     public DebugConsole(Game game)
     {
         Game = game;
@@ -346,7 +345,7 @@ public class DebugConsole : IDisposable
         var t = ConsoleMessageType.Plain;
         if (message.StartsWith(DebugPrefix))
             t = ConsoleMessageType.Debug;
-        else if(message.StartsWith(InfoPrefix))
+        else if (message.StartsWith(InfoPrefix))
             t = ConsoleMessageType.Info;
         else if (message.StartsWith(WarningPrefix))
             t = ConsoleMessageType.Warning;

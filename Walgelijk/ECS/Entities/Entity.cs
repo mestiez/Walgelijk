@@ -53,7 +53,7 @@ namespace Walgelijk
             return new Entity { Identity = identity };
         }
 
-        public override string ToString() => Identity == 0 ? "No entity" :  $"Entity {Identity}";
+        public override string ToString() => Identity == 0 ? "No entity" : $"Entity {Identity}";
 
         public bool Equals(Entity other) => other.Identity == Identity;
     }

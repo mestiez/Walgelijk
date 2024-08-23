@@ -42,8 +42,8 @@ namespace Walgelijk
                     Matrix3x2.CreateTranslation(rect.BottomLeft)
                 );
             graphics.Draw(PrimitiveMeshes.Quad, mat);
-        }     
-        
+        }
+
         /// <summary>
         /// Just draw a quad
         /// </summary>
@@ -51,11 +51,11 @@ namespace Walgelijk
         {
             graphics.CurrentTarget.ModelMatrix =
                 new Matrix4x4(
-                    Matrix3x2.CreateScale(rect.Width, -rect.Height ) *
+                    Matrix3x2.CreateScale(rect.Width, -rect.Height) *
                     Matrix3x2.CreateTranslation(rect.TopLeft)
                 );
             graphics.Draw(PrimitiveMeshes.Quad, mat);
-        }     
+        }
 
         /// <summary>
         /// Just draw screen space text

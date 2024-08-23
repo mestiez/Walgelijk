@@ -1,6 +1,5 @@
 ﻿using SkiaSharp;
 using System;
-using System.Runtime.InteropServices.Marshalling;
 
 namespace Walgelijk;
 
@@ -26,7 +25,10 @@ public class SkiaSharpDecoder : IImageDecoder
 
     public DecodedImage Decode(in ReadOnlySpan<byte> bytes, bool flipY)
     {
-        using var c = SKBitmap.Decode(bytes);
+        using var c = SKBitmap.Decode(bytes, new SKImageInfo
+        {
+            AlphaType = SKAlphaType.Unpremul
+        });
         using var image = c.Copy(SKColorType.Rgba8888);
         var colors = new Color[image.Width * image.Height];
         CopyPixels(image, ref colors, flipY);
@@ -49,7 +51,7 @@ public class SkiaSharpDecoder : IImageDecoder
             GetCoordinatesFromIndex(i, out int x, out int y);
             if (flipY)
                 y = image.Height - y - 1;
-            var tI = GetIndexFrom(x, y) ;
+            var tI = GetIndexFrom(x, y);
 
             destination[tI] = new Color(pixels[pi++], pixels[pi++], pixels[pi++], pixels[pi++]);
         }

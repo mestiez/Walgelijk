@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Numerics;
 
@@ -75,8 +74,8 @@ public struct Color : IEquatable<Color>
             A = byte.Parse(hex[6..8], global::System.Globalization.NumberStyles.HexNumber) / 255f;
         else
             A = 1;
-    } 
-    
+    }
+
     /// <summary>
     /// Create a colour based on a hexadecimal representation as an integer, such as "0xd42c"
     /// </summary>
@@ -90,8 +89,8 @@ public struct Color : IEquatable<Color>
         G = g / 255f;
         B = b / 255f;
         A = 1;
-    }   
-    
+    }
+
     /// <summary>
     /// Create a colour based on a hexadecimal representation as an unsigned integer, such as "0xd42c5e"
     /// </summary>

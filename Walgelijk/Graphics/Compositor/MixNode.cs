@@ -40,7 +40,7 @@ void main()
         int height = h;
         var a = Inputs[0].Read(game, w, h) ?? throw new NullReferenceException("MixNode input 0 is null");
         var b = Inputs[1].Read(game, w, h) ?? throw new NullReferenceException("MixNode input 1 is null");
-        
+
         if (rt == null || rt.Width != w || rt.Height != h)
         {
             rt?.Dispose();

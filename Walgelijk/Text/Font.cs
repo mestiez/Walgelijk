@@ -99,10 +99,10 @@ internal static class BuiltInFont
         using var bytes = new MemoryStream(zip);
         using var arch = new ZipArchive(bytes, ZipArchiveMode.Read);
 
-        using var data = arch.GetEntry("roboto mono.fnt")?.Open() 
+        using var data = arch.GetEntry("roboto mono.fnt")?.Open()
             ?? throw new global::System.Exception("Failed to load built-in font: .fnt not found");
 
-        using var page = arch.GetEntry("roboto mono.png")?.Open() 
+        using var page = arch.GetEntry("roboto mono.png")?.Open()
             ?? throw new global::System.Exception("Failed to load built-in font: .png not found");
 
         return FontLoader.LoadBm(data, TextureLoader.FromStream(page, false));

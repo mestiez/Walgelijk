@@ -15,7 +15,7 @@ public class SpriteRenderTask : IRenderTask
     /// <summary>
     /// The uniform to set to the sprite texture
     /// </summary>
-    public string MainTextureUniform = "mainTex"; 
+    public string MainTextureUniform = "mainTex";
     /// <summary>
     /// The uniform to set to the sprite texture
     /// </summary>

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Walgelijk;
+﻿namespace Walgelijk;
 
 /// <summary>
 /// Base class for attributes that indicate a component constraint

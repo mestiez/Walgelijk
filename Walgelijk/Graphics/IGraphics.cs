@@ -1,6 +1,4 @@
-﻿using static Walgelijk.Vertex;
-
-namespace Walgelijk;
+﻿namespace Walgelijk;
 
 /// <summary>
 /// Graphics utility interface meant to be implemented by the rendering implementation

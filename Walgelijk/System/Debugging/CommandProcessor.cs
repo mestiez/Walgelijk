@@ -285,7 +285,7 @@ public struct CommandProcessor
         foreach (var item in cc)
             if (item.Item1.AsSpan().StartsWith(v, StringComparison.InvariantCultureIgnoreCase))
             {
-                buffer[i] =  item.Item1;
+                buffer[i] = item.Item1;
                 i++;
                 if (i >= buffer.Length)
                     break;

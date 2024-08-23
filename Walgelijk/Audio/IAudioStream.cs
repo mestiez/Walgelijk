@@ -11,12 +11,12 @@ public interface IAudioStream : IDisposable
     /// Current position in the stream
     /// </summary>
     public long Position { get; set; }
-    
+
     /// <summary>
     /// Populates the given buffer with the next batch of samples and returns the amount of samples read 
     /// </summary>
     public int ReadSamples(Span<float> buffer);
-    
+
     /// <summary>
     /// Current time position in the stream
     /// </summary>

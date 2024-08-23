@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
 
 namespace Walgelijk
 {
@@ -128,8 +127,8 @@ namespace Walgelijk
         /// <summary>
         /// Invoked when the scene becomes active
         /// </summary>
-        public virtual void OnActivate() { }  
-        
+        public virtual void OnActivate() { }
+
         /// <summary>
         /// Invoked when the scene becomes inactive
         /// </summary>

@@ -8,7 +8,7 @@ public class GameConsoleLoggingProvider : ILoggerProvider
 
     public GameConsoleLoggingProvider(Game game)
     {
-        this.game = game;        
+        this.game = game;
     }
 
     public ILogger CreateLogger(string categoryName)

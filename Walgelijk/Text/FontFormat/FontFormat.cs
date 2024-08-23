@@ -1,12 +1,7 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
-using System.Text;
-using System.Xml;
 
 namespace Walgelijk;
 
@@ -39,7 +34,7 @@ public class FontFormat
     /// <summary>
     /// The distance from the baseline to the mean line
     /// </summary>
-    public float XHeight; 
+    public float XHeight;
     /// <summary>
     /// The maximum height of uppercase character
     /// </summary>
