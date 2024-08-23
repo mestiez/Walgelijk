@@ -1,5 +1,7 @@
 ﻿using SkiaSharp;
 using System;
+using System.Drawing;
+using System.IO;
 
 namespace Walgelijk;
 
@@ -25,11 +27,15 @@ public class SkiaSharpDecoder : IImageDecoder
 
     public DecodedImage Decode(in ReadOnlySpan<byte> bytes, bool flipY)
     {
-        using var c = SKBitmap.Decode(bytes, new SKImageInfo
+        using var data = SKData.CreateCopy(bytes);
+        using var codec = SKCodec.Create(data);
+        var codecInfo = codec.Info with
         {
-            AlphaType = SKAlphaType.Unpremul
-        });
-        using var image = c.Copy(SKColorType.Rgba8888);
+            AlphaType = SKAlphaType.Unpremul,
+        };
+        using var image = new SKBitmap(codecInfo);
+        codec.GetPixels(image.Info with { ColorType = SKColorType.Rgba8888 }, image.GetPixels());
+
         var colors = new Color[image.Width * image.Height];
         CopyPixels(image, ref colors, flipY);
         return new DecodedImage(image.Width, image.Height, colors);

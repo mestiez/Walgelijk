@@ -5468,6 +5468,11 @@
             Calculate the amount of cycles to execute
             </summary>
         </member>
+        <member name="T:Walgelijk.IGameLoopEvent">
+            <summary>
+            Receives an update for every game loop cycle
+            </summary>
+        </member>
         <member name="T:Walgelijk.Game">
             <summary>
             The link between the scene and the window
@@ -5572,6 +5577,11 @@
         <member name="F:Walgelijk.Game.Logger">
             <summary>
             The logger for the game, also used by <see cref="F:Walgelijk.Game.Logger"/>
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Game.AdditionalLoopEvents">
+            <summary>
+            Additional events to invoke for every game loop cycle
             </summary>
         </member>
         <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window,Walgelijk.AudioRenderer,Microsoft.Extensions.Logging.ILogger)">

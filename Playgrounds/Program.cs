@@ -7,6 +7,7 @@ using Walgelijk.CommonAssetDeserialisers.Audio.Qoa;
 using Walgelijk.CommonAssetDeserialisers.Audio;
 using Walgelijk.Onion.Controls;
 using Walgelijk.OpenTK;
+using Microsoft.Extensions.Logging;
 
 namespace Playgrounds;
 
@@ -34,6 +35,7 @@ public class Program
         game.FixedUpdateRate = 60;
         game.Console.DrawConsoleNotification = true;
         game.Window.VSync = false;
+        game.AdditionalLoopEvents.Add(new TestEvent());
 
         TextureLoader.Settings.FilterMode = FilterMode.Linear;
         TextureLoader.Settings.WrapMode = WrapMode.Repeat;
@@ -83,6 +85,18 @@ public class Program
                         }
                     throw new Exception("Invalid scene name");
                 }
+        }
+    }
+
+    private class TestEvent : IGameLoopEvent
+    {
+        public void FixedUpdate(Game game, float interval)
+        {
+        }
+
+        public void Update(Game game, float dt)
+        {
+            game.Logger.LogDebug("Hi!! {DeltaTime}", dt);
         }
     }
 }
