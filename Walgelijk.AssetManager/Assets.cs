@@ -1,6 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using i3arnon.ConcurrentCollections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 /* Je moet detecteren of een asset een andere asset nodig heeft en als dat zo is moet je die eerder laden
@@ -17,7 +16,7 @@ public static class Assets
 
     private static readonly List<PackageId> sortedPackages = [];
     private static readonly ConcurrentDictionary<PackageId, AssetPackage> packageRegistry = [];
-    private static readonly ConcurrentDictionary<GlobalAssetId, ConcurrentBag<IDisposable>> disposableChain = [];
+    private static readonly ConcurrentDictionary<GlobalAssetId, ConcurrentHashSet<IDisposable>> disposableChain = [];
 
     private static readonly ReaderWriterLockSlim enumerationLock = new(LockRecursionPolicy.SupportsRecursion);
 
@@ -132,6 +131,16 @@ public static class Assets
 
     public static bool UnloadPackage(in ReadOnlySpan<char> id) => UnloadPackage(new(id));
 
+    /// <summary>
+    /// Identical to <code>AssignLifetime(id, SceneLifetimeOperator.Shared)</code>
+    /// </summary>
+    public static void AssignSceneLifetime(GlobalAssetId id) => AssignLifetime(id, SceneLifetimeOperator.Shared);
+
+    /// <summary>
+    /// Assign a lifetime to an asset.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="lifetimeOperator"></param>
     public static void AssignLifetime(GlobalAssetId id, ILifetimeOperator lifetimeOperator)
     {
         Validate(ref id);
@@ -143,7 +152,9 @@ public static class Assets
     }
 
     /// <summary>
-    /// Link an <see cref="IDisposable"/> instance to an asset, so that when the asset is disposed, the specified <see cref="IDisposable"/> is disposed as well
+    /// Link an <see cref="IDisposable"/> instance to an asset, 
+    /// so that when the asset is disposed, 
+    /// the specified <see cref="IDisposable"/> is disposed as well
     /// </summary>
     public static void LinkDisposal(GlobalAssetId id, IDisposable d)
     {
@@ -154,6 +165,17 @@ public static class Assets
     }
 
     /// <summary>
+    /// Undoes the linking by <see cref="LinkDisposal(GlobalAssetId, IDisposable)"/>
+    /// </summary>
+    public static void UnlinkDisposal(GlobalAssetId id, IDisposable d)
+    {
+        Validate(ref id);
+
+        var set = disposableChain.Ensure(id);
+        set.TryRemove(d);
+    }
+
+    /// <summary>
     /// Dispose the asset
     /// </summary>
     /// <param name="id"></param>
@@ -161,8 +183,9 @@ public static class Assets
     {
         Validate(ref id);
 
-        if (disposableChain.TryRemove(id, out var set))
-            while (set.TryTake(out var d))
+        if (disposableChain.TryGetValue(id, out var set))
+            foreach (var d in set)
+            {
                 try
                 {
                     d.Dispose();
@@ -171,9 +194,13 @@ public static class Assets
                 {
                     Logger.Error($"Disposal chain error while disposing {id}: {e}");
                 }
+            }
 
         if (packageRegistry.TryGetValue(id.External, out var assetPackage))
+        {
             assetPackage.DisposeOf(id.Internal);
+            Logger.Log($"Disposed asset {id}");
+        }
     }
 
     public static bool HasAsset(GlobalAssetId id)
@@ -358,8 +385,8 @@ public static class Assets
 
         if (id.External == PackageId.None)
             throw new Exception("External ID is none, but asset not found in any package");
-    }  
-    
+    }
+
     /// <summary>
     /// Resolve agnosticism and throw if not found
     /// </summary>

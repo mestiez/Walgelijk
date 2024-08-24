@@ -1,4 +1,9 @@
-﻿#version 330 core
+﻿// These shaders are not used by the game engine by default, because it actually uses built-in embedded shaders
+// accessible from the BuiltInShaders static class. 
+
+//This shader file servers as something to work off of.
+
+#version 330 core
 
 layout(location = 0) in vec3 in_position;
 layout(location = 1) in vec2 in_texcoord;
