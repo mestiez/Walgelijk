@@ -469,4 +469,60 @@ public class OpenTKGraphics : IGraphics
         var cache = GPUObjects.VertexBufferCache.Load<TVertex>();
         cache.Unload(vb);
     }
+
+    public Color SampleTexture(IReadableTexture tex, int x, int y)
+    {
+        y = (tex.Height - 1) - y; // we gotta flip it
+
+        switch (tex)
+        {
+            case RenderTexture rt:
+                {
+                    if (!GPUObjects.RenderTextureCache.Has(rt))
+                        return Colors.Transparent;
+
+                    var d = GPUObjects.RenderTextureCache.Load(rt);
+                    var hdr = rt.HasFlag(RenderTargetFlags.HDR);
+
+                    if (hdr)
+                        return GetColor<float>(d.TextureIds[0]);
+                    else
+                        return GetColor<byte>(d.TextureIds[0]);
+                }
+            case IReadableTexture tx:
+                {
+                    if (!GPUObjects.TextureCache.Has(tx))
+                        return Colors.Transparent;
+
+                    var d = GPUObjects.TextureCache.Load(tx);
+                    var hdr = tx.HDR;
+
+                    if (hdr)
+                        return GetColor<float>(d.Handle);
+                    else
+                        return GetColor<byte>(d.Handle);
+                }
+        }
+
+        Color GetColor<T>(int handle) where T : struct
+        {
+            var pixel = new T[4]; //rgba
+            PixelType px = pixel is float[]? PixelType.Float : PixelType.UnsignedByte;
+
+            GL.BindTexture(TextureTarget.Texture2D, handle);
+            GL.GetTextureSubImage(
+                handle, 0,
+                xoffset: x, yoffset: y,
+                0, 1, 1, 1,
+                PixelFormat.Rgba, px, pixel.Length, pixel);
+
+            if (pixel is float[] f)
+                return new Color(f);
+            else if (pixel is byte[] b)
+                return new Color(b[0], b[1], b[2], b[3]);
+            return Colors.Transparent;
+        }
+
+        throw new Exception($"Texture type {tex.GetType()} not supported.");
+    }
 }

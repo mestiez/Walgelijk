@@ -74,6 +74,28 @@ public static class AssetDeserialisers
         }
     }
 
+    public static bool HasCandidate<T>(in Asset asset)
+    {
+        setLock.Wait();
+
+        try
+        {
+            if (!byType.TryGetValue(typeof(T), out var set))
+                return false;
+
+            var metadata = asset.Metadata;
+            var candidate = set.FirstOrDefault(d => d.IsCandidate(metadata));
+            if (candidate == null)
+                return false;
+
+            return true;
+        }
+        finally
+        {
+            setLock.Set();
+        }
+    }
+
     public static T Load<T>(in Asset asset)
     {
         setLock.Wait();

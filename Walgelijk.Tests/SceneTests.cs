@@ -5,7 +5,7 @@ using Walgelijk;
 namespace Tests;
 
 [TestClass]
-public class SceneTests
+ public class SceneTests
 {
     //[TestMethod]
     //TODO dit is oud en moet opnieuw

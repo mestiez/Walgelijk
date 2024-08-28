@@ -13,6 +13,10 @@ public static class Assets
     public static IEnumerable<PackageId> AssetPackages => packageRegistry.Keys;
     public static readonly Hook OnAssetPackageRegistered = new();
     public static readonly Hook OnAssetPackageDeregistered = new();
+    /// <summary>
+    /// Provides a way to load assets in the background without having to worry about tasks, async, etc.
+    /// </summary>
+    public static readonly AsyncAssetsInterface Async = new();
 
     private static readonly List<PackageId> sortedPackages = [];
     private static readonly ConcurrentDictionary<PackageId, AssetPackage> packageRegistry = [];

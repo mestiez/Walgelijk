@@ -1956,12 +1956,18 @@
         </member>
         <member name="M:Walgelijk.Color.#ctor(System.Int32)">
             <summary>
-            Create a colour based on a hexadecimal representation as an integer, such as "0xd42c"
+            Create a colour based on a hexadecimal representation as an integer, such as "0x2e021b"
             </summary>
         </member>
         <member name="M:Walgelijk.Color.#ctor(System.UInt32)">
             <summary>
-            Create a colour based on a hexadecimal representation as an unsigned integer, such as "0xd42c5e"
+            Create a colour based on a hexadecimal representation as an unsigned integer, such as "0x2e021b5e"
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Color.#ctor(System.ReadOnlySpan{System.Single})">
+            <summary>
+            Create a colour using floating point values ranging from 0 to 1 in standard dynamic range.
+            Values are expected in order RGBA
             </summary>
         </member>
         <member name="P:Walgelijk.Color.Red">
@@ -2390,6 +2396,13 @@
             <summary>
             Access the stencil buffer state
             </summary>
+        </member>
+        <member name="M:Walgelijk.IGraphics.SampleTexture(Walgelijk.IReadableTexture,System.Int32,System.Int32)">
+            <summary>
+            Get a colour from a texture at a given coordinate in texture space
+            </summary>
+            <param name="tex"></param>
+            <returns></returns>
         </member>
         <member name="T:Walgelijk.IReadableTexture">
             <summary>
@@ -3083,6 +3096,11 @@
             This target's enabled features
             </summary>
         </member>
+        <member name="M:Walgelijk.RenderTarget.HasFlag(Walgelijk.RenderTargetFlags)">
+            <summary>
+            Returns true if <see cref="P:Walgelijk.RenderTarget.Flags"/> contains the given flags
+            </summary>
+        </member>
         <member name="T:Walgelijk.RenderTargetFlags">
             <summary>
             Render target features
@@ -3142,7 +3160,7 @@
         </member>
         <member name="M:Walgelijk.RenderTexture.GetPixel(System.Int32,System.Int32)">
             <summary>
-            You can't get pixels from a RenderTexture. This will return (0,0,0,0)
+            Returns <see cref="M:Walgelijk.IGraphics.SampleTexture(Walgelijk.IReadableTexture,System.Int32,System.Int32)"/>
             </summary>
         </member>
         <member name="M:Walgelijk.RenderTexture.ReadPixels">
@@ -3874,6 +3892,63 @@
         <member name="F:Walgelijk.WrapMode.Mirror">
             <summary>
             Mirrors the UV
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ConcurrentCache`2">
+            <summary>
+            A concurrent version of <see cref="T:Walgelijk.Cache`2"/>. 
+            </summary>
+            <typeparam name="UnloadedType">The key. This object is usually light and cheap to create</typeparam>
+            <typeparam name="LoadedType">The loaded object. This object is usually heavy and expensive to create</typeparam>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.Load(`0)">
+            <summary>
+            Load or create a <typeparamref name="LoadedType"/> from an <typeparamref name="UnloadedType"/>
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.CreateNew(`0)">
+            <summary>
+            Determines what must be done when an entirely new <typeparamref name="LoadedType"/> is created
+            </summary>
+            <param name="raw"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.DisposeOf(`1)">
+            <summary>
+            Dispose of any resources attached to the loaded type. This is invoked when an entry is unloaded.
+            </summary>
+            <param name="loaded"></param>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.Unload(`0)">
+            <summary>
+            Unload an entry and dispose of all attached resources
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.Has(`0)">
+            <summary>
+            Returns if an entry is in the cache
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.UnloadAll">
+            <summary>
+            Clear the cache
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.GetAllLoaded">
+            <summary>
+            Returns every loaded item in the cache
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.GetAllUnloaded">
+            <summary>
+            Returns every unloaded item ever loaded
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.GetAll">
+            <summary>
+            Returns every unloaded item ever loaded
             </summary>
         </member>
         <member name="T:Walgelijk.Cache`2">

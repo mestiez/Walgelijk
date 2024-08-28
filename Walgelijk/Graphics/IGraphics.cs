@@ -99,4 +99,11 @@ public interface IGraphics
     /// Access the stencil buffer state
     /// </summary>
     public StencilState Stencil { get; set; }
+
+    /// <summary>
+    /// Get a colour from a texture at a given coordinate in texture space
+    /// </summary>
+    /// <param name="tex"></param>
+    /// <returns></returns>
+    public Color SampleTexture(IReadableTexture tex, int x, int y);
 }

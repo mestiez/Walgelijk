@@ -92,14 +92,14 @@ public class RenderTexture : RenderTarget, IReadableTexture, IDisposable
     public bool DisposeLocalCopyAfterUpload => false;
 
     /// <summary>
-    /// You can't get pixels from a RenderTexture. This will return (0,0,0,0)
+    /// Returns <see cref="IGraphics.SampleTexture(IReadableTexture, int, int)"/>
     /// </summary>
-    public Color GetPixel(int x, int y) => default;
+    public Color GetPixel(int x, int y) => Game.Main.Window.Graphics.SampleTexture(this, x, y);
 
     /// <summary>
     /// You can't get pixels from a RenderTexture. This will return an empty span.
     /// </summary>
-    public ReadOnlySpan<Color> ReadPixels() => ReadOnlySpan<Color>.Empty;
+    public ReadOnlySpan<Color> ReadPixels() => [];
 
     /// <summary>
     /// Force an update

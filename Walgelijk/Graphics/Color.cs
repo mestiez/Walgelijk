@@ -77,7 +77,7 @@ public struct Color : IEquatable<Color>
     }
 
     /// <summary>
-    /// Create a colour based on a hexadecimal representation as an integer, such as "0xd42c"
+    /// Create a colour based on a hexadecimal representation as an integer, such as "0x2e021b"
     /// </summary>
     public Color(int hex)
     {
@@ -92,7 +92,7 @@ public struct Color : IEquatable<Color>
     }
 
     /// <summary>
-    /// Create a colour based on a hexadecimal representation as an unsigned integer, such as "0xd42c5e"
+    /// Create a colour based on a hexadecimal representation as an unsigned integer, such as "0x2e021b5e"
     /// </summary>
     public Color(uint hex)
     {
@@ -105,6 +105,18 @@ public struct Color : IEquatable<Color>
         G = g / 255f;
         B = b / 255f;
         A = a / 255f;
+    }
+
+    /// <summary>
+    /// Create a colour using floating point values ranging from 0 to 1 in standard dynamic range.
+    /// Values are expected in order RGBA
+    /// </summary>
+    public Color(ReadOnlySpan<float> values)
+    {
+        R = values[0];
+        G = values[1];
+        B = values[2];
+        A = values[3];
     }
 
     /// <summary>

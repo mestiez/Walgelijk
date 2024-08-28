@@ -71,11 +71,6 @@ public class TextureCache : Cache<IReadableTexture, LoadedTexture>
         int i = 0;
         foreach (var pixel in pixels)
         {
-            //data[i]     = (byte)(Utilities.Clamp(pixel.R) * 255);
-            //data[i + 1] = (byte)(Utilities.Clamp(pixel.G) * 255);
-            //data[i + 2] = (byte)(Utilities.Clamp(pixel.B) * 255);
-            //data[i + 3] = (byte)(Utilities.Clamp(pixel.A) * 255);
-
             (byte r, byte g, byte b, byte a) = pixel.ToBytes();
 
             data[i] = r;
@@ -93,7 +88,6 @@ public class TextureCache : Cache<IReadableTexture, LoadedTexture>
     {
         int l = raw.Width * raw.Height * componentCount;
         var data = ArrayPool<float>.Shared.Rent(l);
-        //var data = floatsCache.Load(raw.Width * raw.Height * componentCount);
         int i = 0;
         foreach (var pixel in pixels)
         {
@@ -121,15 +115,11 @@ public class TextureCache : Cache<IReadableTexture, LoadedTexture>
 
     private static void SetTextureData(byte[] data, IReadableTexture raw)
     {
-        // GL.TexStorage2D(TextureTarget2d.Texture2D, 0, SizedInternalFormat.Rgba8, raw.Width, raw.Height);
-        // GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, raw.Width, raw.Height, PixelFormat.Rgba, PixelType.UnsignedByte, data);
         GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, raw.Width, raw.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
     }
 
     private static void SetTextureData(float[] data, IReadableTexture raw)
     {
-        // GL.TexStorage2D(TextureTarget2d.Texture2D, 0, SizedInternalFormat.Rgba16f, raw.Width, raw.Height);
-        // GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, raw.Width, raw.Height, PixelFormat.Rgba, PixelType.Float, data);
         GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, raw.Width, raw.Height, 0, PixelFormat.Rgba, PixelType.Float, data);
     }
 

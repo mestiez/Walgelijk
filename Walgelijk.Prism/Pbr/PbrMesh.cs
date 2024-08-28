@@ -1,13 +1,16 @@
-﻿namespace Walgelijk.Prism;
+﻿namespace Walgelijk.Prism.Pbr;
 
-public class Mesh
+public class PbrMesh
 {
     public readonly string Name;
-    public readonly Vertex[] Vertices;
+
+    public readonly PbrVertex[] Vertices;
+
     public readonly uint[] Indices;
+
     public readonly Material? Material;
 
-    public Mesh(string name, Vertex[] vertices, uint[] indices, Material? material)
+    public PbrMesh(string name, PbrVertex[] vertices, uint[] indices, Material? material)
     {
         Name = name;
         Vertices = vertices;
