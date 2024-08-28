@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Runtime.CompilerServices;
 
 namespace Walgelijk;
 
@@ -12,7 +13,7 @@ public static class Logger
     /// </summary>
     public static void Debug<T>(in T message, [global::System.Runtime.CompilerServices.CallerMemberName] in string? source = null)
     {
-        Game.Main.Logger.LogDebug("{Message} ({Source})", message, source);
+        GetLogger()?.LogDebug("{Message} ({Source})", message, source);
     }
 
     /// <summary>
@@ -20,7 +21,7 @@ public static class Logger
     /// </summary>
     public static void Log<T>(in T message, [global::System.Runtime.CompilerServices.CallerMemberName] in string? source = null)
     {
-        Game.Main.Logger.LogInformation("{Message} ({Source})", message, source);
+        GetLogger()?.LogInformation("{Message} ({Source})", message, source);
     }
 
     /// <summary>
@@ -28,7 +29,7 @@ public static class Logger
     /// </summary>
     public static void Warn<T>(in T message, [global::System.Runtime.CompilerServices.CallerMemberName] in string? source = null)
     {
-        Game.Main.Logger.LogWarning("{Message} ({Source})", message, source);
+        GetLogger()?.LogWarning("{Message} ({Source})", message, source);
     }
 
     /// <summary>
@@ -36,6 +37,9 @@ public static class Logger
     /// </summary>
     public static void Error<T>(in T message, [global::System.Runtime.CompilerServices.CallerMemberName] in string? source = null)
     {
-        Game.Main.Logger.LogError("{Message} ({Source})", message, source);
+        GetLogger()?.LogError("{Message} ({Source})", message, source);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ILogger? GetLogger() => Game.Main?.Logger;
 }
