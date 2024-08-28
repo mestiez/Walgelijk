@@ -11,7 +11,8 @@ internal class FixedAudioCache : Cache<FixedAudioData, BufferHandle>
         ALUtils.CheckError("Generate new fixed buffer");
 
         // channel count can only be 1 or 2, as guaranteed by the file reader
-        // bits per sample can only be 16 s guaranteed by the same lad
+        // bits per sample can only be 16 s guaranteed by that thing as well
+        // TODO the audio data things should provide more data format info
         ALFormat format = raw.ChannelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16;
 
         unsafe
