@@ -221,6 +221,9 @@ internal class SampleAggregator : IDisposable
             for (int i = 0; i < buffer.Length; i++)
             {
 
+                if (item.SampleIndex + 1 >= item.Data.Length) // dit moet erna gebeuren om te zorgen dat je tijd kan besturen zodat het niet stopt op een random tijd zoals 0.003
+                    item.Stop();
+
                 var sampleIndex = item.SampleIndex++ % item.Data.Length;
                 buffer[i] += item.Data[sampleIndex] * m;
 
