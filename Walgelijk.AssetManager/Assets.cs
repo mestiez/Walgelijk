@@ -16,7 +16,7 @@ public static class Assets
     /// <summary>
     /// Provides a way to load assets in the background without having to worry about tasks, async, etc.
     /// </summary>
-    public static readonly AsyncAssetsInterface Async = new();
+    public static AsyncAssetsInterface Async { get; } = new();
 
     private static readonly List<PackageId> sortedPackages = [];
     private static readonly ConcurrentDictionary<PackageId, AssetPackage> packageRegistry = [];

@@ -15,31 +15,32 @@ public class AsyncAssetsInterface
     private readonly ConcurrentDictionary<GlobalAssetId, IWorker> singleWorkers = [];
     private readonly ConcurrentDictionary<string, IWorker> collectionWorkers = [];
 
+    private SemaphoreSlim workerSetLock = new(1);
+
     public T? Load<T>(GlobalAssetId id)
     {
-        lock (singleWorkers)
+        using var l = new DeferredSemaphore(workerSetLock);
+
+        if (singleWorkers.TryGetValue(id, out var worker))
         {
-            if (singleWorkers.TryGetValue(id, out var worker))
+            if (worker.Status == WorkerStatus.Finished)
+                singleWorkers.TryRemove(id, out _);
+
+            return worker.Status switch
             {
-                if (worker.Status == WorkerStatus.Finished)
-                    singleWorkers.TryRemove(id, out _);
+                WorkerStatus.Finished => (T?)Assets.Load<T>(id),
+                _ => default,
+            };
+        }
+        else
+        {
+            worker = new Worker<T>(id);
+            if (!singleWorkers.TryAdd(id, worker))
+                throw new InvalidOperationException($"Asset \"{id}\" is already being loaded.");
 
-                return worker.Status switch
-                {
-                    WorkerStatus.Finished => (T?)Assets.Load<T>(id),
-                    _ => default,
-                };
-            }
-            else
-            {
-                worker = new Worker<T>(id);
-                if (!singleWorkers.TryAdd(id, worker))
-                    throw new InvalidOperationException($"Asset \"{id}\" is already being loaded.");
+            worker.Start();
 
-                worker.Start();
-
-                return default;
-            }
+            return default;
         }
     }
 
@@ -55,20 +56,19 @@ public class AsyncAssetsInterface
     /// <exception cref="Exception"></exception>
     public IEnumerable<T> EnumerateFolder<T>(string folder, out bool finished, out float progress)
     {
+        using var l = new DeferredSemaphore(workerSetLock);
+
         finished = false;
         folder = AssetPackageUtils.NormalisePath(folder);
         CollectionWorker<T> coll;
 
-        lock (collectionWorkers)
-        {
-            if (!collectionWorkers.TryGetValue(folder, out var worker))
-                worker = new CollectionWorker<T>(folder);
+        if (!collectionWorkers.TryGetValue(folder, out var worker))
+            worker = new CollectionWorker<T>(folder);
 
-            coll = worker as CollectionWorker<T> ?? throw new Exception($"Found collection worker is not of the correct type. Expected {nameof(CollectionWorker<T>)}, got {worker.GetType()}");
+        coll = worker as CollectionWorker<T> ?? throw new Exception($"Found collection worker is not of the correct type. Expected {nameof(CollectionWorker<T>)}, got {worker.GetType()}");
 
-            if (worker.Status == WorkerStatus.Finished)
-                collectionWorkers.TryRemove(folder, out _);
-        }
+        if (worker.Status == WorkerStatus.Finished)
+            collectionWorkers.TryRemove(folder, out _);
 
         finished = coll.Status == WorkerStatus.Finished;
         progress = coll.Progress;
