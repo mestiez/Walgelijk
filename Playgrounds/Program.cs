@@ -51,7 +51,7 @@ public class Program
         AssetDeserialisers.Register(new WaveFixedAudioDeserialiser());
         Assets.RegisterPackage("assets.waa");
 
-        game.Scene = new PrismEditorScene().Load(game);
+        game.Scene = new AudioTestScene().Load(game);
 
 #if DEBUG
         game.DevelopmentMode = true;

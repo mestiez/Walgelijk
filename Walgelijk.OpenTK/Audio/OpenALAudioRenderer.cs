@@ -134,18 +134,31 @@ public class OpenALAudioRenderer : AudioRenderer
 
     private void UpdateIfRequired(Sound sound, out int source)
     {
-        source = AudioObjects.Sources.Load(sound);
-        if (!sound.RequiresUpdate && !(sound.Track?.RequiresUpdate ?? false))
-            return;
+        // TODO this is Fucked Up
+        source = -1;
+        try
+        {
+            source = AudioObjects.Sources.Load(sound);
+            if (!sound.RequiresUpdate && !(sound.Track?.RequiresUpdate ?? false))
+                return;
 
-        sound.RequiresUpdate = false;
+            sound.RequiresUpdate = false;
 
-        AL.Source(source, ALSourceb.Looping, sound.Data is not StreamAudioData && sound.Looping);
-        AL.Source(source, ALSourcef.Pitch, sound.Pitch * (sound.Track?.Pitch ?? 1));
-        AL.Source(source, ALSourcef.Gain,
-            (sound.Track?.Muted ?? false) ? 0 : (sound.Volume * (sound.Track?.Volume ?? 1)));
+            AL.Source(source, ALSourceb.Looping, sound.Data is not StreamAudioData && sound.Looping);
+            AL.Source(source, ALSourcef.Pitch, sound.Pitch * (sound.Track?.Pitch ?? 1));
+            AL.Source(source, ALSourcef.Gain,
+                (sound.Track?.Muted ?? false) ? 0 : (sound.Volume * (sound.Track?.Volume ?? 1)));
 
-        ApplySpatialParams(source, sound);
+            ApplySpatialParams(source, sound);
+        }
+        catch (Exception e)
+        {
+            Logger.Error(e);
+        }
+        finally
+        {
+
+        }
     }
 
     private void ApplySpatialParams(int source, Sound sound)
