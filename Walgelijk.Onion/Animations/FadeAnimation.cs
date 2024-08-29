@@ -4,14 +4,9 @@ namespace Walgelijk.Onion.Animations;
 
 public readonly struct FadeAnimation : IAnimation
 {
-    public void AnimateAlpha(ref float alpha, float t)
-    {
-        alpha *= IAnimation.GetProgress(t);
-    }
-
     public void AnimateColour(ref Color color, float t)
     {
-        AnimateAlpha(ref color.A, t);
+        color.A *= IAnimation.GetProgress(t);
     }
 
     public void AnimateRect(ref Rect rect, float t) { }

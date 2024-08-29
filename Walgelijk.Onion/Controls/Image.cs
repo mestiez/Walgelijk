@@ -51,6 +51,7 @@ public readonly struct Image : IControl
         Draw.Colour = p.Theme.Image.Default;
         Draw.OutlineWidth = 0;
         anim.AnimateRect(ref instance.Rects.Rendered, t);
+        anim.AnimateColour(ref Draw.Colour, t);
         Draw.Image(texture ?? Texture.ErrorTexture, instance.Rects.Rendered, containmentMode, 0, p.Theme.Rounding);
     }
 

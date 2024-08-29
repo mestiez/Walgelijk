@@ -24,18 +24,13 @@ public readonly struct Group : IControl
 
     public void OnStart(in ControlParams p)
     {
-        p.Instance.Rects.Local = new Rect(0, 0, 1, 1);
-        p.Instance.CaptureFlags = CaptureFlags.None;
-        p.Instance.Rects.Raycast = null;
-        p.Instance.Rects.DrawBounds = null;
+        p.Instance.CaptureFlags = CaptureFlags.Hover;
     }
 
     public void OnProcess(in ControlParams p)
     {
-        p.Instance.Rects.Rendered = p.Instance.Rects.ComputedGlobal;
-        p.Instance.CaptureFlags = CaptureFlags.Hover;
-        p.Instance.Rects.Raycast = p.Instance.Rects.Rendered;
-        p.Instance.Rects.DrawBounds = p.Instance.Rects.Rendered;
+        p.Instance.Rects.Raycast = p.Instance.Rects.ComputedGlobal;
+        p.Instance.Rects.DrawBounds = p.Instance.Rects.ComputedGlobal;
     }
 
     public void OnRender(in ControlParams p)

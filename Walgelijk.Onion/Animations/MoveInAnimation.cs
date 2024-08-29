@@ -11,7 +11,6 @@ public readonly struct MoveInAnimation : IAnimation
         Origin = origin;
     }
 
-    public void AnimateAlpha(ref float alpha, float t) { }
     public void AnimateColour(ref Color color, float t) { }
 
     public void AnimateRect(ref Rect rect, float t)

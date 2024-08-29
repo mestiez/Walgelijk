@@ -16,7 +16,6 @@ public readonly struct ShrinkAnimation : IAnimation
         TargetSize = minSize;
     }
 
-    public void AnimateAlpha(ref float alpha, float t) { }
     public void AnimateColour(ref Color color, float t) { }
     public void AnimateRect(ref Rect rect, float t) => rect = rect.Scale(GetScaling(t));
     public Matrix3x2 GetTransform(float t) => Matrix3x2.CreateScale(GetScaling(t));
