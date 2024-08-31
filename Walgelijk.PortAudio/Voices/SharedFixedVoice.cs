@@ -28,7 +28,8 @@ internal class SharedFixedVoice : IVoice
         }
     }
 
-    public uint SampleIndex { get; set; }
+    public uint SampleIndex;
+
     public Vector3 Position { get; set; }
     public bool IsVirtual { get; set; }
 

@@ -7,6 +7,7 @@ using Walgelijk.CommonAssetDeserialisers;
 using Walgelijk.CommonAssetDeserialisers.Audio;
 using Walgelijk.CommonAssetDeserialisers.Audio.Qoa;
 using Walgelijk.Onion;
+using Walgelijk.Onion.Controls;
 using Walgelijk.OpenTK;
 using Walgelijk.SimpleDrawing;
 
@@ -30,7 +31,7 @@ public struct AssetManagerTestScene : ISceneCreator
     {
         public (string Name, Sound Sound)[] Streams =
         [
-            //new Sound(Assets.Load<StreamAudioData>("assets:danse_macabre.ogg").Value, loops: true),
+            ("danse_macabre.ogg",new Sound(Assets.Load<StreamAudioData>("danse_macabre.ogg").Value)),
             ("valve_machiavellian_bach.ogg", new Sound(Assets.Load<StreamAudioData>("valve_machiavellian_bach.ogg").Value, loops: true)),
             ("sting_xp_level_up_orch_01.qoa", new Sound(Assets.Load<FixedAudioData>("sting_xp_level_up_orch_01.qoa").Value)),
             ("sample.wav", new Sound(Assets.Load<FixedAudioData>("sample.wav").Value)),
@@ -62,6 +63,13 @@ public struct AssetManagerTestScene : ISceneCreator
 
                     Ui.Layout.Size(200, 200).StickRight();
                     Ui.Label($"{(Audio.IsPlaying(s.Sound) ? "playing" : "stopped")}\n{Audio.GetTime(s.Sound)}");
+
+                    float time = Audio.GetTime(s.Sound);
+                    Ui.Layout.FitWidth().Height(20).CenterHorizontal().StickBottom();
+                    if (Ui.FloatSlider(ref time, Direction.Horizontal, (0, (float)s.Sound.Data.Duration.TotalSeconds), 0.01f))
+                    {
+                        Audio.SetTime(s.Sound, time);
+                    }
                 }
                 Ui.End();
             }

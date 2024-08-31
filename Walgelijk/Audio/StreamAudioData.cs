@@ -17,7 +17,7 @@ public class StreamAudioData : AudioData
         if (SampleRate == 0 || ChannelCount == 0 || SampleCount == 0)
             Duration = TimeSpan.Zero;
         else
-            Duration = TimeSpan.FromSeconds(SampleCount / (double)ChannelCount / sampleRate);
+            Duration = TimeSpan.FromSeconds(SampleCount / sampleRate);
     }
 
     /// <summary>

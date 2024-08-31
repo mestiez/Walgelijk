@@ -4,10 +4,11 @@ namespace Walgelijk.PortAudio.Voices;
 
 internal class SharedStreamVoice : IVoice
 {
+    public const int BufferSize = 2048;
+
     public readonly Sound Sound;
 
     private readonly StreamBuffer stream;
-    private readonly float[] readBuffer = new float[2048];
 
     public SharedStreamVoice(Sound sound)
     {
@@ -15,7 +16,7 @@ internal class SharedStreamVoice : IVoice
         if (Sound.Data is not StreamAudioData streamAudioData)
             throw new Exception("This voice only supports streaming audio data");
 
-        stream = new StreamBuffer(streamAudioData.InputSourceFactory(), readBuffer);
+        stream = new StreamBuffer(streamAudioData.InputSourceFactory(), BufferSize);
     }
 
     public double Time { get => stream.Time; set => stream.Time = value; }
@@ -25,22 +26,31 @@ internal class SharedStreamVoice : IVoice
 
     public void GetSamples(Span<float> frame)
     {
-
+        if (Sound.State == SoundState.Playing)
+        {
+            stream.GetSamples(frame);
+        }
     }
 
     public void Pause()
     {
+        Sound.State = SoundState.Paused;
     }
 
     public void Play()
     {
+        Sound.State = SoundState.Playing;
     }
 
     public void Resume()
     {
+        Sound.State = SoundState.Playing;
     }
 
     public void Stop()
     {
+        Sound.State = SoundState.Stopped;
+        stream.Time = 0;
+        stream.Clear();
     }
 }
