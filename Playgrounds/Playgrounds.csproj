@@ -24,6 +24,9 @@
     <None Include="$(ProjectDir)resources\**" CopyToOutputDirectory="Always" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="C:\Projects\Walgelijk\Playgrounds\assets\perfect-loop.wav" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />
   </ItemGroup>
   <ItemGroup>

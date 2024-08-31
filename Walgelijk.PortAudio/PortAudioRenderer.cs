@@ -2,6 +2,7 @@
 using PortAudioSharp;
 using System.Collections.Concurrent;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using PA = PortAudioSharp.PortAudio;
 
@@ -16,6 +17,7 @@ internal class FixedBufferCache : ConcurrentCache<FixedAudioData, float[]>
         var data = new float[raw.SampleCount];
 
         // data is 16 bits per sample, interleaved
+        // TODO resampling
 
         var p = 0;
 
@@ -45,6 +47,8 @@ internal interface IVoice
     public void Pause();
     public void Resume();
     public void Stop();
+
+    public void GetSamples(Span<float> frame);
 }
 
 internal class SharedVoice : IVoice
@@ -63,8 +67,8 @@ internal class SharedVoice : IVoice
 
     public double Time
     {
-        get => SampleIndex * (PortAudioRenderer.SecondsPerSample / Sound.Data.ChannelCount); 
-        
+        get => SampleIndex * (PortAudioRenderer.SecondsPerSample / Sound.Data.ChannelCount);
+
         set
         {
             uint sampleIndex = uint.Clamp((uint)(value / (PortAudioRenderer.SecondsPerSample / Sound.Data.ChannelCount)), 0, (uint)Data.Length - 1);
@@ -75,6 +79,33 @@ internal class SharedVoice : IVoice
     public uint SampleIndex { get; set; }
     public Vector3 Position { get; set; }
     public bool IsVirtual { get; set; }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetSamples(Span<float> frame)
+    {
+        if (Sound.State is not SoundState.Playing)
+            return;
+
+        var trackVolume = Sound.Track?.Volume ?? 1;
+
+        for (int i = 0; i < frame.Length; i++)
+        {
+            var nextSample = SampleIndex + 1;
+
+            if (!Sound.Looping && nextSample >= Data.Length)
+            {
+                Stop();
+                return;
+            }
+
+            SampleIndex = nextSample % (uint)Data.Length;
+            var v = Data[SampleIndex] * trackVolume;
+
+            frame[i] += v;
+            if (Sound.Data.ChannelCount == 1) // mono, so we should copy our sample to the next channel
+                frame[++i] += v;
+        }
+    }
 
     public void Pause()
     {
@@ -135,6 +166,11 @@ internal class OneShotVoice : IVoice
     public void Stop()
     {
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetSamples(Span<float> frame)
+    {
+    }
 }
 
 internal class SampleAggregator : IDisposable
@@ -146,6 +182,14 @@ internal class SampleAggregator : IDisposable
     public Vector3 ListenerPosition { get; set; }
     public (Vector3 Forward, Vector3 Up) ListenerOrientation { get; set; }
     public AudioDistanceModel DistanceModel { get; set; }
+
+    public IEnumerable<IVoice> GetAll()
+    {
+        foreach (var item in sharedVoices.Values)
+            yield return item; 
+        foreach (var item in oneShotVoices)
+            yield return item;
+    }
 
     private readonly ConcurrentDictionary<Sound, SharedVoice> sharedVoices = [];
     private readonly ConcurrentHashSet<OneShotVoice> oneShotVoices = [];
@@ -204,6 +248,7 @@ internal class SampleAggregator : IDisposable
         isDisposed = true;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetNextSamples(Span<float> buffer)
     {
         buffer.Clear();
@@ -211,37 +256,23 @@ internal class SampleAggregator : IDisposable
         if (Muted)
             return;
 
-        foreach (var item in sharedVoices.Values)
+        // TODO
+        // - correctly handle state (paused, stop, play, etc.)
+        // - correctly handle looping and pitch (for tracks too)
+
+        // - resampling
+        // - correctly deal with mono sources
+        // - streaming
+
+        // - voice cache array for faster enumeration
+
+        foreach (var voice in sharedVoices.Values)
         {
-            if (item.Sound.State is not SoundState.Playing)
-                continue;
-
-            var m = item.Sound.Track?.Volume ?? 1;
-
-            for (int i = 0; i < buffer.Length; i++)
-            {
-
-                if (item.SampleIndex + 1 >= item.Data.Length) // dit moet erna gebeuren om te zorgen dat je tijd kan besturen zodat het niet stopt op een random tijd zoals 0.003
-                    item.Stop();
-
-                var sampleIndex = item.SampleIndex++ % item.Data.Length;
-                buffer[i] += item.Data[sampleIndex] * m;
-
-                // TODO
-                // - the voice should provide samples, the aggregator simply aggregates them
-                // - correctly handle state (paused, stop, play, etc.)
-                // - correctly handle looping and pitch (for tracks too)
-
-                // - resampling
-                // - correctly deal with mono sources
-                // - streaming
-            }
+            voice.GetSamples(buffer);
         }
 
         for (int i = 0; i < buffer.Length; i++)
-        {
             buffer[i] *= Volume;
-        }
     }
 }
 
@@ -305,10 +336,10 @@ public class PortAudioRenderer : AudioRenderer
         /* - Make SoundProcessor object to keep track of currently playing sounds
         /* - Loop through all processors and get their samples
         /* - 3D audio, volume, attenuation, mute state, pitch, etc.
-        /* - BONUS: effects? convolve? SIMD? 
+        /* - BONUS: effects? convolve? SIMD? HDR!!!
         */
 
-        aggregator.GetNextSamples(sampleBuffer);
+        aggregator.GetNextSamples(sampleBuffer); // todo do this somewhere else, read results in this function
         Marshal.Copy(sampleBuffer, 0, output, sampleBuffer.Length);
 
         return StreamCallbackResult.Continue;
@@ -404,9 +435,16 @@ public class PortAudioRenderer : AudioRenderer
 
     public override void Release()
     {
-        stream?.Dispose();
-        PA.Terminate();
-        aggregator.Dispose();
+        try
+        {
+            stream?.Dispose();
+            PA.Terminate();
+            aggregator.Dispose();
+        }
+        catch (Exception e)
+        {
+            Logger.Error(e);
+        }
     }
 
     public override void ResumeAll()

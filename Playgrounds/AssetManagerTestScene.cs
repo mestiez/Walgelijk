@@ -34,6 +34,8 @@ public struct AssetManagerTestScene : ISceneCreator
             //new Sound(Assets.Load<StreamAudioData>("assets:valve_machiavellian_bach.ogg").Value, loops: true),
             new Sound(Assets.Load<FixedAudioData>("sting_xp_level_up_orch_01.qoa").Value),
             new Sound(Assets.Load<FixedAudioData>("sample.wav").Value),
+            new Sound(Assets.Load<FixedAudioData>("perfect-loop.wav").Value){ Looping = true },
+            new Sound(Assets.Load<FixedAudioData>("ppg_alarm_2.wav").Value),
         ];
 
         public override void Update()
