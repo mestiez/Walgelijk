@@ -11,7 +11,6 @@ internal interface IVoice
 
     public void Play();
     public void Pause();
-    public void Resume();
     public void Stop();
 
     public void GetSamples(Span<float> frame);

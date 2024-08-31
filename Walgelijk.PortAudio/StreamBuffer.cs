@@ -41,6 +41,10 @@ internal class StreamBuffer(IAudioStream Stream, uint BufferSize) : IDisposable
         {
             Stream.ReadSamples(writeBuffer);
         }
+        catch (Exception e)
+        {
+            Logger.Error(e);
+        }
         finally
         {
             readingFromSource.Release();

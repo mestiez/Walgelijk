@@ -17,7 +17,7 @@ public class AudioStreamer : IDisposable
     public readonly StreamAudioData AudioData;
     public readonly Dictionary<BufferHandle, BufferEntry> Buffers = [];
 
-    public ALFormat Format => AudioData.ChannelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16;
+    public ALFormat Format => AudioData.ChannelCount == 1 ? ALFormat.MonoFloat32Ext : ALFormat.StereoFloat32Ext;
 
     public TimeSpan CurrentTime
     {
@@ -36,7 +36,6 @@ public class AudioStreamer : IDisposable
                 : TimeSpan.Zero;
     }
 
-    private readonly short[] shortDataBuffer = new short[BufferSize];
     private readonly float[] rawBuffer = new float[BufferSize];
     private readonly int[] bufferHandles = new int[MaxBufferCount];
     private readonly Thread thread;
@@ -81,13 +80,7 @@ public class AudioStreamer : IDisposable
         {
             Array.Copy(rawBuffer, buffer.Data, BufferSize);
 
-            for (int i = 0; i < readAmount; i++)
-            {
-                var v = (short)Utilities.MapRange(-1, 1, short.MinValue, short.MaxValue, buffer.Data[i]);
-                shortDataBuffer[i] = v;
-            }
-
-            AL.BufferData<short>(buffer.Handle, Format, shortDataBuffer.AsSpan(0, readAmount), AudioData.SampleRate);
+            AL.BufferData<float>(buffer.Handle, Format, rawBuffer.AsSpan(0, readAmount), AudioData.SampleRate);
             AlCheck();
 
             AL.SourceQueueBuffer(Source, buffer.Handle);

@@ -4,6 +4,11 @@ public struct AudioFileData
 {
     public short NumChannels;
     public int SampleRate;
+
+    /// <summary>
+    /// Sample count per chanel
+    /// </summary>
     public long SampleCount;
-    public byte[]? Data;
+
+    public float[]? Data;
 }

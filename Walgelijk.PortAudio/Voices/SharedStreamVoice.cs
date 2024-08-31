@@ -22,19 +22,25 @@ internal class SharedStreamVoice : IVoice
     public double Time { get => stream.Time; set => stream.Time = value; }
     public Vector3 Position { get; set; }
     public bool IsVirtual { get; set; }
-    public bool IsFinished => Time > Sound.Data.Duration.TotalSeconds;
+    public bool IsFinished => Time >= Sound.Data.Duration.TotalSeconds;
 
     public void GetSamples(Span<float> frame)
     {
         if (Sound.State == SoundState.Playing)
         {
+            if (stream.Time >= Sound.Data.Duration.TotalSeconds)
+            {
+                if (Sound.Looping)
+                    stream.Time = 0;
+                else
+                {
+                    Stop();
+                    return;
+                }
+            }
+
             stream.GetSamples(frame);
         }
-    }
-
-    public void Pause()
-    {
-        Sound.State = SoundState.Paused;
     }
 
     public void Play()
@@ -42,9 +48,9 @@ internal class SharedStreamVoice : IVoice
         Sound.State = SoundState.Playing;
     }
 
-    public void Resume()
+    public void Pause()
     {
-        Sound.State = SoundState.Playing;
+        Sound.State = SoundState.Paused;
     }
 
     public void Stop()

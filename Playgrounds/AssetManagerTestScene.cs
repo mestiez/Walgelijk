@@ -25,9 +25,9 @@ public struct AssetManagerTestScene : ISceneCreator
         game.FixedUpdateRate = 50;
 
         return scene;
-    } 
+    }
 
-    public class TestSystem : Walgelijk.System 
+    public class TestSystem : Walgelijk.System
     {
         public (string Name, Sound Sound)[] Streams =
         [
@@ -41,12 +41,22 @@ public struct AssetManagerTestScene : ISceneCreator
 
         public override void Update()
         {
-            // Stream.ForceUpdate();
-
             int i = 0;
+            foreach (var device in Audio.EnumerateAvailableAudioDevices())
+            {
+                Ui.Layout.Size(200, 32).StickRight().StickTop().Move(0, i * 32);
+                if (Audio.GetCurrentAudioDevice() == device)
+                    Ui.Layout.Move(-10, 0);
+                if (Ui.Button(device, i++))
+                {
+                    Audio.SetAudioDevice(device);
+                }
+            }
+
+            i = 0;
             foreach (var s in Streams)
             {
-                Ui.Layout.Size(512, 112);
+                Ui.Layout.Size(512, 112).Move(0, i * 112);
                 Ui.StartDragWindow(s.Name, i++);
                 {
                     Ui.Layout.Size(100, 32).Move(0, 0);

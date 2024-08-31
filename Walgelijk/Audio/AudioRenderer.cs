@@ -144,11 +144,13 @@ public abstract class AudioRenderer
     /// <summary>
     /// Load an sound from a file at once
     /// </summary>
+    [Obsolete("Use a decoder instead (e.g Walgelijk.CommonAssetDeserialisers)")]
     public abstract FixedAudioData LoadSound(string path);
 
     /// <summary>
     /// Load a streaming sound from a file
     /// </summary>
+    [Obsolete("Use a decoder instead (e.g Walgelijk.CommonAssetDeserialisers)")]
     public abstract StreamAudioData LoadStream(string path);
 
     /// <summary>

@@ -6,7 +6,7 @@
     <members>
         <member name="T:Walgelijk.AudioData">
             <summary>
-            Object that contains sound data
+            Object that contains sound data ranging from -1 to 1
             </summary>
         </member>
         <member name="P:Walgelijk.AudioData.ChannelCount">
@@ -21,7 +21,7 @@
         </member>
         <member name="P:Walgelijk.AudioData.SampleCount">
             <summary>
-            Total sample count
+            Total sample count (per channel)
             </summary>
         </member>
         <member name="P:Walgelijk.AudioData.Duration">
@@ -261,9 +261,9 @@
             Raw data for the audio. This doesn't necessarily contain all audio data as it could be used as a streaming buffer.
             </summary>
         </member>
-        <member name="M:Walgelijk.FixedAudioData.#ctor(System.Byte[],System.Int32,System.Int32,System.Int64,System.Boolean)">
+        <member name="M:Walgelijk.FixedAudioData.#ctor(System.Single[],System.Int32,System.Int32,System.Int64,System.Boolean)">
             <summary>
-            Create a sound from raw data
+            Create a sound from raw data ranging from -1 to 1
             </summary>
         </member>
         <member name="F:Walgelijk.FixedAudioData.Beep">

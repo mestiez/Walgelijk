@@ -17,8 +17,10 @@ public class PortAudioRenderer : AudioRenderer
 
     private PortAudioSharp.Stream? stream;
     private int currentDeviceIndex = PA.NoDevice;
-    private SampleAggregator aggregator;
-    private float[] sampleBuffer;
+    private readonly SampleAggregator aggregator;
+    private readonly float[] sampleBuffer;
+    private (string, int)[] devices = [];
+    private readonly SemaphoreSlim usingStreamLock = new(1);
 
     internal const int SampleRate = 44100;
     internal const int FramesPerBuffer = 256;
@@ -33,29 +35,51 @@ public class PortAudioRenderer : AudioRenderer
         PA.LoadNativeLibrary();
         PA.Initialize();
 
+        var deviceInfo = PA.GetDeviceInfo(PA.DefaultOutputDevice);
+
+        var d = new HashSet<(string, int)>();
+        for (int i = 0; i < PA.DeviceCount; i++)
+        {
+            var info = PA.GetDeviceInfo(i);
+            if (info.maxOutputChannels >= 2 && info.hostApi == deviceInfo.hostApi && info.defaultSampleRate >= SampleRate)
+                if (!d.Any(a => a.Item1 == info.name))
+                    d.Add((info.name, i));
+        }
+        devices = [.. d];
+
         ReinitialiseStream(PA.DefaultOutputDevice);
         MaxVoices = maxVoices;
     }
 
     private void ReinitialiseStream(int deviceIndex)
     {
-        if (stream != null)
+        usingStreamLock.Wait();
+        try
         {
-            stream.Close();
-            stream.Dispose();
+            if (stream != null)
+            {
+                stream.Close();
+                stream.Dispose();
+            }
+
+            var deviceInfo = PA.GetDeviceInfo(deviceIndex);
+
+            var outParams = new StreamParameters
+            {
+                device = deviceIndex,
+                channelCount = ChannelCount,
+                sampleFormat = SampleFormat.Float32,
+                suggestedLatency = deviceInfo.defaultLowOutputLatency
+            };
+
+            stream = new PortAudioSharp.Stream(null, outParams, SampleRate, FramesPerBuffer, default, OnPaCallback, null);
+            currentDeviceIndex = deviceIndex;
+            stream.Start();
         }
-
-        var outParams = new StreamParameters
+        finally
         {
-            device = deviceIndex,
-            channelCount = ChannelCount,
-            sampleFormat = SampleFormat.Float32,
-            suggestedLatency = PA.GetDeviceInfo(deviceIndex).defaultLowOutputLatency
-        };
-
-        stream = new PortAudioSharp.Stream(null, outParams, SampleRate, FramesPerBuffer, default, OnPaCallback, null);
-
-        stream.Start();
+            usingStreamLock.Release();
+        }
     }
 
     private StreamCallbackResult OnPaCallback(nint input, nint output, uint frameCount, ref StreamCallbackTimeInfo timeInfo, StreamCallbackFlags statusFlags, nint userDataPtr)
@@ -67,11 +91,19 @@ public class PortAudioRenderer : AudioRenderer
         /* - 3D audio, volume, attenuation, mute state, pitch, etc.
         /* - BONUS: effects? convolve? SIMD? HDR!!!
         */
+        usingStreamLock.Wait();
+        try
+        {
+            aggregator.GetNextSamples(sampleBuffer); // todo do this somewhere else, read results in this function
+            Marshal.Copy(sampleBuffer, 0, output, sampleBuffer.Length);
 
-        aggregator.GetNextSamples(sampleBuffer); // todo do this somewhere else, read results in this function
-        Marshal.Copy(sampleBuffer, 0, output, sampleBuffer.Length);
+            return StreamCallbackResult.Continue;
+        }
+        finally
+        {
+            usingStreamLock.Release();
 
-        return StreamCallbackResult.Continue;
+        }
     }
 
     public override void DisposeOf(AudioData audioData)
@@ -82,14 +114,7 @@ public class PortAudioRenderer : AudioRenderer
     {
     }
 
-    public override IEnumerable<string> EnumerateAvailableAudioDevices()
-    {
-        for (int i = 0; i < PA.DeviceCount; i++)
-        {
-            var info = PA.GetDeviceInfo(i);
-            yield return info.name;
-        }
-    }
+    public override IEnumerable<string> EnumerateAvailableAudioDevices() => devices.Select(d => d.Item1);
 
     public override string GetCurrentAudioDevice()
     {
@@ -100,7 +125,7 @@ public class PortAudioRenderer : AudioRenderer
     public override int GetCurrentSamples(Sound sound, Span<float> arr)
     {
         return 0;
-    } 
+    }
 
     public override float GetTime(Sound sound)
     {
@@ -169,6 +194,7 @@ public class PortAudioRenderer : AudioRenderer
             stream?.Dispose();
             PA.Terminate();
             aggregator.Dispose();
+            usingStreamLock.Dispose();
         }
         catch (Exception e)
         {
@@ -186,12 +212,11 @@ public class PortAudioRenderer : AudioRenderer
 
     public override void SetAudioDevice(string device)
     {
-        for (int i = 0; i < PA.DeviceCount; i++)
+        foreach (var item in devices)
         {
-            var info = PA.GetDeviceInfo(i);
-            if (info.name.Equals(device))
+            if (item.Item1 == device)
             {
-                ReinitialiseStream(i);
+                ReinitialiseStream(item.Item2);
                 return;
             }
         }

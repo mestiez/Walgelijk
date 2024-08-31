@@ -181,42 +181,12 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public override FixedAudioData LoadSound(string path)
     {
-        var ext = path.AsSpan()[path.LastIndexOf('.')..];
-        AudioFileData data;
-
-        try
-        {
-            if (ext.Equals(".wav", StringComparison.InvariantCultureIgnoreCase))
-                data = WaveFileReader.Read(path);
-            else if (ext.Equals(".ogg", StringComparison.InvariantCultureIgnoreCase))
-                data = VorbisFileReader.Read(path);
-            else
-                throw new Exception(
-                    $"This is not a supported audio file. Only Microsoft WAV and Ogg Vorbis can be decoded.");
-        }
-        catch (Exception e)
-        {
-            throw new AggregateException($"Failed to load audio file: {path}", e);
-        }
-
-        var audio = new FixedAudioData(data.Data, data.SampleRate, data.NumChannels, data.SampleCount);
-        return audio;
+        throw new NotImplementedException();
     }
 
     public override StreamAudioData LoadStream(string path)
     {
-        var ext = path.AsSpan()[path.LastIndexOf('.')..];
-        AudioFileData data;
-
-        if (ext.Equals(".ogg", StringComparison.InvariantCultureIgnoreCase))
-        {
-            string absolutePath = Path.GetFullPath(path);
-            using var reader = new NVorbis.VorbisReader(absolutePath);
-            data = VorbisFileReader.ReadMetadata(reader);
-            return new StreamAudioData(() => new OggAudioStream(absolutePath), data.SampleRate, data.NumChannels, data.SampleCount);
-        }
-
-        throw new Exception($"No suitable streamer found for the file type {ext}");
+        throw new NotImplementedException();
     }
 
     public override void Pause(Sound sound)

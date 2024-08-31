@@ -13,7 +13,7 @@
     <Exec Command="dotnet pack -c Release --no-restore --no-build --output &quot;$(SolutionDir)OutputPackages&quot;" />
   </Target>
   <ItemGroup>
-    <PackageReference Include="NVorbis" Version="0.10.5" />
+    <PackageReference Include="VorbisPizza" Version="1.4.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Walgelijk.AssetManager\Walgelijk.AssetManager.csproj" />

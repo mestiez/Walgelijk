@@ -7,58 +7,41 @@ namespace Walgelijk;
 /// </summary>
 public static class AudioGen
 {
-    public delegate double AudioFunction(TimeSpan duration, int sampleRate, double time);
+    public delegate float AudioFunction(TimeSpan duration, int sampleRate, float time);
 
     public static AudioFunction Sine(float amplitude, float freq)
-        => (d, s, t) => amplitude * Math.Sin(freq * Math.PI * t);
+        => (d, s, t) => amplitude * float.Sin(freq * float.Pi * t);
 
     public static AudioFunction Square(float amplitude, float freq)
-        => (d, s, t) => amplitude * (Math.Sin(freq * Math.PI * t) > 0 ? 1 : -1);
+        => (d, s, t) => amplitude * (float.Sin(freq * float.Pi * t) > 0 ? 1 : -1);
 
     public static AudioFunction Triangle(float amplitude, float freq)
-        => (d, s, t) => amplitude * (2.0 / Math.PI) * Math.Asin(Math.Sin(freq * Math.PI * t));
+        => (d, s, t) => amplitude * (2f / float.Pi) * float.Asin(float.Sin(freq * float.Pi * t));
 
     public static AudioFunction Sawtooth(float amplitude, float freq)
-        => (d, s, t) => amplitude * (2 * (freq * t - Math.Floor(freq * t + 0.5)));
+        => (d, s, t) => amplitude * (2 * (freq * t - float.Floor(freq * t + 0.5f)));
 
     public static AudioFunction WhiteNoise(float amplitude)
         => (d, s, t) => amplitude * Utilities.RandomFloat(-1, 1);
 
     public static AudioFunction BrownNoise(float amplitude)
     {
-        double y = 0;
+        var y = 0f;
         return (d, s, t) =>
         {
-            y = 0.997 * y + 0.002 * Utilities.RandomFloat(-1, 1);
+            y = 0.997f * y + 0.002f * Utilities.RandomFloat(-1, 1);
             return amplitude * y;
         };
-    }
-
-    public static FixedAudioData FadeOut(this FixedAudioData data)
-    {
-        for (int i = 0; i < data.Data.Length; i += 2)
-        {
-            short sample = (short)(data.Data[i] | (data.Data[i + 1] << 8));
-            var f = Utilities.MapRange(0, data.Data.Length, 1, 0, i);
-            f = Easings.Quad.Out(f);
-            sample = (short)(sample * f);
-            data.Data[i] = (byte)(sample & 0xFF);
-            data.Data[i + 1] = (byte)((sample >> 8) & 0xFF);
-        }
-
-        return data;
     }
 
     public static FixedAudioData SignalGenerator(AudioFunction func, int sampleRate, TimeSpan duration)
     {
         var c = (int)(sampleRate * duration.TotalSeconds);
-        var data = new byte[c * 2];
+        var data = new float[c];
         for (int i = 0; i < c; i++)
         {
-            double time = i / (double)sampleRate;
-            int val = (int)Utilities.MapRange(-1, 1, -32768, 32767, func(duration, sampleRate, time));
-            data[i * 2] = (byte)(val & 0xFF);
-            data[i * 2 + 1] = (byte)(val >> 8);
+            var time = i / (float)sampleRate;
+            data[i] = func(duration, sampleRate, time);
         }
         return new FixedAudioData(data, sampleRate, 2, data.Length, false);
     }

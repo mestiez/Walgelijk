@@ -15,34 +15,49 @@ public class OggStreamAudioDeserialiser : IAssetDeserialiser<StreamAudioData>
 
     public StreamAudioData Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
     {
-        using var reader = new VorbisReader(stream(), true);
-        return new StreamAudioData(() => new OggAudioStream(stream()), reader.SampleRate, reader.Channels, reader.TotalSamples);
+        var reader = new VorbisReader(stream(), false);
+        reader.Initialize();
+        return new StreamAudioData(() => new OggAudioStream(reader), reader.SampleRate, reader.Channels, reader.TotalSamples);
     }
 
     public class OggAudioStream : IAudioStream
     {
         private readonly VorbisReader reader;
+        private readonly double SecondsPerSample;
 
         public OggAudioStream(string path)
         {
             reader = new VorbisReader(path);
+            reader.Initialize();
+
+            SecondsPerSample = 1d/ reader.SampleRate;
         }
 
         public OggAudioStream(Stream source)
         {
-            reader = new VorbisReader(source, true);
+            reader = new VorbisReader(source, false);
+            reader.Initialize();
+
+            SecondsPerSample = 1d/ reader.SampleRate;
+        }
+
+        public OggAudioStream(VorbisReader reader)
+        {
+            this.reader = reader;
+
+            SecondsPerSample = 1d/ reader.SampleRate;
         }
 
         public long Position
         {
             get => reader.SamplePosition;
-            set => reader.SamplePosition = value;
+            set => reader.SamplePosition = long.Clamp(value, 0, reader.TotalSamples - 1);
         }
 
         public TimeSpan TimePosition
         {
-            get => reader.TimePosition;
-            set => reader.TimePosition = value;
+            get => TimeSpan.FromSeconds(Position * SecondsPerSample); // dit is een decoded time position, niet sample time
+            set => Position = (long)(value.TotalSeconds * reader.SampleRate);
         }
 
         public int ReadSamples(Span<float> b) => reader.ReadSamples(b);

@@ -62,19 +62,14 @@ internal class SharedFixedVoice : IVoice
         }
     }
 
-    public void Pause()
-    {
-        Sound.State = SoundState.Paused;
-    }
-
     public void Play()
     {
         Sound.State = SoundState.Playing;
     }
 
-    public void Resume()
+    public void Pause()
     {
-        Sound.State = SoundState.Playing;
+        Sound.State = SoundState.Paused;
     }
 
     public void Stop()

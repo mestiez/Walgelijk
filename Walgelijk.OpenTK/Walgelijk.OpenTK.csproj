@@ -36,7 +36,6 @@
     <None Remove="Video\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NVorbis" Version="0.10.5" />
     <PackageReference Include="OpenTK" Version="4.8.2" />
   </ItemGroup>
   <ItemGroup>

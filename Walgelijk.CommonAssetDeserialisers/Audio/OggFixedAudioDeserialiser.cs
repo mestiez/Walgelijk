@@ -16,11 +16,10 @@ public class OggFixedAudioDeserialiser : IAssetDeserialiser<FixedAudioData>
     public FixedAudioData Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
     {
         using var temp = stream();
-        using var reader = new VorbisReader(temp);
+        using var reader = new VorbisReader(temp, false);
 
         var sampleCount = reader.TotalSamples * reader.Channels;
 
-        var buffer = new byte[sampleCount * 2]; // 16 bits per sample, in pairs of bytes
         var floatData = new float[sampleCount];
 
         int cPos = 0;
@@ -32,13 +31,6 @@ public class OggFixedAudioDeserialiser : IAssetDeserialiser<FixedAudioData>
                 break;
         }
 
-        for (long i = 0; i < sampleCount; i++)
-        {
-            var sample = (short)(floatData[i] * short.MaxValue);
-            buffer[i * 2] = (byte)sample;
-            buffer[i * 2 + 1] = (byte)(sample >> 8);
-        }
-
-        return new FixedAudioData(buffer, reader.SampleRate, reader.Channels, reader.TotalSamples);
+        return new FixedAudioData(floatData, reader.SampleRate, reader.Channels, reader.TotalSamples);
     }
 }

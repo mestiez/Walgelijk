@@ -16,9 +16,9 @@ public class QoaFixedAudioDeserialiser : IAssetDeserialiser<FixedAudioData>
             throw new Exception("Invalid header");
 
         int channelCount = dec.GetChannels();
-        int totalSamples = dec.GetTotalSamples() * channelCount;
+        int totalSamples = dec.GetTotalSamples();
 
-        var buffer = new short[totalSamples];
+        var buffer = new short[totalSamples * channelCount];
         int cursor = 0;
 
         while (true)
@@ -33,16 +33,12 @@ public class QoaFixedAudioDeserialiser : IAssetDeserialiser<FixedAudioData>
 
         Array.Resize(ref buffer, cursor);
 
-        var data = new byte[buffer.Length * 2]; // 16 bits per sample, in pairs of bytes
+        var data = new float[buffer.Length]; // 16 bits per sample, in pairs of bytes
 
         for (long i = 0; i < buffer.Length; i++)
-        {
-            var sample = buffer[i];
-            data[i * 2] = (byte)sample;
-            data[i * 2 + 1] = (byte)(sample >> 8);
-        }
+            data[i] = buffer[i] / (float)short.MaxValue;
 
-        var f = new FixedAudioData(data, dec.GetSampleRate(), totalSamples, totalSamples);
+        var f = new FixedAudioData(data, dec.GetSampleRate(), channelCount, totalSamples);
         return f;
     }
 
