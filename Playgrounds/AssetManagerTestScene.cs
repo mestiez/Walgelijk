@@ -28,14 +28,14 @@ public struct AssetManagerTestScene : ISceneCreator
 
     public class TestSystem : Walgelijk.System 
     {
-        public Sound[] Streams =
+        public (string Name, Sound Sound)[] Streams =
         [
             //new Sound(Assets.Load<StreamAudioData>("assets:danse_macabre.ogg").Value, loops: true),
-            //new Sound(Assets.Load<StreamAudioData>("assets:valve_machiavellian_bach.ogg").Value, loops: true),
-            new Sound(Assets.Load<FixedAudioData>("sting_xp_level_up_orch_01.qoa").Value),
-            new Sound(Assets.Load<FixedAudioData>("sample.wav").Value),
-            new Sound(Assets.Load<FixedAudioData>("perfect-loop.wav").Value){ Looping = true },
-            new Sound(Assets.Load<FixedAudioData>("ppg_alarm_2.wav").Value),
+            ("valve_machiavellian_bach.ogg", new Sound(Assets.Load<StreamAudioData>("valve_machiavellian_bach.ogg").Value, loops: true)),
+            ("sting_xp_level_up_orch_01.qoa", new Sound(Assets.Load<FixedAudioData>("sting_xp_level_up_orch_01.qoa").Value)),
+            ("sample.wav", new Sound(Assets.Load<FixedAudioData>("sample.wav").Value)),
+            ("perfect-loop.wav", new Sound(Assets.Load<FixedAudioData>("perfect-loop.wav").Value){ Looping = true }),
+            ("ppg_alarm_2.wav", new Sound(Assets.Load<FixedAudioData>("ppg_alarm_2.wav").Value)),
         ];
 
         public override void Update()
@@ -46,22 +46,22 @@ public struct AssetManagerTestScene : ISceneCreator
             foreach (var s in Streams)
             {
                 Ui.Layout.Size(512, 112);
-                Ui.StartDragWindow("Controller", i++);
+                Ui.StartDragWindow(s.Name, i++);
                 {
                     Ui.Layout.Size(100, 32).Move(0, 0);
                     if (Ui.Button("Play"))
-                        Audio.Play(s);
+                        Audio.Play(s.Sound);
 
                     Ui.Layout.Size(100, 32).Move(100, 0);
                     if (Ui.Button("Pause"))
-                        Audio.Pause(s);
+                        Audio.Pause(s.Sound);
 
                     Ui.Layout.Size(100, 32).Move(200, 0);
                     if (Ui.Button("Stop"))
-                        Audio.Stop(s);
+                        Audio.Stop(s.Sound);
 
                     Ui.Layout.Size(200, 200).StickRight();
-                    Ui.Label($"{(Audio.IsPlaying(s) ? "playing" : "stopped")}\n{Audio.GetTime(s)}");
+                    Ui.Label($"{(Audio.IsPlaying(s.Sound) ? "playing" : "stopped")}\n{Audio.GetTime(s.Sound)}");
                 }
                 Ui.End();
             }
