@@ -60,6 +60,8 @@ public class OggStreamAudioDeserialiser : IAssetDeserialiser<StreamAudioData>
             set => Position = (long)(value.TotalSeconds * reader.SampleRate);
         }
 
+        public bool HasEnded => reader.IsEndOfStream;
+
         public int ReadSamples(Span<float> b) => reader.ReadSamples(b);
 
         public void Dispose()

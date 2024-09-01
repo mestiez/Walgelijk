@@ -291,6 +291,11 @@
             Current time position in the stream
             </summary>
         </member>
+        <member name="P:Walgelijk.IAudioStream.HasEnded">
+            <summary>
+            True if the stream has reached the end
+            </summary>
+        </member>
         <member name="T:Walgelijk.Sound">
             <summary>
             A sound that can be played. It does not contain audio data, but is instead linked to an <see cref="T:Walgelijk.AudioData"/>

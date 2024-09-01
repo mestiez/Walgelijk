@@ -7,11 +7,15 @@ internal class StreamBuffer(IAudioStream Stream, uint BufferSize) : IDisposable
 
     private SemaphoreSlim readingFromSource = new(1);
     private int bufferPosition = 0;
+    private double requestSetTime = -1;
 
     public double Time
     {
-        get => Stream.TimePosition.TotalSeconds;
-        set => Stream.TimePosition = TimeSpan.FromSeconds(value);
+        get => requestSetTime != -1 ? requestSetTime : Stream.TimePosition.TotalSeconds;
+        set
+        {
+            requestSetTime = value;
+        }
     }
 
     public void GetSamples(Span<float> frame)
@@ -21,7 +25,7 @@ internal class StreamBuffer(IAudioStream Stream, uint BufferSize) : IDisposable
             frame[i] += readBuffer[(i + bufferPosition) % readBuffer.Length];
         }
 
-        bufferPosition += frame.Length; 
+        bufferPosition += frame.Length;
         // this only works because the buffer size is divisible by the framesize (this is why they all have to be a power of two)
         // another constraint is that the frame size must never exceed the buffer size
 
@@ -29,8 +33,7 @@ internal class StreamBuffer(IAudioStream Stream, uint BufferSize) : IDisposable
         {
             bufferPosition = 0;
             writeBuffer.CopyTo(readBuffer, 0);
-
-            ThreadPool.QueueUserWorkItem(FillBuffer); // TODO loop
+            ThreadPool.QueueUserWorkItem(FillBuffer);
         }
     }
 
@@ -39,6 +42,11 @@ internal class StreamBuffer(IAudioStream Stream, uint BufferSize) : IDisposable
         readingFromSource.Wait();
         try
         {
+            if (requestSetTime != -1)
+            {
+                Stream.TimePosition = TimeSpan.FromSeconds(requestSetTime);
+                requestSetTime = -1;
+            }
             Stream.ReadSamples(writeBuffer);
         }
         catch (Exception e)
@@ -53,6 +61,9 @@ internal class StreamBuffer(IAudioStream Stream, uint BufferSize) : IDisposable
 
     public void Clear()
     {
+        requestSetTime = -1;
+        Stream.TimePosition = TimeSpan.Zero;
+        bufferPosition = 0;
         Array.Clear(readBuffer);
         Array.Clear(writeBuffer);
     }

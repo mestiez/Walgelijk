@@ -10,6 +10,7 @@ public struct DeferredSemaphore : IDisposable
     public DeferredSemaphore(SemaphoreSlim semaphore)
     {
         this.semaphore = semaphore;
+        semaphore.Wait();
     }
 
     public void Dispose()

@@ -21,4 +21,9 @@ public interface IAudioStream : IDisposable
     /// Current time position in the stream
     /// </summary>
     public TimeSpan TimePosition { get; set; }
+
+    /// <summary>
+    /// True if the stream has reached the end
+    /// </summary>
+    public bool HasEnded { get; }
 }

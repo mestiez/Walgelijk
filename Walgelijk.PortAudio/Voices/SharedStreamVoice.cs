@@ -56,7 +56,6 @@ internal class SharedStreamVoice : IVoice
     public void Stop()
     {
         Sound.State = SoundState.Stopped;
-        stream.Time = 0;
         stream.Clear();
     }
 }

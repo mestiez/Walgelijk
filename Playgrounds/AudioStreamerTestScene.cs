@@ -55,6 +55,8 @@ public struct AudioStreamerTestScene : ISceneCreator
 
             public TimeSpan TimePosition { get; set; }
 
+            public bool HasEnded => false;
+
             public void Dispose()
             {
             }
