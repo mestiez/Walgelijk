@@ -66,9 +66,5 @@ internal sealed class EmptyAudioRenderer : AudioRenderer
 
     public override void SetPosition(Sound sound, Vector3 worldPosition) { }
 
-    public override FixedAudioData LoadSound(string path) => new FixedAudioData([], 0, 0, 0);
-
-    public override StreamAudioData LoadStream(string path) => new StreamAudioData(() => default, 0, 0, 0);
-
     public override int GetCurrentSamples(Sound sound, Span<float> arr) => 0;
 }

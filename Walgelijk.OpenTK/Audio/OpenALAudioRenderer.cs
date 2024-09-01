@@ -84,25 +84,6 @@ public class OpenALAudioRenderer : AudioRenderer
         MaxTempSourceCount = maxTempSourceCount;
         temporarySources = new(MaxTempSourceCount);
         temporarySourceBuffer = new TemporarySource[MaxTempSourceCount];
-        Resources.RegisterType(typeof(FixedAudioData), d => LoadSound(d));
-        Resources.RegisterType(typeof(StreamAudioData), d => LoadStream(d));
-        Resources.RegisterType(typeof(AudioData), d =>
-        {
-            var s = new FileInfo(d);
-            if (s.Length >=
-                1_000_000) //this is fucked but if the file is more than or equal to 1 MB it should probably be streamed. or be explicit and do not use the AudioData base class
-            {
-                if (Game.Main.DevelopmentMode)
-                    Logger.Warn(
-                        $"Audio \"{s.Name}\" loaded using base class {nameof(AudioData)} will be streamed because it exceeds 1 megabyte. Consider using the actual implementations {nameof(FixedAudioData)} and {nameof(StreamAudioData)}.");
-                return LoadStream(d);
-            }
-
-            if (Game.Main.DevelopmentMode)
-                Logger.Warn(
-                    $"Audio \"{s.Name}\" loaded using base class {nameof(AudioData)} will be read in its entirety because it is smaller than 1 megabyte. Consider using the actual implementations {nameof(FixedAudioData)} and {nameof(StreamAudioData)}.");
-            return LoadSound(d);
-        });
         canEnumerateDevices = AL.IsExtensionPresent("ALC_ENUMERATION_EXT");
         Initialise();
     }
@@ -177,16 +158,6 @@ public class OpenALAudioRenderer : AudioRenderer
             AL.Source(source, ALSourcef.ReferenceDistance, 0);
             AL.Source(source, ALSourcef.RolloffFactor, 0);
         }
-    }
-
-    public override FixedAudioData LoadSound(string path)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override StreamAudioData LoadStream(string path)
-    {
-        throw new NotImplementedException();
     }
 
     public override void Pause(Sound sound)

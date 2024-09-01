@@ -106,14 +106,6 @@ public class PortAudioRenderer : AudioRenderer
         }
     }
 
-    public override void DisposeOf(AudioData audioData)
-    {
-    }
-
-    public override void DisposeOf(Sound sound)
-    {
-    }
-
     public override IEnumerable<string> EnumerateAvailableAudioDevices() => devices.Select(d => d.Item1);
 
     public override string GetCurrentAudioDevice()
@@ -138,16 +130,6 @@ public class PortAudioRenderer : AudioRenderer
         return aggregator.Contains(sound) && sound.State == SoundState.Playing;
     }
 
-    public override FixedAudioData LoadSound(string path)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override StreamAudioData LoadStream(string path)
-    {
-        throw new NotImplementedException();
-    }
-
     public override void Pause(Sound sound)
     {
         aggregator.GetShared(sound, out var voice);
@@ -156,35 +138,52 @@ public class PortAudioRenderer : AudioRenderer
 
     public override void PauseAll()
     {
+        foreach (var item in aggregator.GetAll())
+            item.Pause();
     }
 
     public override void PauseAll(AudioTrack track)
     {
+        foreach (var item in aggregator.GetAll(track))
+            item.Pause();
     }
 
     public override void Play(Sound sound, float volume = 1)
     {
         aggregator.GetShared(sound, out var voice);
+        voice.Volume = volume;
         voice.Play();
     }
 
     public override void Play(Sound sound, Vector3 worldPosition, float volume = 1)
     {
         aggregator.GetShared(sound, out var voice);
+
         voice.Position = worldPosition;
+        voice.Volume = volume;
+
         voice.Play();
     }
 
     public override void PlayOnce(Sound sound, float volume = 1, float pitch = 1, AudioTrack? track = null)
     {
+        aggregator.GetOneShot(sound, out var voice);
+
+        voice.Pitch = pitch;
+        voice.Volume = volume;
+
+        voice.Play();
     }
 
     public override void PlayOnce(Sound sound, Vector3 worldPosition, float volume = 1, float pitch = 1, AudioTrack? track = null)
     {
-    }
+        aggregator.GetOneShot(sound, out var voice);
 
-    public override void Process(float dt)
-    {
+        voice.Position = worldPosition;
+        voice.Pitch = pitch;
+        voice.Volume = volume;
+
+        voice.Play();
     }
 
     public override void Release()
@@ -195,6 +194,7 @@ public class PortAudioRenderer : AudioRenderer
             PA.Terminate();
             aggregator.Dispose();
             usingStreamLock.Dispose();
+            FixedBufferCache.Shared.UnloadAll();
         }
         catch (Exception e)
         {
@@ -204,10 +204,16 @@ public class PortAudioRenderer : AudioRenderer
 
     public override void ResumeAll()
     {
+        foreach (var item in aggregator.GetAll())
+            if (item.State == SoundState.Paused)
+                item.Play();
     }
 
     public override void ResumeAll(AudioTrack track)
     {
+        foreach (var item in aggregator.GetAll(track))
+            if (item.State == SoundState.Paused)
+                item.Play();
     }
 
     public override void SetAudioDevice(string device)
@@ -244,13 +250,41 @@ public class PortAudioRenderer : AudioRenderer
 
     public override void StopAll()
     {
+        foreach (var item in aggregator.GetAll())
+            if (item.State == SoundState.Paused)
+                item.Stop();
     }
 
     public override void StopAll(AudioTrack track)
     {
+        foreach (var item in aggregator.GetAll(track))
+            if (item.State == SoundState.Paused)
+                item.Stop();
     }
 
     public override void UpdateTracks()
     {
+        // we do nothing lol
     }
+
+    public override void Process(float dt)
+    {
+        // we do nothing lol
+    }
+
+    public override void DisposeOf(AudioData audioData)
+    {
+        switch (audioData)
+        {
+            case FixedAudioData d:
+                FixedBufferCache.Shared.Unload(d);
+                break;
+        }
+    }
+
+    public override void DisposeOf(Sound sound)
+    {
+        // we do nothing lol
+    }
+
 }

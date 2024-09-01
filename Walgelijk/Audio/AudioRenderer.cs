@@ -56,7 +56,7 @@ public abstract class AudioRenderer
     public abstract AudioDistanceModel DistanceModel { get; set; }
 
     /// <summary>
-    /// Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="PlayOnce(Sound, float, float, AudioTrack?)"/> or <see cref="PlayOnce(Sound, Vector3, float, float, AudioTrack?)"/>
+    /// Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="PlayOnce(Sound, float?, float?, AudioTrack?)"/> or <see cref="PlayOnce(Sound, Vector3, float?, float?, AudioTrack?)"/>
     /// </summary>
     public abstract bool IsPlaying(Sound sound);
 
@@ -140,18 +140,6 @@ public abstract class AudioRenderer
     /// Get time in seconds for the sound if it is playing
     /// </summary>
     public abstract float GetTime(Sound sound);
-
-    /// <summary>
-    /// Load an sound from a file at once
-    /// </summary>
-    [Obsolete("Use a decoder instead (e.g Walgelijk.CommonAssetDeserialisers)")]
-    public abstract FixedAudioData LoadSound(string path);
-
-    /// <summary>
-    /// Load a streaming sound from a file
-    /// </summary>
-    [Obsolete("Use a decoder instead (e.g Walgelijk.CommonAssetDeserialisers)")]
-    public abstract StreamAudioData LoadStream(string path);
 
     /// <summary>
     /// Release all resources used by the audio engine

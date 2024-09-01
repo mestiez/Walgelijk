@@ -4,7 +4,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using Walgelijk.PortAudio.Voices;
 
-namespace Walgelijk.PortAudio; 
+namespace Walgelijk.PortAudio;
 
 internal class SampleAggregator : IDisposable
 {
@@ -27,9 +27,20 @@ internal class SampleAggregator : IDisposable
             yield return item;
     }
 
+    public IEnumerable<IVoice> GetAll(AudioTrack track)
+    {
+        foreach (var item in sharedVoiceCache)
+            if (item.Track == track)
+                yield return item;
+
+        foreach (var item in oneShotVoices)
+            if (item.Track == track)
+                yield return item;
+    }
+
     private readonly ConcurrentDictionary<Sound, IVoice> sharedVoices = [];
     private readonly ConcurrentHashSet<IVoice> oneShotVoices = [];
-    private Thread processThread;
+    private readonly Thread processThread;
 
     //private readonly SemaphoreSlim sharedvoiceSetLock = new(1);
 
@@ -78,10 +89,8 @@ internal class SampleAggregator : IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetOneShot(Sound sound, out IVoice voice)
     {
-        throw new NotImplementedException();
-
-        //voice = sound.Data is StreamAudioData ? new SharedStreamVoice(sound) : new SharedFixedVoice(sound);
-        //oneShotVoices.Add(voice);
+        voice = sound.Data is StreamAudioData ? new OneShotStreamVoice(sound) : new OneShotFixedVoice(sound);
+        oneShotVoices.Add(voice);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -112,9 +121,10 @@ internal class SampleAggregator : IDisposable
         // - voice cache array for faster enumeration
 
         foreach (var voice in sharedVoiceCache)
-        {
             voice.GetSamples(buffer);
-        }
+
+        foreach (var voice in oneShotVoices)
+            voice.GetSamples(buffer);
 
         for (int i = 0; i < buffer.Length; i++)
             buffer[i] *= Volume;

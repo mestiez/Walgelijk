@@ -107,7 +107,7 @@
         </member>
         <member name="M:Walgelijk.AudioRenderer.IsPlaying(Walgelijk.Sound)">
             <summary>
-            Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Single,System.Single,Walgelijk.AudioTrack)"/> or <see cref="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Numerics.Vector3,System.Single,System.Single,Walgelijk.AudioTrack)"/>
+            Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="!:PlayOnce(Sound, float?, float?, AudioTrack?)"/> or <see cref="!:PlayOnce(Sound, Vector3, float?, float?, AudioTrack?)"/>
             </summary>
         </member>
         <member name="M:Walgelijk.AudioRenderer.Play(Walgelijk.Sound,System.Single)">
@@ -189,16 +189,6 @@
         <member name="M:Walgelijk.AudioRenderer.GetTime(Walgelijk.Sound)">
             <summary>
             Get time in seconds for the sound if it is playing
-            </summary>
-        </member>
-        <member name="M:Walgelijk.AudioRenderer.LoadSound(System.String)">
-            <summary>
-            Load an sound from a file at once
-            </summary>
-        </member>
-        <member name="M:Walgelijk.AudioRenderer.LoadStream(System.String)">
-            <summary>
-            Load a streaming sound from a file
             </summary>
         </member>
         <member name="M:Walgelijk.AudioRenderer.Release">

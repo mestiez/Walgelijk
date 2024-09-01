@@ -1,61 +1,27 @@
-﻿using System.Numerics;
+﻿namespace Walgelijk.PortAudio.Voices;
 
-namespace Walgelijk.PortAudio.Voices;
-
-internal class SharedStreamVoice : IVoice
+internal class SharedStreamVoice : StreamVoice
 {
-    public const int BufferSize = 2048;
-
-    public readonly Sound Sound;
-
-    private readonly StreamBuffer stream;
-
-    public SharedStreamVoice(Sound sound)
+    public SharedStreamVoice(Sound sound) : base(sound)
     {
-        Sound = sound;
-        if (Sound.Data is not StreamAudioData streamAudioData)
-            throw new Exception("This voice only supports streaming audio data");
-
-        stream = new StreamBuffer(streamAudioData.InputSourceFactory(), BufferSize);
     }
 
-    public double Time { get => stream.Time; set => stream.Time = value; }
-    public Vector3 Position { get; set; }
-    public bool IsVirtual { get; set; }
-    public bool IsFinished => Time >= Sound.Data.Duration.TotalSeconds;
+    public override bool IsFinished => Time >= Sound.Data.Duration.TotalSeconds - double.Epsilon;
+    public override bool Looping { get => Sound.Looping; set => Sound.Looping = value; }
 
-    public void GetSamples(Span<float> frame)
-    {
-        if (Sound.State == SoundState.Playing)
-        {
-            if (stream.Time >= Sound.Data.Duration.TotalSeconds)
-            {
-                if (Sound.Looping)
-                    stream.Time = 0;
-                else
-                {
-                    Stop();
-                    return;
-                }
-            }
-
-            stream.GetSamples(frame);
-        }
-    }
-
-    public void Play()
+    public override void Play()
     {
         Sound.State = SoundState.Playing;
     }
 
-    public void Pause()
+    public override void Pause()
     {
         Sound.State = SoundState.Paused;
     }
 
-    public void Stop()
+    public override void Stop()
     {
         Sound.State = SoundState.Stopped;
-        stream.Clear();
+        StreamBuffer.Clear();
     }
 }
