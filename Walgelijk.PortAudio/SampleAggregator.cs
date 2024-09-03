@@ -48,7 +48,7 @@ internal class SampleAggregator : IDisposable
 
     public SampleAggregator(int maxVoices, int processInterval)
     {
-        MaxVoices = maxVoices;
+        MaxVoices = maxVoices; 
         ProcessInterval = processInterval;
 
         processThread = new(Process)

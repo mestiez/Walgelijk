@@ -30,7 +30,7 @@ public class OggStreamAudioDeserialiser : IAssetDeserialiser<StreamAudioData>
             reader = new VorbisReader(path);
             reader.Initialize();
 
-            SecondsPerSample = 1d/ reader.SampleRate;
+            SecondsPerSample = 1d / reader.SampleRate;
         }
 
         public OggAudioStream(Stream source)
@@ -38,14 +38,14 @@ public class OggStreamAudioDeserialiser : IAssetDeserialiser<StreamAudioData>
             reader = new VorbisReader(source, false);
             reader.Initialize();
 
-            SecondsPerSample = 1d/ reader.SampleRate;
+            SecondsPerSample = 1d / reader.SampleRate;
         }
 
         public OggAudioStream(VorbisReader reader)
         {
             this.reader = reader;
 
-            SecondsPerSample = 1d/ reader.SampleRate;
+            SecondsPerSample = 1d / reader.SampleRate;
         }
 
         public long Position
@@ -61,6 +61,8 @@ public class OggStreamAudioDeserialiser : IAssetDeserialiser<StreamAudioData>
         }
 
         public bool HasEnded => reader.IsEndOfStream;
+        public int SampleRate => reader.SampleRate;
+        public int ChannelCount => reader.Channels;
 
         public int ReadSamples(Span<float> b) => reader.ReadSamples(b);
 

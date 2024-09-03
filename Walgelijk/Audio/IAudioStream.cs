@@ -13,6 +13,17 @@ public interface IAudioStream : IDisposable
     public long Position { get; set; }
 
     /// <summary>
+    /// Samples per second (per channel)
+    /// </summary>
+    public int SampleRate { get; }
+
+    /// <summary>
+    /// Amount of channels. Generally 1 for mono and 2 for stereo.
+    /// If the amount of channels is greater than 1, the samples are interpreted to be interleaved
+    /// </summary>
+    public int ChannelCount { get; }
+
+    /// <summary>
     /// Populates the given buffer with the next batch of samples and returns the amount of samples read 
     /// </summary>
     public int ReadSamples(Span<float> buffer);

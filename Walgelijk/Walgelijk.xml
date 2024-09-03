@@ -271,6 +271,17 @@
             Current position in the stream
             </summary>
         </member>
+        <member name="P:Walgelijk.IAudioStream.SampleRate">
+            <summary>
+            Samples per second (per channel)
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IAudioStream.ChannelCount">
+            <summary>
+            Amount of channels. Generally 1 for mono and 2 for stereo.
+            If the amount of channels is greater than 1, the samples are interpreted to be interleaved
+            </summary>
+        </member>
         <member name="M:Walgelijk.IAudioStream.ReadSamples(System.Span{System.Single})">
             <summary>
             Populates the given buffer with the next batch of samples and returns the amount of samples read 
