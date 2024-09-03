@@ -148,7 +148,7 @@ public readonly struct Slider : IControl
             var v = states[p.Identity];
             var str = v.ToString();
             if (!string.IsNullOrWhiteSpace(labelFormat))
-                str = string.Format(labelFormat, str);
+                str = string.Format(labelFormat, v);
 
             Draw.Font = p.Theme.Font;
             Draw.Colour = p.Theme.Text[instance.State];
