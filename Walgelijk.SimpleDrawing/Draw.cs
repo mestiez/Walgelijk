@@ -410,7 +410,7 @@ public static class Draw
     {
         var textureSize = texture.Size;
         var size = rect.GetSize();
-        var topLeft = Draw.ScreenSpace ? rect.TopRight : rect.BottomLeft;
+        var topLeft = rect.BottomLeft;
 
         Vector2 imageSize;
         Vector2 imagePos = default;
