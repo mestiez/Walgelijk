@@ -70,7 +70,7 @@ internal class StreamBuffer : IDisposable
             int position = 0;
             for (int i = lastBufferPos; i < lastBuffer.Length; i++)
             {
-                frame[position++] = lastBuffer[i] * multiplier;
+                frame[position++] += lastBuffer[i] * multiplier;
                 lastBufferPos++;
                 SampleIndex++;
 

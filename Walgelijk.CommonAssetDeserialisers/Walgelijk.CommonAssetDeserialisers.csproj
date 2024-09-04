@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>0.8.1</Version>
+    <Version>0.8.2</Version>
     <Description>Provides deserialisers for commonly used asset formats, for Walgelijk.AssetManager</Description>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageIcon>icon.png</PackageIcon>
@@ -13,7 +13,7 @@
     <Exec Command="dotnet pack -c Release --no-restore --no-build --output &quot;$(SolutionDir)OutputPackages&quot;" />
   </Target>
   <ItemGroup>
-    <PackageReference Include="VorbisPizza" Version="1.4.2" />
+    <PackageReference Include="NVorbis" Version="0.10.5" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Walgelijk.AssetManager\Walgelijk.AssetManager.csproj" />

@@ -10,9 +10,7 @@ using System.Threading.Tasks;
 using Walgelijk;
 using Walgelijk.AssetManager;
 using Walgelijk.AssetManager.Deserialisers;
-using Walgelijk.CommonAssetDeserialisers;
 using Walgelijk.CommonAssetDeserialisers.Audio;
-using Walgelijk.OpenTK;
 
 namespace Tests.AssetManager;
 
@@ -248,7 +246,7 @@ melee 0.2";
 
         void stream()
         {
-           // l.Wait();
+            // l.Wait();
             using var reference = new VorbisReader("splitmek.ogg");
             var audio = package.Load<StreamAudioData>("sounds/music/splitmek.ogg");
             Assert.IsNotNull(audio);
@@ -259,19 +257,20 @@ melee 0.2";
             using var source = audio.InputSourceFactory();
             var buffer = new float[1024];
             var referenceBuffer = new float[1024];
-         //   l.Set();
+            //   l.Set();
             while (true)
             {
-            //    l.Wait();
+                //    l.Wait();
                 int c = source.ReadSamples(buffer);
                 int rC = reference.ReadSamples(referenceBuffer);
-              //  l.Set();
+                //  l.Set();
                 Assert.AreEqual(rC, c);
                 if (c == 0)
                     break;
 
-                for (int i = 0; i < c; i++)
-                    Assert.AreEqual(buffer[i], referenceBuffer[i], 0.1f);
+                lock (referenceBuffer)
+                    for (int i = 0; i < c; i++)
+                        Assert.AreEqual(buffer[i], referenceBuffer[i], 0.1f);
             }
         }
     }
