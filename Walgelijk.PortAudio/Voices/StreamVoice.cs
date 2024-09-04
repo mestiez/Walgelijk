@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Walgelijk.PortAudio.Effects;
 
 namespace Walgelijk.PortAudio.Voices;
 
@@ -7,6 +8,7 @@ abstract class StreamVoice : IVoice
     public const int BufferSize = 2048;
 
     public readonly Sound Sound;
+    public List<IEffect> Effects { get; } = [];
 
     protected readonly StreamBuffer StreamBuffer;
 
@@ -32,21 +34,27 @@ abstract class StreamVoice : IVoice
 
     public void GetSamples(Span<float> frame)
     {
-        if (Sound.State == SoundState.Playing)
-        {
-            if (StreamBuffer.Time >= Sound.Data.Duration.TotalSeconds)
-            {
-                if (Sound.Looping)
-                    StreamBuffer.Time = 0;
-                else
-                {
-                    Stop();
-                    return;
-                }
-            }
+        if (State is not SoundState.Playing)
+            return;
 
-            StreamBuffer.GetSamples(frame);
+        var volume = (Track?.Volume ?? 1) * Volume;
+
+        if (StreamBuffer.Time >= Sound.Data.Duration.TotalSeconds)
+        {
+            if (Sound.Looping)
+                StreamBuffer.Time = 0;
+            else
+            {
+                Stop();
+                return;
+            }
         }
+
+        StreamBuffer.GetSamples(frame, volume); // TODO apply speed/tempo
+
+        var t = TimeSpan.FromSeconds(Time);
+        foreach (var item in Effects)
+            item.Process(frame, StreamBuffer.SampleIndex, t);
     }
 
     public abstract void Play();

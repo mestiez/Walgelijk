@@ -1,4 +1,6 @@
-﻿namespace Walgelijk.PortAudio.Voices;
+﻿using Walgelijk.PortAudio.Effects;
+
+namespace Walgelijk.PortAudio.Voices;
 
 internal class SharedFixedVoice : FixedVoice
 {

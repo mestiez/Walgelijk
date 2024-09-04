@@ -19,16 +19,19 @@ public struct AssetManagerTestScene : ISceneCreator
         return scene;
     }
 
+    private static AudioTrack Music = new();
+    private static AudioTrack SFX = new();
+
     public class TestSystem : Walgelijk.System
     {
         public (string Name, Sound Sound)[] Streams =
         [
-            ("48000HzStream.ogg",new Sound(Assets.Load<StreamAudioData>("48000HzStream.ogg").Value)),
-            ("valve_machiavellian_bach.ogg", new Sound(Assets.Load<StreamAudioData>("valve_machiavellian_bach.ogg").Value, loops: true)),
-            ("sting_xp_level_up_orch_01.qoa", new Sound(Assets.Load<FixedAudioData>("sting_xp_level_up_orch_01.qoa").Value)),
-            ("sample.wav", new Sound(Assets.Load<FixedAudioData>("sample.wav").Value)),
-            ("perfect-loop.wav", new Sound(Assets.Load<FixedAudioData>("perfect-loop.wav").Value){ Looping = true }),
-            ("96000Hz.wav", new Sound(Assets.Load<FixedAudioData>("96000Hz.wav").Value)),
+            ("48000HzStream.ogg",new Sound(Assets.Load<StreamAudioData>("48000HzStream.ogg").Value) { Track = Music }),
+            ("valve_machiavellian_bach.ogg", new Sound(Assets.Load<StreamAudioData>("valve_machiavellian_bach.ogg").Value, loops: true) { Track = Music }),
+            ("sting_xp_level_up_orch_01.qoa", new Sound(Assets.Load<FixedAudioData>("sting_xp_level_up_orch_01.qoa").Value) { Track = SFX }),
+            ("sample.wav", new Sound(Assets.Load<FixedAudioData>("sample.wav").Value) { Track = SFX }),
+            ("perfect-loop.wav", new Sound(Assets.Load<FixedAudioData>("perfect-loop.wav").Value){ Looping = true, Track = SFX }),
+            ("96000Hz.wav", new Sound(Assets.Load<FixedAudioData>("96000Hz.wav").Value) { Track = SFX }),
         ];
 
         public override void Update()
@@ -44,6 +47,20 @@ public struct AssetManagerTestScene : ISceneCreator
                     Audio.SetAudioDevice(device);
                 }
             }
+
+            Ui.Theme.Text(Colors.Black).Push();
+
+            Ui.Layout.Size(50, 150).StickRight().StickBottom();
+            float v = Music.Volume;
+            if (Ui.FloatSlider(ref v, Direction.Vertical, (0,1), label: "{0:P0}\nMUSIC"))
+                Music.Volume = v;
+
+            Ui.Layout.Size(50, 150).StickRight().StickBottom().Move(-60, 0);
+            v = SFX.Volume;
+            if (Ui.FloatSlider(ref v, Direction.Vertical, (0,1), label: "{0:P0}\nSFX"))
+                SFX.Volume = v;
+
+            Ui.Theme.Pop();
 
             i = 0;
             foreach (var s in Streams)
@@ -63,7 +80,7 @@ public struct AssetManagerTestScene : ISceneCreator
                     if (Ui.Button("Stop"))
                         Audio.Stop(s.Sound);
 
-                    Ui.Layout.Size(200, 200).StickRight();
+                    Ui.Layout.Size(100, 200).StickRight().StickTop();
                     Ui.Label($"{(Audio.IsPlaying(s.Sound) ? "playing" : "stopped")}\n{Audio.GetTime(s.Sound)}");
 
                     float time = Audio.GetTime(s.Sound);

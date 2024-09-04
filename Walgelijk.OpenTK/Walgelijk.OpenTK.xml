@@ -4,6 +4,11 @@
         <name>Walgelijk.OpenTK</name>
     </assembly>
     <members>
+        <member name="F:Walgelijk.OpenTK.AudioFileData.SampleCount">
+            <summary>
+            Sample count per chanel
+            </summary>
+        </member>
         <member name="M:Walgelijk.OpenTK.OpenALAudioRenderer.GetCurrentSamples(Walgelijk.Sound,System.Span{System.Single})">
             <summary>
             Populates the array with the most recently played samples ranging from -1 to 1

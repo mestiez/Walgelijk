@@ -11,6 +11,7 @@ using Walgelijk;
 using Walgelijk.AssetManager;
 using Walgelijk.AssetManager.Deserialisers;
 using Walgelijk.CommonAssetDeserialisers;
+using Walgelijk.CommonAssetDeserialisers.Audio;
 using Walgelijk.OpenTK;
 
 namespace Tests.AssetManager;
@@ -203,7 +204,7 @@ melee 0.2";
     public void StreamDeserialise()
     {
         using var package = AssetPackage.Load(validPackage);
-        AssetDeserialisers.Register(new TestStreamAudioDeserialiser());
+        AssetDeserialisers.Register(new OggStreamAudioDeserialiser());
 
         for (int i = 0; i < 5; i++)
             stream();
@@ -237,7 +238,7 @@ melee 0.2";
     public void ConcurrentStreamDeserialise()
     {
         using var package = AssetPackage.Load(validPackage);
-        AssetDeserialisers.Register(new TestStreamAudioDeserialiser());
+        AssetDeserialisers.Register(new OggStreamAudioDeserialiser());
         var l = new ManualResetEventSlim(true);
 
         Task.WaitAll(
@@ -283,22 +284,3 @@ melee 0.2";
     // - lifetime stuff
 }
 
-public class TestStreamAudioDeserialiser : IAssetDeserialiser
-{
-    public Type ReturningType => typeof(StreamAudioData);
-
-    public bool IsCandidate(in AssetMetadata assetMetadata)
-    {
-        return
-            assetMetadata.MimeType.Equals("audio/vorbis", StringComparison.InvariantCultureIgnoreCase) ||
-            assetMetadata.MimeType.Equals("audio/ogg", StringComparison.InvariantCultureIgnoreCase);
-    }
-
-    public object Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
-    {
-        using var reader = new VorbisReader(stream(), true);
-        var data = VorbisFileReader.ReadMetadata(reader);
-        reader.Dispose();
-        return new StreamAudioData(() => new OggAudioStream(stream()), data.SampleRate, data.NumChannels, data.SampleCount);
-    }
-}

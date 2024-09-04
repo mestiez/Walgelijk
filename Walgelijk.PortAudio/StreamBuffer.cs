@@ -1,7 +1,10 @@
-﻿using System.Buffers;
-using System.Collections.Concurrent;
+﻿namespace Walgelijk.PortAudio;
 
-namespace Walgelijk.PortAudio;
+// TODO
+// remove queue, favour preallocated arrays
+// remove new arrays in FillBuffer, use preexisting arrays
+// resampling should be given the previous frame to prevent clicking and popping
+// resampler should not be a simple linear interpolation
 
 internal class StreamBuffer : IDisposable
 {
@@ -22,13 +25,16 @@ internal class StreamBuffer : IDisposable
     private float[]? lastBuffer = null;
     private int lastBufferPos = 0;
 
+    //private int SourceSampleRate => (int)(Stream.SampleRate * 0.25f);
+    private int SourceSampleRate => Stream.SampleRate;
+
     public StreamBuffer(IAudioStream stream, int bufferSize)
     {
         Stream = stream;
         BufferSize = bufferSize;
 
         needsResampling = stream.SampleRate != PortAudioRenderer.SampleRate;
-        resampledBufferSize = Resampler.GetInputLength(BufferSize, stream.SampleRate, PortAudioRenderer.SampleRate, stream.ChannelCount);
+        resampledBufferSize = Resampler.GetInputLength(BufferSize, SourceSampleRate, PortAudioRenderer.SampleRate, stream.ChannelCount);
         readBuffer = new float[resampledBufferSize];
     }
 
@@ -41,8 +47,12 @@ internal class StreamBuffer : IDisposable
         }
     }
 
-    public void GetSamples(Span<float> frame)
+    public ulong SampleIndex { get; private set; }
+
+    public void GetSamples(Span<float> frame, float multiplier)
     {
+        // TODO deze structuur werkt niet als de resampled buffer kleiner is dan de frame omdat
+        // je dan meerdere resampled buffers moet opvragen per GetSamples invocation
 
         if (lastBuffer == null)
         {
@@ -51,6 +61,7 @@ internal class StreamBuffer : IDisposable
                 if (decoded.TryDequeue(out lastBuffer, out _))
                     lastBufferPos = 0;
             }
+            
             ThreadPool.QueueUserWorkItem(FillBuffer);
         }
 
@@ -59,8 +70,9 @@ internal class StreamBuffer : IDisposable
             int position = 0;
             for (int i = lastBufferPos; i < lastBuffer.Length; i++)
             {
-                frame[position++] = lastBuffer[i];
+                frame[position++] = lastBuffer[i] * multiplier;
                 lastBufferPos++;
+                SampleIndex++;
 
                 if (position >= frame.Length)
                 {
@@ -96,14 +108,14 @@ internal class StreamBuffer : IDisposable
                 {
                     Stream.ReadSamples(readBuffer);
 
-                    var requestedLength = Resampler.GetOutputLength(resampledBufferSize, Stream.SampleRate, PortAudioRenderer.SampleRate, Stream.ChannelCount);
+                    var requestedLength = Resampler.GetOutputLength(resampledBufferSize, SourceSampleRate, PortAudioRenderer.SampleRate, Stream.ChannelCount);
                     var resampled = new float[requestedLength];
                     int read = 0;
 
                     if (Stream.ChannelCount == 2)
-                        read = Resampler.ResampleInterleavedStereo(readBuffer, resampled, Stream.SampleRate, PortAudioRenderer.SampleRate);
+                        read = Resampler.ResampleInterleavedStereo(readBuffer, resampled, SourceSampleRate, PortAudioRenderer.SampleRate);
                     else
-                        read = Resampler.ResampleMono(readBuffer, resampled, Stream.SampleRate, PortAudioRenderer.SampleRate);
+                        read = Resampler.ResampleMono(readBuffer, resampled, SourceSampleRate, PortAudioRenderer.SampleRate);
 
                     decoded.Enqueue(resampled, Stream.TimePosition.TotalSeconds);
                 }
@@ -129,6 +141,7 @@ internal class StreamBuffer : IDisposable
         bufferPosition = 0;
         decoded.Clear();
         lastBuffer = null;
+        SampleIndex = 0;
         //Array.Clear(readBuffer);
         //Array.Clear(writeBuffer);
     }

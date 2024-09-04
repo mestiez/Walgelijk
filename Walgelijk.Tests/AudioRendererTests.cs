@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Walgelijk;
-using Walgelijk.Mock;
 using Walgelijk.OpenTK;
 
 namespace Tests;
@@ -11,6 +11,8 @@ namespace Tests;
 [TestClass]
 public class AudioRendererTests
 {
+    public Walgelijk.CommonAssetDeserialisers.Audio.WaveFixedAudioDeserialiser des = new();
+
     public readonly static Func<AudioRenderer>[] Renderers =
     {
         () => new OpenALAudioRenderer()
@@ -19,6 +21,14 @@ public class AudioRendererTests
         },
     };
 
+    [TestInitialize]
+    public void Init()
+    {
+        des = new();
+    }
+
+    private FixedAudioData LoadSound(string s) => des.Deserialise(() => File.OpenRead(s), default);
+
     [TestMethod]
     public void FixedAudioLifetime()
     {
@@ -26,7 +36,7 @@ public class AudioRendererTests
         {
             var renderer = createNew();
             {
-                var audioData = renderer.LoadSound("machine_blaster-01.wav");
+                var audioData = LoadSound("machine_blaster-01.wav");
 
                 Assert.IsNotNull(audioData, "Loaded audio data is null");
                 Assert.IsTrue(audioData.Duration > TimeSpan.Zero, "Loaded audio data duration is zero");
@@ -72,9 +82,9 @@ public class AudioRendererTests
         {
             var renderer = createNew();
             {
-                var audioData1 = renderer.LoadSound("machine_blaster-01.wav");
-                var audioData2 = renderer.LoadSound("machine_blaster-02.wav");
-                var audioData3 = renderer.LoadSound("machine_blaster-03.wav");
+                var audioData1 = LoadSound("machine_blaster-01.wav");
+                var audioData2 = LoadSound("machine_blaster-02.wav");
+                var audioData3 = LoadSound("machine_blaster-03.wav");
 
                 var sounds = new[] { new Sound(audioData1), new Sound(audioData2), new Sound(audioData3) };
                 var distr = new FixedIntervalDistributor(30);

@@ -1,12 +1,8 @@
-﻿using System.Numerics;
-using System.Runtime.CompilerServices;
-
-namespace Walgelijk.PortAudio.Voices;
+﻿namespace Walgelijk.PortAudio.Voices;
 
 internal class OneShotFixedVoice : FixedVoice
 {
     public override bool IsFinished => isFinished;
-
     private bool isFinished;
     private double duration;
 

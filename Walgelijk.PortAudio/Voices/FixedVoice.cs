@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using Walgelijk.PortAudio.Effects;
 
 namespace Walgelijk.PortAudio.Voices;
 
@@ -8,6 +9,7 @@ internal abstract class FixedVoice : IVoice
 {
     public readonly ImmutableArray<float> Data;
 
+    public List<IEffect> Effects { get; } = [];
     public Vector3 Position { get; set; }
 
     public abstract SoundState State { get; set; }
