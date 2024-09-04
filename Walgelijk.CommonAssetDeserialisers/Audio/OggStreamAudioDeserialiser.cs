@@ -15,8 +15,8 @@ public class OggStreamAudioDeserialiser : IAssetDeserialiser<StreamAudioData>
 
     public StreamAudioData Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
     {
-        var reader = new VorbisReader(stream(), false);
-        return new StreamAudioData(() => new OggAudioStream(reader), reader.SampleRate, reader.Channels, reader.TotalSamples);
+        using var reader = new VorbisReader(stream(), false);
+        return new StreamAudioData(() => new OggAudioStream(stream()), reader.SampleRate, reader.Channels, reader.TotalSamples);
     }
 
     public class OggAudioStream : IAudioStream
@@ -63,7 +63,7 @@ public class OggStreamAudioDeserialiser : IAssetDeserialiser<StreamAudioData>
 
         public void Dispose()
         {
-            reader?.Dispose();
+           reader?.Dispose();
         }
     }
 }

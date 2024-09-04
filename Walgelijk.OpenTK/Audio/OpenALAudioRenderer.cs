@@ -81,10 +81,13 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public OpenALAudioRenderer(int maxTempSourceCount = 128)
     {
+        //ALC.RegisterOpenALResolver();
+        AL.RegisterOpenALResolver();
+
         MaxTempSourceCount = maxTempSourceCount;
         temporarySources = new(MaxTempSourceCount);
         temporarySourceBuffer = new TemporarySource[MaxTempSourceCount];
-        canEnumerateDevices = AL.IsExtensionPresent("ALC_ENUMERATION_EXT");
+
         Initialise();
     }
 
@@ -111,6 +114,12 @@ public class OpenALAudioRenderer : AudioRenderer
 
         if (!canPlayAudio)
             Logger.Error("Failed to initialise the audio renderer", nameof(OpenALAudioRenderer));
+
+        canEnumerateDevices = ALC.IsEnumerationExtensionPresent(device);
+
+        if (!AL.EXTFloat32.IsExtensionPresent())
+            throw new Exception("AL Float32 extension not available");
+
     }
 
     private void UpdateIfRequired(Sound sound, out int source)
@@ -439,10 +448,7 @@ public class OpenALAudioRenderer : AudioRenderer
     public override IEnumerable<string> EnumerateAvailableAudioDevices()
     {
         if (!canEnumerateDevices)
-        {
-            Logger.Warn("ALC_ENUMERATION_EXT is not present");
             yield break;
-        }
 
         foreach (var deviceName in ALC.GetString(AlcGetStringList.AllDevicesSpecifier))
             yield return deviceName;
@@ -629,8 +635,12 @@ internal static class ALUtils
 {
     public static void CheckError([CallerMemberName] in string id = default)
     {
-        var e = AL.GetError();
-        if (e != ALError.NoError)
-            throw new global::System.Exception($"OpenAL error at [{id ?? "unknown"}]: " + AL.GetErrorString(e));
+        while (true)
+        {
+            var e = AL.GetError();
+            if (e == ALError.NoError)
+                break;
+            Console.Error.WriteLine($"OpenAL error at [{id ?? "unknown"}]: " + AL.GetErrorString(e));
+        }
     }
 }

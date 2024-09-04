@@ -17,9 +17,9 @@ internal class FixedAudioCache : Cache<FixedAudioData, BufferHandle>
         unsafe
         {
             var data = raw.GetData() ?? ReadOnlyMemory<float>.Empty;
-            using var coll = data.Pin();
-            AL.BufferData(buffer, format, coll.Pointer, data.Length, raw.SampleRate);
-            coll.Dispose();
+            //using var coll = data.Pin();
+            AL.BufferData(buffer, format, data.Span, raw.SampleRate);
+           // coll.Dispose();
             ALUtils.CheckError("Upload fixed buffer data");
         }
 
