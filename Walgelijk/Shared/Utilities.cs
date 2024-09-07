@@ -170,6 +170,15 @@ public struct Utilities
     }
 
     /// <summary>
+    /// Returns a random Vector2 (x,y ranged -1.0f through 1.0f)
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 RandomVector2()
+    {
+        return new Vector2(RandomFloat(-1.0f, 1.0f), RandomFloat(-1.0f, 1.0f));
+    }
+
+    /// <summary>
     /// Clamp a value within a range
     /// </summary>
     /// <returns></returns>

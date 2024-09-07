@@ -23,10 +23,10 @@ public class BatchedSpriteComponent : Component
         Texture = texture;
     }
 
-    public BatchedSpriteComponent(IReadableTexture texture)
+    public BatchedSpriteComponent(IReadableTexture texture, bool centered = false)
     {
         Material = BatchMaterialCreator.DefaultInstancedMaterial;
-        VertexBuffer = PrimitiveMeshes.CenteredQuad;
+        VertexBuffer = centered ? PrimitiveMeshes.CenteredQuad : PrimitiveMeshes.Quad;
         Texture = texture;
     }
 }

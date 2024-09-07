@@ -85,6 +85,11 @@ public sealed class Scene : IDisposable
     public event Action<Entity>? OnCreateEntity;
 
     /// <summary>
+    /// Fired when an entity is removed
+    /// </summary>
+    public event Action<Entity>? OnRemovedEntity;
+
+    /// <summary>
     /// Fired when a component is attached to an entity
     /// </summary>
     public event Action<Entity, object>? OnAttachComponent;
@@ -180,6 +185,7 @@ public sealed class Scene : IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void RemoveEntity(Entity identity)
     {
+        OnRemovedEntity?.Invoke(identity);
         entities.Remove(identity);
         components.Remove(identity);
     }
