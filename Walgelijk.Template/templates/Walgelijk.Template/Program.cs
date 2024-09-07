@@ -2,6 +2,11 @@ using System.Numerics;
 using Walgelijk;
 using Walgelijk.OpenTK;
 using Walgelijk.SimpleDrawing;
+using Walgelijk.AssetManager;
+using Walgelijk.AssetManager.Deserialisers;
+using Walgelijk.CommonAssetDeserialisers;
+using Walgelijk.CommonAssetDeserialisers.Audio;
+using Walgelijk.CommonAssetDeserialisers.Audio.Qoa;
 
 namespace Walgelijk.Template;
 
@@ -18,15 +23,18 @@ public class Program
 
         Game.UpdateRate = 120;
         Game.FixedUpdateRate = 60;
-
         Game.Window.VSync = false;
 
         TextureLoader.Settings.FilterMode = FilterMode.Linear;
 
-        Resources.SetBasePathForType<FixedAudioData>("audio");
-        Resources.SetBasePathForType<StreamAudioData>("audio");
-        Resources.SetBasePathForType<Texture>("textures");
-        Resources.SetBasePathForType<Font>("fonts");
+        AssetDeserialisers.Register(new OggFixedAudioDeserialiser());
+        AssetDeserialisers.Register(new OggStreamAudioDeserialiser());
+        AssetDeserialisers.Register(new QoaFixedAudioDeserialiser());
+        AssetDeserialisers.Register(new WaveFixedAudioDeserialiser());
+        AssetDeserialisers.Register(new FontDeserialiser());
+
+        foreach (var a in Directory.EnumerateFiles("assets", "*.waa"))
+            Assets.RegisterPackage(a);
 
         var scene = Game.Scene = new Scene(Game);
         scene.AddSystem(new CameraSystem());
@@ -55,7 +63,7 @@ public class Program
         Game.Console.DrawConsoleNotification = false;
 #endif
 
-        Game.Window.SetIcon(Resources.Load<Texture>("icon.png"));
+        Game.Window.SetIcon(Assets.LoadNoCache<Texture>("textures/icon.png"));
         Game.Profiling.DrawQuickProfiler = false;
         Game.Compositor.Enabled = false;
 
@@ -89,7 +97,7 @@ public class ExampleSystem : Walgelijk.System
     public override void Render()
     {
         Draw.Reset();
-        Draw.Font = Resources.Load<Font>("inter.wf");
+        Draw.Font = Assets.Load<Font>("fonts/inter.wf");
         Draw.Colour = Colors.White;
         Draw.FontSize = 72;
         foreach (var inst in Scene.GetAllComponentsOfType<ExampleComponent>())

@@ -2,7 +2,7 @@
   "profiles": {
     "Walgelijk.FontGenerator": {
       "commandName": "Project",
-      "commandLineArgs": "pt-serif_regular.ttf"
+      "commandLineArgs": "--input pt-serif_regular.ttf"
     }
   }
 }

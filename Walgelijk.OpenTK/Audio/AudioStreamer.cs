@@ -17,17 +17,18 @@ public class AudioStreamer : IDisposable
     public readonly StreamAudioData AudioData;
     public readonly Dictionary<BufferHandle, BufferEntry> Buffers = [];
 
-    public ALFormat Format => AudioData.ChannelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16;
+    public ALFormat Format => AudioData.ChannelCount == 1 ? ALFormat.MonoFloat32Ext : ALFormat.StereoFloat32Ext;
 
     public TimeSpan CurrentTime
     {
         get
         {
-            AL.GetSource(Source, ALGetSourcei.SampleOffset, out int samplesPlayedInThisBuffer);
-            AlCheck();
-            var total = samplesPlayedInThisBuffer + processedSamples;
-            return TimeSpan.FromSeconds((total / (float)AudioData.SampleRate / AudioData.ChannelCount) %
-                                        (float)Sound.Data.Duration.TotalSeconds);
+            return stream.TimePosition; 
+            //AL.GetSource(Source, ALGetSourcei.SampleOffset, out int samplesPlayedInThisBuffer);
+            //ALUtils.CheckError();
+            //var total = samplesPlayedInThisBuffer + processedSamples;
+            //return TimeSpan.FromSeconds((total / (float)AudioData.SampleRate / AudioData.ChannelCount) %
+            //                            (float)Sound.Data.Duration.TotalSeconds);
         }
 
         set =>
@@ -36,7 +37,6 @@ public class AudioStreamer : IDisposable
                 : TimeSpan.Zero;
     }
 
-    private readonly short[] shortDataBuffer = new short[BufferSize];
     private readonly float[] rawBuffer = new float[BufferSize];
     private readonly int[] bufferHandles = new int[MaxBufferCount];
     private readonly Thread thread;
@@ -59,7 +59,7 @@ public class AudioStreamer : IDisposable
         for (int i = 0; i < MaxBufferCount; i++)
         {
             var a = new BufferEntry(AL.GenBuffer());
-            AlCheck();
+            ALUtils.CheckError();
             Buffers.Add(a.Handle, a);
             bufferHandles[i] = a.Handle;
         }
@@ -81,17 +81,10 @@ public class AudioStreamer : IDisposable
         {
             Array.Copy(rawBuffer, buffer.Data, BufferSize);
 
-            for (int i = 0; i < readAmount; i++)
-            {
-                var v = (short)Utilities.MapRange(-1, 1, short.MinValue, short.MaxValue, buffer.Data[i]);
-                shortDataBuffer[i] = v;
-            }
-
-            AL.BufferData<short>(buffer.Handle, Format, shortDataBuffer.AsSpan(0, readAmount), AudioData.SampleRate);
-            AlCheck();
-
+            AL.BufferData<float>(buffer.Handle, Format, rawBuffer.AsSpan(0, readAmount), AudioData.SampleRate);
+            ALUtils.CheckError();
             AL.SourceQueueBuffer(Source, buffer.Handle);
-            AlCheck();
+            ALUtils.CheckError();
 
             lock (recentlyPlayed)
             {
@@ -111,7 +104,7 @@ public class AudioStreamer : IDisposable
 
         if (Sound.State == SoundState.Playing)
             AL.SourcePlay(Source);
-        AlCheck();
+        ALUtils.CheckError();
 
         while (monitorFlag)
         {
@@ -124,9 +117,9 @@ public class AudioStreamer : IDisposable
             }
 
             var state = Source.GetALState();
-            AlCheck();
+            ALUtils.CheckError();
             var processed = AL.GetSource(Source, ALGetSourcei.BuffersProcessed);
-            AlCheck();
+            ALUtils.CheckError();
 
             switch (Sound.State)
             {
@@ -134,33 +127,33 @@ public class AudioStreamer : IDisposable
                     // if we are requested to play, didnt reach the end yet, and the source isnt playing: play the source
                     if (!endReached && state is ALSourceState.Stopped or ALSourceState.Initial or ALSourceState.Paused)
                         AL.SourcePlay(Source);
-                    AlCheck();
+                    ALUtils.CheckError();
                     processed = AL.GetSource(Source, ALGetSourcei.BuffersProcessed);
-                    AlCheck();
+                    ALUtils.CheckError();
                     break;
                 case SoundState.Paused:
                     // if we are requested to pause and the source is still playing, pause
                     if (state == ALSourceState.Playing)
                         AL.SourcePause(Source);
-                    AlCheck();
+                    ALUtils.CheckError();
                     continue;
                 case SoundState.Stopped:
                     // if we are requested to stop and the source isnt stopped, stop
                     if (state is ALSourceState.Playing or ALSourceState.Paused)
                     {
                         AL.SourceStop(Source);
-                        AlCheck();
+                        ALUtils.CheckError();
                         processed = AL.GetSource(Source, ALGetSourcei.BuffersProcessed);
-                        AlCheck();
+                        ALUtils.CheckError();
 
                         for (int i = 0; i < processed; i++)
                         {
                             AL.SourceUnqueueBuffer(Source);
-                            AlCheck();
+                            ALUtils.CheckError();
                         }
 
                         //AL.SourceRewind(Source);
-                        AlCheck();
+                        ALUtils.CheckError();
 
                         stream?.Dispose();
 
@@ -176,7 +169,7 @@ public class AudioStreamer : IDisposable
             while (processed > 0)
             {
                 int bufferHandle = AL.SourceUnqueueBuffer(Source);
-                AlCheck();
+                ALUtils.CheckError();
 
                 if (Sound.State is SoundState.Playing && Buffers.TryGetValue(bufferHandle, out var buffer))
                     if (!FillBuffer(buffer))
@@ -222,19 +215,6 @@ public class AudioStreamer : IDisposable
             AL.DeleteBuffer(b.Handle);
 
         stream.Dispose();
-    }
-
-    private static void AlCheck()
-    {
-#if DEBUG
-        while (true)
-        {
-            var err = AL.GetError();
-            if (err == ALError.NoError)
-                break;
-            Console.Error.WriteLine(err);
-        }
-#endif
     }
 
     public IEnumerable<float> TakeLastPlayed(int count = 1024)

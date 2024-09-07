@@ -1,7 +1,5 @@
 ﻿using System.Numerics;
 using Walgelijk;
-using Walgelijk.PLMPEG;
-using Walgelijk.SimpleDrawing;
 
 namespace Playgrounds;
 
@@ -56,37 +54,6 @@ public struct TransformTestScene : ISceneCreator
                 transform.Position = new Vector2(p, y);
                 y -= 128;
             }
-        }
-    }
-}
-
-public struct PlmpegScene : ISceneCreator
-{
-    public Scene Load(Game game)
-    {
-        var scene = new Scene(game);
-        scene.AddSystem(new TransformTestSystem());
-        return scene;
-    }
-
-    public class TransformTestSystem : Walgelijk.System
-    {
-        private Video video;
-
-        public override void Initialise()
-        {
-            var stream = new FileStream("sodium_chloride.mpg", FileMode.Open, FileAccess.Read);
-            video = new Walgelijk.PLMPEG.Video(stream);
-
-            video.Play();
-
-            Audio.Play(video.Sound);
-        }
-
-        public override void Update()
-        {
-            if (Input.IsKeyPressed(Key.Space))
-                video.IsPlaying = !video.IsPlaying;
         }
     }
 }

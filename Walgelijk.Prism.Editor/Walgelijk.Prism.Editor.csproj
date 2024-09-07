@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<Description>3D map editor</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Walgelijk.AssetManager\Walgelijk.AssetManager.csproj" />
+		<ProjectReference Include="..\Walgelijk.Onion\Walgelijk.Onion.csproj" />
+		<ProjectReference Include="..\Walgelijk.Prism\Walgelijk.Prism.csproj" />
+	</ItemGroup>
+
+</Project>

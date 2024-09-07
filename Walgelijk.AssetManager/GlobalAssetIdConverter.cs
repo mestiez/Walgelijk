@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Walgelijk.AssetManager;
 
@@ -11,24 +10,30 @@ public class GlobalAssetIdConverter : JsonConverter<GlobalAssetId>
 
         if (string.IsNullOrWhiteSpace(s))
             return GlobalAssetId.None;
+        var index = s.IndexOf(':');
 
-        if (s.Contains(':'))
+        if (index != -1)
         {
-            var index = s.IndexOf(':');
-
             var external = s[..index];
             var @internal = s[(index + 1)..];
 
-            if (!int.TryParse(external, out var externalId))
-                externalId = Hashes.MurmurHash1(external);
+            if (!PackageId.TryParse(external, out var externalId))
+                externalId = new PackageId(external);
 
-            if (!int.TryParse(@internal, out var internalId))
-                internalId = Hashes.MurmurHash1(@internal);
+            if (!AssetId.TryParse(@internal, out var internalId))
+                internalId = new AssetId(@internal);
 
             return new GlobalAssetId(externalId, internalId);
         }
         else
-            throw new Exception("Invalid GlobalAssetId: no delimiter. A global asset ID is formatted like so: \"external:internal\"");
+        {
+            // agnostic ID
+
+            if (!AssetId.TryParse(s, out var internalId))
+                internalId = new AssetId(s);
+
+            return new GlobalAssetId(internalId);
+        }
     }
 
     public override void WriteJson(JsonWriter writer, GlobalAssetId value, JsonSerializer serializer)
@@ -36,6 +41,6 @@ public class GlobalAssetIdConverter : JsonConverter<GlobalAssetId>
         if (value == GlobalAssetId.None)
             writer.WriteNull();
         else
-            writer.WriteValue(value.ToString());
+            writer.WriteValue(value.ToNamedString());
     }
 }

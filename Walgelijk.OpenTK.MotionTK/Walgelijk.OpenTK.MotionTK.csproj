@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <Version>1.1.23</Version>
+    <Version>1.1.27</Version>
     <Company>Studio Minus</Company>
     <Authors>zooi</Authors>
     <PackageIcon>icon.png</PackageIcon>

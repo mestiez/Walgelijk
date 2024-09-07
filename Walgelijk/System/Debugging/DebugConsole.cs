@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Text;
 using TextCopy;
 
@@ -10,7 +9,7 @@ namespace Walgelijk;
 /// <summary>
 /// Class that renders and controls the debug console
 /// </summary>
-public class DebugConsole : ILogger, IDisposable
+public class DebugConsole : IDisposable
 {
     /// <summary>
     /// The key that will toggle the console
@@ -66,10 +65,10 @@ public class DebugConsole : ILogger, IDisposable
     private int suggestionIndex;
     private bool disposed = false;
 
-    public string DebugPrefix   = "[DBG]";
-    public string InfoPrefix    = "[INF]";
+    public string DebugPrefix = "[DBG]";
+    public string InfoPrefix = "[INF]";
     public string WarningPrefix = "[WRN]";
-    public string ErrorPrefix   = "[ERR]";
+    public string ErrorPrefix = "[ERR]";
 
     internal const int MaxShownBuffer = 8192;
     internal ReadOnlySpan<byte> GetBuffer()
@@ -84,7 +83,7 @@ public class DebugConsole : ILogger, IDisposable
     /// Current user input
     /// </summary>
     public string? CurrentInput;
-    
+
     public DebugConsole(Game game)
     {
         Game = game;
@@ -92,7 +91,6 @@ public class DebugConsole : ILogger, IDisposable
         writer.AutoFlush = true;
         UI = new DebugConsoleUi(this);
         sessionHistory = new();
-        Logger.Implementations.Add(this);
 
         // Push the session history into our current history.
         if (sessionHistory.LastSessionCommands != null)
@@ -347,7 +345,7 @@ public class DebugConsole : ILogger, IDisposable
         var t = ConsoleMessageType.Plain;
         if (message.StartsWith(DebugPrefix))
             t = ConsoleMessageType.Debug;
-        else if(message.StartsWith(InfoPrefix))
+        else if (message.StartsWith(InfoPrefix))
             t = ConsoleMessageType.Info;
         else if (message.StartsWith(WarningPrefix))
             t = ConsoleMessageType.Warning;
@@ -379,25 +377,5 @@ public class DebugConsole : ILogger, IDisposable
         writer.Dispose();
         stream.Dispose();
         UI.Dispose();
-    }
-
-    public void Debug<T>(T message, string? source = null)
-    {
-        WriteLine(message!.ToString() ?? "NULL", ConsoleMessageType.Debug);
-    }
-
-    public void Log<T>(T message, string? source = null)
-    {
-        WriteLine(message!.ToString() ?? "NULL", ConsoleMessageType.Info);
-    }
-
-    public void Warn<T>(T message, string? source = null)
-    {
-        WriteLine(message!.ToString() ?? "NULL", ConsoleMessageType.Warning);
-    }
-
-    public void Error<T>(T message, string? source = null)
-    {
-        WriteLine(message!.ToString() ?? "NULL", ConsoleMessageType.Error);
     }
 }

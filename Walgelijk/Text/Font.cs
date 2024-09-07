@@ -49,11 +49,11 @@ public class Font
     /// <summary>
     /// Glyphs by character
     /// </summary>
-    public Dictionary<char, Glyph> Glyphs { get; internal set; } = new Dictionary<char, Glyph>();
+    public Dictionary<char, Glyph> Glyphs { get; internal set; } = [];
     /// <summary>
     /// Kernings by <see cref="KerningPair"/>
     /// </summary>
-    public Dictionary<KerningPair, Kerning> Kernings { get; internal set; } = new Dictionary<KerningPair, Kerning>();
+    public Dictionary<KerningPair, Kerning> Kernings { get; internal set; } = [];
 
     /// <summary>
     /// Material this font uses. Be aware this may be shared across text. Use <see cref="FontMaterialCreator.CreateFor(Font)"/> to create a new material.
@@ -99,10 +99,10 @@ internal static class BuiltInFont
         using var bytes = new MemoryStream(zip);
         using var arch = new ZipArchive(bytes, ZipArchiveMode.Read);
 
-        using var data = arch.GetEntry("roboto mono.fnt")?.Open() 
+        using var data = arch.GetEntry("roboto mono.fnt")?.Open()
             ?? throw new global::System.Exception("Failed to load built-in font: .fnt not found");
 
-        using var page = arch.GetEntry("roboto mono.png")?.Open() 
+        using var page = arch.GetEntry("roboto mono.png")?.Open()
             ?? throw new global::System.Exception("Failed to load built-in font: .png not found");
 
         return FontLoader.LoadBm(data, TextureLoader.FromStream(page, false));

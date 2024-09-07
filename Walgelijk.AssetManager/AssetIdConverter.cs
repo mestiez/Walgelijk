@@ -10,8 +10,8 @@ public class AssetIdConverter : JsonConverter<AssetId>
         if (string.IsNullOrWhiteSpace(s))
             return AssetId.None;
 
-        if (int.TryParse(s, out var id))
-            return new AssetId(id);
+        if (AssetId.TryParse(s, out var id))
+            return id;
 
         return new AssetId(s);
     }

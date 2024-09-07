@@ -29,7 +29,7 @@ public readonly struct ComponentRef<T> : IEquatable<ComponentRef<T>> where T : C
     /// Gets the component of type T attached to the entity from the specified scene.
     /// </summary>
     /// <param name="scene">The scene to search for the component.</param>
-    public readonly T Get(Scene scene) 
+    public readonly T Get(Scene scene)
         => scene.GetComponentFrom<T>(Entity);
 
     /// <summary>
@@ -37,7 +37,7 @@ public readonly struct ComponentRef<T> : IEquatable<ComponentRef<T>> where T : C
     /// </summary>
     /// <param name="scene">The scene to search for the component.</param>
     /// <param name="component">The component. Null if not found.</param>
-    public readonly bool TryGet(Scene scene, [NotNullWhen(true)] out T? component) 
+    public readonly bool TryGet(Scene scene, [NotNullWhen(true)] out T? component)
         => scene.TryGetComponentFrom(Entity, out component);
 
     /// <summary>
@@ -45,7 +45,7 @@ public readonly struct ComponentRef<T> : IEquatable<ComponentRef<T>> where T : C
     /// </summary>
     /// <param name="scene">The scene to check for the entity and component.</param>
     /// <returns>True if the entity exists in the scene and has the component of type T; otherwise, false.</returns>
-    public readonly bool IsValid(Scene scene) 
+    public readonly bool IsValid(Scene scene)
         => scene.HasEntity(Entity) && scene.HasComponent<T>(Entity);
 
     public override bool Equals(object? obj)

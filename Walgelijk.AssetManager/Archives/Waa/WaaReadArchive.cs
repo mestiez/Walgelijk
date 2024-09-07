@@ -10,7 +10,7 @@ namespace Walgelijk.AssetManager.Archives.Waa;
 
 public class WaaReadArchive : IReadArchive
 {
-    private readonly ImmutableDictionary<int, ReadEntry> entries;
+    private readonly ImmutableDictionary<string, ReadEntry> entries;
     private readonly ConcurrentBag<SubSeekableFileStream> ownedStreams = [];
 
     public string BaseFile { get; }
@@ -35,7 +35,7 @@ public class WaaReadArchive : IReadArchive
         int entryCount = reader.ReadInt32();
         int chunkListOffset = reader.ReadInt32();
 
-        var index = new Dictionary<int, ReadEntry>();
+        var index = new Dictionary<string, ReadEntry>();
 
         var pathAcc = new byte[256];
         for (int i = 0; i < entryCount; i++)
@@ -64,7 +64,7 @@ public class WaaReadArchive : IReadArchive
             if (chunkCount != (int)double.Ceiling(length / (double)Chunk.ChunkSize))
                 throw new Exception("Entry chunk count does not match length");
 
-            index.Add(Hashes.MurmurHash1(path), new ReadEntry
+            index.Add(path, new ReadEntry
             {
                 StartOffset = chunkStartIndex + chunkListOffset,
                 ChunkCount = chunkCount,
@@ -77,7 +77,7 @@ public class WaaReadArchive : IReadArchive
 
     public Stream? GetEntry(string path)
     {
-        if (entries.TryGetValue(Hashes.MurmurHash1(path), out var r))
+        if (entries.TryGetValue(path, out var r))
         {
             var s = new SubSeekableFileStream(new FileStream(BaseFile, FileMode.Open, FileAccess.Read), r.StartOffset, r.Length);
             ownedStreams.Add(s);
@@ -86,7 +86,7 @@ public class WaaReadArchive : IReadArchive
         return null;
     }
 
-    public bool HasEntry(string path) => entries.ContainsKey(Hashes.MurmurHash1(path));
+    public bool HasEntry(string path) => entries.ContainsKey(path);
 
     public void Dispose()
     {

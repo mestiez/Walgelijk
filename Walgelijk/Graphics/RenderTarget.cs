@@ -45,5 +45,10 @@ public abstract class RenderTarget
     /// </summary>
     public RenderTargetFlags Flags { get; init; }
 
+    /// <summary>
+    /// Returns true if <see cref="Flags"/> contains the given flags
+    /// </summary>
+    public bool HasFlag(RenderTargetFlags f) => (Flags & f) == f;
+
     private static Matrix4x4 uvMatrix = Matrix4x4.CreateOrthographicOffCenter(0, 1, 1, 0, 0, 100);
 }

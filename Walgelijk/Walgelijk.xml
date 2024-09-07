@@ -6,7 +6,7 @@
     <members>
         <member name="T:Walgelijk.AudioData">
             <summary>
-            Object that contains sound data
+            Object that contains sound data ranging from -1 to 1
             </summary>
         </member>
         <member name="P:Walgelijk.AudioData.ChannelCount">
@@ -21,7 +21,7 @@
         </member>
         <member name="P:Walgelijk.AudioData.SampleCount">
             <summary>
-            Total sample count
+            Total sample count (per channel)
             </summary>
         </member>
         <member name="P:Walgelijk.AudioData.Duration">
@@ -107,7 +107,7 @@
         </member>
         <member name="M:Walgelijk.AudioRenderer.IsPlaying(Walgelijk.Sound)">
             <summary>
-            Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Single,System.Single,Walgelijk.AudioTrack)"/> or <see cref="M:Walgelijk.AudioRenderer.PlayOnce(Walgelijk.Sound,System.Numerics.Vector3,System.Single,System.Single,Walgelijk.AudioTrack)"/>
+            Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="!:PlayOnce(Sound, float?, float?, AudioTrack?)"/> or <see cref="!:PlayOnce(Sound, Vector3, float?, float?, AudioTrack?)"/>
             </summary>
         </member>
         <member name="M:Walgelijk.AudioRenderer.Play(Walgelijk.Sound,System.Single)">
@@ -191,16 +191,6 @@
             Get time in seconds for the sound if it is playing
             </summary>
         </member>
-        <member name="M:Walgelijk.AudioRenderer.LoadSound(System.String)">
-            <summary>
-            Load an sound from a file at once
-            </summary>
-        </member>
-        <member name="M:Walgelijk.AudioRenderer.LoadStream(System.String)">
-            <summary>
-            Load a streaming sound from a file
-            </summary>
-        </member>
         <member name="M:Walgelijk.AudioRenderer.Release">
             <summary>
             Release all resources used by the audio engine
@@ -261,9 +251,9 @@
             Raw data for the audio. This doesn't necessarily contain all audio data as it could be used as a streaming buffer.
             </summary>
         </member>
-        <member name="M:Walgelijk.FixedAudioData.#ctor(System.Byte[],System.Int32,System.Int32,System.Int64,System.Boolean)">
+        <member name="M:Walgelijk.FixedAudioData.#ctor(System.Single[],System.Int32,System.Int32,System.Int64,System.Boolean)">
             <summary>
-            Create a sound from raw data
+            Create a sound from raw data ranging from -1 to 1
             </summary>
         </member>
         <member name="F:Walgelijk.FixedAudioData.Beep">
@@ -281,6 +271,17 @@
             Current position in the stream
             </summary>
         </member>
+        <member name="P:Walgelijk.IAudioStream.SampleRate">
+            <summary>
+            Samples per second (per channel)
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IAudioStream.ChannelCount">
+            <summary>
+            Amount of channels. Generally 1 for mono and 2 for stereo.
+            If the amount of channels is greater than 1, the samples are interpreted to be interleaved
+            </summary>
+        </member>
         <member name="M:Walgelijk.IAudioStream.ReadSamples(System.Span{System.Single})">
             <summary>
             Populates the given buffer with the next batch of samples and returns the amount of samples read 
@@ -289,6 +290,11 @@
         <member name="P:Walgelijk.IAudioStream.TimePosition">
             <summary>
             Current time position in the stream
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IAudioStream.HasEnded">
+            <summary>
+            True if the stream has reached the end
             </summary>
         </member>
         <member name="T:Walgelijk.Sound">
@@ -1245,7 +1251,6 @@
             <summary>
             Generate new Tag with a unique value that probably doesn't matter
             </summary>
-            <returns></returns>
         </member>
         <member name="T:Walgelijk.RequiresComponents">
             <summary>
@@ -1315,6 +1320,11 @@
         <member name="E:Walgelijk.Scene.OnCreateEntity">
             <summary>
             Fired when an entity is created and registered
+            </summary>
+        </member>
+        <member name="E:Walgelijk.Scene.OnRemovedEntity">
+            <summary>
+            Fired when an entity is removed
             </summary>
         </member>
         <member name="E:Walgelijk.Scene.OnAttachComponent">
@@ -1462,6 +1472,14 @@
         <member name="M:Walgelijk.Scene.DetachComponent``1(Walgelijk.Entity)">
             <summary>
             Detach a component from an entity
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Scene.DetachComponentImmediate``1(Walgelijk.Entity)">
+            <summary>
+            Detach a component from an entity and sync the buffers immediately.
+            So if you call <see cref="M:Walgelijk.Scene.DetachComponentImmediate``1(Walgelijk.Entity)"/> and then
+            <see cref="M:Walgelijk.Scene.HasComponent``1(Walgelijk.Entity)"/> in the same frame/tick, 
+            <see cref="M:Walgelijk.Scene.HasComponent``1(Walgelijk.Entity)"/> will return the correct value.
             </summary>
         </member>
         <member name="M:Walgelijk.Scene.UpdateSystems">
@@ -1737,6 +1755,11 @@
             Relevant graphics instance
             </summary>
         </member>
+        <member name="P:Walgelijk.System.Log">
+            <summary>
+            Relevant logging instance
+            </summary>
+        </member>
         <member name="P:Walgelijk.System.ExecutionOrder">
             <summary>
             The order of execution relative to other systems. The lower, the earlier it gets executed.
@@ -1944,12 +1967,18 @@
         </member>
         <member name="M:Walgelijk.Color.#ctor(System.Int32)">
             <summary>
-            Create a colour based on a hexadecimal representation as an integer, such as "0xd42c"
+            Create a colour based on a hexadecimal representation as an integer, such as "0x2e021b"
             </summary>
         </member>
         <member name="M:Walgelijk.Color.#ctor(System.UInt32)">
             <summary>
-            Create a colour based on a hexadecimal representation as an unsigned integer, such as "0xd42c5e"
+            Create a colour based on a hexadecimal representation as an unsigned integer, such as "0x2e021b5e"
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Color.#ctor(System.ReadOnlySpan{System.Single})">
+            <summary>
+            Create a colour using floating point values ranging from 0 to 1 in standard dynamic range.
+            Values are expected in order RGBA
             </summary>
         </member>
         <member name="P:Walgelijk.Color.Red">
@@ -2135,16 +2164,6 @@
             Draw a rectangle
             </summary>
         </member>
-        <member name="T:Walgelijk.ImageSharpDecoder">
-            <summary>
-            Decodes the most common image formats (PNG, JPEG, BMP, etc.)
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ImageSharpDecoder.CopyPixels(SixLabors.ImageSharp.ImageFrame{SixLabors.ImageSharp.PixelFormats.Rgba32},Walgelijk.Color[]@,System.Boolean)">
-            <summary>
-            Copies pixels from <see cref="T:SixLabors.ImageSharp.Image"/> to an array
-            </summary>
-        </member>
         <member name="T:Walgelijk.QOIDecoder">
             <summary>Decoder of the "Quite OK Image" (QOI) format.</summary>
         </member>
@@ -2153,6 +2172,16 @@
             <remarks>Returns <see langword="true" /> if decoded successfully.</remarks>
             <param name="encoded">QOI file contents. Only the first <c>encodedSize</c> bytes are accessed.</param>
             <param name="encodedSize">QOI file length.</param>
+        </member>
+        <member name="T:Walgelijk.SkiaSharpDecoder">
+            <summary>
+            Decodes the most common image formats (PNG, JPEG, BMP, etc.)
+            </summary>
+        </member>
+        <member name="M:Walgelijk.SkiaSharpDecoder.CopyPixels(SkiaSharp.SKBitmap,Walgelijk.Color[]@,System.Boolean)">
+            <summary>
+            Copies pixels from <see cref="T:SkiaSharp.SKBitmap"/> to an array
+            </summary>
         </member>
         <member name="T:Walgelijk.TextureLoader">
             <summary>
@@ -2378,6 +2407,13 @@
             <summary>
             Access the stencil buffer state
             </summary>
+        </member>
+        <member name="M:Walgelijk.IGraphics.SampleTexture(Walgelijk.IReadableTexture,System.Int32,System.Int32)">
+            <summary>
+            Get a colour from a texture at a given coordinate in texture space
+            </summary>
+            <param name="tex"></param>
+            <returns></returns>
         </member>
         <member name="T:Walgelijk.IReadableTexture">
             <summary>
@@ -3071,6 +3107,11 @@
             This target's enabled features
             </summary>
         </member>
+        <member name="M:Walgelijk.RenderTarget.HasFlag(Walgelijk.RenderTargetFlags)">
+            <summary>
+            Returns true if <see cref="P:Walgelijk.RenderTarget.Flags"/> contains the given flags
+            </summary>
+        </member>
         <member name="T:Walgelijk.RenderTargetFlags">
             <summary>
             Render target features
@@ -3130,7 +3171,7 @@
         </member>
         <member name="M:Walgelijk.RenderTexture.GetPixel(System.Int32,System.Int32)">
             <summary>
-            You can't get pixels from a RenderTexture. This will return (0,0,0,0)
+            Returns <see cref="M:Walgelijk.IGraphics.SampleTexture(Walgelijk.IReadableTexture,System.Int32,System.Int32)"/>
             </summary>
         </member>
         <member name="M:Walgelijk.RenderTexture.ReadPixels">
@@ -3862,6 +3903,63 @@
         <member name="F:Walgelijk.WrapMode.Mirror">
             <summary>
             Mirrors the UV
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ConcurrentCache`2">
+            <summary>
+            A concurrent version of <see cref="T:Walgelijk.Cache`2"/>. 
+            </summary>
+            <typeparam name="UnloadedType">The key. This object is usually light and cheap to create</typeparam>
+            <typeparam name="LoadedType">The loaded object. This object is usually heavy and expensive to create</typeparam>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.Load(`0)">
+            <summary>
+            Load or create a <typeparamref name="LoadedType"/> from an <typeparamref name="UnloadedType"/>
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.CreateNew(`0)">
+            <summary>
+            Determines what must be done when an entirely new <typeparamref name="LoadedType"/> is created
+            </summary>
+            <param name="raw"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.DisposeOf(`1)">
+            <summary>
+            Dispose of any resources attached to the loaded type. This is invoked when an entry is unloaded.
+            </summary>
+            <param name="loaded"></param>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.Unload(`0)">
+            <summary>
+            Unload an entry and dispose of all attached resources
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.Has(`0)">
+            <summary>
+            Returns if an entry is in the cache
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.UnloadAll">
+            <summary>
+            Clear the cache
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.GetAllLoaded">
+            <summary>
+            Returns every loaded item in the cache
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.GetAllUnloaded">
+            <summary>
+            Returns every unloaded item ever loaded
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.GetAll">
+            <summary>
+            Returns every unloaded item ever loaded
             </summary>
         </member>
         <member name="T:Walgelijk.Cache`2">
@@ -4867,6 +4965,11 @@
             Returns a colour with a random hue
             </summary>
         </member>
+        <member name="M:Walgelijk.Utilities.RandomVector2">
+            <summary>
+            Returns a random Vector2 (x,y ranged -1.0f through 1.0f)
+            </summary>
+        </member>
         <member name="M:Walgelijk.Utilities.Clamp(System.Single,System.Single,System.Single)">
             <summary>
             Clamp a value within a range
@@ -5343,49 +5446,9 @@
             Clear the console
             </summary>
         </member>
-        <member name="T:Walgelijk.ConsoleLogger">
-            <summary>
-            The default logger. Logs to the console.
-            </summary>
-        </member>
-        <member name="T:Walgelijk.DiskLogger">
-            <summary>
-            A disk logger. Logs to the <see cref="F:Walgelijk.DiskLogger.TargetPath"/>
-            </summary>
-        </member>
-        <member name="T:Walgelijk.ILogger">
-            <summary>
-            Interface for basic logging
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ILogger.Debug``1(``0,System.String)">
-            <summary>
-            Debug information
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ILogger.Log``1(``0,System.String)">
-            <summary>
-            Log information
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ILogger.Warn``1(``0,System.String)">
-            <summary>
-            Log a warning
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ILogger.Error``1(``0,System.String)">
-            <summary>
-            Log an error
-            </summary>
-        </member>
         <member name="T:Walgelijk.Logger">
             <summary>
             Access the logging implementation
-            </summary>
-        </member>
-        <member name="P:Walgelijk.Logger.Implementations">
-            <summary>
-            The logging implementation used. Set to <see cref="T:Walgelijk.ConsoleLogger"/> by default
             </summary>
         </member>
         <member name="M:Walgelijk.Logger.Debug``1(``0@,System.String@)">
@@ -5406,31 +5469,6 @@
         <member name="M:Walgelijk.Logger.Error``1(``0@,System.String@)">
             <summary>
             Log an error
-            </summary>
-        </member>
-        <member name="T:Walgelijk.LogLevel">
-            <summary>
-            Levels of logging
-            </summary>
-        </member>
-        <member name="F:Walgelijk.LogLevel.Debug">
-            <summary>
-            Debug messages
-            </summary>
-        </member>
-        <member name="F:Walgelijk.LogLevel.Info">
-            <summary>
-            Informational messages
-            </summary>
-        </member>
-        <member name="F:Walgelijk.LogLevel.Warn">
-            <summary>
-            Warning messages
-            </summary>
-        </member>
-        <member name="F:Walgelijk.LogLevel.Error">
-            <summary>
-            Error messages
             </summary>
         </member>
         <member name="T:Walgelijk.Profiler">
@@ -5621,7 +5659,17 @@
             The maximum amount of fixed updates per frame
             </summary>
         </member>
-        <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window,Walgelijk.AudioRenderer)">
+        <member name="F:Walgelijk.Game.Logger">
+            <summary>
+            The logger for the game, also used by <see cref="F:Walgelijk.Game.Logger"/>
+            </summary>
+        </member>
+        <member name="F:Walgelijk.Game.AdditionalLoopEvents">
+            <summary>
+            Additional events to invoke for every game loop cycle
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window,Walgelijk.AudioRenderer,Microsoft.Extensions.Logging.ILogger)">
             <summary>
             Create a game with a window and an optional audio renderer. If the audio renderer is not set, the game won't be able to play any sounds
             </summary>
@@ -5729,6 +5777,11 @@
         <member name="M:Walgelijk.Hook.op_Subtraction(Walgelijk.Hook,System.Action)">
             <summary>
             Remove listener
+            </summary>
+        </member>
+        <member name="T:Walgelijk.IGameLoopEvent">
+            <summary>
+            Receives an update for every game loop cycle
             </summary>
         </member>
         <member name="T:Walgelijk.NameGenerator">
@@ -7075,6 +7128,251 @@
             <summary>
             Fullscreen
             </summary>
+        </member>
+        <member name="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1">
+            <summary>
+            Represents a thread-safe hash-based unique collection.
+            </summary>
+            <typeparam name="T">The type of the items in the collection.</typeparam>
+            <remarks>
+            All public members of <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/> are thread-safe and may be used
+            concurrently from multiple threads.
+            </remarks>
+        </member>
+        <member name="P:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.Comparer">
+            <summary>
+            Gets the <see cref="T:System.Collections.Generic.IEqualityComparer`1" />
+            that is used to determine equality for the values in the set.
+            </summary>
+            <value>
+            The <see cref="T:System.Collections.Generic.IEqualityComparer`1" /> generic interface implementation that is used to 
+            provide hash values and determine equality for the values in the current <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1" />.
+            </value>
+            <remarks>
+            <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1" /> requires an equality implementation to determine
+            whether values are equal. You can specify an implementation of the <see cref="T:System.Collections.Generic.IEqualityComparer`1" />
+            generic interface by using a constructor that accepts a comparer parameter;
+            if you do not specify one, the default generic equality comparer <see cref="P:System.Collections.Generic.EqualityComparer`1.Default" /> is used.
+            </remarks>
+        </member>
+        <member name="P:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.Count">
+            <summary>
+            Gets the number of items contained in the <see
+            cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>.
+            </summary>
+            <value>The number of items contained in the <see
+            cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>.</value>
+            <remarks>Count has snapshot semantics and represents the number of items in the <see
+            cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>
+            at the moment when Count was accessed.</remarks>
+        </member>
+        <member name="P:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.IsEmpty">
+            <summary>
+            Gets a value that indicates whether the <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/> is empty.
+            </summary>
+            <value>true if the <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/> is empty; otherwise,
+            false.</value>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.#ctor">
+            <summary>
+            Initializes a new instance of the <see
+            cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>
+            class that is empty, has the default concurrency level, has the default initial capacity, and
+            uses the default comparer for the item type.
+            </summary>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see
+            cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>
+            class that is empty, has the specified concurrency level and capacity, and uses the default
+            comparer for the item type.
+            </summary>
+            <param name="concurrencyLevel">The estimated number of threads that will update the
+            <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/> concurrently.</param>
+            <param name="capacity">The initial number of elements that the <see
+            cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>
+            can contain.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is
+            less than 1.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException"> <paramref name="capacity"/> is less than
+            0.</exception>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.#ctor(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>
+            class that contains elements copied from the specified <see
+            cref="T:System.Collections.Generic.IEnumerable`1"/>, has the default concurrency
+            level, has the default initial capacity, and uses the default comparer for the item type.
+            </summary>
+            <param name="collection">The <see
+            cref="T:System.Collections.Generic.IEnumerable`1"/> whose elements are copied to
+            the new
+            <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is a null reference.</exception>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.#ctor(System.Collections.Generic.IEqualityComparer{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>
+            class that is empty, has the specified concurrency level and capacity, and uses the specified
+            <see cref="T:System.Collections.Generic.IEqualityComparer`1"/>.
+            </summary>
+            <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer`1"/>
+            implementation to use when comparing items.</param>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.#ctor(System.Collections.Generic.IEnumerable{`0},System.Collections.Generic.IEqualityComparer{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>
+            class that contains elements copied from the specified <see
+            cref="T:System.Collections.IEnumerable"/>, has the default concurrency level, has the default
+            initial capacity, and uses the specified
+            <see cref="T:System.Collections.Generic.IEqualityComparer`1"/>.
+            </summary>
+            <param name="collection">The <see
+            cref="T:System.Collections.Generic.IEnumerable`1"/> whose elements are copied to
+            the new
+            <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>.</param>
+            <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer`1"/>
+            implementation to use when comparing items.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is a null reference
+            (Nothing in Visual Basic).
+            </exception>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.#ctor(System.Int32,System.Collections.Generic.IEnumerable{`0},System.Collections.Generic.IEqualityComparer{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/> 
+            class that contains elements copied from the specified <see cref="T:System.Collections.IEnumerable"/>, 
+            has the specified concurrency level, has the specified initial capacity, and uses the specified 
+            <see cref="T:System.Collections.Generic.IEqualityComparer`1"/>.
+            </summary>
+            <param name="concurrencyLevel">The estimated number of threads that will update the 
+            <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/> concurrently.</param>
+            <param name="collection">The <see cref="T:System.Collections.Generic.IEnumerable`1"/> whose elements are copied to the new 
+            <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>.</param>
+            <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer`1"/> implementation to use 
+            when comparing items.</param>
+            <exception cref="T:System.ArgumentNullException">
+            <paramref name="collection"/> is a null reference.
+            </exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="concurrencyLevel"/> is less than 1.
+            </exception>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.#ctor(System.Int32,System.Int32,System.Collections.Generic.IEqualityComparer{`0})">
+            <summary>
+            Initializes a new instance of the <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>
+            class that is empty, has the specified concurrency level, has the specified initial capacity, and
+            uses the specified <see cref="T:System.Collections.Generic.IEqualityComparer`1"/>.
+            </summary>
+            <param name="concurrencyLevel">The estimated number of threads that will update the
+            <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/> concurrently.</param>
+            <param name="capacity">The initial number of elements that the <see
+            cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>
+            can contain.</param>
+            <param name="comparer">The <see cref="T:System.Collections.Generic.IEqualityComparer`1"/>
+            implementation to use when comparing items.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            <paramref name="concurrencyLevel"/> is less than 1. -or-
+            <paramref name="capacity"/> is less than 0.
+            </exception>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.Add(`0)">
+            <summary>
+            Adds the specified item to the <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>.
+            </summary>
+            <param name="item">The item to add.</param>
+            <returns>true if the items was added to the <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>
+            successfully; false if it already exists.</returns>
+            <exception cref="T:System.OverflowException">The <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>
+            contains too many items.</exception>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.Clear">
+            <summary>
+            Removes all items from the <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>.
+            </summary>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.Contains(`0)">
+            <summary>
+            Determines whether the <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/> contains the specified
+            item.
+            </summary>
+            <param name="item">The item to locate in the <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>.</param>
+            <returns>true if the <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/> contains the item; otherwise, false.</returns>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.TryGetValue(`0,`0@)">
+            <summary>
+            Searches the <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/> for a given value and returns the equal value it finds, if any.
+            </summary>
+            <param name="equalValue">The value to search for.</param>
+            <param name="actualValue">The value from the set that the search found, or the default value of <typeparamref name="T"/> when the search yielded no match.</param>
+            <returns>A value indicating whether the search was successful.</returns>
+            <remarks>
+            This can be useful when you want to reuse a previously stored reference instead of
+            a newly constructed one (so that more sharing of references can occur) or to look up
+            a value that has more complete data than the value you currently have, although their
+            comparer functions indicate they are equal.
+            </remarks>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.TryRemove(`0)">
+            <summary>
+            Attempts to remove the item from the <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>.
+            </summary>
+            <param name="item">The item to remove.</param>
+            <returns>true if an item was removed successfully; otherwise, false.</returns>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.System#Collections#Generic#IEnumerable{T}#GetEnumerator">
+            <summary>Returns an enumerator that iterates through the <see
+            cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>.</summary>
+            <returns>An enumerator for the <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>.</returns>
+            <remarks>
+            The enumerator returned from the collection is safe to use concurrently with
+            reads and writes to the collection, however it does not represent a moment-in-time snapshot
+            of the collection.  The contents exposed through the enumerator may contain modifications
+            made to the collection after <see cref="M:System.Collections.Generic.IEnumerable`1.GetEnumerator"/> was called.
+            </remarks>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.GetEnumerator">
+            <summary>Returns a value-type enumerator that iterates through the <see
+            cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>.</summary>
+            <returns>An enumerator for the <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1"/>.</returns>
+            <remarks>
+            The enumerator returned from the collection is safe to use concurrently with
+            reads and writes to the collection, however it does not represent a moment-in-time snapshot
+            of the collection.  The contents exposed through the enumerator may contain modifications
+            made to the collection after <see cref="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.GetEnumerator"/> was called.
+            </remarks>
+        </member>
+        <member name="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.Enumerator">
+            <summary>
+            Represents an enumerator for <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1" />.
+            </summary>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.Enumerator.#ctor(i3arnon.ConcurrentCollections.ConcurrentHashSet{`0})">
+            <summary>
+            Constructs an enumerator for <see cref="T:i3arnon.ConcurrentCollections.ConcurrentHashSet`1" />.
+            </summary>
+        </member>
+        <member name="P:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.Enumerator.Current">
+            <summary>
+            Gets the element in the collection at the current position of the enumerator.
+            </summary>
+            <value>The element in the collection at the current position of the enumerator.</value>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.Enumerator.Reset">
+            <summary>
+            Sets the enumerator to its initial position, which is before the first element in the collection.
+            </summary>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.Enumerator.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:i3arnon.ConcurrentCollections.ConcurrentHashSet`1.Enumerator.MoveNext">
+            <summary>
+            Advances the enumerator to the next element of the collection.
+            </summary>
+            <returns>true if the enumerator was successfully advanced to the next element; false if the enumerator has passed the end of the collection.</returns>
         </member>
     </members>
 </doc>

@@ -3,9 +3,9 @@
 namespace Walgelijk;
 
 /// <summary>
-/// Object that contains sound data
+/// Object that contains sound data ranging from -1 to 1
 /// </summary>
-public abstract class AudioData : IExternal<byte>
+public abstract class AudioData : IExternal<float>
 {
     /// <summary>
     /// Number of channels
@@ -18,7 +18,7 @@ public abstract class AudioData : IExternal<byte>
     public int SampleRate { get; init; }
 
     /// <summary>
-    /// Total sample count
+    /// Total sample count (per channel)
     /// </summary>
     public long SampleCount { get; init; }
 
@@ -40,5 +40,5 @@ public abstract class AudioData : IExternal<byte>
     /// <summary>
     /// Get a readonly collection of the raw audio data. This can be null if it has been disposed.
     /// </summary>
-    public abstract ReadOnlyMemory<byte>? GetData();
+    public abstract ReadOnlyMemory<float>? GetData();
 }

@@ -38,6 +38,7 @@ public class SourceCache : Cache<Sound, SourceHandle>
                     if (!AL.IsBuffer(buffer))
                         throw new Exception("Failed to create fixed audio buffer");
                     var source = AL.GenSource();
+                    //ALUtils.CheckError();
                     if (!AL.IsSource(source))
                         throw new Exception("Failed to create fixed audio source");
                     AL.Source(source, ALSourcei.Buffer, buffer);

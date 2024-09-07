@@ -2,31 +2,30 @@
 
 public class Program
 {
-    static void Main(string[] args)
+    /// <summary>
+    /// Converts font files to Walgelijk font archives
+    /// </summary>
+    /// <param name="input">Path to input file or directory</param>
+    /// <param name="output">Path to output file. Does nothing if the input is a directory.</param>
+    /// <param name="charset">Path to text file containing all to-be-encoded characters. ASCII by default.</param>
+    /// <param name="fontSize">Font size to render the font with. Effectively determines bitmap resolution.</param>
+    static void Main(string input = ".", FileInfo? output = null, FileInfo? charset = null, int fontSize = 48)
     {
-        if (args.Length == 0)
+        if (Directory.Exists(input))
         {
-            ConvertDir(new DirectoryInfo("."));
+            ConvertDir(new DirectoryInfo(input), charset, fontSize);
             return;
         }
-        else if (args.Length == 1)
+        else if (File.Exists(input))
         {
-            if (Directory.Exists(args[0]))
-            {
-                ConvertDir(new DirectoryInfo(args[0]));
-                return;
-            }
-            else if (File.Exists(args[0]))
-            {
-                ConvertFile(new FileInfo(args[0]));
-                return;
-            }
+            ConvertFile(new FileInfo(input), output, charset, fontSize);
+            return;
         }
-        
-        Console.Error.WriteLine($"Invalid input. Usage:\nwfont [path to ttf or directory]");
+
+        Console.Error.WriteLine($"Invalid input: input path not found");
     }
 
-    private static void ConvertDir(DirectoryInfo dir)
+    private static void ConvertDir(DirectoryInfo dir, FileInfo? charset, int fontSize)
     {
         Console.WriteLine($"Converting all valid files (otf, ttf) in {dir}...");
         var files = dir.GetFiles("*.ttf").Concat(dir.GetFiles("*.otf"));
@@ -36,11 +35,13 @@ public class Program
         Console.WriteLine();
 
         foreach (var item in files)
-            ConvertFile(item);
+            ConvertFile(item, null, charset, fontSize);
     }
 
-    private static void ConvertFile(FileInfo file)
+    private static void ConvertFile(FileInfo file, FileInfo? output, FileInfo? charset, int fontSize)
     {
-        new Generator(file).Generate();
+        if (charset != null)
+            Console.WriteLine("Using charset at \"{0}\"", charset.FullName);
+        new Generator(file, fontSize, charset).Generate(output);
     }
 }

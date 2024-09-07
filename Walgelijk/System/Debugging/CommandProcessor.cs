@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
@@ -187,15 +188,15 @@ public struct CommandProcessor
                 case CommandResult commandResult:
                     switch (commandResult.Type)
                     {
-                        case LogLevel.Info:
-                            console.WriteLine(commandResult.Message, ConsoleMessageType.Info);
-                            break;
-                        case LogLevel.Warn:
+                        case LogLevel.Warning:
                             console.WriteLine(commandResult.Message, ConsoleMessageType.Warning);
                             break;
-                        case LogLevel.Error:
+                        case LogLevel.Error or LogLevel.Critical:
                             console.WriteLine(commandResult.Message, ConsoleMessageType.Error);
                             return false;
+                        default:
+                            console.WriteLine(commandResult.Message, ConsoleMessageType.Info);
+                            break;
                     }
                     break;
                 default:
@@ -284,7 +285,7 @@ public struct CommandProcessor
         foreach (var item in cc)
             if (item.Item1.AsSpan().StartsWith(v, StringComparison.InvariantCultureIgnoreCase))
             {
-                buffer[i] =  item.Item1;
+                buffer[i] = item.Item1;
                 i++;
                 if (i >= buffer.Length)
                     break;

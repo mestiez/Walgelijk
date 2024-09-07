@@ -26,7 +26,7 @@ public struct PrismScene : ISceneCreator
             ClearColour = new Color("#152123")
         });
 
-        PrismPrimitives.GenerateCuboid(new Vector3(1), out var verts, out var indices);
+        MeshPrimitives.GenerateCenteredCube(1, out var verts, out var indices);
         var vxb = new VertexBuffer(verts, indices) { PrimitiveType = Primitive.Triangles };
 
         for (int i = 0; i < 15; i++)
@@ -43,7 +43,7 @@ public struct PrismScene : ISceneCreator
             scene.AttachComponent(cube, new SpinnyComponent());
         }
 
-        PrismPrimitives.GenerateQuad(new Vector2(1), out verts, out indices);
+        MeshPrimitives.GenerateQuad(new Vector2(1), out verts, out indices);
         vxb = new VertexBuffer(verts, indices) { PrimitiveType = Primitive.Triangles };
 
         for (int x = -5; x < 10; x++)
@@ -70,8 +70,8 @@ public struct PrismScene : ISceneCreator
                 Position = new Vector3(0, 5, 0)
             });
 
-            var m = MeshLoader.Load("resources/meshes/vase.dae")[0];
-            scene.AttachComponent(cat, new PrismMeshComponent(m.Vertices, m.Indices, m.Material ?? new Material(Material.DefaultTextured) { DepthTested = true }));
+            //var m = MeshLoader.Load("resources/meshes/vase.dae")[0];
+            //scene.AttachComponent(cat, new PrismMeshComponent(m.Vertices, m.Indices, m.Material ?? new Material(Material.DefaultTextured) { DepthTested = true }));
         }
 
         return scene;

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.IO;
 
 namespace Walgelijk.AssetManager;
@@ -12,51 +13,58 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
     /// <summary>
     /// Id of the asset package this asset resides in
     /// </summary>
-    public readonly int External;
+    public readonly PackageId External;
 
     /// <summary>
     /// Id of the asset within the asset package <see cref="External"/>
     /// </summary>
     public readonly AssetId Internal;
 
+    /// <summary>
+    /// True if the package ID was not supplied, meaning this ID is package-agnostic.
+    /// </summary>
+    public bool IsAgnostic => External == PackageId.None;
+
     public GlobalAssetId(string assetPackage, string path)
     {
-        External = Hashes.MurmurHash1(assetPackage);
+        External = new(assetPackage);
         Internal = new(path);
     }
 
     public GlobalAssetId(int external, int @internal)
     {
-        External = external;
+        External = new(external);
         Internal = new(@internal);
     }
 
-    public GlobalAssetId(int external, AssetId @internal)
+    public GlobalAssetId(PackageId external, AssetId @internal)
     {
         External = external;
-        Internal = @internal;
-    }
-
-    public GlobalAssetId(string assetPackage, AssetId @internal)
-    {
-        External = Hashes.MurmurHash1(assetPackage);
         Internal = @internal;
     }   
     
-    public GlobalAssetId(string assetPackage, int @internal)
+    public GlobalAssetId(AssetId @internal)
     {
-        External = Hashes.MurmurHash1(assetPackage);
-        Internal = new(@internal);
+        External = PackageId.None;
+        Internal = @internal;
     }
 
     public GlobalAssetId(ReadOnlySpan<char> formatted)
     {
-        var sp = formatted.IndexOf(':');
-        if (sp == -1)
-            throw new Exception("Formatted string contains no external ID part");
+        var index = formatted.IndexOf(':');
+        if (index == -1)
+        {
+            External = PackageId.None;
+            Internal = new AssetId(formatted);
+        }
+        else
+        {
+            var external = formatted[..index];
+            var @internal = formatted[(index + 1)..];
 
-        External = Hashes.MurmurHash1(formatted[..sp]);
-        Internal = new(formatted[(sp+1)..]);
+            External = new(external);
+            Internal = new(@internal);
+        }
     }
 
     public static implicit operator GlobalAssetId(ReadOnlySpan<char> formatted)
@@ -75,7 +83,20 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
         return !(left == right);
     }
 
-    public override string ToString() => $"{External}:{Internal}";
+    public override string ToString() => IsAgnostic ? Internal.ToString() : $"{External}:{Internal}";
+
+    public string ToNamedString()
+    {
+        var id = this;
+
+        if (IsAgnostic)
+            Assets.TryFindFirst(Internal, out id);
+
+        if (Assets.TryGetMetadata(id, out var asset) && Assets.TryGetPackage(id.External, out var package))
+            return $"{package.Metadata.Name}:{asset.Path}";
+
+        return ToString();
+    }
 
     public override bool Equals(object? obj)
     {
@@ -84,7 +105,7 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
 
     public bool Equals(GlobalAssetId other)
     {
-        return External == other.External &&
+        return External.Equals(other.External) &&
                Internal.Equals(other.Internal);
     }
 
@@ -93,5 +114,15 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
         return HashCode.Combine(External, Internal);
     }
 
-    public static readonly GlobalAssetId None = default;
+    /// <summary>
+    /// If this ID is agnostic, resolve the agnosticism (<see cref="Assets.FindFirst"/>).
+    /// </summary>
+    public GlobalAssetId ResolveExternal()
+    {
+        if (IsAgnostic && Assets.TryFindFirst(Internal, out var a))
+            return a;
+        return this;
+    }
+
+    public static readonly GlobalAssetId None = new(PackageId.None, AssetId.None);
 }

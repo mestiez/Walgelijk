@@ -7,6 +7,8 @@ using Walgelijk.CommonAssetDeserialisers.Audio.Qoa;
 using Walgelijk.CommonAssetDeserialisers.Audio;
 using Walgelijk.Onion.Controls;
 using Walgelijk.OpenTK;
+using Microsoft.Extensions.Logging;
+using Walgelijk.PortAudio;
 
 namespace Playgrounds;
 
@@ -14,7 +16,7 @@ public class Program
 {
     private static Game game = new Game(
             new OpenTKWindow("playground", new Vector2(-1, -1), new Vector2(800, 600)),
-            new OpenALAudioRenderer()
+            new PortAudioRenderer()
             );
 
     static void Main(string[] args)
@@ -50,7 +52,7 @@ public class Program
         AssetDeserialisers.Register(new WaveFixedAudioDeserialiser());
         Assets.RegisterPackage("assets.waa");
 
-        game.Scene = new PlmpegScene().Load(game);
+        game.Scene = new AssetManagerTestScene().Load(game);
 
 #if DEBUG
         game.DevelopmentMode = true;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 namespace Walgelijk;
 
@@ -18,7 +17,7 @@ public class StreamAudioData : AudioData
         if (SampleRate == 0 || ChannelCount == 0 || SampleCount == 0)
             Duration = TimeSpan.Zero;
         else
-            Duration = TimeSpan.FromSeconds(SampleCount / (double)ChannelCount / sampleRate);
+            Duration = TimeSpan.FromSeconds(SampleCount / (double)sampleRate);
     }
 
     /// <summary>
@@ -31,5 +30,5 @@ public class StreamAudioData : AudioData
     /// <summary>
     /// Returns an empty span because this object has no knowledge of the data being read other than its source
     /// </summary>
-    public override ReadOnlyMemory<byte>? GetData() => ReadOnlyMemory<byte>.Empty;
+    public override ReadOnlyMemory<float>? GetData() => ReadOnlyMemory<float>.Empty;
 }

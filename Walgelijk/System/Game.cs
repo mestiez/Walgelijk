@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,7 +15,7 @@ public class Game
     /// <summary>
     /// The last instance that was created
     /// </summary>
-    public static Game Main { get; private set; }
+    public static Game Main { get; private set; } = null!;
 
     /// <summary>
     /// Path to the directory where the executable is
@@ -73,7 +74,7 @@ public class Game
 
                 scene.Activate();
 
-                Logger.Log("Scene changed");
+                Logger.LogInformation("Scene changed");
             }
 
             OnSceneChange?.Dispatch((previous, scene));
@@ -161,15 +162,34 @@ public class Game
     private readonly Stopwatch clock = new();
 
     /// <summary>
+    /// The logger for the game, also used by <see cref="Logger"/>
+    /// </summary>
+    public readonly ILogger Logger;
+
+    /// <summary>
+    /// Additional events to invoke for every game loop cycle
+    /// </summary>
+    public List<IGameLoopEvent> AdditionalLoopEvents = [];
+
+    /// <summary>
     /// Create a game with a window and an optional audio renderer. If the audio renderer is not set, the game won't be able to play any sounds
     /// </summary>
-    public Game(Window window, AudioRenderer? audioRenderer = null)
+    public Game(Window window, AudioRenderer? audioRenderer = null, ILogger? logger = null)
     {
-        var entryAssembly = Assembly.GetEntryAssembly();
-        if (entryAssembly == null)
-            throw new Exception("Could not get entry assembly so a Game instance could not be created");
+        var entryAssembly = Assembly.GetEntryAssembly() ?? throw new Exception("Could not get entry assembly so a Game instance could not be created");
         ExecutableDirectory = Path.GetDirectoryName(entryAssembly.Location) + Path.DirectorySeparatorChar;
-        global::System.Console.WriteLine(ExecutableDirectory);
+
+        if (logger == null)
+        {
+            using ILoggerFactory factory = LoggerFactory.Create(b =>
+            {
+                b.AddConsole();
+                b.AddProvider(new GameConsoleLoggingProvider(this));
+            });
+            logger = factory.CreateLogger(entryAssembly!.GetName()!.Name!);
+        }
+        Logger = logger;
+
         Window = window;
         window.Game = this;
         Main = this;
@@ -179,8 +199,10 @@ public class Game
         Profiling = new Profiler(this);
         DebugDraw = new DebugDraw(this);
         Compositor = new Compositor(this);
-        Logger.Log(Version());
-        Logger.Log($"Display DPI: {window.DPI}");
+
+        Logger.LogInformation("Executable directory is \"{Directory}\"", ExecutableDirectory);
+        Logger.LogInformation("{Version}", Version());
+        Logger.LogInformation("Display DPI: {DPI}", window.DPI);
     }
 
     /// <summary>
@@ -213,6 +235,8 @@ public class Game
             AudioRenderer.UpdateTracks();
             Console.Update();
             AudioRenderer.Process(unscaledDt);
+            foreach (var e in AdditionalLoopEvents)
+                e.Update(this, unscaledDt);
 
             double fixedUpdateInterval = 1d / FixedUpdateRate;
             if (!Console.IsActive)
@@ -223,6 +247,8 @@ public class Game
                 while (accumulator > fixedUpdateInterval)
                 {
                     Scene?.FixedUpdateSystems();
+                    foreach (var e in AdditionalLoopEvents)
+                        e.FixedUpdate(this, unscaledDt);
                     fixedUpdateClock = 0;
                     accumulator -= fixedUpdateInterval;
                     iteration++;
@@ -291,7 +317,6 @@ public class Game
 
         AudioRenderer?.Release();
         Window.Close();
-        Logger.Dispose();
     }
 
     [Command(HelpString = "Provides some control over the compositor at runtime", Alias = "Compositor")]

@@ -34,6 +34,26 @@ namespace Walgelijk
             Game.Stop();
         }
 
+        [Command(HelpString = "Get or set the window type. Enter ?? as a parameter to see available types.")]
+        private static CommandResult Window(string? type = null)
+        {
+            if (string.IsNullOrEmpty(type))
+                return "Current window type is " + Game.Window.WindowType.ToString();
+
+            if (type == "??")
+                return string.Join('\n', Enum.GetNames<WindowType>());
+
+            if (Enum.TryParse<WindowType>(type, true, out var t))
+            {
+                Game.Window.WindowType = t;
+                return CommandResult.Info($"Window type set to {t}");
+            }
+            else
+            {
+                return CommandResult.Error($"{type} is not a valid window type.");
+            }
+        }
+
         [Command(HelpString = "Get the console filter")]
         private static CommandResult GetFilter()
         {

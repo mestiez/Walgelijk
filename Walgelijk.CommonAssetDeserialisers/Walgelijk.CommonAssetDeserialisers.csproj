@@ -4,7 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>0.3.3</Version>
+    <Version>0.8.3</Version>
+    <Description>Provides deserialisers for commonly used asset formats, for Walgelijk.AssetManager</Description>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>

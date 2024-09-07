@@ -14,7 +14,7 @@ public class AssetPackage : IDisposable
     public readonly IReadArchive Archive;
     public readonly ImmutableHashSet<AssetId> All = [];
 
-    private readonly ImmutableDictionary<int, string> guidTable;
+    private readonly ImmutableDictionary<AssetId, string> guidTable;
     private readonly AssetFolder hierarchyRoot = new("/");
 
     private readonly ConcurrentDictionary<AssetId, object> cache = [];
@@ -31,7 +31,7 @@ public class AssetPackage : IDisposable
     {
         packageLock.EnterWriteLock();
 
-        var guidTable = new Dictionary<int, string>();
+        var guidTable = new Dictionary<AssetId, string>();
         var archive = new WaaReadArchive(file);
         var all = new HashSet<AssetId>();
         Archive = archive;
@@ -40,7 +40,28 @@ public class AssetPackage : IDisposable
             var metadataEntry = archive.GetEntry("package.json") ?? throw new Exception("Archive has no package.json. This asset package is invalid");
             using var e = new StreamReader(metadataEntry!, encoding: Encoding.UTF8, leaveOpen: false);
             var json = e.ReadToEnd();
+            /// YOU NEED AN INTERMEDIARY FORMAT
+            /// FUCKING JSON!!! FUCK!!!!!!!!!!!
             Metadata = JsonConvert.DeserializeObject<AssetPackageMetadata>(json);
+
+            if (Metadata.FormatVersion.Minor < 14)
+            {
+                // older version uses a different metadata format
+
+                var oldTemplate = new
+                {
+                    Id = string.Empty,
+                    NumericalId = 0
+                };
+                var old = JsonConvert.DeserializeAnonymousType(json, oldTemplate) ?? throw new Exception("Invalid package metadata. Rebuild please!");
+                Metadata.Id = new PackageId(old.NumericalId);
+                Metadata.Name = old.Id;
+            }
+
+            if (Metadata.Id == PackageId.None)
+            {
+                throw new Exception("Package ID is None");
+            }
         }
 
         // read guid table
@@ -54,14 +75,14 @@ public class AssetPackage : IDisposable
                 if (idLine == null)
                     break;
 
-                if (!int.TryParse(idLine, out var id))
-                    throw new Exception($"Id {idLine} is not an integer");
+                if (!AssetId.TryParse(idLine.Trim(), out var assetId))
+                    throw new Exception($"Id {idLine} is not a valid asset ID");
 
                 var path = e.ReadLine() ?? throw new Exception($"Invalid GUID table: id {idLine} is missing path");
 
                 AssetPackageUtils.AssertPathValidity(path);
 
-                guidTable.Add(id, path);
+                guidTable.Add(assetId, path);
             }
 
             this.guidTable = guidTable.ToImmutableDictionary();
@@ -86,9 +107,8 @@ public class AssetPackage : IDisposable
                 assetFolder.Assets = new AssetId[count];
                 for (int i = 0; i < count; i++)
                 {
-                    int asset = int.Parse(e.ReadLine()!);
-                    var b = assetFolder.Assets[i] = new(asset);
-                    all.Add(b);
+                    var asset = assetFolder.Assets[i] = AssetId.Parse(e.ReadLine()!);
+                    all.Add(asset);
                 }
             }
         }
@@ -115,8 +135,7 @@ public class AssetPackage : IDisposable
 
                 for (int i = 0; i < count; i++)
                 {
-                    int asset = int.Parse(e.ReadLine()!);
-                    arr[i] = new AssetId(asset);
+                    arr[i] = AssetId.Parse(e.ReadLine()!);
                 }
             }
         }
@@ -150,10 +169,9 @@ public class AssetPackage : IDisposable
         return [];
     }
 
-
     public Asset GetAsset(in AssetId id)
     {
-        if (id.Internal == 0)
+        if (id == AssetId.None)
             throw new Exception("Id is None");
 
         var path = GetAssetPath(id);
@@ -164,18 +182,18 @@ public class AssetPackage : IDisposable
         // it is malformed because the guid table is pointing to entries that don't exist
 
         // TODO we are doing unnecessary work by calling this function (double GetAssetPath)
-        return new Asset(GetAssetMetadata(id), () => Archive.GetEntry(p)!);
+        return new Asset(GetMetadata(id), () => Archive.GetEntry(p)!);
     }
 
     public string GetAssetPath(in AssetId id)
     {
-        if (guidTable.TryGetValue(id.Internal, out var path))
+        if (guidTable.TryGetValue(id, out var path))
             return path;
 
         throw new Exception($"Asset {id.Internal} does not exist.");
     }
 
-    public bool HasAsset(in AssetId id) => guidTable.ContainsKey(id.Internal);
+    public bool HasAsset(in AssetId id) => guidTable.ContainsKey(id);
 
     public T Load<T>(in string path) => Load<T>(new AssetId(path));
 
@@ -199,7 +217,7 @@ public class AssetPackage : IDisposable
 
         try
         {
-            var metadata = GetAssetMetadata(id);
+            var metadata = GetMetadata(id);
             if (cache.TryGetValue(id, out var obj))
             {
                 if (obj is T t)
@@ -295,7 +313,7 @@ public class AssetPackage : IDisposable
 
     public static AssetPackage Load(string path) => new AssetPackage(path);
 
-    public AssetMetadata GetAssetMetadata(in AssetId id)
+    public AssetMetadata GetMetadata(in AssetId id)
     {
         lock (metadataCache)
         {

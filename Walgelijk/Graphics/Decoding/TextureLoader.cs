@@ -20,7 +20,7 @@ public static class TextureLoader
     public static List<IImageDecoder> Decoders = new()
     {
         new QOIDecoder(),
-        new ImageSharpDecoder()
+        new SkiaSharpDecoder()
     };
 
     /// <summary>

@@ -30,6 +30,11 @@ public class MockGraphics : IGraphics
         where TVertex : struct
     { }
 
+    public Color SampleTexture(IReadableTexture tex, int x, int y)
+    {
+        return Utilities.RandomColour();
+    }
+
     public void SaveTexture(FileStream output, IReadableTexture texture) { }
 
     public void SetUniform<T>(Material material, string uniformName, T data) { }

@@ -18,6 +18,9 @@ public readonly struct AssetRef<T> : IDisposable, IEquatable<AssetRef<T>>
         Assets.DisposeOf(Id);
     }
 
+    /// <summary>
+    /// Returns false if the ID is none
+    /// </summary>
     public bool IsValid => Id != GlobalAssetId.None;
 
     public static AssetRef<T> None => new AssetRef<T>(GlobalAssetId.None);
@@ -34,7 +37,7 @@ public readonly struct AssetRef<T> : IDisposable, IEquatable<AssetRef<T>>
         return !(left == right);
     }
 
-    public override string ToString() => Id.ToString();
+    public override string ToString() => Id.ToNamedString();
 
     public override bool Equals(object? obj)
     {

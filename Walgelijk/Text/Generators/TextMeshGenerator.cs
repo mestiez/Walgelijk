@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using Walgelijk.BmFont;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Walgelijk;
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Numerics;
 
 namespace Walgelijk;
@@ -66,10 +65,6 @@ internal sealed class EmptyAudioRenderer : AudioRenderer
     public override float GetTime(Sound sound) => 0;
 
     public override void SetPosition(Sound sound, Vector3 worldPosition) { }
-
-    public override FixedAudioData LoadSound(string path) => new FixedAudioData(Array.Empty<byte>(), 0, 0, 0);
-
-    public override StreamAudioData LoadStream(string path) => new StreamAudioData(() => default, 0, 0, 0);
 
     public override int GetCurrentSamples(Sound sound, Span<float> arr) => 0;
 }

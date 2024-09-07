@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Version>0.2.0</Version>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Description>Cross-platform audio backend for Walgelijk using PortAudio</Description>
+		<PackageIcon>icon.png</PackageIcon>
+	</PropertyGroup>
+
+	<Target Name="PostBuild" Condition="'$(Configuration)'=='Release'" AfterTargets="PostBuildEvent">
+		<Exec Command="dotnet pack -c Release --no-restore --no-build --output &quot;$(SolutionDir)OutputPackages&quot;" />
+	</Target>
+
+	<ItemGroup>
+		<PackageReference Include="PortAudioSharp2" Version="1.0.4" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="icon.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+</Project>

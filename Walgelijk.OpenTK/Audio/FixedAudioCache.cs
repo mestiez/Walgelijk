@@ -1,4 +1,5 @@
 ﻿using OpenTK.Audio.OpenAL;
+using System;
 
 namespace Walgelijk.OpenTK;
 
@@ -11,15 +12,14 @@ internal class FixedAudioCache : Cache<FixedAudioData, BufferHandle>
         ALUtils.CheckError("Generate new fixed buffer");
 
         // channel count can only be 1 or 2, as guaranteed by the file reader
-        // bits per sample can only be 16 s guaranteed by the same lad
-        ALFormat format = raw.ChannelCount == 1 ? ALFormat.Mono16 : ALFormat.Stereo16;
+        ALFormat format = raw.ChannelCount == 1 ? ALFormat.MonoFloat32Ext : ALFormat.StereoFloat32Ext;
 
         unsafe
         {
-            var data = raw.GetData() ?? global::System.ReadOnlyMemory<byte>.Empty;
-            using var coll = data.Pin();
-            AL.BufferData(buffer, format, coll.Pointer, data.Length, raw.SampleRate);
-            coll.Dispose();
+            var data = raw.GetData() ?? ReadOnlyMemory<float>.Empty;
+            //using var coll = data.Pin();
+            AL.BufferData(buffer, format, data.Span, raw.SampleRate);
+           // coll.Dispose();
             ALUtils.CheckError("Upload fixed buffer data");
         }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Numerics;
 
 namespace Walgelijk;
@@ -57,7 +56,7 @@ public abstract class AudioRenderer
     public abstract AudioDistanceModel DistanceModel { get; set; }
 
     /// <summary>
-    /// Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="PlayOnce(Sound, float, float, AudioTrack?)"/> or <see cref="PlayOnce(Sound, Vector3, float, float, AudioTrack?)"/>
+    /// Returns true if the sound is currently being played. It does not consider temporary sources created using <see cref="PlayOnce(Sound, float?, float?, AudioTrack?)"/> or <see cref="PlayOnce(Sound, Vector3, float?, float?, AudioTrack?)"/>
     /// </summary>
     public abstract bool IsPlaying(Sound sound);
 
@@ -141,16 +140,6 @@ public abstract class AudioRenderer
     /// Get time in seconds for the sound if it is playing
     /// </summary>
     public abstract float GetTime(Sound sound);
-
-    /// <summary>
-    /// Load an sound from a file at once
-    /// </summary>
-    public abstract FixedAudioData LoadSound(string path);
-
-    /// <summary>
-    /// Load a streaming sound from a file
-    /// </summary>
-    public abstract StreamAudioData LoadStream(string path);
 
     /// <summary>
     /// Release all resources used by the audio engine

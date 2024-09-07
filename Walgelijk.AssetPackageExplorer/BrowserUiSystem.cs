@@ -41,7 +41,7 @@ public class BrowserUiSystem : Walgelijk.System
                 {
                     e.FolderCache = [
                         ..e.Package.GetFoldersIn(e.CurrentPath).Select(f => new Entry(f + '/', e.CurrentPath.TrimEnd('/') + '/' + f)),
-                        ..e.Package.EnumerateFolder(e.CurrentPath).Select(i => new Entry(e.Package.GetAssetMetadata(i)))];
+                        ..e.Package.EnumerateFolder(e.CurrentPath).Select(i => new Entry(e.Package.GetMetadata(i)))];
                     e.IsRebuildingFolderCache = false;
                 },
                 e.FolderRefreshCancel.Token);

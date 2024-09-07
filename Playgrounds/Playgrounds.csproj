@@ -5,7 +5,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>1.0.44</Version>
+    <Version>1.0.45</Version>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Walgelijk.AssetManager\Walgelijk.AssetManager.csproj" />
@@ -14,13 +14,17 @@
     <ProjectReference Include="..\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />
     <ProjectReference Include="..\Walgelijk.ParticleSystem\Walgelijk.ParticleSystem.csproj" />
     <ProjectReference Include="..\Walgelijk.Physics\Walgelijk.Physics.csproj" />
-    <ProjectReference Include="..\Walgelijk.PLMPEG\Walgelijk.PLMPEG.csproj" />
+    <ProjectReference Include="..\Walgelijk.PortAudio\Walgelijk.PortAudio.csproj" />
+    <ProjectReference Include="..\Walgelijk.Prism.Editor\Walgelijk.Prism.Editor.csproj" />
     <ProjectReference Include="..\Walgelijk.Prism\Walgelijk.Prism.csproj" />
     <ProjectReference Include="..\Walgelijk.SimpleDrawing\Walgelijk.SimpleDrawing.csproj" />
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(ProjectDir)resources\**" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Projects\Walgelijk\Playgrounds\assets\perfect-loop.wav" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />

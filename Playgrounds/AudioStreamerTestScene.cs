@@ -28,7 +28,6 @@ public struct AudioStreamerTestScene : ISceneCreator
 
         private class SineWaveStream : IAudioStream
         {
-            public int SampleRate = 44100;
             public long Position { get; set; }
 
             private double acc = 0;
@@ -54,6 +53,12 @@ public struct AudioStreamerTestScene : ISceneCreator
             }
 
             public TimeSpan TimePosition { get; set; }
+
+            public bool HasEnded => false;
+
+            public int SampleRate => 44100;
+
+            public int ChannelCount => 1;
 
             public void Dispose()
             {

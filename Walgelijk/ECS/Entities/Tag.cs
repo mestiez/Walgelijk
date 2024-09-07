@@ -5,7 +5,7 @@ namespace Walgelijk;
 /// <summary>
 /// A tag that can be connected to an entity. Multiple objects can share the same tag.
 /// </summary>
-public struct Tag
+public struct Tag : IEquatable<Tag>
 {
     /// <summary>
     /// The tag value
@@ -17,16 +17,30 @@ public struct Tag
         Value = value;
     }
 
+    public Tag(in ReadOnlySpan<char> value)
+    {
+        Value = Hashes.MurmurHash1(value);
+    }
+
+    public Tag(in string value)
+    {
+        Value = Hashes.MurmurHash1(value);
+    }
+
     /// <summary>
     /// Generate new Tag with a unique value that probably doesn't matter
     /// </summary>
-    /// <returns></returns>
-    public static Tag CreateUnique() => new Tag(Guid.NewGuid().GetHashCode()); //TODO think of something better lol
+    public static Tag CreateUnique() => new Tag(Guid.NewGuid().GetHashCode());
 
     public override bool Equals(object? obj)
     {
         return obj is Tag tag &&
                Value == tag.Value;
+    }
+
+    public bool Equals(Tag other)
+    {
+        return Value == other.Value;
     }
 
     public override int GetHashCode()

@@ -62,7 +62,7 @@ public readonly struct Slider : IControl
         var v = 0f;
 
         float d;
-        if (p.Input.CtrlHeld && p.Instance.HasScroll && Math.Abs(d = p.Input.ScrollDelta.Y) > 0)
+        if (p.Input.CtrlHeld && p.Instance.HasScroll && float.Abs(d = p.Input.ScrollDelta.Y) > 0)
         {
             var s = Onion.Configuration.ScrollSensitivity;
 
@@ -77,12 +77,12 @@ public readonly struct Slider : IControl
                         s /= p.Instance.Rects.ComputedGlobal.Height;
                         break;
                 }
-                s *= Math.Abs(range.Max - range.Min);
+                s *= float.Abs(range.Max - range.Min);
             }
             else
                 s = step - float.Epsilon;
 
-            v = Utilities.Clamp(states[p.Identity] + (d > 0 ? s : -s), range.Min, range.Max);
+            v = float.Clamp(states[p.Identity] + (d > 0 ? s : -s), range.Min, range.Max);
         }
         else if (p.Instance.IsActive)
         {
@@ -91,10 +91,10 @@ public readonly struct Slider : IControl
             switch (direction)
             {
                 case Direction.Horizontal:
-                    v = Utilities.Clamp(Utilities.MapRange(r.MinX, r.MaxX, range.Min, range.Max, m.X), range.Min, range.Max);
+                    v = float.Clamp(Utilities.MapRange(r.MinX, r.MaxX, range.Min, range.Max, m.X), range.Min, range.Max);
                     break;
                 case Direction.Vertical:
-                    v = Utilities.Clamp(Utilities.MapRange(r.MaxY, r.MinY, range.Min, range.Max, m.Y), range.Min, range.Max);
+                    v = float.Clamp(Utilities.MapRange(r.MaxY, r.MinY, range.Min, range.Max, m.Y), range.Min, range.Max);
                     break;
             }
         }
@@ -146,9 +146,11 @@ public readonly struct Slider : IControl
         {
             // TODO string allocation :S
             var v = states[p.Identity];
-            var str = v.ToString();
+            string str;
             if (!string.IsNullOrWhiteSpace(labelFormat))
-                str = string.Format(labelFormat, str);
+                str = string.Format(labelFormat, v);
+            else
+                str = v.ToString();
 
             Draw.Font = p.Theme.Font;
             Draw.Colour = p.Theme.Text[instance.State];

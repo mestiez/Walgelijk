@@ -1,5 +1,5 @@
 ﻿using FFmpeg.AutoGen;
-using System.Drawing;
+using OpenTK.Mathematics;
 using static FFmpeg.AutoGen.ffmpeg;
 
 namespace MotionTK;
@@ -12,7 +12,7 @@ public unsafe class DataSource : IDisposable
     #region Fields
 
     private int _videoStreamId = -1;
-    private Size _videoSize = Size.Empty;
+    private Vector2i _videoSize = Vector2i.Zero;
     private AVCodecContext* _videoContext;
     private AVCodec* _videoCodec;
     private AVFrame* _videoRawFrame;
@@ -44,7 +44,7 @@ public unsafe class DataSource : IDisposable
     public VideoPlayback VideoPlayback { get; private set; }
     public AudioPlayback AudioPlayback { get; private set; }
 
-    public Size VideoSize => new Size(_videoSize.Width, _videoSize.Height);
+    public Vector2i VideoSize => _videoSize;
     public PlayState State { get; private set; } = PlayState.Stopped;
     public int AudioChannelCount { get; private set; } = -1;
     public int AudioSampleRate => HasAudio ? _audioContext->sample_rate : -1;
@@ -194,9 +194,9 @@ public unsafe class DataSource : IDisposable
             return;
         }
 
-        _videoSize = new Size(_videoContext->width, _videoContext->height);
-        _videoRawFrame = CreateVideoFrame(_videoContext->pix_fmt, _videoSize.Width, _videoSize.Height, ref _videoRawBuffer);
-        _videoRgbaFrame = CreateVideoFrame(AVPixelFormat.AV_PIX_FMT_RGBA, _videoSize.Width, _videoSize.Height, ref _videoRgbaBuffer);
+        _videoSize = new(_videoContext->width, _videoContext->height);
+        _videoRawFrame = CreateVideoFrame(_videoContext->pix_fmt, _videoSize.X, _videoSize.Y, ref _videoRawBuffer);
+        _videoRgbaFrame = CreateVideoFrame(AVPixelFormat.AV_PIX_FMT_RGBA, _videoSize.X, _videoSize.Y, ref _videoRgbaBuffer);
 
         if (_videoRawFrame == null || _videoRgbaFrame == null)
         {
@@ -206,8 +206,8 @@ public unsafe class DataSource : IDisposable
         }
 
         int swapmode = SWS_FAST_BILINEAR;
-        if (_videoSize.Width * _videoSize.Height <= 500000 && _videoSize.Width % 8 != 0) swapmode |= SWS_ACCURATE_RND;
-        _videoSwContext = sws_getCachedContext(null, _videoSize.Width, _videoSize.Height, _videoContext->pix_fmt, _videoSize.Width, _videoSize.Height, AVPixelFormat.AV_PIX_FMT_RGBA, swapmode, null, null, null);
+        if (_videoSize.X * _videoSize.Y <= 500000 && _videoSize.X % 8 != 0) swapmode |= SWS_ACCURATE_RND;
+        _videoSwContext = sws_getCachedContext(null, _videoSize.X, _videoSize.Y, _videoContext->pix_fmt, _videoSize.X, _videoSize.Y, AVPixelFormat.AV_PIX_FMT_RGBA, swapmode, null, null, null);
 
         if (_videoSwContext == null)
         {
@@ -295,7 +295,7 @@ public unsafe class DataSource : IDisposable
         StopDecodeThread();
         _playingOffset = TimeSpan.Zero;
         FileLength = TimeSpan.Zero;
-        _videoSize = Size.Empty;
+        _videoSize = default;
         _videoStreamId = -1;
         _audioStreamId = -1;
         AudioChannelCount = -1;
@@ -516,7 +516,7 @@ public unsafe class DataSource : IDisposable
 
         var videoPacket = new VideoPacket(_videoRgbaFrame->data[0], TimeSpan.Zero);
         VideoPlayback.PushPacket(videoPacket);
-        ClearBuffer(_videoRgbaFrame, AVPixelFormat.AV_PIX_FMT_RGBA, _videoSize.Width, _videoSize.Height, ref _videoRgbaBuffer);
+        ClearBuffer(_videoRgbaFrame, AVPixelFormat.AV_PIX_FMT_RGBA, _videoSize.X, _videoSize.Y, ref _videoRgbaBuffer);
 
         return true;
     }

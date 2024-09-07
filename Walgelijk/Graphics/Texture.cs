@@ -142,7 +142,7 @@ public class Texture : IReadableTexture, IDisposable
         //TODO deze doet nog niks met de GPU
     }
 
-    private int GetIndexFrom(int x, int y)
+    public int GetIndexFrom(int x, int y)
     {
         if (x < 0 || x >= Width)
             throw new ArgumentOutOfRangeException($"X ({x}) is out of range (0, {Width - 1})");
@@ -154,7 +154,7 @@ public class Texture : IReadableTexture, IDisposable
         return index;
     }
 
-    private void GetCoordinatesFromIndex(int index, out int x, out int y)
+    public void GetCoordinatesFromIndex(int index, out int x, out int y)
     {
         if (index >= Width * Height)
             throw new ArgumentOutOfRangeException($"Index ({index}) is out of range ({Width * Height})");

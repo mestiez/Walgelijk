@@ -81,29 +81,13 @@ public class OpenALAudioRenderer : AudioRenderer
 
     public OpenALAudioRenderer(int maxTempSourceCount = 128)
     {
+        //ALC.RegisterOpenALResolver();
+        AL.RegisterOpenALResolver();
+
         MaxTempSourceCount = maxTempSourceCount;
         temporarySources = new(MaxTempSourceCount);
         temporarySourceBuffer = new TemporarySource[MaxTempSourceCount];
-        Resources.RegisterType(typeof(FixedAudioData), d => LoadSound(d));
-        Resources.RegisterType(typeof(StreamAudioData), d => LoadStream(d));
-        Resources.RegisterType(typeof(AudioData), d =>
-        {
-            var s = new FileInfo(d);
-            if (s.Length >=
-                1_000_000) //this is fucked but if the file is more than or equal to 1 MB it should probably be streamed. or be explicit and do not use the AudioData base class
-            {
-                if (Game.Main.DevelopmentMode)
-                    Logger.Warn(
-                        $"Audio \"{s.Name}\" loaded using base class {nameof(AudioData)} will be streamed because it exceeds 1 megabyte. Consider using the actual implementations {nameof(FixedAudioData)} and {nameof(StreamAudioData)}.");
-                return LoadStream(d);
-            }
 
-            if (Game.Main.DevelopmentMode)
-                Logger.Warn(
-                    $"Audio \"{s.Name}\" loaded using base class {nameof(AudioData)} will be read in its entirety because it is smaller than 1 megabyte. Consider using the actual implementations {nameof(FixedAudioData)} and {nameof(StreamAudioData)}.");
-            return LoadSound(d);
-        });
-        canEnumerateDevices = AL.IsExtensionPresent("ALC_ENUMERATION_EXT");
         Initialise();
     }
 
@@ -130,22 +114,41 @@ public class OpenALAudioRenderer : AudioRenderer
 
         if (!canPlayAudio)
             Logger.Error("Failed to initialise the audio renderer", nameof(OpenALAudioRenderer));
+
+        canEnumerateDevices = ALC.IsEnumerationExtensionPresent(device);
+
+        if (!AL.EXTFloat32.IsExtensionPresent())
+            throw new Exception("AL Float32 extension not available");
+
     }
 
     private void UpdateIfRequired(Sound sound, out int source)
     {
-        source = AudioObjects.Sources.Load(sound);
-        if (!sound.RequiresUpdate && !(sound.Track?.RequiresUpdate ?? false))
-            return;
+        // TODO this is Fucked Up
+        source = -1;
+        try
+        {
+            source = AudioObjects.Sources.Load(sound);
+            if (!sound.RequiresUpdate && !(sound.Track?.RequiresUpdate ?? false))
+                return;
 
-        sound.RequiresUpdate = false;
+            sound.RequiresUpdate = false;
 
-        AL.Source(source, ALSourceb.Looping, sound.Data is not StreamAudioData && sound.Looping);
-        AL.Source(source, ALSourcef.Pitch, sound.Pitch * (sound.Track?.Pitch ?? 1));
-        AL.Source(source, ALSourcef.Gain,
-            (sound.Track?.Muted ?? false) ? 0 : (sound.Volume * (sound.Track?.Volume ?? 1)));
+            AL.Source(source, ALSourceb.Looping, sound.Data is not StreamAudioData && sound.Looping);
+            AL.Source(source, ALSourcef.Pitch, sound.Pitch * (sound.Track?.Pitch ?? 1));
+            AL.Source(source, ALSourcef.Gain,
+                (sound.Track?.Muted ?? false) ? 0 : (sound.Volume * (sound.Track?.Volume ?? 1)));
 
-        ApplySpatialParams(source, sound);
+            ApplySpatialParams(source, sound);
+        }
+        catch (Exception e)
+        {
+            Logger.Error(e);
+        }
+        finally
+        {
+
+        }
     }
 
     private void ApplySpatialParams(int source, Sound sound)
@@ -164,46 +167,6 @@ public class OpenALAudioRenderer : AudioRenderer
             AL.Source(source, ALSourcef.ReferenceDistance, 0);
             AL.Source(source, ALSourcef.RolloffFactor, 0);
         }
-    }
-
-    public override FixedAudioData LoadSound(string path)
-    {
-        var ext = path.AsSpan()[path.LastIndexOf('.')..];
-        AudioFileData data;
-
-        try
-        {
-            if (ext.Equals(".wav", StringComparison.InvariantCultureIgnoreCase))
-                data = WaveFileReader.Read(path);
-            else if (ext.Equals(".ogg", StringComparison.InvariantCultureIgnoreCase))
-                data = VorbisFileReader.Read(path);
-            else
-                throw new Exception(
-                    $"This is not a supported audio file. Only Microsoft WAV and Ogg Vorbis can be decoded.");
-        }
-        catch (Exception e)
-        {
-            throw new AggregateException($"Failed to load audio file: {path}", e);
-        }
-
-        var audio = new FixedAudioData(data.Data, data.SampleRate, data.NumChannels, data.SampleCount);
-        return audio;
-    }
-
-    public override StreamAudioData LoadStream(string path)
-    {
-        var ext = path.AsSpan()[path.LastIndexOf('.')..];
-        AudioFileData data;
-
-        if (ext.Equals(".ogg", StringComparison.InvariantCultureIgnoreCase))
-        {
-            string absolutePath = Path.GetFullPath(path);
-            using var reader = new NVorbis.VorbisReader(absolutePath);
-            data = VorbisFileReader.ReadMetadata(reader);
-            return new StreamAudioData(() => new OggAudioStream(absolutePath), data.SampleRate, data.NumChannels, data.SampleCount);
-        }
-
-        throw new Exception($"No suitable streamer found for the file type {ext}");
     }
 
     public override void Pause(Sound sound)
@@ -485,10 +448,7 @@ public class OpenALAudioRenderer : AudioRenderer
     public override IEnumerable<string> EnumerateAvailableAudioDevices()
     {
         if (!canEnumerateDevices)
-        {
-            Logger.Warn("ALC_ENUMERATION_EXT is not present");
             yield break;
-        }
 
         foreach (var deviceName in ALC.GetString(AlcGetStringList.AllDevicesSpecifier))
             yield return deviceName;
@@ -675,8 +635,12 @@ internal static class ALUtils
 {
     public static void CheckError([CallerMemberName] in string id = default)
     {
-        var e = AL.GetError();
-        if (e != ALError.NoError)
-            throw new global::System.Exception($"OpenAL error at [{id ?? "unknown"}]: " + AL.GetErrorString(e));
+        while (true)
+        {
+            var e = AL.GetError();
+            if (e == ALError.NoError)
+                break;
+            Console.Error.WriteLine($"OpenAL error at [{id ?? "unknown"}]: " + AL.GetErrorString(e));
+        }
     }
 }

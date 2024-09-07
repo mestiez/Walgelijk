@@ -262,7 +262,7 @@ public struct Rect : IEquatable<Rect>
     {
         return new Rect(GetCenter(), GetSize() * scale);
     }
-    
+
     /// <summary>
     /// This will return a copy of this rectangle scaled in each direction by the given value ranging, 1 meaning 100%
     /// </summary>

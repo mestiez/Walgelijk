@@ -1,10 +1,12 @@
-﻿using Newtonsoft.Json;
-using SixLabors.Fonts;
+﻿using HarfBuzzSharp;
+using Newtonsoft.Json;
+using SkiaSharp;
+using System.CommandLine.Rendering;
 using System.Diagnostics;
 using System.IO.Compression;
-using System.Linq;
 using System.Numerics;
 using System.Reflection;
+using System.Text;
 
 namespace Walgelijk.FontGenerator;
 
@@ -14,15 +16,16 @@ public class Generator
 
     public readonly string FontName;
     public readonly FileInfo FontFile;
+    public readonly FileInfo CharsetFile;
     public readonly int FontSize;
 
     private readonly string intermediateImageOut;
     private readonly string intermediateMetadataOut;
-    private readonly string finalOut;
 
     private static readonly char[] vowels = "aeiou".ToCharArray();
+    private FileInfo file;
 
-    public Generator(FileInfo fontFile, int fontSize = 48)
+    public Generator(FileInfo fontFile, int fontSize = 48, FileInfo? charset = null)
     {
         FontName = Path.GetFileNameWithoutExtension(fontFile.FullName).Replace(' ', '_');
         foreach (var invalid in Path.GetInvalidFileNameChars().Append('_'))
@@ -33,13 +36,14 @@ public class Generator
 
         intermediateImageOut = Path.GetFullPath($"{intermediatePrefix}{FontName}.png");
         intermediateMetadataOut = Path.GetFullPath($"{intermediatePrefix}{FontName}.json");
-        finalOut = FontFile.DirectoryName + Path.DirectorySeparatorChar + FontName + ".wf";
+        CharsetFile = charset ?? new FileInfo(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "charset.txt"));
     }
 
-    public void Generate()
+    public void Generate(FileInfo? output)
     {
         var packageImageName = "atlas.png";
         var packageMetadataName = "meta.json";
+        var finalOut = output?.FullName ?? (FontFile.DirectoryName + Path.DirectorySeparatorChar + FontName + ".wf");
 
         RunMsdfGen();
         var metadata =
@@ -63,7 +67,9 @@ public class Generator
             atlas: null!, // will be loaded by game engine or whatever software interprets this file
             capHeight: capheight,
             lineHeight: metadata.Metrics.LineHeight * FontSize,
-            kernings: (metadata.Kerning?.Select(a => new Kerning { Amount = a.Advance, FirstChar = a.Unicode1, SecondChar = a.Unicode2 }).ToArray())!,
+            kernings: (metadata.Kerning?
+                .Select(a => new Kerning { Amount = a.Advance, FirstChar = a.Unicode1, SecondChar = a.Unicode2 })
+                .Where(k => float.Abs(k.Amount) > float.Epsilon).ToArray())!,
             glyphs: (metadata.Glyphs?.Select(g => new Glyph(
                 character: g.Unicode,
                 advance: g.Advance * FontSize,
@@ -111,9 +117,14 @@ public class Generator
         using var process = new Process();
         var execDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!;
         var processPath = Path.Combine(execDir, "msdf-atlas-gen");
-        var charsetPath = Path.Combine(execDir, "charset.txt");
+
+        // transform the charset into the questionable format for msdfgen
+        var chars = string.Join(", ", File.ReadAllText(CharsetFile.FullName).Select(c => $"{Convert.ToInt32(c)}"));
+        var tmp = Path.GetTempFileName();
+        File.WriteAllText(tmp, chars);
+
         process.StartInfo = new ProcessStartInfo(processPath,
-            $"-font \"{FontFile.FullName}\" -type msdf -outerempadding 0.1 -size {FontSize} -charset \"{charsetPath}\" -format png -potr -imageout \"{intermediateImageOut}\" -json \"{intermediateMetadataOut}\"")
+            $"-font \"{FontFile.FullName}\" -type msdf -outerempadding 0.1 -size {FontSize} -charset \"{tmp}\" -format png -potr -imageout \"{intermediateImageOut}\" -json \"{intermediateMetadataOut}\"")
         {
             RedirectStandardError = true
         };
@@ -127,37 +138,87 @@ public class Generator
 
     private void GetExtraData(MsdfDataStructs.MsdfGenFont msdfGenFont)
     {
-        var gatheredKernings = new List<MsdfDataStructs.MsdfKerning>();
+        var gatheredKernings = new HashSet<MsdfDataStructs.MsdfKerning>();
+
         {
             var execDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!;
-            var charsetPath = Path.Combine(execDir, "charset.txt");
-            var charset = File.ReadAllText(charsetPath).Distinct().ToArray();
-            var coll = new SixLabors.Fonts.FontCollection();
-            var family = coll.Add(FontFile.FullName);
-            var font = family.CreateFont(FontSize);
-            var t = new TextOptions(font);
+            var charset = File.ReadAllText(CharsetFile.FullName).Distinct().ToArray();
+
+            using var blob = Blob.FromFile(FontFile.FullName);
+            using var face = new Face(blob, 0);
+            using var font = new HarfBuzzSharp.Font(face);
+            font.SetFunctionsOpenType();
+
+            float scaling = FontSize / (float)face.UnitsPerEm;
+
+            int i = 0;
+            int totalPairCount = charset.Length * charset.Length;
+            var glyphWidths = new float[2];
+            var glyphBounds = new SKRect[2];
+
             for (int o = 0; o < charset.Length; o++)
                 for (int p = 0; p < charset.Length; p++)
                 {
-                    if (font.TryGetGlyphs(new(charset[o]), out var glyphsA)  
-                        && font.TryGetGlyphs(new(charset[p]), out var glyphsB) 
-                        && font.TryGetKerningOffset(glyphsA[0], glyphsB[0], t.Dpi, out var kerning))
+                    var a = charset[o];
+                    var b = charset[p];
+
+                    var codepointA = new Rune(a).Value;
+                    var codepointB = new Rune(b).Value;
+
+                    if (!font.TryGetGlyph(codepointA, out var glyphA))
+                        continue;
+                    if (!font.TryGetGlyph(codepointB, out var glyphB))
+                        continue;
+
+                    var k = font.GetHorizontalGlyphKerning(glyphA, glyphB) * scaling;
+
+                    {
+                        using var buffer = new HarfBuzzSharp.Buffer();
+                        buffer.Direction = Direction.LeftToRight;
+                        buffer.Script = Script.Latin;
+                        buffer.Language = new Language("en");
+                        buffer.AddUtf16($"{a}{b}");
+
+                        font.Shape(buffer);
+
+                        var infos = buffer.GetGlyphInfoSpan();
+                        var positions = buffer.GetGlyphPositionSpan();
+
+                        if (positions.Length != 2) // some ligature type shit is going on
+                        {
+                            // we do nothing...
+                        }
+                        else
+                        {
+                            var advance = (positions[0].XAdvance + positions[1].XOffset);
+                            var diff = advance - font.GetHorizontalGlyphAdvance(glyphA);
+                            if (float.Abs(diff) > float.Abs(k))
+                                k = diff * scaling;
+                        }
+                    }
+
+                    if (float.Abs(k) > 0)
                     {
                         gatheredKernings.Add(new MsdfDataStructs.MsdfKerning
                         {
-                            Unicode1 = charset[o],
-                            Unicode2 = charset[p],
-                            Advance = kerning.X
+                            Unicode1 = a,
+                            Unicode2 = b,
+                            Advance = k
                         });
                     }
+
+                    var ocp = Console.CursorLeft;
+                    Console.Write("{0}/{1}", i, totalPairCount);
+                    Console.CursorLeft = ocp;
+                    i++;
                 }
+            Console.WriteLine();
         }
-        var arr = gatheredKernings.ToArray();
 
         if (msdfGenFont.Kerning == null)
-            msdfGenFont.Kerning = arr.Distinct().ToArray();
+            msdfGenFont.Kerning = [.. gatheredKernings];
         else
-            msdfGenFont.Kerning = arr.Concat(msdfGenFont.Kerning).Distinct().ToArray();
+            msdfGenFont.Kerning = [.. gatheredKernings.Union(msdfGenFont.Kerning)];
 
         Console.WriteLine($"Kerning read complete ({msdfGenFont.Kerning.Length} kerning pairs generated)");
     }

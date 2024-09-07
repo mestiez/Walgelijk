@@ -40,7 +40,7 @@ namespace Walgelijk
         /// </summary>
         public RenderOrder OffsetLayer(int offset)
         {
-            return new RenderOrder(Layer + offset, OrderInLayer );
+            return new RenderOrder(Layer + offset, OrderInLayer);
         }
 
         /// <summary>

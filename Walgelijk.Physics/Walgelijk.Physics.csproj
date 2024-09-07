@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-    <Version>0.2.23</Version>
+    <Version>0.3.2</Version>
     <Authors>mestiez</Authors>
     <Company>Studio Minus</Company>
     <PackageIcon>icon.png</PackageIcon>

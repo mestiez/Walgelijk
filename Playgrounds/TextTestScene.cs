@@ -83,20 +83,13 @@ public readonly struct TextTestScene : ISceneCreator
 
         public static readonly Color GeometryBoundsCol = Colors.Red;
         public static readonly Color TextBoundsCol = Colors.Blue;
-        public static readonly Color BaselineCol = new Color("#0acf52");
+        public static readonly Color BaselineCol = new(0x0acf52);
 
         private Font[] Fonts =
-        {
+        [
             Font.Default,
-            Resources.Load<Font>("AbrilFatface-Regular.wf"),
-            Resources.Load<Font>("Inter-SemiBold.wf"),
-            Resources.Load<Font>("RobotoMono-Regular.wf"),
-            Resources.Load<Font>("NimbusRomNo9L-Reg.wf"),
-            Resources.Load<Font>("Rye-Regular.wf"),
-            Resources.Load<Font>("Amarante-Regular.wf"),
-            Resources.Load<Font>("pt-serif-regular.wf"),
-            Resources.Load<Font>("Cookie-Regular.wf"),
-        };
+            ..Directory.EnumerateFiles("resources/fonts/", "**.wf").Select(p => Resources.Load<Font>(p, true))
+        ];
 
         private int selectedFontIndex = 0;
         private ActionRenderTask renderTask;

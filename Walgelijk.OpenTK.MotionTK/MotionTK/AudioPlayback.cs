@@ -79,7 +79,7 @@ public class AudioPlayback : Playback<AudioPacket>
             AL.SourceUnqueueBuffers(SourceHandle, processed, processedBuffers);
             foreach (int bufferHandle in processedBuffers)
             {
-                AudioBuffer.ByHandle(bufferHandle).MakeAvailable();
+                AudioBuffer.ByHandle(bufferHandle)?.MakeAvailable();
             }
         }
 

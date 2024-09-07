@@ -15,12 +15,12 @@ public readonly struct AssetId : IEquatable<AssetId>
 
     public AssetId(string path)
     {
-        Internal = Hashes.MurmurHash1(path);
+        Internal = IdUtil.Hash(path);
     }  
     
     public AssetId(ReadOnlySpan<char> path)
     {
-        Internal = Hashes.MurmurHash1(path);
+        Internal = IdUtil.Hash(path);
     }
 
     public AssetId(int @internal)
@@ -28,7 +28,41 @@ public readonly struct AssetId : IEquatable<AssetId>
         Internal = @internal;
     }
 
-    public override string ToString() => Internal.ToString();
+    /// <summary>
+    /// Parses a formatted string. This function takes a stringified ID, <b>not a path</b>.
+    /// </summary>
+    public static AssetId Parse(ReadOnlySpan<char> id)
+    {
+        if (TryParse(id, out var asset))
+            return asset;
+
+        throw new Exception($"{id} is not a valid ID");
+    }
+
+    /// <summary>
+    /// Parses a formatted string. This function takes a stringified ID, <b>not a path</b>.
+    /// </summary>
+    public static AssetId Parse(string id)
+    {
+        return Parse(id.AsSpan());
+    }
+
+    /// <summary>
+    /// Parses a formatted string. This function takes a stringified ID, <b>not a path</b>.
+    /// </summary>
+    public static bool TryParse(ReadOnlySpan<char> id, out AssetId asset)
+    {
+        if (IdUtil.TryConvert(id, out var i))
+        {
+            asset = new AssetId(i);
+            return true;
+        }
+
+        asset = default;
+        return false;
+    }
+
+    public override string ToString() => IdUtil.Convert(Internal);
 
     public override bool Equals(object? obj)
     {

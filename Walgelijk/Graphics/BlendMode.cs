@@ -24,11 +24,11 @@ public enum BlendMode
     /// <summary>
     /// Only keeps the greatest pixel value
     /// </summary>
-    Lighten,    
+    Lighten,
     /// <summary>
     /// Only keeps the smallest pixel value
     /// </summary>
-    Darken,   
+    Darken,
     /// <summary>
     /// Only keeps the smallest pixel value
     /// </summary>

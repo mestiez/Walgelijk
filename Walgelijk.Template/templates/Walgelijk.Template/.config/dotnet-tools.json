@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "walgelijk.fontgenerator": {
+      "version": "1.4.3",
+      "commands": [
+        "wfont"
+      ],
+      "rollForward": false
+    },
+    "walgelijk.assetpackagebuilder": {
+      "version": "0.8.1",
+      "commands": [
+        "waapack"
+      ],
+      "rollForward": false
+    }
+  }
+}

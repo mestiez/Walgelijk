@@ -10,8 +10,7 @@ using System.Threading.Tasks;
 using Walgelijk;
 using Walgelijk.AssetManager;
 using Walgelijk.AssetManager.Deserialisers;
-using Walgelijk.CommonAssetDeserialisers;
-using Walgelijk.OpenTK;
+using Walgelijk.CommonAssetDeserialisers.Audio;
 
 namespace Tests.AssetManager;
 
@@ -41,8 +40,8 @@ public class AssetPackages
 
         var content = package.EnumerateFolder("textures/ui/levelselect/").ToArray();
         AssetId[] expected = [
-            new(1397134492),
-            new(1971289920)
+            new(0x5346949C),
+            new(0x757F7F40)
         ];
 
         Assert.IsTrue(expected.SequenceEqual(content), "read content does not match expected content");
@@ -203,7 +202,7 @@ melee 0.2";
     public void StreamDeserialise()
     {
         using var package = AssetPackage.Load(validPackage);
-        AssetDeserialisers.Register(new TestStreamAudioDeserialiser());
+        AssetDeserialisers.Register(new OggStreamAudioDeserialiser());
 
         for (int i = 0; i < 5; i++)
             stream();
@@ -237,7 +236,7 @@ melee 0.2";
     public void ConcurrentStreamDeserialise()
     {
         using var package = AssetPackage.Load(validPackage);
-        AssetDeserialisers.Register(new TestStreamAudioDeserialiser());
+        AssetDeserialisers.Register(new OggStreamAudioDeserialiser());
         var l = new ManualResetEventSlim(true);
 
         Task.WaitAll(
@@ -247,7 +246,7 @@ melee 0.2";
 
         void stream()
         {
-           // l.Wait();
+            // l.Wait();
             using var reference = new VorbisReader("splitmek.ogg");
             var audio = package.Load<StreamAudioData>("sounds/music/splitmek.ogg");
             Assert.IsNotNull(audio);
@@ -258,19 +257,20 @@ melee 0.2";
             using var source = audio.InputSourceFactory();
             var buffer = new float[1024];
             var referenceBuffer = new float[1024];
-         //   l.Set();
+            //   l.Set();
             while (true)
             {
-            //    l.Wait();
+                //    l.Wait();
                 int c = source.ReadSamples(buffer);
                 int rC = reference.ReadSamples(referenceBuffer);
-              //  l.Set();
+                //  l.Set();
                 Assert.AreEqual(rC, c);
                 if (c == 0)
                     break;
 
-                for (int i = 0; i < c; i++)
-                    Assert.AreEqual(buffer[i], referenceBuffer[i], 0.1f);
+                lock (referenceBuffer)
+                    for (int i = 0; i < c; i++)
+                        Assert.AreEqual(buffer[i], referenceBuffer[i], 0.1f);
             }
         }
     }
@@ -283,22 +283,3 @@ melee 0.2";
     // - lifetime stuff
 }
 
-public class TestStreamAudioDeserialiser : IAssetDeserialiser
-{
-    public Type ReturningType => typeof(StreamAudioData);
-
-    public bool IsCandidate(in AssetMetadata assetMetadata)
-    {
-        return
-            assetMetadata.MimeType.Equals("audio/vorbis", StringComparison.InvariantCultureIgnoreCase) ||
-            assetMetadata.MimeType.Equals("audio/ogg", StringComparison.InvariantCultureIgnoreCase);
-    }
-
-    public object Deserialise(Func<Stream> stream, in AssetMetadata assetMetadata)
-    {
-        using var reader = new VorbisReader(stream(), true);
-        var data = global::Walgelijk.OpenTK.VorbisFileReader.ReadMetadata(reader);
-        reader.Dispose();
-        return new StreamAudioData(() => new OggAudioStream(stream()), data.SampleRate, data.NumChannels, data.SampleCount);
-    }
-}

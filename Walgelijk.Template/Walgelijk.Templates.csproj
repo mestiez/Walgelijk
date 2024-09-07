@@ -12,7 +12,7 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <ContentTargetFolders>content</ContentTargetFolders>
     <PackageIcon>icon.png</PackageIcon>
-    <Version>1.5.0</Version>
+    <Version>1.7.0</Version>
   </PropertyGroup>
   <Target Name="PostBuild" Condition="'$(Configuration)'=='Release'" AfterTargets="PostBuildEvent">
     <Exec Command="dotnet pack -c Release --no-restore --no-build --output &quot;$(SolutionDir)OutputPackages&quot;" />

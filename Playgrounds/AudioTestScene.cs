@@ -40,6 +40,12 @@ public struct AudioTestScene : ISceneCreator
             if (Input.IsKeyHeld(Key.Space))
             {
                 Audio.PlayOnce(Utilities.PickRandom(OneShot), new Vector3(Utilities.RandomFloat(-100, 100), 0, 0), 0.1f);
+                Audio.PlayOnce(Utilities.PickRandom(OneShot), new Vector3(Utilities.RandomFloat(-100, 100), 0, 0), 0.1f);
+                Audio.PlayOnce(Utilities.PickRandom(OneShot), new Vector3(Utilities.RandomFloat(-100, 100), 0, 0), 0.1f);
+                Audio.PlayOnce(Utilities.PickRandom(OneShot), new Vector3(Utilities.RandomFloat(-100, 100), 0, 0), 0.1f);
+                Audio.PlayOnce(Utilities.PickRandom(OneShot), new Vector3(Utilities.RandomFloat(-100, 100), 0, 0), 0.1f);
+                Audio.PlayOnce(Utilities.PickRandom(OneShot), new Vector3(Utilities.RandomFloat(-100, 100), 0, 0), 0.1f);
+                Audio.PlayOnce(Utilities.PickRandom(OneShot), new Vector3(Utilities.RandomFloat(-100, 100), 0, 0), 0.1f);
             }
         }
 

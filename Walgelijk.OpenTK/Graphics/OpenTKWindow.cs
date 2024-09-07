@@ -18,7 +18,22 @@ public class OpenTKWindow : Window
     public override bool IsOpen => window.Exists && !window.IsExiting;
     public override bool HasFocus => window.IsFocused;
     public override bool IsVisible { get => window.IsVisible; set => window.IsVisible = value; }
-    public override bool Resizable { get => window.WindowBorder == WindowBorder.Resizable; set => window.WindowBorder = value ? WindowBorder.Resizable : WindowBorder.Fixed; }
+    public override bool Resizable
+    {
+        get => window.WindowBorder == WindowBorder.Resizable;
+
+        set
+        {
+            switch (windowType)
+            {
+                case WindowType.Normal:
+                    window.WindowBorder = value ? WindowBorder.Resizable : WindowBorder.Fixed;
+                    break;
+            }
+
+            // we simply do nothing if the window type isnt normal
+        }
+    }
     public override float DPI
     {
         get
@@ -28,31 +43,15 @@ public class OpenTKWindow : Window
             return 96;
         }
     }
+    private WindowType windowType = WindowType.Normal;
     public override WindowType WindowType
     {
-        get
-        {
-            if (window.WindowState == WindowState.Normal)
-            {
-                if (window.WindowBorder == WindowBorder.Resizable)
-                    return WindowType.Normal;
-                else if (window.WindowBorder == WindowBorder.Hidden)
-                    return WindowType.Borderless;
-            }
-            else if (window.WindowState == WindowState.Fullscreen)
-            {
-                if (window.WindowBorder == WindowBorder.Resizable)
-                    return WindowType.Fullscreen;
-                else if (window.WindowBorder == WindowBorder.Hidden)
-                    return WindowType.BorderlessFullscreen;
-            }
-
-            return WindowType.Normal;
-        }
+        get => windowType;
 
         set
         {
-            switch (value)
+            windowType = value;
+            switch (windowType)
             {
                 case WindowType.Normal:
                     window.WindowState = WindowState.Normal;
@@ -64,7 +63,7 @@ public class OpenTKWindow : Window
                     break;
                 case WindowType.BorderlessFullscreen:
                     window.WindowBorder = WindowBorder.Hidden;
-                    window.WindowState = WindowState.Fullscreen;
+                    window.WindowState = WindowState.Maximized;
                     window.Size = Monitors.GetMonitorFromWindow(window).ClientArea.Size;
                     break;
                 case WindowType.Fullscreen:
@@ -197,8 +196,6 @@ public class OpenTKWindow : Window
 
         inputHandler = new InputHandler(this);
         internalGraphics = new OpenTKGraphics();
-
-        Logger.Log("Graphics API: " + window.API);
     }
 
     public override void Close() => window.Close();

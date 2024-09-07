@@ -1,27 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <Version>1.3.7</Version>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Description>Barebones 3D module for Walgelijk</Description>
-    <PackageIcon>icon.png</PackageIcon>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="AssimpNet" Version="4.1.0" />
-  </ItemGroup>
-  <Target Name="PostBuild" Condition="'$(Configuration)'=='Release'" AfterTargets="PostBuildEvent">
-    <Exec Command="dotnet pack -c Release --no-restore --no-build --output &quot;$(SolutionDir)OutputPackages&quot;" />
-  </Target>
-  <ItemGroup>
-    <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="icon.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<Version>1.3.9</Version>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Description>Barebones 3D module for Walgelijk</Description>
+		<PackageIcon>icon.png</PackageIcon>
+	</PropertyGroup>
+	<Target Name="PostBuild" Condition="'$(Configuration)'=='Release'" AfterTargets="PostBuildEvent">
+		<Exec Command="dotnet pack -c Release --no-restore --no-build --output &quot;$(SolutionDir)OutputPackages&quot;" />
+	</Target>
+	<ItemGroup>
+		<ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="icon.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
 </Project>

@@ -4,10 +4,10 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>0.11.5</Version>
+    <Version>0.16.9</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageIcon>icon.png</PackageIcon>
-    <Description>Provides deserialisers for commonly used asset formats, for Walgelijk.AssetManager</Description>
+    <Description>Provides support for asset packages</Description>
     <Authors>mestiez</Authors>
   </PropertyGroup>
   <Target Name="PostBuild" Condition="'$(Configuration)'=='Release'" AfterTargets="PostBuildEvent">

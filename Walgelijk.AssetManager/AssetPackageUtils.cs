@@ -7,22 +7,6 @@ namespace Walgelijk.AssetManager;
 
 public static class AssetPackageUtils
 {
-    /* AssetPackage structure:
-     * 
-     * 📁 root
-     *  | 📁 assets 
-     *  |  | ~ all assets go here
-     *  |  | the asset folder can contain a .tags file (empty name for entire directory or filename for per file) which
-     *  |  | can determine tags. the same goes for .mimetype files
-     *  | 📁 metadata
-     *  |  | ~ every asset has a corresponding .meta file, which contains
-     *  |  |   a kv map of properties such as file size, mime type, tags, etc.
-     *  | 📃 guid_table.txt
-     *  | 📃 tag_table.txt
-     *  | 📃 hierarchy.txt
-     *  | 📃 package.json
-     */
-
     private struct IntermediateAsset
     {
         public AssetId Id;
@@ -77,10 +61,18 @@ public static class AssetPackageUtils
 
     public static void Build(string id, DirectoryInfo directory, Stream output, IAssetBuilderProcessor? preprocessor = null)
     {
+        Build(id, directory, output, preprocessor == null ? null : [preprocessor]);
+    }
+
+    public static void Build(string id, DirectoryInfo directory, Stream output, IAssetBuilderProcessor[]? preprocessors)
+    {
+        if (id.Contains(':'))
+            throw new Exception("Package ID may not contain a colon");
+
         const string assetRoot = "assets/";
         const string metadataRoot = "metadata/";
 
-        using IWriteArchive archive = new WaaWriteArchive(output);
+        using var archive = new WaaWriteArchive(output);
         var guidsIntermediate = new HashSet<int>();
         var guidTable = new StringBuilder();
         var tagTable = new StringBuilder();
@@ -90,8 +82,8 @@ public static class AssetPackageUtils
 
         var package = new AssetPackageMetadata
         {
-            Id = id,
-            NumericalId = Hashes.MurmurHash1(id),
+            Name = id,
+            Id = new(id),
             EngineVersion = Assembly.GetAssembly(typeof(Game))!.GetName()!.Version!,
             FormatVersion = Assembly.GetAssembly(typeof(AssetPackageUtils))!.GetName()!.Version!,
         };
@@ -118,7 +110,7 @@ public static class AssetPackageUtils
                 new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(asset.Metadata))));
 
             // write guid to table
-            guidTable.AppendLine(asset.Id.Internal.ToString());
+            guidTable.AppendLine(asset.Id.ToString());
             guidTable.AppendLine(asset.AssetPath);
 
             // write guid to table
@@ -163,7 +155,7 @@ public static class AssetPackageUtils
                 s.AppendLine(path);
                 s.AppendLine(set.Count.ToString());
                 foreach (var asset in set)
-                    s.AppendFormat("\t{0}\n", asset.Internal);
+                    s.AppendFormat("\t{0}\n", asset.ToString());
             }
             var l = archive.WriteEntry("hierarchy.txt", new MemoryStream(Encoding.UTF8.GetBytes(s.ToString())));
             Console.WriteLine($"hierarchy.txt written {l}");
@@ -201,10 +193,10 @@ public static class AssetPackageUtils
                 var id = new AssetId(resourcePath);
 
                 if (id == AssetId.None)
-                    throw new Exception($"Resource at \"{resourcePath}\" generates ID zero. This can be solved by renaming the file, but you really shouldn't be seeing this so it's probably a bug.");
+                    throw new Exception($"Resource at \"{resourcePath}\" generates reserved ID zero. This may be solved by renaming the file, but you really shouldn't be seeing this so it's probably a bug.");
 
                 if (!guidsIntermediate.Add(id.Internal))
-                    throw new Exception($"Resource at \"{resourcePath}\" collides with another resource.");
+                    throw new Exception($"Resource at \"{resourcePath}\" collides with another resource. Rename or relocate.");
 
                 var mimeTypeFile = info.EnumerateFiles(childFile.Name + ".mimetype").FirstOrDefault();
                 var tagsFile = info.EnumerateFiles(childFile.Name + ".tags").FirstOrDefault();
@@ -215,7 +207,8 @@ public static class AssetPackageUtils
                 if (globalTags != null)
                     tags = [.. tags, .. globalTags];
 
-                var contentHash = global::System.IO.Hashing.XxHash3.Hash(File.ReadAllBytes(childFile.FullName));
+                var contentData = File.ReadAllBytes(childFile.FullName);
+                var contentHash = global::System.IO.Hashing.XxHash3.Hash(contentData);
 
                 var metadata = new AssetMetadata
                 {
@@ -223,11 +216,23 @@ public static class AssetPackageUtils
                     Path = resourcePath,
                     MimeType = mimeType ?? globalMimeType ?? MimeTypes.GetFromExtension(childFile.Extension),
                     Size = childFile.Length,
-                    XXH3 = string.Join(null, contentHash.Select(static b => b.ToString("x2"))),
+                    XXH3 = string.Join(null, contentHash.Select(static b => b.ToString("X2"))),
                     Tags = tags
                 };
 
-                preprocessor?.Process(ref metadata);
+                if (preprocessors != null)
+                {
+                    var readonlyData = contentData.AsSpan();
+                    foreach (var p in preprocessors)
+                        try
+                        {
+                            p?.Process(ref metadata, readonlyData);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.Error.WriteLine("Asset builder processor {0} threw an exception {1}", p.GetType(), e);
+                        }
+                }
 
                 if (metadata.Tags != null)
                     foreach (var tag in metadata.Tags)

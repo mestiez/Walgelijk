@@ -1,6 +1,5 @@
 ﻿using CommandLine;
 using Walgelijk.AssetManager;
-using Walgelijk.AssetManager.Archives.Waa;
 
 namespace Walgelijk.AssetPackageBuilder;
 
