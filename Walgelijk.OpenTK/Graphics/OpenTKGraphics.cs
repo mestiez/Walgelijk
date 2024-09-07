@@ -241,23 +241,30 @@ public class OpenTKGraphics : IGraphics
         if (obj == null)
             return;
 
-        switch (obj)
+        try
         {
-            case RenderTexture rt:
-                GPUObjects.RenderTextureCache.Unload(rt);
-                break;
-            case IReadableTexture texture:
-                GPUObjects.TextureCache.Unload(texture);
-                break;
-            case Material mat:
-                GPUObjects.MaterialCache.Unload(mat);
-                break;
-            case Shader shader:
-                GPUObjects.ShaderCache.Unload(shader);
-                break;
-            default:
-                Logger.Error("Attempt to delete unsupported object from GPU");
-                break;
+            switch (obj)
+            {
+                case RenderTexture rt:
+                    GPUObjects.RenderTextureCache.Unload(rt);
+                    break;
+                case IReadableTexture texture:
+                    GPUObjects.TextureCache.Unload(texture);
+                    break;
+                case Material mat:
+                    GPUObjects.MaterialCache.Unload(mat);
+                    break;
+                case Shader shader:
+                    GPUObjects.ShaderCache.Unload(shader);
+                    break;
+                default:
+                    Logger.Error("Attempt to delete unsupported object from GPU");
+                    break;
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.Error("Failed to delete GPU object: " + e);
         }
     }
 

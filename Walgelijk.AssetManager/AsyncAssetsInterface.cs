@@ -19,6 +19,9 @@ public class AsyncAssetsInterface
 
     public T? Load<T>(GlobalAssetId id)
     {
+        if (Assets.IsCached(id))
+            return Assets.Load<T>(id);
+
         using var l = new DeferredSemaphore(workerSetLock);
 
         if (singleWorkers.TryGetValue(id, out var worker))
@@ -28,7 +31,7 @@ public class AsyncAssetsInterface
 
             return worker.Status switch
             {
-                WorkerStatus.Finished => (T?)Assets.Load<T>(id),
+                WorkerStatus.Finished => Assets.Load<T>(id),
                 _ => default,
             };
         }

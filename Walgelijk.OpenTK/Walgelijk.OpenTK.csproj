@@ -7,7 +7,7 @@
     <Authors>mestiez</Authors>
     <Company>Studio Minus</Company>
     <RepositoryType>git</RepositoryType>
-    <Version>0.22.1</Version>
+    <Version>0.22.2</Version>
     <PackageIcon>icon.png</PackageIcon>
     <Description>Windowing, input, video, and audio interface for Walgelijk using OpenTK</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -30,11 +30,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Video\**" />
-    <EmbeddedResource Remove="Video\**" />
-    <None Remove="Video\**" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="OpenTK" Version="4.8.2" />
   </ItemGroup>

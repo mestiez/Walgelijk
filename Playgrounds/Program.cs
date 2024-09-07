@@ -16,7 +16,7 @@ public class Program
 {
     private static Game game = new Game(
             new OpenTKWindow("playground", new Vector2(-1, -1), new Vector2(800, 600)),
-            new OpenALAudioRenderer()
+            new PortAudioRenderer()
             );
 
     static void Main(string[] args)

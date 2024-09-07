@@ -64,6 +64,9 @@ internal class RenderTextureCache : Cache<RenderTexture, RenderTextureHandles>
 
     protected override void DisposeOf(RenderTextureHandles loaded)
     {
+        if (loaded.RenderTexture == null)
+            return;
+
         loaded.RenderTexture.DepthBuffer = null;
         GL.DeleteFramebuffer(loaded.FramebufferID);
         GPUObjects.TextureCache.Unload(loaded.RenderTexture);

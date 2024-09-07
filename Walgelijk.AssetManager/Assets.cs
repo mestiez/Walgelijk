@@ -379,6 +379,17 @@ public static class Assets
 
     internal static T LoadDirect<T>(AssetId id) => LoadDirect<T>(FindFirst(id));
 
+    public static bool IsCached(GlobalAssetId id)
+    {
+        if (!TryValidate(ref id))
+            return false;
+
+        if (packageRegistry.TryGetValue(id.External, out var assetPackage))
+            return assetPackage.IsCached(id.Internal);
+
+        return false;
+    }
+
     /// <summary>
     /// Resolve agnosticism and throw if not found
     /// </summary>
@@ -388,7 +399,7 @@ public static class Assets
             id = id.ResolveExternal();
 
         if (id.External == PackageId.None)
-            throw new Exception("External ID is none, but asset not found in any package");
+            throw new Exception($"External ID is none, but asset not found in any package: {id.External}:{id.Internal}");
     }
 
     /// <summary>
