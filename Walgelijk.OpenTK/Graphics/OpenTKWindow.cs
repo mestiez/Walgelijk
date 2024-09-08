@@ -170,6 +170,7 @@ public class OpenTKWindow : Window
 
     public OpenTKWindow(string title, Vector2 position, Vector2 size)
     {
+        InitializeDedicatedGraphics();
         window = new NativeWindow(new NativeWindowSettings
         {
             Size = new global::OpenTK.Mathematics.Vector2i((int)size.X, (int)size.Y),
@@ -198,6 +199,28 @@ public class OpenTKWindow : Window
         internalGraphics = new OpenTKGraphics();
     }
 
+    [DllImport("nvapi64.dll", EntryPoint = "fake")]
+    private static extern int LoadNvApi64();
+
+    [DllImport("nvapi.dll", EntryPoint = "fake")]
+    private static extern int LoadNvApi32();
+
+    /// <summary>
+    /// Sets the default video card to Nvidia instead of the low-end Intel GPU for laptops with multiple GPUs.
+    /// This can be overridden per app in the Windows graphics menu.
+    /// </summary>
+    private static void InitializeDedicatedGraphics()
+    {
+        try
+        {
+            if (Environment.Is64BitProcess) 
+                LoadNvApi64();
+            else
+                LoadNvApi32();
+        }
+        catch { } // will always fail since 'fake' entry point doesn't exist
+    }
+    
     public override void Close() => window.Close();
 
     public override void ResetInputState() => inputHandler.Reset();
