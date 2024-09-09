@@ -163,7 +163,6 @@ public class OpenTKWindow : Window
     internal readonly OpenTKWindowRenderTarget renderTarget;
     internal readonly InputHandler inputHandler;
     internal readonly OpenTKGraphics internalGraphics;
-
     private readonly Stopwatch clock = new();
     private DefaultCursor cursorAppearance;
     private IReadableTexture customCursor;
