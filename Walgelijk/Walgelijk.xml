@@ -7104,6 +7104,15 @@
             E.g <see cref="!:WorldBounds.MinX"/> represents the leftmost world space X coordinate still visible in the window
             </summary>
         </member>
+        <member name="M:Walgelijk.Window.ConfineCursor(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Confine the cursor to the bounds of the window.
+            </summary>
+            <param name="leftPadding">How many pixels away from the left edge of the screen the cursor is locked to.</param>
+            <param name="topPadding">How many pixels away from the top edge of the screen the cursor is locked to.</param>
+            <param name="widthPadding">How many pixels away from the right edge of the screen the cursor is locked to.</param>
+            <param name="heightPadding">How many pixels away from the bottom edge of the screen the cursor is locked to.</param>
+        </member>
         <member name="T:Walgelijk.WindowType">
             <summary>
             The window border type

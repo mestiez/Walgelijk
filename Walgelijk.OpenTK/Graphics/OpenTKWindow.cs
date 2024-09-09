@@ -164,19 +164,6 @@ public class OpenTKWindow : Window
     internal readonly InputHandler inputHandler;
     internal readonly OpenTKGraphics internalGraphics;
 
-    [StructLayout(LayoutKind.Sequential)]
-    private struct RECT
-    {
-        public int Left;
-        public int Top;
-        public int Right;
-        public int Bottom;
-    }
-
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool ClipCursor(ref RECT lpRect);
-
     private readonly Stopwatch clock = new();
     private DefaultCursor cursorAppearance;
     private IReadableTexture customCursor;
@@ -293,10 +280,7 @@ public class OpenTKWindow : Window
         inputHandler.Reset();
 
         if (HasFocus && (windowType == WindowType.Fullscreen || WindowType == WindowType.BorderlessFullscreen))
-        {
-            var windowRECT = new RECT { Left = (int)Position.X, Top = (int)Position.Y, Bottom = (int)Height - 17, Right = (int)Width - 9 };
-            ClipCursor(ref windowRECT);
-        }
+            ConfineCursor(widthPadding: 9, heightPadding: 17);
 
         window.Context.SwapBuffers();
         window.ProcessEvents(0);

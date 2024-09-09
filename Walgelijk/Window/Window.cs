@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace Walgelijk;
 
@@ -193,4 +194,30 @@ public abstract class Window
     /// E.g <see cref="WorldBounds.MinX"/> represents the leftmost world space X coordinate still visible in the window
     /// </summary>
     public Rect WorldBounds;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct RECT
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+    }
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool ClipCursor(ref RECT lpRect);
+
+    /// <summary>
+    /// Confine the cursor to the bounds of the window.
+    /// </summary>
+    /// <param name="leftPadding">How many pixels away from the left edge of the screen the cursor is locked to.</param>
+    /// <param name="topPadding">How many pixels away from the top edge of the screen the cursor is locked to.</param>
+    /// <param name="widthPadding">How many pixels away from the right edge of the screen the cursor is locked to.</param>
+    /// <param name="heightPadding">How many pixels away from the bottom edge of the screen the cursor is locked to.</param>
+    protected void ConfineCursor(int leftPadding = 0, int topPadding = 0, int widthPadding = 0, int heightPadding = 0)
+    {
+        var windowRECT = new RECT { Left = (int)Position.X - leftPadding, Top = (int)Position.Y - topPadding, Bottom = Height - heightPadding, Right = Width - widthPadding };
+        ClipCursor(ref windowRECT);
+    }
 }
