@@ -328,23 +328,35 @@ public static class Assets
     /// </summary>
     public static IEnumerable<GlobalAssetId> EnumerateFolder(string folder, SearchOption searchOption = SearchOption.TopDirectoryOnly)
     {
-        foreach (var p in packageRegistry.Values)
-            foreach (var a in p.EnumerateFolder(folder, searchOption))
-                yield return new GlobalAssetId(p.Metadata.Id, a);
+        lock (sortedPackages)
+            foreach (var packageId in sortedPackages)
+            {
+                var p = packageRegistry[packageId];
+                foreach (var a in p.EnumerateFolder(folder, searchOption))
+                    yield return new GlobalAssetId(p.Metadata.Id, a);
+            }
     }
 
     public static IEnumerable<GlobalAssetId> GetAllAssets()
     {
-        foreach (var p in packageRegistry.Values)
-            foreach (var a in p.All)
-                yield return new(p.Metadata.Id, a);
+        lock (sortedPackages)
+            foreach (var packageId in sortedPackages)
+            {
+                var p = packageRegistry[packageId];
+                foreach (var a in p.All)
+                    yield return new(p.Metadata.Id, a);
+            }
     }
 
     public static IEnumerable<GlobalAssetId> QueryTags(string tag)
     {
-        foreach (var p in packageRegistry.Values)
-            foreach (var a in p.QueryTags(tag))
-                yield return new GlobalAssetId(p.Metadata.Id, a);
+        lock (sortedPackages)
+            foreach (var packageId in sortedPackages)
+            {
+                var p = packageRegistry[packageId];
+                foreach (var a in p.QueryTags(tag))
+                    yield return new GlobalAssetId(p.Metadata.Id, a);
+            }
     }
 
     public static GlobalAssetId FindFirst(AssetId assetId)
