@@ -173,7 +173,7 @@ public class OpenTKWindow : Window
         public int Bottom;
     }
 
-    [DllImport("user32.dll", SetLastError = true)]
+    [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool ClipCursor(ref RECT lpRect);
 
@@ -292,7 +292,7 @@ public class OpenTKWindow : Window
     {
         inputHandler.Reset();
 
-        if (HasFocus && (windowType == WindowType.Fullscreen || WindowType == WindowType.BorderlessFullscreen)
+        if (HasFocus && (windowType == WindowType.Fullscreen || WindowType == WindowType.BorderlessFullscreen))
         {
             var windowRECT = new RECT { Left = (int)Position.X, Top = (int)Position.Y, Bottom = (int)Height - 17, Right = (int)Width - 9 };
             ClipCursor(ref windowRECT);
