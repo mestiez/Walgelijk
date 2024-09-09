@@ -163,6 +163,20 @@ public class OpenTKWindow : Window
     internal readonly OpenTKWindowRenderTarget renderTarget;
     internal readonly InputHandler inputHandler;
     internal readonly OpenTKGraphics internalGraphics;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct RECT
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+    }
+
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool ClipCursor(ref RECT lpRect);
+
     private readonly Stopwatch clock = new();
     private DefaultCursor cursorAppearance;
     private IReadableTexture customCursor;
@@ -213,14 +227,14 @@ public class OpenTKWindow : Window
     {
         try
         {
-            if (Environment.Is64BitProcess) 
+            if (Environment.Is64BitProcess)
                 LoadNvApi64();
             else
                 LoadNvApi32();
         }
         catch { } // will always fail since 'fake' entry point doesn't exist
     }
-    
+
     public override void Close() => window.Close();
 
     public override void ResetInputState() => inputHandler.Reset();
@@ -277,6 +291,12 @@ public class OpenTKWindow : Window
     public override void LoopCycle()
     {
         inputHandler.Reset();
+
+        if (HasFocus && (windowType == WindowType.Fullscreen || WindowType == WindowType.BorderlessFullscreen)
+        {
+            var windowRECT = new RECT { Left = (int)Position.X, Top = (int)Position.Y, Bottom = (int)Height - 17, Right = (int)Width - 9 };
+            ClipCursor(ref windowRECT);
+        }
 
         window.Context.SwapBuffers();
         window.ProcessEvents(0);
