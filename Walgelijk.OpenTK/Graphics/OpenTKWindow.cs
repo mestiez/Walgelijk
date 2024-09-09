@@ -170,7 +170,7 @@ public class OpenTKWindow : Window
 
     public OpenTKWindow(string title, Vector2 position, Vector2 size)
     {
-        InitializeDedicatedGraphics();
+        InitialiseDedicatedGraphics();
         window = new NativeWindow(new NativeWindowSettings
         {
             Size = new global::OpenTK.Mathematics.Vector2i((int)size.X, (int)size.Y),
@@ -209,7 +209,7 @@ public class OpenTKWindow : Window
     /// Sets the default video card to Nvidia instead of the low-end Intel GPU for laptops with multiple GPUs.
     /// This can be overridden per app in the Windows graphics menu.
     /// </summary>
-    private static void InitializeDedicatedGraphics()
+    private static void InitialiseDedicatedGraphics()
     {
         try
         {
