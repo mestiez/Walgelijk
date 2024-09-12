@@ -130,10 +130,13 @@ public static class AssetDeserialisers
 
             throw new Exception($"Asset {asset.Metadata.Id} at \"{asset.Metadata.Path}\" cannot be deserialised as {typeof(T)}. No candidates found.");
         }
-        catch (Exception)
+        catch (Exception e)
         {
             if (TryGetFallbackForType<T>(out var fallback)) // try to fall back
+            {
+                Logger.Error(e);
                 return fallback;
+            }
             throw;
         }
         finally
