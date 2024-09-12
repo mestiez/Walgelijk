@@ -43,6 +43,6 @@ public static class AudioGen
             var time = i / (float)sampleRate;
             data[i] = func(duration, sampleRate, time);
         }
-        return new FixedAudioData(data, sampleRate, 2, data.Length, false);
+        return new FixedAudioData(data, sampleRate, 1, data.Length, false);
     }
 }

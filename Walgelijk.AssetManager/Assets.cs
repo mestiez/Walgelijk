@@ -329,9 +329,9 @@ public static class Assets
     public static IEnumerable<GlobalAssetId> EnumerateFolder(string folder, SearchOption searchOption = SearchOption.TopDirectoryOnly)
     {
         lock (sortedPackages)
-            foreach (var packageId in sortedPackages)
+            for (int i = sortedPackages.Count - 1; i >= 0; i--)
             {
-                var p = packageRegistry[packageId];
+                var p = packageRegistry[sortedPackages[i]];
                 foreach (var a in p.EnumerateFolder(folder, searchOption))
                     yield return new GlobalAssetId(p.Metadata.Id, a);
             }
@@ -340,9 +340,9 @@ public static class Assets
     public static IEnumerable<GlobalAssetId> GetAllAssets()
     {
         lock (sortedPackages)
-            foreach (var packageId in sortedPackages)
+            for (int i = sortedPackages.Count - 1; i >= 0; i--)
             {
-                var p = packageRegistry[packageId];
+                var p = packageRegistry[sortedPackages[i]];
                 foreach (var a in p.All)
                     yield return new(p.Metadata.Id, a);
             }
@@ -351,9 +351,9 @@ public static class Assets
     public static IEnumerable<GlobalAssetId> QueryTags(string tag)
     {
         lock (sortedPackages)
-            foreach (var packageId in sortedPackages)
+            for (int i = sortedPackages.Count - 1; i >= 0; i--)
             {
-                var p = packageRegistry[packageId];
+                var p = packageRegistry[sortedPackages[i]];
                 foreach (var a in p.QueryTags(tag))
                     yield return new GlobalAssetId(p.Metadata.Id, a);
             }
