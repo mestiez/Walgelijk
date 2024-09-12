@@ -1,20 +1,35 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace Walgelijk;
 
 public class DiskLogger : ILogger, IDisposable
 {
-    private readonly string diskLogPath;
+    private readonly DirectoryInfo diskLogDirectory;
     private readonly FileStream logFile;
     private readonly StreamWriter writer;
 
-    public DiskLogger(string logPath)
-    {
-        diskLogPath = logPath;
+    // Means 2 log files will exist at a time.
+    private const int maxLogFiles = 1;
 
-        logFile = File.Open(diskLogPath, FileMode.OpenOrCreate);
+    public DiskLogger(DirectoryInfo logsDir)
+    {
+        diskLogDirectory = logsDir;
+
+        if (diskLogDirectory.Exists)
+        {
+            var files = diskLogDirectory.GetFiles().OrderByDescending(x => x.CreationTime).ToArray();
+            if (files.Length >= maxLogFiles)
+            {
+                foreach (var file in files.Skip(maxLogFiles))
+                    file.Delete();
+            }
+        }
+
+        var logFileName = string.Format("{0}\\log-{1}.txt", diskLogDirectory.Name, DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
+        logFile = File.Open(logFileName, FileMode.OpenOrCreate);
         writer = new(logFile);
     }
 

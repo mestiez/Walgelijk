@@ -187,7 +187,7 @@ public class Game
             {
                 b.AddConsole();
                 b.AddProvider(new GameConsoleLoggingProvider(this));
-                b.AddProvider(new DiskLoggingProvider(string.Format("{0}\\log-{1}.txt", diskLogDir, DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"))));
+                b.AddProvider(new DiskLoggingProvider(diskLogDir));
             });
             logger = factory.CreateLogger(entryAssembly!.GetName()!.Name!);
         }
