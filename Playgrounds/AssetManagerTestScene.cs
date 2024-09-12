@@ -32,6 +32,7 @@ public struct AssetManagerTestScene : ISceneCreator
             ("sample.wav", new Sound(Assets.Load<FixedAudioData>("sample.wav").Value) { Track = SFX }),
             ("perfect-loop.wav", new Sound(Assets.Load<FixedAudioData>("perfect-loop.wav").Value){ Looping = true, Track = SFX }),
             ("96000Hz.wav", new Sound(Assets.Load<FixedAudioData>("96000Hz.wav").Value) { Track = SFX }),
+            ("invalid.wav", new Sound(Assets.Load<FixedAudioData>("invalid.wav").Value) { Track = SFX }),
         ];
 
         public override void Update()

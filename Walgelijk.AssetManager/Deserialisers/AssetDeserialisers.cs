@@ -1,4 +1,6 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Walgelijk.AssetManager.Deserialisers;
 
@@ -7,6 +9,8 @@ public static class AssetDeserialisers
     private readonly static HashSet<IAssetDeserialiser> deserialisers = [];
     private readonly static ConcurrentDictionary<Type, List<IAssetDeserialiser>> byType = [];
     private readonly static ManualResetEventSlim setLock = new(true);
+
+    private readonly static ConcurrentDictionary<Type, object> fallbacks = [];
 
     static AssetDeserialisers()
     {
@@ -115,19 +119,54 @@ public static class AssetDeserialisers
                         if (result is IDisposable d)
                             d.Dispose();
 
-                        throw new Exception(
+                        var message =
                             $"Asset {asset.Metadata.Id} at \"{asset.Metadata.Path}\" cannot be deserialised as {typeof(T)}. " +
-                            $"Attempted to use best candidate {candidate.GetType().FullName}."
-                            );
+                            $"Attempted to use best candidate {candidate.GetType().FullName}.";
+
+                        throw new Exception(message);
                     }
                 }
             }
 
             throw new Exception($"Asset {asset.Metadata.Id} at \"{asset.Metadata.Path}\" cannot be deserialised as {typeof(T)}. No candidates found.");
         }
+        catch (Exception)
+        {
+            if (TryGetFallbackForType<T>(out var fallback)) // try to fall back
+                return fallback;
+            throw;
+        }
         finally
         {
             setLock.Set();
         }
+    }
+
+    /// <summary>
+    /// Set a fallback asset that will be used when a deserialiser for the given type fails.
+    /// </summary>
+    public static void SetFallbackForType(Type type, object fallback)
+    {
+        // This is not a generic method because that implies some pattern match magic,
+        // which we're not going to support. You give the exact and explicit type.
+
+        if (!fallback.GetType().IsAssignableTo(type))
+            throw new Exception("Given object \"fallback\" is not of type \"type\" ");
+
+        fallbacks.AddOrSet(type, fallback);
+    }
+
+    public static bool TryGetFallbackForType<T>([NotNullWhen(true)] out T? v)
+    {
+        // generic method only because its annoying to have to cast it on the caller's end every time
+
+        if (fallbacks.TryGetValue(typeof(T), out var fallback) && fallback is T t)
+        {
+            v = t;
+            return true;
+        }
+
+        v = default;
+        return false;
     }
 }

@@ -52,6 +52,8 @@ public class Program
         AssetDeserialisers.Register(new WaveFixedAudioDeserialiser());
         Assets.RegisterPackage("assets.waa");
 
+        AssetDeserialisers.SetFallbackForType(typeof(FixedAudioData), FixedAudioData.Beep);
+
         game.Scene = new AssetManagerTestScene().Load(game);
 
 #if DEBUG
