@@ -179,12 +179,15 @@ public class Game
         var entryAssembly = Assembly.GetEntryAssembly() ?? throw new Exception("Could not get entry assembly so a Game instance could not be created");
         ExecutableDirectory = Path.GetDirectoryName(entryAssembly.Location) + Path.DirectorySeparatorChar;
 
+        var diskLogDir = Directory.CreateDirectory(string.Format("{0}\\logs", ExecutableDirectory));
+
         if (logger == null)
         {
             using ILoggerFactory factory = LoggerFactory.Create(b =>
             {
                 b.AddConsole();
                 b.AddProvider(new GameConsoleLoggingProvider(this));
+                b.AddProvider(new DiskLoggingProvider(diskLogDir));
             });
             logger = factory.CreateLogger(entryAssembly!.GetName()!.Name!);
         }
