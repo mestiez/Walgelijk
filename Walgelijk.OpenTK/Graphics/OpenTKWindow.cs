@@ -213,14 +213,14 @@ public class OpenTKWindow : Window
     {
         try
         {
-            if (Environment.Is64BitProcess) 
+            if (Environment.Is64BitProcess)
                 LoadNvApi64();
             else
                 LoadNvApi32();
         }
         catch { } // will always fail since 'fake' entry point doesn't exist
     }
-    
+
     public override void Close() => window.Close();
 
     public override void ResetInputState() => inputHandler.Reset();
@@ -277,6 +277,9 @@ public class OpenTKWindow : Window
     public override void LoopCycle()
     {
         inputHandler.Reset();
+
+        if (HasFocus && (windowType == WindowType.Fullscreen || WindowType == WindowType.BorderlessFullscreen))
+            ConfineCursor(widthPadding: 9, heightPadding: 17);
 
         window.Context.SwapBuffers();
         window.ProcessEvents(0);
