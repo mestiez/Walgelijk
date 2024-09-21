@@ -1,6 +1,7 @@
 ﻿using i3arnon.ConcurrentCollections;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using Walgelijk.AssetManager.Deserialisers;
 
 /* Je moet detecteren of een asset een andere asset nodig heeft en als dat zo is moet je die eerder laden
  * Dit is nodig omdat er een lock is waardoor je niet assets kan laden terwijl je een asset laadt
@@ -147,12 +148,11 @@ public static class Assets
     /// <param name="lifetimeOperator"></param>
     public static void AssignLifetime(GlobalAssetId id, ILifetimeOperator lifetimeOperator)
     {
-        Validate(ref id);
-
-        lifetimeOperator.Triggered.AddListener(() =>
-        {
-            DisposeOf(id);
-        });
+        if (TryResolveAgnosticism(ref id))
+            lifetimeOperator.Triggered.AddListener(() =>
+            {
+                DisposeOf(id);
+            });
     }
 
     /// <summary>
@@ -162,10 +162,11 @@ public static class Assets
     /// </summary>
     public static void LinkDisposal(GlobalAssetId id, IDisposable d)
     {
-        Validate(ref id);
-
-        var set = disposableChain.Ensure(id);
-        set.Add(d);
+        if (TryResolveAgnosticism(ref id))
+        {
+            var set = disposableChain.Ensure(id);
+            set.Add(d);
+        }
     }
 
     /// <summary>
@@ -173,10 +174,11 @@ public static class Assets
     /// </summary>
     public static void UnlinkDisposal(GlobalAssetId id, IDisposable d)
     {
-        Validate(ref id);
-
-        var set = disposableChain.Ensure(id);
-        set.TryRemove(d);
+        if (TryResolveAgnosticism(ref id))
+        {
+            var set = disposableChain.Ensure(id);
+            set.TryRemove(d);
+        }
     }
 
     /// <summary>
@@ -185,7 +187,8 @@ public static class Assets
     /// <param name="id"></param>
     public static void DisposeOf(GlobalAssetId id)
     {
-        Validate(ref id);
+        if (!TryResolveAgnosticism(ref id))
+            return;
 
         if (disposableChain.TryGetValue(id, out var set))
             foreach (var d in set)
@@ -209,7 +212,7 @@ public static class Assets
 
     public static bool HasAsset(GlobalAssetId id)
     {
-        if (TryValidate(ref id) && packageRegistry.TryGetValue(id.External, out var p))
+        if (TryResolveAgnosticism(ref id) && packageRegistry.TryGetValue(id.External, out var p))
             return p.HasAsset(id.Internal);
         return false;
     }
@@ -229,7 +232,7 @@ public static class Assets
 
     public static bool TryLoad<T>(GlobalAssetId id, out AssetRef<T> assetRef)
     {
-        if (TryValidate(ref id) && packageRegistry.TryGetValue(id.External, out var assetPackage))
+        if (TryResolveAgnosticism(ref id) && packageRegistry.TryGetValue(id.External, out var assetPackage))
         {
             if (assetPackage.HasAsset(id.Internal))
             {
@@ -251,11 +254,8 @@ public static class Assets
     /// <exception cref="KeyNotFoundException"></exception>
     public static AssetRef<T> Load<T>(GlobalAssetId id)
     {
-        Validate(ref id);
-
-        if (packageRegistry.TryGetValue(id.External, out var assetPackage))
-            return new AssetRef<T>(id);
-        throw new KeyNotFoundException($"Asset package {id.External} not found");
+        id = id.ResolveExternal();
+        return new AssetRef<T>(id);
     }
 
     /// <summary>
@@ -272,10 +272,13 @@ public static class Assets
     /// <returns></returns>
     public static T LoadNoCache<T>(GlobalAssetId id)
     {
-        Validate(ref id);
+        id = id.ResolveExternal();
 
         if (packageRegistry.TryGetValue(id.External, out var assetPackage))
             return assetPackage.LoadNoCache<T>(id.Internal);
+
+        if (AssetDeserialisers.TryGetFallbackForType<T>(out var fallback))
+            return fallback;
 
         throw new KeyNotFoundException($"Asset package {id.External} not found");
     }
@@ -291,7 +294,7 @@ public static class Assets
 
     public static AssetMetadata GetMetadata(GlobalAssetId id)
     {
-        Validate(ref id);
+        id = id.ResolveExternal();
 
         if (TryGetMetadata(id, out var m))
             return m;
@@ -303,7 +306,7 @@ public static class Assets
 
     public static bool TryGetMetadata(GlobalAssetId id, out AssetMetadata metadata)
     {
-        if (TryValidate(ref id) && packageRegistry.TryGetValue(id.External, out var assetPackage)
+        if (TryResolveAgnosticism(ref id) && packageRegistry.TryGetValue(id.External, out var assetPackage)
             && assetPackage.HasAsset(id.Internal))
         {
             metadata = assetPackage.GetMetadata(id.Internal);
@@ -382,10 +385,14 @@ public static class Assets
 
     internal static T LoadDirect<T>(GlobalAssetId id)
     {
-        Validate(ref id);
+        id = id.ResolveExternal();
 
         if (packageRegistry.TryGetValue(id.External, out var assetPackage))
             return assetPackage.Load<T>(id.Internal);
+
+        if (AssetDeserialisers.TryGetFallbackForType<T>(out var fallback))
+            return fallback;
+
         throw new KeyNotFoundException($"Asset package {id.External} not found");
     }
 
@@ -393,7 +400,7 @@ public static class Assets
 
     public static bool IsCached(GlobalAssetId id)
     {
-        if (!TryValidate(ref id))
+        if (!TryResolveAgnosticism(ref id))
             return false;
 
         if (packageRegistry.TryGetValue(id.External, out var assetPackage))
@@ -405,19 +412,7 @@ public static class Assets
     /// <summary>
     /// Resolve agnosticism and throw if not found
     /// </summary>
-    internal static void Validate(ref GlobalAssetId id)
-    {
-        if (id.IsAgnostic)
-            id = id.ResolveExternal();
-
-        if (id.External == PackageId.None)
-            throw new Exception($"External ID is none, but asset not found in any package: {id.External}:{id.Internal}");
-    }
-
-    /// <summary>
-    /// Resolve agnosticism and throw if not found
-    /// </summary>
-    internal static bool TryValidate(ref GlobalAssetId id)
+    internal static bool TryResolveAgnosticism(ref GlobalAssetId id)
     {
         if (id.IsAgnostic)
             id = id.ResolveExternal();
