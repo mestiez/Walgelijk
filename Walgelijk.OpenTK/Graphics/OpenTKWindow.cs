@@ -108,6 +108,9 @@ public class OpenTKWindow : Window
 
     private void SetCursorAppearance(DefaultCursor value)
     {
+        if (!IsCursorLocked)
+            window.CursorState = value is DefaultCursor.Invisible ? CursorState.Hidden : CursorState.Normal;
+
         window.Cursor = value switch
         {
             DefaultCursor.Pointer => MouseCursor.Hand,
@@ -116,6 +119,7 @@ public class OpenTKWindow : Window
             DefaultCursor.Hand => MouseCursor.Hand,
             DefaultCursor.HorizontalResize => MouseCursor.HResize,
             DefaultCursor.VerticalResize => MouseCursor.VResize,
+            DefaultCursor.Invisible => MouseCursor.Empty,
             _ => MouseCursor.Default,
         };
     }
