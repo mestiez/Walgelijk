@@ -290,7 +290,6 @@ public class OpenTKWindow : Window
 
         window.Context.SwapBuffers();
         window.ProcessEvents(0);
-        //NativeWindow.ProcessWindowEvents(window.IsEventDriven);
 
         Game.State.Input = inputHandler.InputState;
 
@@ -299,13 +298,11 @@ public class OpenTKWindow : Window
             if (!debugOutputFlag)
             {
                 debugOutputFlag = true;
-                //GL.Enable(EnableCap.DebugOutput);
             }
         }
         else if (debugOutputFlag)
         {
             debugOutputFlag = false;
-            //GL.Disable(EnableCap.DebugOutput);
         }
     }
 

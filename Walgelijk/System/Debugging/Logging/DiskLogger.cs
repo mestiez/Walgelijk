@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Walgelijk;
 
@@ -30,7 +31,7 @@ public class DiskLogger : ILogger, IDisposable
 
         var logFileName = string.Format("{0}\\log-{1}.txt", diskLogDirectory.Name, DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
         logFile = File.Open(logFileName, FileMode.OpenOrCreate);
-        writer = new(logFile);
+        writer = new(logFile, Encoding.UTF8);
     }
 
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull => default;
