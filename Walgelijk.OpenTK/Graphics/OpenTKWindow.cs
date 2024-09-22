@@ -93,6 +93,7 @@ public class OpenTKWindow : Window
                 window.MousePosition = window.MouseState.PreviousPosition;
         }
     }
+
     public override DefaultCursor CursorAppearance
     {
         get => cursorAppearance;
@@ -276,6 +277,8 @@ public class OpenTKWindow : Window
     {
         if (!obj.IsFocused)
             IsCursorLocked = false;
+
+        SetCursorAppearance(CursorAppearance);
     }
 
     public override void LoopCycle()
