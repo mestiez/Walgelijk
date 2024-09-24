@@ -70,9 +70,9 @@ public class DebugConsole : IDisposable
     public string WarningPrefix = "[WRN]";
     public string ErrorPrefix = "[ERR]";
 
-    internal const int MaxShownBuffer = 8192;
+    internal const int MaxShownBuffer = 32_768;
     internal ReadOnlySpan<byte> GetBuffer()
-        => stream.GetBuffer().AsSpan(Math.Max(0, (int)stream.Length - MaxShownBuffer), Math.Min(MaxShownBuffer, (int)stream.Length));
+        => stream.GetBuffer().AsSpan(int.Max(0, (int)stream.Length - MaxShownBuffer), int.Min(MaxShownBuffer, (int)stream.Length));
 
     /// <summary>
     /// Input cursor index

@@ -88,7 +88,7 @@ public class DebugConsoleUi : IDisposable
             AmountOfIndicesToRender = 0,
         };
 
-        mat = new Material(new Shader(ShaderDefaults.WorldSpaceVertex, DebugConsoleAssets.FragmentShader));
+        mat = new Material(new Shader(BuiltInShaders.WorldSpaceVertex, DebugConsoleAssets.FragmentShader));
         mat.SetUniform("tint", Colors.Magenta);
         mat.SetUniform("mainTex", Texture.White);
         mat.SetUniform("bgTex", Texture.White);
@@ -305,7 +305,7 @@ public class DebugConsoleUi : IDisposable
         int lineOffset = debugConsole.ScrollOffset;
         graphics.DrawBounds = new DrawBounds(totalRect);
 
-        for (int i = Math.Max(lineOffset, 0); i < VisibleLineCount; i++)
+        for (int i = int.Max(lineOffset, 0); i < VisibleLineCount; i++)
         {
             var line = lines[i];
             int offsetLineIndex = i - lineOffset;
