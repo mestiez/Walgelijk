@@ -56,19 +56,7 @@ public class DiskLogger : ILogger, IDisposable
         if (!IsEnabled(logLevel))
             return;
 
-        writer.WriteLine(formatter(state, exception), MapLevel(logLevel));
-    }
-
-    private static ConsoleMessageType MapLevel(LogLevel logLevel)
-    {
-        return logLevel switch
-        {
-            LogLevel.Debug => ConsoleMessageType.Debug,
-            LogLevel.Information => ConsoleMessageType.Info,
-            LogLevel.Warning => ConsoleMessageType.Warning,
-            LogLevel.Error or LogLevel.Critical => ConsoleMessageType.Error,
-            _ => ConsoleMessageType.Info,
-        };
+        writer.WriteLine(formatter(state, exception));
     }
 
     public void Dispose()
