@@ -67,7 +67,9 @@ internal class RenderTextureCache : Cache<RenderTexture, RenderTextureHandles>
         if (loaded.RenderTexture == null)
             return;
 
+        loaded.RenderTexture.DepthBuffer?.Dispose();
         loaded.RenderTexture.DepthBuffer = null;
+
         GL.DeleteFramebuffer(loaded.FramebufferID);
         GPUObjects.TextureCache.Unload(loaded.RenderTexture);
         GPUObjects.RenderTargetDictionary.Delete(loaded.RenderTexture);

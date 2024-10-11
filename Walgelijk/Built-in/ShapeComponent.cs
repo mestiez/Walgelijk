@@ -1,4 +1,6 @@
-﻿namespace Walgelijk
+﻿using System.Numerics;
+
+namespace Walgelijk
 {
     /// <summary>
     /// Provides a <see cref="VertexBuffer"/> and <see cref="ShapeRenderTask"/>
@@ -40,5 +42,10 @@
         /// Apply vertical flip
         /// </summary>
         public bool VerticalFlip { get; set; } = false;
+
+        /// <summary>
+        /// Optional additional transform applied to the final render
+        /// </summary>
+        public Matrix3x2? AdditionalTransform { get; set; }
     }
 }
