@@ -58,8 +58,15 @@ public class PortAudioRenderer : AudioRenderer
         {
             if (stream != null)
             {
-                stream.Close();
-                stream.Dispose();
+                try
+                {
+                    stream.Close();
+                    stream.Dispose();
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e);
+                }
             }
 
             var deviceInfo = PA.GetDeviceInfo(deviceIndex);

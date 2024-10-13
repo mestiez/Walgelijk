@@ -738,6 +738,11 @@
             Apply vertical flip
             </summary>
         </member>
+        <member name="P:Walgelijk.ShapeComponent.AdditionalTransform">
+            <summary>
+            Optional additional transform applied to the final render
+            </summary>
+        </member>
         <member name="T:Walgelijk.ShapeRendererSystem">
             <summary>
             System that renders components that implement <see cref="T:Walgelijk.ShapeComponent"/>
@@ -3176,7 +3181,8 @@
         </member>
         <member name="M:Walgelijk.RenderTexture.ReadPixels">
             <summary>
-            You can't get pixels from a RenderTexture. This will return an empty span.
+            You can't get all pixels from a RenderTexture. This will return an empty span. 
+            Use <see cref="M:Walgelijk.RenderTexture.GetPixel(System.Int32,System.Int32)"/> to sample from this texture.
             </summary>
         </member>
         <member name="M:Walgelijk.RenderTexture.ForceUpdate">

@@ -53,13 +53,18 @@ public struct AssetManagerTestScene : ISceneCreator
 
             Ui.Layout.Size(50, 150).StickRight().StickBottom();
             float v = Music.Volume;
-            if (Ui.FloatSlider(ref v, Direction.Vertical, (0,1), label: "{0:P0}\nMUSIC"))
+            if (Ui.FloatSlider(ref v, Direction.Vertical, (0, 1), label: "{0:P0}\nMUSIC"))
                 Music.Volume = v;
 
             Ui.Layout.Size(50, 150).StickRight().StickBottom().Move(-60, 0);
             v = SFX.Volume;
-            if (Ui.FloatSlider(ref v, Direction.Vertical, (0,1), label: "{0:P0}\nSFX"))
+            if (Ui.FloatSlider(ref v, Direction.Vertical, (0, 1), label: "{0:P0}\nSFX"))
                 SFX.Volume = v;
+
+            Ui.Layout.Size(50, 150).StickRight().StickBottom().Move(-120, 0);
+            v = SFX.Pitch = Music.Pitch;
+            if (Ui.FloatSlider(ref v, Direction.Vertical, (0, 2), label: "{0:P0}\nPITCH"))
+                Music.Pitch = SFX.Pitch = v;
 
             Ui.Theme.Pop();
 
