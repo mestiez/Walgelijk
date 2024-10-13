@@ -5,7 +5,7 @@ namespace Walgelijk.PortAudio.Voices;
 
 abstract class StreamVoice : IVoice
 {
-    public const int BufferSize = 2048;
+    public const int BufferSize = 2048 * 4;
 
     public readonly Sound Sound;
     public List<IEffect> Effects { get; } = [];
@@ -55,7 +55,7 @@ abstract class StreamVoice : IVoice
         }
 
         // fill the buffer with the next samples
-        StreamBuffer.GetSamples(frame, volume, pitch); // TODO apply speed/tempo
+        StreamBuffer.GetSamples(frame, volume, pitch);
 
         var t = TimeSpan.FromSeconds(Time);
         foreach (var item in Effects)

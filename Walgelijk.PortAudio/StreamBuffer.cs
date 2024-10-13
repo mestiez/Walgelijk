@@ -3,47 +3,34 @@ using Walgelijk.PortAudio.Voices;
 
 namespace Walgelijk.PortAudio;
 
-// TODO
-// remove queue, favour preallocated arrays
-// remove new arrays in FillBuffer, use preexisting arrays
-// resampling should be given the previous frame to prevent clicking and popping
-// resampler should not be a simple linear interpolation
-
 internal class StreamBuffer : IDisposable, IStreamBuffer
 {
-    private readonly IAudioStream Stream;
-    private readonly int BufferSize;
-
+    private readonly IAudioStream stream;
+    private readonly int bufferSize;
     private readonly bool needsResampling;
-    private readonly int resampledBufferSize;
-    private readonly float[] readBuffer;
 
+    private double requestSetTime;
+    private int currentSampleIndex;
+    private StreamChunkFixedVoice? currentVoice = null;
+
+    private Queue<StreamChunkFixedVoice> buffer = [];
     private SemaphoreSlim readingFromSource = new(1);
-    private int bufferPosition = 0;
-    private double requestSetTime = -1;
+    private int workerCount;
 
-    private readonly PriorityQueue<float[], double> decoded = new();
-    private int workerCount = 0;
-
-    private float[]? lastBuffer = null;
-    private int lastBufferPos = 0;
-
-    //private int SourceSampleRate => (int)(Stream.SampleRate * 0.25f);
-    private int SourceSampleRate => Stream.SampleRate;
+    private int SourceSampleRate => stream.SampleRate;
 
     public StreamBuffer(IAudioStream stream, int bufferSize)
     {
-        Stream = stream;
-        BufferSize = bufferSize;
+        this.stream = stream;
+        this.bufferSize = bufferSize;
 
         needsResampling = stream.SampleRate != PortAudioRenderer.SampleRate;
-        resampledBufferSize = Resampler.GetInputLength(BufferSize, SourceSampleRate, PortAudioRenderer.SampleRate, stream.ChannelCount);
-        readBuffer = new float[resampledBufferSize];
+        //voices = new StreamChunkFixedVoice[4];
     }
 
     public double Time
     {
-        get => requestSetTime != -1 ? requestSetTime : Stream.TimePosition.TotalSeconds;
+        get => requestSetTime != -1 ? requestSetTime : stream.TimePosition.TotalSeconds;
         set
         {
             requestSetTime = value;
@@ -54,86 +41,69 @@ internal class StreamBuffer : IDisposable, IStreamBuffer
 
     public void GetSamples(Span<float> frame, float amplitude, float pitch)
     {
-        // TODO deze structuur werkt niet als de resampled buffer kleiner is dan de frame omdat
-        // je dan meerdere resampled buffers moet opvragen per GetSamples invocation
-
-        if (lastBuffer == null)
+        if (requestSetTime != -1)
         {
-            lock (decoded)
-            {
-                if (decoded.TryDequeue(out lastBuffer, out _))
-                    lastBufferPos = 0;
-            }
-            
-            ThreadPool.QueueUserWorkItem(FillBuffer, pitch, true);
+            stream.TimePosition = TimeSpan.FromSeconds(requestSetTime);
+            requestSetTime = -1;
         }
 
-        if (lastBuffer != null)
+        while (buffer.Count < 4)
+            buffer.Enqueue(GetNextSource()); // TODO put this on another thread
+
+        int indexInFrame = 0;
+
+        while (true)
         {
-            int position = 0;
-            for (int i = lastBufferPos; i < lastBuffer.Length; i++)
-            {
-                frame[position++] += lastBuffer[i] * amplitude;
-                lastBufferPos++;
-                SampleIndex++;
+            if (currentVoice == null || currentVoice.IsFinished)
+                if (!buffer.TryDequeue(out currentVoice))
+                    break;
 
-                if (position >= frame.Length)
-                {
-                    if (i == lastBuffer.Length - 1)
-                        returnBuffer();
-                    return;
-                }
-            }
+            currentVoice.Pitch = pitch;
+            currentVoice.Volume = amplitude;
+            currentVoice.GetSamples(frame[indexInFrame..]);
+            indexInFrame += currentVoice.WrittenSamples;
 
-            returnBuffer();
-
-            void returnBuffer()
-            {
-                lastBuffer = null;
-            }
+            if (indexInFrame >= frame.Length - 1)
+                break;
         }
+
+        // TODO
+        // there is some crackling here at low pitches
+        // i SPECULATE this is because of interpolation between two chunks is not implemented
+        // also resampling the streaming thing MAY cause some crackling too, for reasons i dont understand, but are probably the same as the speed/pitch thing (speed adjustment is identical to resampling)
     }
 
-    private void FillBuffer(float pitch)
+    private StreamChunkFixedVoice GetNextSource()
     {
         Interlocked.Increment(ref workerCount);
         readingFromSource.Wait();
         try
         {
-            if (requestSetTime != -1)
+            int offset = currentSampleIndex;
+
+            var data = new float[bufferSize];
+            var read = stream.ReadSamples(data);
+            if (Random.Shared.NextSingle() > 0.8f)
+                Thread.Sleep(Random.Shared.Next(0, 344));
+
+            if (needsResampling)
             {
-                Stream.TimePosition = TimeSpan.FromSeconds(requestSetTime);
-                requestSetTime = -1;
+                float[] resampled = new float[Resampler.GetOutputLength(data.Length, stream.SampleRate, PortAudioRenderer.SampleRate, stream.ChannelCount)];
+                if (stream.ChannelCount == 2)
+                    Resampler.ResampleInterleavedStereo(data, resampled, stream.SampleRate, PortAudioRenderer.SampleRate);
+                else
+                    Resampler.ResampleMono(data, resampled, stream.SampleRate, PortAudioRenderer.SampleRate);
+                data = resampled;
             }
 
-            lock (decoded)
-                if (needsResampling || pitch != 1)
-                {
-                    int inSampleRate = (int)(SourceSampleRate * pitch);
-                    Stream.ReadSamples(readBuffer);
-
-                    var requestedLength = Resampler.GetOutputLength(resampledBufferSize, inSampleRate, PortAudioRenderer.SampleRate, Stream.ChannelCount);
-                    var resampled = new float[requestedLength];
-                    int read = 0;
-
-                    if (Stream.ChannelCount == 2)
-                        read = Resampler.ResampleInterleavedStereo(readBuffer, resampled, inSampleRate, PortAudioRenderer.SampleRate);
-                    else
-                        read = Resampler.ResampleMono(readBuffer, resampled, inSampleRate, PortAudioRenderer.SampleRate);
-
-                    decoded.Enqueue(resampled, Stream.TimePosition.TotalSeconds);
-                }
-                else
-                {
-                    var buffer = new float[BufferSize];
-                    var read = Stream.ReadSamples(buffer);
-                    decoded.Enqueue(buffer, Stream.TimePosition.TotalSeconds);
-                }
+            return new StreamChunkFixedVoice([.. data], stream.ChannelCount)
+            {
+                State = SoundState.Playing,
+            };
         }
-
         finally
         {
-            readingFromSource.Release();
+            readingFromSource.Release(); 
             Interlocked.Decrement(ref workerCount);
         }
     }
@@ -141,35 +111,26 @@ internal class StreamBuffer : IDisposable, IStreamBuffer
     public void Clear()
     {
         requestSetTime = -1;
-        Stream.TimePosition = TimeSpan.Zero;
-        bufferPosition = 0;
-        decoded.Clear();
-        lastBuffer = null;
+        stream.TimePosition = TimeSpan.Zero;
         SampleIndex = 0;
-        //Array.Clear(readBuffer);
-        //Array.Clear(writeBuffer);
+        buffer.Clear();
+        currentVoice = null;
     }
 
     public void Dispose()
     {
-        Stream.Dispose();
+        stream.Dispose();
     }
 
-    // NIEUW IDEE
-    // ipv die arrays, maak deze chunks (of recycle) elke keer als je er eentje nodig hebt
-    // en vul ze met de nieuwe samples
-    // dan kun je gewoon die pitch aanpassen en gebeurt alles magisch automatisch
-    // behalve stream time, die moet je zelf bijhouden
-    // DOE HET
     internal class StreamChunkFixedVoice : FixedVoice
     {
-        public override bool IsFinished => isFinished;
+        public override bool IsFinished => isFinished || SampleIndex >= (Data.Length / ChannelCount);
         private bool isFinished;
 
-        public StreamChunkFixedVoice(ImmutableArray<float> data, int channelCount, AudioTrack? track) : base(data)
+        public StreamChunkFixedVoice(ImmutableArray<float> data, int channelCount) : base(data)
         {
             ChannelCount = channelCount;
-            Track = track;
+            Track = null;
         }
 
         public override float Volume { get; set; }

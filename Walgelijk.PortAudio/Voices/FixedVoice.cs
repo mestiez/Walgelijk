@@ -21,6 +21,7 @@ internal abstract class FixedVoice : IVoice
     public abstract AudioTrack? Track { get; }
 
     public double SampleIndex;
+    internal int WrittenSamples;
 
     protected FixedVoice(Sound sound)
     {
@@ -49,6 +50,8 @@ internal abstract class FixedVoice : IVoice
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public virtual void GetSamples(Span<float> frame)
     {
+        WrittenSamples = 0;
+
         if (State is not SoundState.Playing)
             return;
 
@@ -63,14 +66,14 @@ internal abstract class FixedVoice : IVoice
 
         int frameCount = frame.Length / totalChannels;
 
-        double sampleIndex = SampleIndex; 
+        double sampleIndex = SampleIndex;
 
         for (int frameIdx = 0; frameIdx < frameCount; frameIdx++)
         {
             if (sampleIndex >= totalFrames)
             {
                 if (Looping)
-                    sampleIndex %= totalFrames; 
+                    sampleIndex %= totalFrames;
                 else
                 {
                     Stop();
@@ -100,6 +103,7 @@ internal abstract class FixedVoice : IVoice
                 var outputIndex = (frameIdx * totalChannels) + channel;
 
                 frame[outputIndex] += sampleValue;
+                WrittenSamples++;
             }
 
             sampleIndex += pitch;
