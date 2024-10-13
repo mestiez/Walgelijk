@@ -106,6 +106,10 @@ internal abstract class FixedVoice : IVoice
         }
 
         SampleIndex = sampleIndex;
+
+        var t = TimeSpan.FromSeconds(Time);
+        foreach (var item in Effects)
+            item.Process(frame, (ulong)SampleIndex, t);
     }
 
     public abstract void Play();

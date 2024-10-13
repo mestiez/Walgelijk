@@ -23,3 +23,25 @@ public class DistortionEffect : IEffect
         }
     }
 }
+
+public class DelayEffect : IEffect
+{
+    private Queue<float> delayBuffer = [];
+
+    public void Process(Span<float> frame, ulong sampleIndex, TimeSpan time)
+    {
+        foreach (var sample in frame)
+            delayBuffer.Enqueue(sample);
+
+        int index = 0;
+        while (delayBuffer.Count > 12000)
+        {
+            if (delayBuffer.TryDequeue(out var sample))
+            {
+                frame[index++] += sample * 0.5f;
+                if (index >= frame.Length)
+                    return;
+            }
+        }
+    }
+}

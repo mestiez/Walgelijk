@@ -1,4 +1,5 @@
-﻿using Walgelijk.PortAudio.Voices;
+﻿using System.Collections.Immutable;
+using Walgelijk.PortAudio.Voices;
 
 namespace Walgelijk.PortAudio;
 
@@ -153,4 +154,46 @@ internal class StreamBuffer : IDisposable, IStreamBuffer
     {
         Stream.Dispose();
     }
+
+    // NIEUW IDEE
+    // ipv die arrays, maak deze chunks (of recycle) elke keer als je er eentje nodig hebt
+    // en vul ze met de nieuwe samples
+    // dan kun je gewoon die pitch aanpassen en gebeurt alles magisch automatisch
+    // behalve stream time, die moet je zelf bijhouden
+    // DOE HET
+    internal class StreamChunkFixedVoice : FixedVoice
+    {
+        public override bool IsFinished => isFinished;
+        private bool isFinished;
+
+        public StreamChunkFixedVoice(ImmutableArray<float> data, int channelCount, AudioTrack? track) : base(data)
+        {
+            ChannelCount = channelCount;
+            Track = track;
+        }
+
+        public override float Volume { get; set; }
+        public override float Pitch { get; set; }
+        public override SoundState State { get; set; }
+        public override bool Looping { get => false; set { } }
+        public override int ChannelCount { get; }
+        public override AudioTrack? Track { get; }
+
+        public override void Pause()
+        {
+            State = SoundState.Paused;
+        }
+
+        public override void Play()
+        {
+            State = SoundState.Playing;
+        }
+
+        public override void Stop()
+        {
+            State = SoundState.Stopped;
+            isFinished = true;
+        }
+    }
+
 }
