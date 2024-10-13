@@ -30,6 +30,11 @@ internal abstract class FixedVoice : IVoice
         Data = FixedBufferCache.Shared.Load(fixedAudioData);
     }
 
+    internal FixedVoice(ImmutableArray<float> data)
+    {
+        Data = data;
+    }
+
     public double Time
     {
         get => SampleIndex * PortAudioRenderer.SecondsPerSample;
@@ -47,11 +52,11 @@ internal abstract class FixedVoice : IVoice
         if (State is not SoundState.Playing)
             return;
 
-        var pitch = Track?.Pitch ?? 1 * Pitch;
+        var pitch = (Track?.Pitch ?? 1) * Pitch;
         if (pitch == 0)
             return; // avoid division by zero or no progression
 
-        var volume = Track?.Volume ?? 1 * Volume;
+        var volume = (Track?.Volume ?? 1) * Volume;
 
         var totalChannels = ChannelCount;
         var totalFrames = Data.Length / totalChannels;

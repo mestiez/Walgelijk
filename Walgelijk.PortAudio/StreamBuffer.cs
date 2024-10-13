@@ -1,4 +1,6 @@
-﻿namespace Walgelijk.PortAudio;
+﻿using Walgelijk.PortAudio.Voices;
+
+namespace Walgelijk.PortAudio;
 
 // TODO
 // remove queue, favour preallocated arrays
@@ -6,7 +8,7 @@
 // resampling should be given the previous frame to prevent clicking and popping
 // resampler should not be a simple linear interpolation
 
-internal class StreamBuffer : IDisposable
+internal class StreamBuffer : IDisposable, IStreamBuffer
 {
     private readonly IAudioStream Stream;
     private readonly int BufferSize;
@@ -49,7 +51,7 @@ internal class StreamBuffer : IDisposable
 
     public ulong SampleIndex { get; private set; }
 
-    public void GetSamples(Span<float> frame, float multiplier)
+    public void GetSamples(Span<float> frame, float amplitude, float pitch)
     {
         // TODO deze structuur werkt niet als de resampled buffer kleiner is dan de frame omdat
         // je dan meerdere resampled buffers moet opvragen per GetSamples invocation
@@ -62,7 +64,7 @@ internal class StreamBuffer : IDisposable
                     lastBufferPos = 0;
             }
             
-            ThreadPool.QueueUserWorkItem(FillBuffer);
+            ThreadPool.QueueUserWorkItem(FillBuffer, pitch, true);
         }
 
         if (lastBuffer != null)
@@ -70,7 +72,7 @@ internal class StreamBuffer : IDisposable
             int position = 0;
             for (int i = lastBufferPos; i < lastBuffer.Length; i++)
             {
-                frame[position++] += lastBuffer[i] * multiplier;
+                frame[position++] += lastBuffer[i] * amplitude;
                 lastBufferPos++;
                 SampleIndex++;
 
@@ -91,7 +93,7 @@ internal class StreamBuffer : IDisposable
         }
     }
 
-    private void FillBuffer(object? state)
+    private void FillBuffer(float pitch)
     {
         Interlocked.Increment(ref workerCount);
         readingFromSource.Wait();
@@ -104,18 +106,19 @@ internal class StreamBuffer : IDisposable
             }
 
             lock (decoded)
-                if (needsResampling)
+                if (needsResampling || pitch != 1)
                 {
+                    int inSampleRate = (int)(SourceSampleRate * pitch);
                     Stream.ReadSamples(readBuffer);
 
-                    var requestedLength = Resampler.GetOutputLength(resampledBufferSize, SourceSampleRate, PortAudioRenderer.SampleRate, Stream.ChannelCount);
+                    var requestedLength = Resampler.GetOutputLength(resampledBufferSize, inSampleRate, PortAudioRenderer.SampleRate, Stream.ChannelCount);
                     var resampled = new float[requestedLength];
                     int read = 0;
 
                     if (Stream.ChannelCount == 2)
-                        read = Resampler.ResampleInterleavedStereo(readBuffer, resampled, SourceSampleRate, PortAudioRenderer.SampleRate);
+                        read = Resampler.ResampleInterleavedStereo(readBuffer, resampled, inSampleRate, PortAudioRenderer.SampleRate);
                     else
-                        read = Resampler.ResampleMono(readBuffer, resampled, SourceSampleRate, PortAudioRenderer.SampleRate);
+                        read = Resampler.ResampleMono(readBuffer, resampled, inSampleRate, PortAudioRenderer.SampleRate);
 
                     decoded.Enqueue(resampled, Stream.TimePosition.TotalSeconds);
                 }

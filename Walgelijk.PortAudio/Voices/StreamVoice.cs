@@ -37,6 +37,10 @@ abstract class StreamVoice : IVoice
         if (State is not SoundState.Playing)
             return;
 
+        var pitch = (Track?.Pitch ?? 1) * Pitch;
+        if (pitch == 0)
+            return; // avoid division by zero or no progression
+
         var volume = (Track?.Volume ?? 1) * Volume;
 
         if (StreamBuffer.Time >= Sound.Data.Duration.TotalSeconds)
@@ -50,7 +54,8 @@ abstract class StreamVoice : IVoice
             }
         }
 
-        StreamBuffer.GetSamples(frame, volume); // TODO apply speed/tempo
+        // fill the buffer with the next samples
+        StreamBuffer.GetSamples(frame, volume, pitch); // TODO apply speed/tempo
 
         var t = TimeSpan.FromSeconds(Time);
         foreach (var item in Effects)
