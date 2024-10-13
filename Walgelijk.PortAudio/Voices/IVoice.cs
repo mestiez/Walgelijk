@@ -21,4 +21,6 @@ internal interface IVoice
     public void Stop();
 
     public void GetSamples(Span<float> frame);
+
+    public int GetMostRecentlyPlayed(Span<float> frame) => 0;
 }

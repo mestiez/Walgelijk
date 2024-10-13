@@ -32,6 +32,10 @@ abstract class StreamVoice : IVoice
     public abstract bool IsFinished { get; }
     public abstract bool Looping { get; set; }
 
+    private readonly CircularBuffer<float> lastPlayedFrame = new CircularBuffer<float>(PortAudioRenderer.FramesPerBuffer * PortAudioRenderer.ChannelCount);
+    private readonly float[] acc = new float[PortAudioRenderer.FramesPerBuffer * PortAudioRenderer.ChannelCount];
+    private readonly SemaphoreSlim l = new(1);
+
     public void GetSamples(Span<float> frame)
     {
         if (State is not SoundState.Playing)
@@ -54,15 +58,49 @@ abstract class StreamVoice : IVoice
             }
         }
 
+        Array.Clear(acc);
+
         // fill the buffer with the next samples
-        StreamBuffer.GetSamples(frame, volume, pitch);
+        StreamBuffer.GetSamples(acc, volume, pitch);
 
         var t = TimeSpan.FromSeconds(Time);
         foreach (var item in Effects)
-            item.Process(frame, StreamBuffer.SampleIndex, t);
+            item.Process(acc, StreamBuffer.SampleIndex, t);
+
+        l.Wait();
+        try
+        {
+            lastPlayedFrame.Write(acc);
+        }
+        finally
+        {
+            l.Release();
+        }
+
+        acc.CopyTo(frame);
     }
 
     public abstract void Play();
     public abstract void Pause();
     public abstract void Stop();
+
+    public int GetMostRecentlyPlayed(Span<float> frame)
+    {
+        l.Wait();
+        try
+        {
+            int idx = 0;
+            for (int i = 0; i < lastPlayedFrame.Capacity; i++)
+            {
+                frame[idx++] = lastPlayedFrame.Read();
+                if (idx >= frame.Length)
+                    return idx;
+            }
+            return idx;
+        }
+        finally
+        {
+            l.Release();
+        }
+    }
 }

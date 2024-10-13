@@ -1,5 +1,6 @@
 ﻿using PortAudioSharp;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using PA = PortAudioSharp.PortAudio;
 
@@ -123,7 +124,8 @@ public class PortAudioRenderer : AudioRenderer
 
     public override int GetCurrentSamples(Sound sound, Span<float> arr)
     {
-        return 0;
+        aggregator.GetShared(sound, out var voice);
+        return voice.GetMostRecentlyPlayed(arr);
     }
 
     public override float GetTime(Sound sound)
@@ -269,11 +271,13 @@ public class PortAudioRenderer : AudioRenderer
                 item.Stop();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override void UpdateTracks()
     {
         // we do nothing lol
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public override void Process(float dt)
     {
         // we do nothing lol

@@ -4047,6 +4047,12 @@
             </summary>
             <param name="value"></param>
         </member>
+        <member name="M:Walgelijk.CircularBuffer`1.Write(System.ReadOnlySpan{`0})">
+            <summary>
+            Add <paramref name="value"/> to the buffer at <see cref="P:Walgelijk.CircularBuffer`1.Position"/>
+            </summary>
+            <param name="value"></param>
+        </member>
         <member name="M:Walgelijk.CircularBuffer`1.Read">
             <summary>
             Take value from the buffer at <see cref="P:Walgelijk.CircularBuffer`1.Position"/>

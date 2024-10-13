@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Walgelijk;
 
@@ -35,6 +36,16 @@ public class CircularBuffer<T> where T : IEqualityOperators<T, T, bool>
         buffer[index] = value;
         index++;
         index %= buffer.Length;
+    }  
+    
+    /// <summary>
+    /// Add <paramref name="value"/> to the buffer at <see cref="Position"/>
+    /// </summary>
+    /// <param name="value"></param>
+    public void Write(ReadOnlySpan<T> values)
+    {
+        for (int i = 0; i < values.Length; i++)
+            Write(values[i]);
     }
 
     /// <summary>
