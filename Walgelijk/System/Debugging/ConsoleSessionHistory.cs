@@ -28,7 +28,7 @@ public sealed class ConsoleSessionHistory
     public ConsoleSessionHistory()
     {
         buffer = new string[BufferSize];
-        var fullPath = new StringBuilder(Directory.GetCurrentDirectory()).Append(Path.DirectorySeparatorChar).Append(FilePath).ToString();
+        var fullPath = Path.Combine(Game.Main.AppDataDirectory, FilePath);
 
         if (File.Exists(fullPath))
         {
