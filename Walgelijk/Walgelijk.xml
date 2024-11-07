@@ -5585,6 +5585,11 @@
             Path to the directory where the executable is
             </summary>
         </member>
+        <member name="F:Walgelijk.Game.AppDataDirectory">
+            <summary>
+            Path to where any state should be stored
+            </summary>
+        </member>
         <member name="P:Walgelijk.Game.Console">
             <summary>
             The developer console
