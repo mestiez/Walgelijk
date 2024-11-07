@@ -179,7 +179,7 @@ public class Game
         var entryAssembly = Assembly.GetEntryAssembly() ?? throw new Exception("Could not get entry assembly so a Game instance could not be created");
         ExecutableDirectory = Path.GetDirectoryName(entryAssembly.Location) + Path.DirectorySeparatorChar;
 
-        var diskLogDir = Directory.CreateDirectory(string.Format("{0}\\logs", ExecutableDirectory));
+        var diskLogDir = Directory.CreateDirectory(Path.Combine(ExecutableDirectory, "logs"));
 
         if (logger == null)
         {

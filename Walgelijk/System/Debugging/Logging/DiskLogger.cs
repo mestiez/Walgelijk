@@ -9,29 +9,23 @@ namespace Walgelijk;
 public class DiskLogger : ILogger, IDisposable
 {
     private readonly DirectoryInfo diskLogDirectory;
-    private readonly FileStream logFile;
     private readonly StreamWriter writer;
 
-    // Means 2 log files will exist at a time.
-    private const int maxLogFiles = 1;
-
-    public DiskLogger(DirectoryInfo logsDir)
+    public DiskLogger(DirectoryInfo logsDir, int maxLogFiles = 2)
     {
         diskLogDirectory = logsDir;
 
         if (diskLogDirectory.Exists)
         {
-            var files = diskLogDirectory.GetFiles().OrderByDescending(x => x.CreationTime).ToArray();
-            if (files.Length >= maxLogFiles)
-            {
+            FileInfo[] files = [.. diskLogDirectory.EnumerateFiles().OrderByDescending(x => x.CreationTime)];
+
+            if (files.Length > maxLogFiles)
                 foreach (var file in files.Skip(maxLogFiles))
                     file.Delete();
-            }
         }
 
-        var logFileName = string.Format("{0}\\log-{1}.txt", diskLogDirectory.Name, DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
-        logFile = File.Open(logFileName, FileMode.OpenOrCreate);
-        writer = new(logFile, Encoding.UTF8);
+        var logFileName = Path.Combine(diskLogDirectory.FullName, $"log-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.txt");
+        writer = new(logFileName, append: true, encoding: Encoding.UTF8);
     }
 
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull => default;
@@ -56,12 +50,12 @@ public class DiskLogger : ILogger, IDisposable
         if (!IsEnabled(logLevel))
             return;
 
-        writer.WriteLine(formatter(state, exception));
+        writer?.WriteLine(formatter(state, exception));
+        writer?.Flush();
     }
 
     public void Dispose()
     {
-        writer.Close();
-        logFile.Close();
+        writer.Dispose();
     }
 }
