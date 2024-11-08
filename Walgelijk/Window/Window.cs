@@ -217,6 +217,8 @@ public abstract class Window
     /// <param name="heightPadding">How many pixels away from the bottom edge of the screen the cursor is locked to.</param>
     protected void ConfineCursor(int leftPadding = 0, int topPadding = 0, int widthPadding = 0, int heightPadding = 0)
     {
+        if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
         var windowRECT = new RECT { Left = (int)Position.X - leftPadding, Top = (int)Position.Y - topPadding, Bottom = Height - heightPadding, Right = Width - widthPadding };
         ClipCursor(ref windowRECT);
     }
