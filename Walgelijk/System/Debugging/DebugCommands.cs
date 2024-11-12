@@ -54,6 +54,30 @@ namespace Walgelijk
             }
         }
 
+        [Command(HelpString = "Get or set the cursor appearance. Enter ?? as a parameter to see available appearances.")]
+        private static CommandResult Cursor(string? appearance = null)
+        {
+            if (string.IsNullOrEmpty(appearance))
+                return "Current cursor appearance is " + Game.Window.CursorAppearance.ToString();
+
+            if (appearance == "??")
+                return string.Join('\n', Enum.GetNames<DefaultCursor>());
+
+            if (Enum.TryParse<DefaultCursor>(appearance, true, out var a))
+            {
+                Game.Window.CursorAppearance = a;
+
+                if (Game.Window.CursorStack.Requests.Count > 0)
+                    return CommandResult.Warn($"CursorStack is in use, so your request may be overwritten immediately. Cursor appearance set to {a}.");
+                else
+                    return CommandResult.Info($"Cursor appearance set to {a}");
+            }
+            else
+            {
+                return CommandResult.Error($"{appearance} is not a valid cursor appearance.");
+            }
+        }
+
         [Command(HelpString = "Get the console filter")]
         private static CommandResult GetFilter()
         {

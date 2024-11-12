@@ -93,6 +93,7 @@ public class OpenTKWindow : Window
                 window.MousePosition = window.MouseState.PreviousPosition;
         }
     }
+
     public override DefaultCursor CursorAppearance
     {
         get => cursorAppearance;
@@ -108,6 +109,9 @@ public class OpenTKWindow : Window
 
     private void SetCursorAppearance(DefaultCursor value)
     {
+        if (!IsCursorLocked)
+            window.CursorState = value is DefaultCursor.Invisible ? CursorState.Hidden : CursorState.Normal;
+
         window.Cursor = value switch
         {
             DefaultCursor.Pointer => MouseCursor.Hand,
@@ -116,6 +120,7 @@ public class OpenTKWindow : Window
             DefaultCursor.Hand => MouseCursor.Hand,
             DefaultCursor.HorizontalResize => MouseCursor.HResize,
             DefaultCursor.VerticalResize => MouseCursor.VResize,
+            DefaultCursor.Invisible => MouseCursor.Empty,
             _ => MouseCursor.Default,
         };
     }
@@ -170,6 +175,7 @@ public class OpenTKWindow : Window
 
     public OpenTKWindow(string title, Vector2 position, Vector2 size)
     {
+        InitialiseDedicatedGraphics();
         window = new NativeWindow(new NativeWindowSettings
         {
             Size = new global::OpenTK.Mathematics.Vector2i((int)size.X, (int)size.Y),
@@ -196,6 +202,28 @@ public class OpenTKWindow : Window
 
         inputHandler = new InputHandler(this);
         internalGraphics = new OpenTKGraphics();
+    }
+
+    [DllImport("nvapi64.dll", EntryPoint = "fake")]
+    private static extern int LoadNvApi64();
+
+    [DllImport("nvapi.dll", EntryPoint = "fake")]
+    private static extern int LoadNvApi32();
+
+    /// <summary>
+    /// Sets the default video card to Nvidia instead of the low-end Intel GPU for laptops with multiple GPUs.
+    /// This can be overridden per app in the Windows graphics menu.
+    /// </summary>
+    private static void InitialiseDedicatedGraphics()
+    {
+        try
+        {
+            if (Environment.Is64BitProcess)
+                LoadNvApi64();
+            else
+                LoadNvApi32();
+        }
+        catch { } // will always fail since 'fake' entry point doesn't exist
     }
 
     public override void Close() => window.Close();
@@ -249,15 +277,19 @@ public class OpenTKWindow : Window
     {
         if (!obj.IsFocused)
             IsCursorLocked = false;
+
+        SetCursorAppearance(CursorAppearance);
     }
 
     public override void LoopCycle()
     {
         inputHandler.Reset();
 
+        if (HasFocus && (windowType == WindowType.Fullscreen || WindowType == WindowType.BorderlessFullscreen))
+            ConfineCursor(widthPadding: 9, heightPadding: 17);
+
         window.Context.SwapBuffers();
         window.ProcessEvents(0);
-        //NativeWindow.ProcessWindowEvents(window.IsEventDriven);
 
         Game.State.Input = inputHandler.InputState;
 
@@ -266,13 +298,11 @@ public class OpenTKWindow : Window
             if (!debugOutputFlag)
             {
                 debugOutputFlag = true;
-                //GL.Enable(EnableCap.DebugOutput);
             }
         }
         else if (debugOutputFlag)
         {
             debugOutputFlag = false;
-            //GL.Disable(EnableCap.DebugOutput);
         }
     }
 

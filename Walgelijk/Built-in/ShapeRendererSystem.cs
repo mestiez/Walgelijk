@@ -56,8 +56,11 @@ public class ShapeRendererSystem : System
         else
             shape.RenderTask.ModelMatrix = transform.LocalToWorldMatrix;
 
-        shape.RenderTask.Color = shape.Color;
+        if (shape.AdditionalTransform.HasValue)
+            shape.RenderTask.ModelMatrix *= shape.AdditionalTransform.Value;
 
+        shape.RenderTask.Color = shape.Color;
+        
         RenderQueue.Add(shape.RenderTask, shape.RenderOrder);
     }
 }

@@ -738,6 +738,11 @@
             Apply vertical flip
             </summary>
         </member>
+        <member name="P:Walgelijk.ShapeComponent.AdditionalTransform">
+            <summary>
+            Optional additional transform applied to the final render
+            </summary>
+        </member>
         <member name="T:Walgelijk.ShapeRendererSystem">
             <summary>
             System that renders components that implement <see cref="T:Walgelijk.ShapeComponent"/>
@@ -3176,7 +3181,8 @@
         </member>
         <member name="M:Walgelijk.RenderTexture.ReadPixels">
             <summary>
-            You can't get pixels from a RenderTexture. This will return an empty span.
+            You can't get all pixels from a RenderTexture. This will return an empty span. 
+            Use <see cref="M:Walgelijk.RenderTexture.GetPixel(System.Int32,System.Int32)"/> to sample from this texture.
             </summary>
         </member>
         <member name="M:Walgelijk.RenderTexture.ForceUpdate">
@@ -4036,6 +4042,12 @@
             </summary>
         </member>
         <member name="M:Walgelijk.CircularBuffer`1.Write(`0)">
+            <summary>
+            Add <paramref name="value"/> to the buffer at <see cref="P:Walgelijk.CircularBuffer`1.Position"/>
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:Walgelijk.CircularBuffer`1.Write(System.ReadOnlySpan{`0})">
             <summary>
             Add <paramref name="value"/> to the buffer at <see cref="P:Walgelijk.CircularBuffer`1.Position"/>
             </summary>
@@ -5573,6 +5585,11 @@
             Path to the directory where the executable is
             </summary>
         </member>
+        <member name="F:Walgelijk.Game.AppDataDirectory">
+            <summary>
+            Path to where any state should be stored
+            </summary>
+        </member>
         <member name="P:Walgelijk.Game.Console">
             <summary>
             The developer console
@@ -7103,6 +7120,15 @@
             The bounds of the window in world space. 
             E.g <see cref="!:WorldBounds.MinX"/> represents the leftmost world space X coordinate still visible in the window
             </summary>
+        </member>
+        <member name="M:Walgelijk.Window.ConfineCursor(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Confine the cursor to the bounds of the window.
+            </summary>
+            <param name="leftPadding">How many pixels away from the left edge of the screen the cursor is locked to.</param>
+            <param name="topPadding">How many pixels away from the top edge of the screen the cursor is locked to.</param>
+            <param name="widthPadding">How many pixels away from the right edge of the screen the cursor is locked to.</param>
+            <param name="heightPadding">How many pixels away from the bottom edge of the screen the cursor is locked to.</param>
         </member>
         <member name="T:Walgelijk.WindowType">
             <summary>

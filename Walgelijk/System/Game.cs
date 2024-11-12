@@ -22,6 +22,11 @@ public class Game
     /// </summary>
     public readonly string ExecutableDirectory;
 
+    /// <summary>
+    /// Path to where any state should be stored
+    /// </summary>
+    public readonly string AppDataDirectory;
+
     private Scene? scene;
 
     /// <summary>
@@ -177,7 +182,17 @@ public class Game
     public Game(Window window, AudioRenderer? audioRenderer = null, ILogger? logger = null)
     {
         var entryAssembly = Assembly.GetEntryAssembly() ?? throw new Exception("Could not get entry assembly so a Game instance could not be created");
+
         ExecutableDirectory = Path.GetDirectoryName(entryAssembly.Location) + Path.DirectorySeparatorChar;
+        AppDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        if (string.IsNullOrWhiteSpace(AppDataDirectory))
+            throw new Exception("SpecialFolder.LocalApplicationData does not return a valid location. Where are we?");
+        AppDataDirectory = Path.Combine(AppDataDirectory, entryAssembly.GetName().Name ?? (Random.Shared.Next().ToString("X2")));
+        var d = Directory.CreateDirectory(AppDataDirectory);
+        if (!d.Exists)
+            throw new Exception($"AppDataDirectory could not be created at \"{AppDataDirectory}\"");
+
+        var diskLogDir = Directory.CreateDirectory(Path.Combine(AppDataDirectory, "logs"));
 
         if (logger == null)
         {
@@ -185,6 +200,7 @@ public class Game
             {
                 b.AddConsole();
                 b.AddProvider(new GameConsoleLoggingProvider(this));
+                b.AddProvider(new DiskLoggingProvider(diskLogDir));
             });
             logger = factory.CreateLogger(entryAssembly!.GetName()!.Name!);
         }
@@ -200,7 +216,8 @@ public class Game
         DebugDraw = new DebugDraw(this);
         Compositor = new Compositor(this);
 
-        Logger.LogInformation("Executable directory is \"{Directory}\"", ExecutableDirectory);
+        Logger.LogInformation("Executable directory is \"{ExecutableDirectory}\"", ExecutableDirectory);
+        Logger.LogInformation("App data directory is \"{AppDataDirectory}\"", AppDataDirectory);
         Logger.LogInformation("{Version}", Version());
         Logger.LogInformation("Display DPI: {DPI}", window.DPI);
     }

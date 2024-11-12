@@ -1,6 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.IO;
 
 namespace Walgelijk.AssetManager;
 
@@ -116,6 +114,7 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
 
     /// <summary>
     /// If this ID is agnostic, resolve the agnosticism (<see cref="Assets.FindFirst"/>).
+    /// Does nothing if external ID isn't found.
     /// </summary>
     public GlobalAssetId ResolveExternal()
     {
@@ -123,6 +122,8 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
             return a;
         return this;
     }
+
+    public bool Exists => Assets.HasAsset(this);
 
     public static readonly GlobalAssetId None = new(PackageId.None, AssetId.None);
 }

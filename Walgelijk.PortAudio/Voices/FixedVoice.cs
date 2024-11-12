@@ -20,7 +20,8 @@ internal abstract class FixedVoice : IVoice
     public abstract int ChannelCount { get; }
     public abstract AudioTrack? Track { get; }
 
-    public int SampleIndex;
+    public double SampleIndex;
+    internal int WrittenSamples;
 
     protected FixedVoice(Sound sound)
     {
@@ -30,41 +31,89 @@ internal abstract class FixedVoice : IVoice
         Data = FixedBufferCache.Shared.Load(fixedAudioData);
     }
 
+    internal FixedVoice(ImmutableArray<float> data)
+    {
+        Data = data;
+    }
+
     public double Time
     {
-        get => SampleIndex * (PortAudioRenderer.SecondsPerSample / ChannelCount);
+        get => SampleIndex * PortAudioRenderer.SecondsPerSample;
 
         set
         {
-            int sampleIndex = int.Clamp((int)(value / (PortAudioRenderer.SecondsPerSample / ChannelCount)), 0, Data.Length - 1);
-            SampleIndex = sampleIndex;
+            double totalFrames = Data.Length / ChannelCount;
+            SampleIndex = double.Clamp(value / PortAudioRenderer.SecondsPerSample, 0, totalFrames - 1);
         }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public virtual void GetSamples(Span<float> frame)
     {
+        WrittenSamples = 0;
+
         if (State is not SoundState.Playing)
             return;
 
+        var pitch = (Track?.Pitch ?? 1) * Pitch;
+        if (pitch == 0)
+            return; // avoid division by zero or no progression
+
         var volume = (Track?.Volume ?? 1) * Volume;
 
-        for (int i = 0; i < frame.Length; i++)
-        {
-            var nextSample = SampleIndex + 1;
+        var totalChannels = ChannelCount;
+        var totalFrames = Data.Length / totalChannels;
 
-            if (!Looping && nextSample >= Data.Length)
+        int frameCount = frame.Length / totalChannels;
+
+        double sampleIndex = SampleIndex;
+
+        for (int frameIdx = 0; frameIdx < frameCount; frameIdx++)
+        {
+            if (sampleIndex >= totalFrames)
             {
-                Stop();
-                return;
+                if (Looping)
+                    sampleIndex %= totalFrames;
+                else
+                {
+                    Stop();
+                    return;
+                }
             }
 
-            SampleIndex = nextSample % Data.Length;
-            var v = Data[SampleIndex] * volume;
-            frame[i] += v;
-            if (ChannelCount == 1) // mono, so we should copy our sample to the next channel
-                frame[++i] += v;
+            var currentFrameIndex = (int)sampleIndex;
+            var nextFrameIndex = currentFrameIndex + 1;
+
+            if (nextFrameIndex >= totalFrames)
+                nextFrameIndex = Looping ? 0 : currentFrameIndex;
+
+            var fraction = (float)(sampleIndex - currentFrameIndex);
+
+            for (int channel = 0; channel < totalChannels; channel++)
+            {
+                var dataIndex = (currentFrameIndex * totalChannels) + channel;
+                var nextDataIndex = (nextFrameIndex * totalChannels) + channel;
+
+                var sampleCurrent = Data[dataIndex];
+                var sampleNext = Data[nextDataIndex];
+
+                float sampleInterpolated = float.Lerp(sampleCurrent, sampleNext, fraction);
+                float sampleValue = sampleInterpolated * volume;
+
+                var outputIndex = (frameIdx * totalChannels) + channel;
+
+                frame[outputIndex] += sampleValue;
+                WrittenSamples++;
+            }
+
+            sampleIndex += pitch;
         }
+
+        SampleIndex = sampleIndex;
+
+        var t = TimeSpan.FromSeconds(Time);
+        foreach (var item in Effects)
+            item.Process(frame, (ulong)SampleIndex, t);
     }
 
     public abstract void Play();

@@ -62,6 +62,8 @@ public class TextureCache : Cache<IReadableTexture, LoadedTexture>
 
         if (raw.DisposeLocalCopyAfterUpload)
             raw.DisposeLocalCopy();
+
+        GL.BindTexture(TextureTarget.Texture2D, 0);
     }
 
     private void WriteLDRData(IReadableTexture raw, int componentCount, ReadOnlySpan<Color> pixels)

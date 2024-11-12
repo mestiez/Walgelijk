@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using Walgelijk;
+using Walgelijk.AssetManager;
 using Walgelijk.Onion;
 using Walgelijk.SimpleDrawing;
 
@@ -23,12 +24,13 @@ public struct AudioVisScene : ISceneCreator
 
         private (string Name, Sound Sound)[] music =
         {
-            LoadMusic("panning_test.ogg"),
-            LoadMusic("mc4.ogg"),
-            LoadMusic("warning_party_imminent.ogg"),
+            LoadMusic("valve_machiavellian_bach.ogg"),
+            LoadMusic("48000HzStream.ogg"),
+            //LoadMusic("mc4.ogg"),
+            //LoadMusic("warning_party_imminent.ogg"),
         };
 
-        static (string, Sound) LoadMusic(string file) => (file, new Sound(Resources.Load<StreamAudioData>(file), false));
+        static (string, Sound) LoadMusic(string file) => (file, new Sound(Assets.Load<StreamAudioData>(file), false));
 
         public override void Update()
         {

@@ -97,7 +97,8 @@ public class RenderTexture : RenderTarget, IReadableTexture, IDisposable
     public Color GetPixel(int x, int y) => Game.Main.Window.Graphics.SampleTexture(this, x, y);
 
     /// <summary>
-    /// You can't get pixels from a RenderTexture. This will return an empty span.
+    /// You can't get all pixels from a RenderTexture. This will return an empty span. 
+    /// Use <see cref="GetPixel"/> to sample from this texture.
     /// </summary>
     public ReadOnlySpan<Color> ReadPixels() => [];
 

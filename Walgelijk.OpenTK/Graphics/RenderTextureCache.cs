@@ -1,4 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 
@@ -50,6 +51,7 @@ internal class RenderTextureCache : Cache<RenderTexture, RenderTextureHandles>
                 0);
 
             raw.DepthBuffer = new PseudoTexture(id, raw.Width, raw.Height);
+            GL.BindTexture(textureTarget, 0);
         }
 
         var result = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
@@ -59,6 +61,11 @@ internal class RenderTextureCache : Cache<RenderTexture, RenderTextureHandles>
             return new RenderTextureHandles(-1, null!, raw);
         }
 
+        GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebufferId);
+        GL.ClearColor(default(Color4));
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+        GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
         return new RenderTextureHandles(framebufferId, [.. ids], raw);
     }
 
@@ -67,13 +74,20 @@ internal class RenderTextureCache : Cache<RenderTexture, RenderTextureHandles>
         if (loaded.RenderTexture == null)
             return;
 
+        loaded.RenderTexture.DepthBuffer?.Dispose();
         loaded.RenderTexture.DepthBuffer = null;
-        GL.DeleteFramebuffer(loaded.FramebufferID);
+
+        if (loaded.FramebufferID != -1)
+            GL.DeleteFramebuffer(loaded.FramebufferID);
         GPUObjects.TextureCache.Unload(loaded.RenderTexture);
         GPUObjects.RenderTargetDictionary.Delete(loaded.RenderTexture);
         for (int i = 0; i < loaded.TextureIds.Length; i++)
         {
-            GL.DeleteTexture(loaded.TextureIds[i]);
+            if (loaded.TextureIds[i] != 0)
+                GL.DeleteTexture(loaded.TextureIds[i]);
         }
+
+        if (GL.GetInteger(GetPName.FramebufferBinding) == loaded.FramebufferID)
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
     }
 }
