@@ -55,6 +55,11 @@ public class TextMeshGenerator
     public bool ParseRichText = false;
 
     /// <summary>
+    /// If rich text is enabled and an &#x3C;i&#x3E; tag is found, this value determines the skewing direction and intensity.
+    /// </summary>
+    public float SkewIntensity = -0.1f;
+
+    /// <summary>
     /// The generator will consider newlines if this is true. If false, it'll just ignore them and stay on one line.
     /// </summary>
     public bool Multiline = true;
@@ -386,7 +391,7 @@ public class TextMeshGenerator
 
             if (tagContents.StartsWith(RichTextTags.Italic)) //Italics tag
             {
-                skew = isClosingTag ? 0 : Font.Size * /*SkewIntensity*/ 0.1f;
+                skew = isClosingTag ? 0 : Font.Size * SkewIntensity;
                 return;
             }
         }

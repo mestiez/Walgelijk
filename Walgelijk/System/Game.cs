@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using Walgelijk.Audio.SoundCues;
 
 namespace Walgelijk;
 
@@ -177,6 +178,11 @@ public class Game
     public List<IGameLoopEvent> AdditionalLoopEvents = [];
 
     /// <summary>
+    /// Processes and manages all <see cref="ISoundCue"/>s. This is a layer above the <see cref="AudioRenderer"/> that simplifies audio into playable "cues".
+    /// </summary>
+    public SoundCueManager SoundCueManager;
+
+    /// <summary>
     /// Create a game with a window and an optional audio renderer. If the audio renderer is not set, the game won't be able to play any sounds
     /// </summary>
     public Game(Window window, AudioRenderer? audioRenderer = null, ILogger? logger = null)
@@ -281,6 +287,7 @@ public class Game
             }
 
             SetWindowWorldBounds();
+            
             Window.LoopCycle();
 
             Scene?.RenderSystems();

@@ -50,6 +50,13 @@ namespace Walgelijk
         }
 
         /// <summary>
+        /// If true, the shader will be recompiled.
+        /// </summary>
+        public bool NeedsUpdate;
+
+        public void ForceUpdate() => NeedsUpdate = true;
+
+        /// <summary>
         /// Default shader. Renders vertex colours and textures.
         /// </summary>
         public static readonly Shader Default = new(BuiltInShaders.WorldSpaceVertex, BuiltInShaders.TexturedFragment);

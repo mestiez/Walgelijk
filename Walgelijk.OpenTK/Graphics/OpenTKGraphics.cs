@@ -459,6 +459,9 @@ public class OpenTKGraphics : IGraphics
             case Material mat:
                 GPUObjects.MaterialCache.Load(mat);
                 break;
+            case Shader shader:
+                GPUObjects.ShaderCache.Load(shader);
+                break;
             default:
                 Logger.Error("Attempt to upload unsupported object to GPU");
                 break;
