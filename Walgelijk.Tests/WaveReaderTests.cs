@@ -22,10 +22,10 @@ public class WaveReaderTests
         var file = d.Deserialise(() => File.OpenRead("mono_microsoft.wav"), default);
         Assert.AreEqual(1, file.ChannelCount);
         Assert.AreEqual(48_000, file.SampleRate);
-        Assert.AreEqual(28_687, file.SampleCount);
-        Assert.AreEqual(file.SampleCount, file.Data.Length / 2);
-    }    
-    
+        Assert.AreEqual(26_356, file.SampleCount);
+        Assert.AreEqual(file.SampleCount, file.Data.Length);
+    }
+
     [TestMethod]
     public void StereoMicrosoft()
     {
@@ -33,10 +33,10 @@ public class WaveReaderTests
 
         Assert.AreEqual(2, file.ChannelCount);
         Assert.AreEqual(44_100, file.SampleRate);
-        Assert.AreEqual(228_352, file.SampleCount);
+        Assert.AreEqual(114_176, file.SampleCount);
         Assert.AreEqual(file.SampleCount, file.Data.Length / 2);
-    }  
-    
+    }
+
     [TestMethod]
     public void MonoJunkChunk()
     {
@@ -45,8 +45,8 @@ public class WaveReaderTests
         Assert.AreEqual(1, file.ChannelCount);
         Assert.AreEqual(44_100, file.SampleRate);
         Assert.AreEqual(33_918, file.SampleCount);
-        Assert.AreEqual(file.SampleCount, file.Data.Length / 2);
-    }    
+        Assert.AreEqual(file.SampleCount, file.Data.Length);
+    }
 
     [TestMethod]
     public void BitRateFailure()

@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.IO.Hashing;
+using System.Threading;
 using Walgelijk;
 using Walgelijk.AssetManager;
 
@@ -12,6 +13,8 @@ public class AssetsTests
 {
     const string validPackage1 = "base.waa";
     const string validPackage2 = "koploper.waa";
+
+    private SemaphoreSlim useIdUtil = new(1);
 
     [TestInitialize]
     public void Init()
@@ -32,6 +35,31 @@ public class AssetsTests
         Assert.AreEqual("koploper", @koploper.Metadata.Name);
 
         Assets.ClearRegistry();
+    }
+
+    [TestMethod]
+    public void VanillaPackageNamedString()
+    {
+        useIdUtil.Wait();
+        var b = Assets.RegisterPackage(validPackage1);
+        try
+        {
+            var id = new GlobalAssetId("base:textures/door.png");
+
+            var beforeVanilla = id.ToNamedString();
+            IdUtil.VanillaPackageIds.Add(b.Metadata.Id);
+            var afterVanilla = id.ToNamedString();
+
+            Assert.AreNotEqual(beforeVanilla, afterVanilla);
+            Assert.AreEqual("base:textures/door.png", beforeVanilla);
+            Assert.AreEqual("textures/door.png", afterVanilla);
+        }
+        finally
+        {
+            IdUtil.VanillaPackageIds.Clear();
+            useIdUtil.Release();
+            Assets.ClearRegistry();
+        }
     }
 
     [TestMethod]
