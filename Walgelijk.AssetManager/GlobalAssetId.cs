@@ -83,18 +83,7 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
 
     public override string ToString() => IsAgnostic ? Internal.ToString() : $"{External}:{Internal}";
 
-    public string ToNamedString()
-    {
-        var id = this;
-
-        if (IsAgnostic)
-            Assets.TryFindFirst(Internal, out id);
-
-        if (Assets.TryGetMetadata(id, out var asset) && Assets.TryGetPackage(id.External, out var package))
-            return $"{package.Metadata.Name}:{asset.Path}";
-
-        return ToString();
-    }
+    public string ToNamedString() => IdUtil.ToNamedString(this);
 
     public override bool Equals(object? obj)
     {
