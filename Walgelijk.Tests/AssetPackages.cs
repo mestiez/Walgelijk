@@ -17,12 +17,12 @@ namespace Tests.AssetManager;
 [TestClass]
 public class AssetPackages
 {
-    const string validPackage = "base.waa";
+    const string validPackage = "assetspack_test1.waa";
 
     [TestInitialize]
     public void Init()
     {
-        Assert.IsTrue(File.Exists(validPackage), "These tests depend on the test archive, which isn't publicly available");
+        Assert.IsTrue(File.Exists(validPackage));
     }
 
     [TestMethod]
@@ -38,10 +38,11 @@ public class AssetPackages
     {
         using var package = AssetPackage.Load(validPackage);
 
-        var content = package.EnumerateFolder("textures/ui/levelselect/").ToArray();
+        var content = package.EnumerateFolder("sounds/click").ToArray();
         AssetId[] expected = [
-            new(0x5346949C),
-            new(0x757F7F40)
+            new(1340043485),
+            new(-444787356),
+            new(942193713)
         ];
 
         Assert.IsTrue(expected.SequenceEqual(content), "read content does not match expected content");
@@ -53,10 +54,10 @@ public class AssetPackages
         using var package = AssetPackage.Load(validPackage);
 
         string[] paths = [
-            "textures/ui/levelselect/levels_icon.png",
-            "data/dj.json",
-            "sounds/swish/swish-2.wav",
-            "shaders/sdf-font.frag",
+            "textures/dog.png",
+            "state.json",
+            "sounds/click/ui_button_simple_click_01.wav",
+            "shaders/door.frag",
         ];
         var ids = paths.Select(p => new AssetId(p)).ToArray();
 
@@ -73,18 +74,12 @@ public class AssetPackages
     {
         using var package = AssetPackage.Load(validPackage);
 
-        var asset = package.GetAsset(new AssetId("data/stats/grunt.stats"));
+        var asset = package.GetAsset(new AssetId("small.txt"));
         var expectedContent =
-@"0.13.1
-
-name Grunt
-
-aiming_randomness 1.25
-shooting_timeout 1
-recoil_handling 0.4
-dodge 0
-panic 2
-melee 0.2";
+@"first line
+second line
+next comes an empty line
+";
 
         using var actual = new StreamReader(asset.Stream(), encoding: Encoding.UTF8, leaveOpen: false);
 
@@ -96,14 +91,14 @@ melee 0.2";
     {
         using var package = AssetPackage.Load(validPackage);
 
-        var str = package.Load<string>("data/convars.txt");
+        var str = package.Load<string>("state.json");
         Assert.IsNotNull(str);
 
         var hash = Crc32.HashToUInt32(Encoding.UTF8.GetBytes(str));
-        var expectedHash = 0xD142F3B5u;
+        var expectedHash = 0x1F4538A4u;
         Assert.AreEqual(expectedHash, hash);
 
-        Assert.AreSame(package.Load<string>("data/convars.txt"), str);
+        Assert.AreSame(package.Load<string>("state.json"), str);
     }
 
     [TestMethod]
@@ -114,16 +109,16 @@ melee 0.2";
 
         await Task.Run(() =>
         {
-            str = package.Load<byte[]>("data/dj.json");
+            str = package.Load<byte[]>("state.json");
             Assert.IsNotNull(str);
 
             var hash = Crc32.HashToUInt32(str);
-            var expectedHash = 0x93F9269Bu;
+            var expectedHash = 0x1F4538A4u;
             Assert.AreEqual(expectedHash, hash);
 
         });
 
-        Assert.AreSame(package.Load<byte[]>("data/dj.json"), str);
+        Assert.AreSame(package.Load<byte[]>("state.json"), str);
 
         package.Dispose();
     }
@@ -139,28 +134,28 @@ melee 0.2";
         Task.WaitAll(
             Task.Run(() =>
             {
-                str1 = package.Load<byte[]>("data/dj.json");
+                str1 = package.Load<byte[]>("state.json");
                 Assert.IsNotNull(str1);
 
                 var hash = Crc32.HashToUInt32(str1);
-                var expectedHash = 0x93F9269Bu;
+                var expectedHash = 0x1F4538A4u;
                 Assert.AreEqual(expectedHash, hash);
 
             }),
             Task.Run(() =>
             {
-                str2 = package.Load<string>("data/convars.txt");
+                str2 = package.Load<string>("small.txt");
                 Assert.IsNotNull(str2);
 
                 var hash = Crc32.HashToUInt32(Encoding.UTF8.GetBytes(str2));
-                var expectedHash = 0xD142F3B5u;
+                var expectedHash = 0xF42CA29Bu;
                 Assert.AreEqual(expectedHash, hash);
 
             })
         );
 
-        Assert.AreSame(package.Load<byte[]>("data/dj.json"), str1);
-        Assert.AreSame(package.Load<string>("data/convars.txt"), str2);
+        Assert.AreSame(package.Load<byte[]>("state.json"), str1);
+        Assert.AreSame(package.Load<string>("small.txt"), str2);
     }
 
     [TestMethod]
@@ -174,27 +169,27 @@ melee 0.2";
         Task.WaitAll(
             Task.Run(() =>
             {
-                str1 = package.Load<string>("data/dj.json");
+                str1 = package.Load<string>("state.json");
                 Assert.IsNotNull(str1);
 
                 var hash = Crc32.HashToUInt32(Encoding.UTF8.GetBytes(str1));
-                var expectedHash = 0x93F9269Bu;
+                var expectedHash = 0x1F4538A4u;
                 Assert.AreEqual(expectedHash, hash);
 
             }),
             Task.Run(() =>
             {
-                str2 = package.Load<string>("data/dj.json");
+                str2 = package.Load<string>("state.json");
                 Assert.IsNotNull(str2);
 
                 var hash = Crc32.HashToUInt32(Encoding.UTF8.GetBytes(str2));
-                var expectedHash = 0x93F9269Bu;
+                var expectedHash = 0x1F4538A4u;
                 Assert.AreEqual(expectedHash, hash);
 
             })
         );
 
-        Assert.AreSame(package.Load<string>("data/dj.json"), str1);
+        Assert.AreSame(package.Load<string>("state.json"), str1);
         Assert.AreSame(str1, str2);
     }
 
@@ -210,7 +205,7 @@ melee 0.2";
         void stream()
         {
             using var reference = new VorbisReader("splitmek.ogg");
-            var audio = package.Load<StreamAudioData>("sounds/music/splitmek.ogg");
+            var audio = package.Load<StreamAudioData>("sounds/splitmek.ogg");
             Assert.IsNotNull(audio);
             Assert.AreEqual(reference.Channels, audio.ChannelCount);
             Assert.AreEqual(reference.SampleRate, audio.SampleRate);
@@ -248,7 +243,7 @@ melee 0.2";
         {
             // l.Wait();
             using var reference = new VorbisReader("splitmek.ogg");
-            var audio = package.Load<StreamAudioData>("sounds/music/splitmek.ogg");
+            var audio = package.Load<StreamAudioData>("sounds/splitmek.ogg");
             Assert.IsNotNull(audio);
             Assert.AreEqual(reference.Channels, audio.ChannelCount);
             Assert.AreEqual(reference.SampleRate, audio.SampleRate);

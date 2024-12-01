@@ -1,0 +1,104 @@
+{
+    "game": "BattleQuest 3000",
+    "version": "1.5.3",
+    "players": [
+      {
+        "playerId": 1,
+        "username": "DragonSlayer99",
+        "level": 25,
+        "experience": 45760,
+        "health": 95,
+        "mana": 120,
+        "location": {
+          "x": 235,
+          "y": -145,
+          "zone": "Dark Forest"
+        },
+        "achievements": [
+          {
+            "id": 101,
+            "name": "First Blood",
+            "description": "Defeat your first enemy",
+            "unlockedAt": "2024-11-28T14:23:00Z"
+          },
+          {
+            "id": 105,
+            "name": "Treasure Hunter",
+            "description": "Find 10 hidden treasures",
+            "unlockedAt": "2024-11-29T10:12:00Z"
+          }
+        ],
+        "inventory": [
+          {
+            "itemId": 501,
+            "name": "Iron Sword",
+            "type": "Weapon",
+            "damage": 15,
+            "durability": 80
+          },
+          {
+            "itemId": 702,
+            "name": "Healing Potion",
+            "type": "Consumable",
+            "effect": "+50 health",
+            "quantity": 3
+          }
+        ],
+        "friends": ["MageMaster22", "StealthyFox"]
+      },
+      {
+        "playerId": 2,
+        "username": "MageMaster22",
+        "level": 18,
+        "experience": 30230,
+        "health": 70,
+        "mana": 200,
+        "location": {
+          "x": 500,
+          "y": 320,
+          "zone": "Crystal Caverns"
+        },
+        "achievements": [
+          {
+            "id": 102,
+            "name": "Spell Caster",
+            "description": "Cast 50 spells",
+            "unlockedAt": "2024-11-27T09:45:00Z"
+          }
+        ],
+        "inventory": [
+          {
+            "itemId": 601,
+            "name": "Magic Staff",
+            "type": "Weapon",
+            "damage": 20,
+            "durability": 60
+          },
+          {
+            "itemId": 801,
+            "name": "Mana Potion",
+            "type": "Consumable",
+            "effect": "+50 mana",
+            "quantity": 5
+          }
+        ],
+        "friends": ["DragonSlayer99"]
+      }
+    ],
+    "settings": {
+      "graphics": {
+        "resolution": "1920x1080",
+        "quality": "High"
+      },
+      "audio": {
+        "musicVolume": 70,
+        "effectsVolume": 85
+      },
+      "controls": {
+        "moveForward": "W",
+        "moveBackward": "S",
+        "attack": "LeftMouse",
+        "jump": "Space"
+      }
+    }
+  }

@@ -12,14 +12,12 @@ namespace Tests.AssetManager;
 [TestClass]
 public class AssetJsonConverterTests
 {
-    const string validPackage1 = "base.waa";
+    const string validPackage1 = "assetspack_test1.waa";
 
     [TestInitialize]
     public void Init()
     {
-        Assert.IsTrue(
-            File.Exists(validPackage1) && File.Exists(validPackage1),
-            "These tests depend on the test archives, which aren't publicly available");
+        Assert.IsTrue(File.Exists(validPackage1) && File.Exists(validPackage1));
         Assets.ClearRegistry();
         Assets.RegisterPackage(validPackage1);
     }
@@ -43,13 +41,13 @@ public class AssetJsonConverterTests
     public void ExportNamed()
     {
         string[] named = [
-            "base:data/convars.txt",
-            "base:textures/door.png",
-            "base:sounds/accurate_shot_warning.wav",
+            "assetspack_test1:small.txt",
+            "assetspack_test1:textures/dog.png",
+            "assetspack_test1:sounds/birds.ogg",
         ];
 
         GlobalAssetId[] p = [.. named.Select(n => new GlobalAssetId(n))];
-        Assert.IsTrue(p.All(i => Assets.HasAsset(i)));
+        Assert.IsTrue(p.All(Assets.HasAsset));
 
         var json = JsonConvert.SerializeObject(p);
 
