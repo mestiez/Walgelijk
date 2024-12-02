@@ -44,15 +44,24 @@ public static class IdUtil
     {
         if (id.IsAgnostic)
             Assets.TryFindFirst(id.Internal, out id);
-        else if (VanillaPackageIds.Contains(id.External) && Assets.TryGetMetadata(id, out var asset))
-                return asset.Path; // the package is "vanilla" so the package id should never be included
 
-        // the id is as specific as it can be at this point, resolve as usual
+        if (Assets.TryGetMetadata(id, out var asset))
         {
-            if (Assets.TryGetMetadata(id, out var asset) && Assets.TryGetPackage(id.External, out var package))
+            if (VanillaPackageIds.Contains(id.External))
+                return asset.Path;
+
+            if (Assets.TryGetPackage(id.External, out var package))
                 return $"{package.Metadata.Name}:{asset.Path}";
         }
 
         return id.ToString();
+    }
+
+    public static string ToUnnamedString(GlobalAssetId id)
+    {
+        if (id.IsAgnostic || VanillaPackageIds.Contains(id.External))
+            return Convert(id.Internal.Internal);
+
+        return $"{id.External}:{id.Internal}";
     }
 }

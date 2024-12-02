@@ -39,8 +39,8 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
     {
         External = external;
         Internal = @internal;
-    }   
-    
+    }
+
     public GlobalAssetId(AssetId @internal)
     {
         External = PackageId.None;
@@ -81,7 +81,7 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
         return !(left == right);
     }
 
-    public override string ToString() => IsAgnostic ? Internal.ToString() : $"{External}:{Internal}";
+    public override string ToString() => IdUtil.ToUnnamedString(this);
 
     public string ToNamedString() => IdUtil.ToNamedString(this);
 
