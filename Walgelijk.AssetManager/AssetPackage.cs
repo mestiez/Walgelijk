@@ -27,87 +27,48 @@ public class AssetPackage : IDisposable
     private bool disposed;
     private ushort deserialisingCount;
 
-    public AssetPackage(string file)
+    public AssetPackage(string path)
     {
         packageLock.EnterWriteLock();
 
-        var guidTable = new Dictionary<AssetId, string>();
-        var archive = new WaaReadArchive(file);
+        if (File.Exists(path))
+            Archive = new WaaReadArchive(path);
+        else if (Directory.Exists(path))
+            Archive = new DirectoryReadArchive(path);
+        else
+            throw new FileNotFoundException($"The input path \"{path}\" cannot be located as file nor as a directory.");
+
         var all = new HashSet<AssetId>();
-        Archive = archive;
-        // read metadata
+        IAssetPackageProvider provider = Archive switch
         {
-            var metadataEntry = archive.GetEntry("package.json") ?? throw new Exception("Archive has no package.json. This asset package is invalid");
-            using var e = new StreamReader(metadataEntry!, encoding: Encoding.UTF8, leaveOpen: false);
-            var json = e.ReadToEnd();
-            /// YOU NEED AN INTERMEDIARY FORMAT
-            /// FUCKING JSON!!! FUCK!!!!!!!!!!!
-            Metadata = JsonConvert.DeserializeObject<AssetPackageMetadata>(json);
+            DirectoryReadArchive _ => new UnprocessedDirectoryPackageProvider(Archive as DirectoryReadArchive),
+            _ => new CommonAssetPackageProvider(Archive)
+        };
 
-            if (Metadata.FormatVersion.Minor < 14)
-            {
-                // older version uses a different metadata format
-
-                var oldTemplate = new
-                {
-                    Id = string.Empty,
-                    NumericalId = 0
-                };
-                var old = JsonConvert.DeserializeAnonymousType(json, oldTemplate) ?? throw new Exception("Invalid package metadata. Rebuild please!");
-                Metadata.Id = new PackageId(old.NumericalId);
-                Metadata.Name = old.Id;
-            }
-
-            if (Metadata.Id == PackageId.None)
-            {
-                throw new Exception("Package ID is None");
-            }
-        }
+        // read metadata
+        Metadata = provider.GetMetadata();
 
         // read guid table
-        {
-            var guidTableEntry = archive.GetEntry("guid_table.txt") ?? throw new Exception("Archive has no guid_table.txt. This asset package is invalid.");
-            using var e = new StreamReader(guidTableEntry!, encoding: Encoding.UTF8, leaveOpen: false);
-
-            while (true)
-            {
-                var idLine = e.ReadLine();
-                if (idLine == null)
-                    break;
-
-                if (!AssetId.TryParse(idLine.Trim(), out var assetId))
-                    throw new Exception($"Id {idLine} is not a valid asset ID");
-
-                var path = e.ReadLine() ?? throw new Exception($"Invalid GUID table: id {idLine} is missing path");
-
-                AssetPackageUtils.AssertPathValidity(path);
-
-                guidTable.Add(assetId, path);
-            }
-
-            this.guidTable = guidTable.ToImmutableDictionary();
-        }
+        guidTable = provider.GetGuidTable();
 
         // read hierarchy
         {
-            var hierarchyEntry = archive.GetEntry("hierarchy.txt") ?? throw new Exception("Archive has no hierarchy.txt. This asset package is invalid.");
-            using var e = new StreamReader(hierarchyEntry!, encoding: Encoding.UTF8, leaveOpen: false);
-
+            using var iterator = provider.GetHierarchy();
             while (true)
             {
                 // TODO error handling
 
-                var path = e.ReadLine();
+                var hierarchyPath = iterator.NextOrDefault();
 
-                if (path == null)
+                if (hierarchyPath == null)
                     break;
 
-                var assetFolder = EnsureHierarchyFolder(path);
-                var count = int.Parse(e.ReadLine()!);
+                var assetFolder = EnsureHierarchyFolder(hierarchyPath);
+                var count = int.Parse(iterator.NextOrDefault()!);
                 assetFolder.Assets = new AssetId[count];
                 for (int i = 0; i < count; i++)
                 {
-                    var asset = assetFolder.Assets[i] = AssetId.Parse(e.ReadLine()!);
+                    var asset = assetFolder.Assets[i] = AssetId.Parse(iterator.NextOrDefault()!);
                     all.Add(asset);
                 }
             }
@@ -116,29 +77,7 @@ public class AssetPackage : IDisposable
         All = [.. all];
 
         // read tagged cache
-        {
-            var tagTableEntry = archive.GetEntry("tag_table.txt") ?? throw new Exception("Archive has no tag_table.txt. This asset package is invalid.");
-            using var e = new StreamReader(tagTableEntry!, encoding: Encoding.UTF8, leaveOpen: false);
-
-            while (true)
-            {
-                // TODO error handling
-
-                var tag = e.ReadLine();
-
-                if (tag == null)
-                    break;
-
-                var count = int.Parse(e.ReadLine()!);
-                var arr = new AssetId[count];
-                taggedCache.AddOrSet(tag, arr);
-
-                for (int i = 0; i < count; i++)
-                {
-                    arr[i] = AssetId.Parse(e.ReadLine()!);
-                }
-            }
-        }
+        taggedCache = new(provider.GetTaggedCache());
 
         packageLock.ExitWriteLock();
     }

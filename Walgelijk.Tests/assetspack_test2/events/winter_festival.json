@@ -1,0 +1,97 @@
+{
+  "event": {
+    "id": 3001,
+    "name": "The Great Winter Festival",
+    "description": "Celebrate the season with exclusive quests, challenges, and rewards!",
+    "startDate": "2024-12-01T00:00:00Z",
+    "endDate": "2024-12-31T23:59:59Z",
+    "location": "Winter Village",
+    "type": "Seasonal",
+    "objectives": [
+      {
+        "id": 1,
+        "name": "Build a Snowman",
+        "description": "Collect snow and accessories to build a snowman.",
+        "progress": {
+          "current": 0,
+          "required": 3,
+          "unit": "snowmen"
+        },
+        "reward": {
+          "type": "item",
+          "itemId": 1010,
+          "name": "Snowman Hat",
+          "rarity": "Rare"
+        }
+      },
+      {
+        "id": 2,
+        "name": "Defeat the Ice Golem",
+        "description": "Find and defeat the Ice Golem boss in the Frozen Caverns.",
+        "progress": {
+          "current": 0,
+          "required": 1,
+          "unit": "defeats"
+        },
+        "reward": {
+          "type": "currency",
+          "amount": 500,
+          "currencyName": "Winter Coins"
+        }
+      }
+    ],
+    "rewards": [
+      {
+        "id": 1,
+        "name": "Winter Chest",
+        "description": "Contains random seasonal items.",
+        "type": "lootBox"
+      },
+      {
+        "id": 2,
+        "name": "Exclusive Mount: Frosty Elk",
+        "description": "An icy elk mount available only during the Winter Festival.",
+        "type": "mount",
+        "rarity": "Legendary"
+      }
+    ],
+    "requirements": {
+      "minimumLevel": 10,
+      "requiredItems": [
+        {
+          "itemId": 2005,
+          "name": "Winter Token",
+          "quantity": 5
+        }
+      ],
+      "restrictedZones": ["Lava Pits", "Desert Wastes"]
+    },
+    "participation": {
+      "maxPlayers": 50,
+      "individualMode": true,
+      "groupMode": true
+    },
+    "eventNPCs": [
+      {
+        "id": 9001,
+        "name": "Festive Merchant",
+        "role": "Shopkeeper",
+        "location": {
+          "x": 100,
+          "y": 250,
+          "zone": "Winter Village"
+        }
+      },
+      {
+        "id": 9002,
+        "name": "Snowman Builder",
+        "role": "Quest Giver",
+        "location": {
+          "x": 120,
+          "y": 300,
+          "zone": "Winter Village"
+        }
+      }
+    ]
+  }
+}

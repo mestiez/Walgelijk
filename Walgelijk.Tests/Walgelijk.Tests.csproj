@@ -1,63 +1,68 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <IsPackable>false</IsPackable>
-    <Version>1.0.22</Version>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="3.5.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="3.5.0" />
-    <PackageReference Include="coverlet.collector" Version="6.0.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Walgelijk.AssetManager\Walgelijk.AssetManager.csproj" />
-    <ProjectReference Include="..\Walgelijk.CommonAssetDeserialisers\Walgelijk.CommonAssetDeserialisers.csproj" />
-    <ProjectReference Include="..\Walgelijk.Localisation\Walgelijk.Localisation.csproj" />
-    <ProjectReference Include="..\Walgelijk.Onion\Walgelijk.Onion.csproj" />
-    <ProjectReference Include="..\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />
-    <ProjectReference Include="..\Walgelijk.ParticleSystem\Walgelijk.ParticleSystem.csproj" />
-    <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="24bitwave.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="base.waa">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="koploper.waa">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="machine_blaster-01.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="machine_blaster-02.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="machine_blaster-03.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="mono_junk_chunk.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="mono_microsoft.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="$(ProjectDir)resources\**" CopyToOutputDirectory="Always" />
-    <None Include="$(ProjectDir)assets\**" CopyToOutputDirectory="Always" />
-    <None Update="splitmek.ogg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="stereo_microsoft.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="test.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<IsPackable>false</IsPackable>
+		<Version>1.0.22</Version>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+		<PackageReference Include="MSTest.TestAdapter" Version="3.5.0" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.6.3" />
+		<PackageReference Include="coverlet.collector" Version="6.0.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Walgelijk.AssetManager\Walgelijk.AssetManager.csproj" />
+		<ProjectReference Include="..\Walgelijk.CommonAssetDeserialisers\Walgelijk.CommonAssetDeserialisers.csproj" />
+		<ProjectReference Include="..\Walgelijk.Localisation\Walgelijk.Localisation.csproj" />
+		<ProjectReference Include="..\Walgelijk.Onion\Walgelijk.Onion.csproj" />
+		<ProjectReference Include="..\Walgelijk.OpenTK\Walgelijk.OpenTK.csproj" />
+		<ProjectReference Include="..\Walgelijk.ParticleSystem\Walgelijk.ParticleSystem.csproj" />
+		<ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="24bitwave.wav">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="machine_blaster-01.wav">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="machine_blaster-02.wav">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="machine_blaster-03.wav">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="mono_junk_chunk.wav">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="mono_microsoft.wav">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="$(ProjectDir)resources\**" CopyToOutputDirectory="Always" />
+		<None Include="$(ProjectDir)assetspack_test1\**" CopyToOutputDirectory="Always" />
+		<None Include="$(ProjectDir)assetspack_test2\**" CopyToOutputDirectory="Always" />
+		<None Update="assetspack_test1\small.txt">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="assetspack_test1\sounds\splitmek.ogg">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="splitmek.ogg">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="stereo_microsoft.wav">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="test.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+		<Exec Command="waapack -i assetspack_test1 -o assetspack_test1.waa --Id assetspack_test1 -f&#xD;&#xA;move assetspack_test1.waa &quot;$(OutDir)assetspack_test1.waa&quot;" WorkingDirectory="$(ProjectDir)" />
+		<Exec Command="waapack -i assetspack_test2 -o assetspack_test2.waa --Id assetspack_test2 -f&#xD;&#xA;move assetspack_test2.waa &quot;$(OutDir)assetspack_test2.waa&quot;" WorkingDirectory="$(ProjectDir)" />
+	</Target>
 </Project>

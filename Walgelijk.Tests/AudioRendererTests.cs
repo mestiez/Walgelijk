@@ -50,7 +50,7 @@ public class AudioRendererTests
                 bool started = false;
 
                 var t = TimeSpan.Zero;
-                while (t <= audioData.Duration - TimeSpan.FromMilliseconds(100))
+                while (t <= audioData.Duration - TimeSpan.FromSeconds(0.1))
                 {
                     if (!started)
                     {
@@ -58,12 +58,13 @@ public class AudioRendererTests
                         started = true;
                     }
 
-                    var dt = TimeSpan.FromSeconds(1 / 30f);
+                    var dt = TimeSpan.FromSeconds(1 / 120f);
                     t += dt;
 
-                    renderer.Process((float)dt.TotalSeconds);
                     Assert.AreEqual(SoundState.Playing, sound.State);
                     Assert.IsTrue(renderer.IsPlaying(sound));
+
+                    renderer.Process((float)dt.TotalSeconds);
                     Thread.Sleep(dt);
                 }
 

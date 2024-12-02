@@ -39,8 +39,8 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
     {
         External = external;
         Internal = @internal;
-    }   
-    
+    }
+
     public GlobalAssetId(AssetId @internal)
     {
         External = PackageId.None;
@@ -81,20 +81,9 @@ public readonly struct GlobalAssetId : IEquatable<GlobalAssetId>
         return !(left == right);
     }
 
-    public override string ToString() => IsAgnostic ? Internal.ToString() : $"{External}:{Internal}";
+    public override string ToString() => IdUtil.ToUnnamedString(this);
 
-    public string ToNamedString()
-    {
-        var id = this;
-
-        if (IsAgnostic)
-            Assets.TryFindFirst(Internal, out id);
-
-        if (Assets.TryGetMetadata(id, out var asset) && Assets.TryGetPackage(id.External, out var package))
-            return $"{package.Metadata.Name}:{asset.Path}";
-
-        return ToString();
-    }
+    public string ToNamedString() => IdUtil.ToNamedString(this);
 
     public override bool Equals(object? obj)
     {

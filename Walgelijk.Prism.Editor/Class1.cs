@@ -43,7 +43,7 @@ public static class MapEditorScene
             ClearColour = new Color(0x2e021b)
         });
 
-        scene.AttachComponent(scene.CreateEntity(), new EditorDataComponent());
+        var editor = scene.AttachComponent(scene.CreateEntity(), new EditorDataComponent());
         scene.AttachComponent(scene.CreateEntity(), new MeshProviderComponent());
 
         return scene;
@@ -52,6 +52,7 @@ public static class MapEditorScene
 
 public class EditorDataComponent : Component
 {
+    
 }
 
 public struct NewEntityArgs
@@ -117,21 +118,5 @@ public class EditorSystem : Walgelijk.System
             }
         }
         Ui.End();
-
-        Draw.Reset();
-        Draw.ScreenSpace = true;
-
-        var tex = Assets.Load<Texture>("bg.png").Value;
-        var x = (int)Input.WindowMousePosition.X;
-        var y = (int)Input.WindowMousePosition.Y;
-
-        Draw.Colour = Colors.White;
-        Draw.Image(tex, new Rect(0, 0, tex.Width, tex.Height), ImageContainmentMode.OriginalSize);
-
-        Draw.ResetTexture();
-        Draw.Colour = Graphics.SampleTexture(tex, x, y);
-        Draw.OutlineColour = new Vector4(Vector3.One - Draw.Colour.RGB, 1);
-        Draw.OutlineWidth = 1;
-        Draw.Quad(new Rect(Input.WindowMousePosition, new(24)));
     }
 }

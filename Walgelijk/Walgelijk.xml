@@ -3230,6 +3230,11 @@
             Load shader from files
             </summary>
         </member>
+        <member name="F:Walgelijk.Shader.NeedsUpdate">
+            <summary>
+            If true, the shader will be recompiled.
+            </summary>
+        </member>
         <member name="F:Walgelijk.Shader.Default">
             <summary>
             Default shader. Renders vertex colours and textures.
@@ -5686,6 +5691,11 @@
             Additional events to invoke for every game loop cycle
             </summary>
         </member>
+        <member name="F:Walgelijk.Game.SoundCueManager">
+            <summary>
+            Processes and manages all <see cref="T:Walgelijk.Audio.SoundCues.ISoundCue"/>s. This is a layer above the <see cref="P:Walgelijk.Game.AudioRenderer"/> that simplifies audio into playable "cues".
+            </summary>
+        </member>
         <member name="M:Walgelijk.Game.#ctor(Walgelijk.Window,Walgelijk.AudioRenderer,Microsoft.Extensions.Logging.ILogger)">
             <summary>
             Create a game with a window and an optional audio renderer. If the audio renderer is not set, the game won't be able to play any sounds
@@ -6557,6 +6567,11 @@
         <member name="F:Walgelijk.TextMeshGenerator.ParseRichText">
             <summary>
             Parse rich text tags
+            </summary>
+        </member>
+        <member name="F:Walgelijk.TextMeshGenerator.SkewIntensity">
+            <summary>
+            If rich text is enabled and an &#x3C;i&#x3E; tag is found, this value determines the skewing direction and intensity.
             </summary>
         </member>
         <member name="F:Walgelijk.TextMeshGenerator.Multiline">
