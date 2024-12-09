@@ -284,23 +284,24 @@ public class Game
 
                 Scene?.UpdateSystems();
                 RoutineScheduler.StepRoutines(scaledDt);
+                Profiling.Tick();
             }
 
             SetWindowWorldBounds();
-            
-            Window.LoopCycle();
 
             Scene?.RenderSystems();
             if (DevelopmentMode)
                 DebugDraw.Render();
 
             Compositor.Prepare();
-            Profiling.Tick();
             RenderQueue.RenderAndReset(Window.Graphics);
             Compositor.Render(Window.Graphics);
+
             Window.Graphics.CurrentTarget = Window.RenderTarget;
             Console.Render();
             Profiling.Render();
+
+            Window.LoopCycle();
 
             if (!Window.IsOpen)
                 break;

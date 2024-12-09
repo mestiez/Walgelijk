@@ -7,7 +7,7 @@
     <Authors>mestiez</Authors>
     <Description>Basic Walgelijk game templates.</Description>
     <PackageTags>dotnet-new;templates;studio-minus;games</PackageTags>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <ContentTargetFolders>content</ContentTargetFolders>
