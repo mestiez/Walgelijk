@@ -54,7 +54,7 @@ public class Program
 
         AssetDeserialisers.SetFallbackForType(typeof(FixedAudioData), FixedAudioData.Beep);
 
-        game.Scene = new PrismEditorScene().Load(game);
+        game.Scene = new AtlasTestScene().Load(game);
 
 #if DEBUG
         game.DevelopmentMode = true;
