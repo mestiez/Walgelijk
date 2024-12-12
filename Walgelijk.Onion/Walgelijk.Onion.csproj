@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>0.5.24</Version>
+    <Version>0.6.0</Version>
     <Authors>mestiez</Authors>
     <Company>Studio Minus</Company>
     <PackageIcon>icon.png</PackageIcon>

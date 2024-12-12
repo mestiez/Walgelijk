@@ -37,8 +37,10 @@ public struct StencilScene : ISceneCreator
             Draw.InsideMask();
             Draw.Image(Resources.Load<Texture>("qoitest.qoi"), new Rect(Window.Size / 2, new Vector2(512)), ImageContainmentMode.Contain);
 
-
             Draw.DisableMask();
+
+            Draw.TextDrawRatio = 0.5f;
+            Draw.Text("var destCap = destBlockEntity.getCapability(ITEM_HANDLER, direction.getOpposite());", new(10), Vector2.One);
         }
 
         public override void Render()

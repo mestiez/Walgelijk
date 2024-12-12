@@ -38,20 +38,26 @@ public class Language
 
     public static Language Load(string filePath)
     {
-        var data = File.ReadAllText(filePath);
+        using var s = File.OpenRead(filePath);
+        return Load(s);
+    }
+
+    public static Language Load(Stream input)
+    {
+        using var reader = new StreamReader(input);
+        var data = reader.ReadToEnd();
+
         var s = JsonConvert.DeserializeObject<Serialisable>(data);
         return new Language(
-            s.DisplayName ?? Path.GetFileNameWithoutExtension(filePath),
+            s.DisplayName ?? "???",
             string.IsNullOrWhiteSpace(s.Culture) ? CultureInfo.InvariantCulture : new CultureInfo(s.Culture),
-            string.IsNullOrWhiteSpace(s.Flag) ? Flags.Unknown : Resources.Load<Texture>(Path.GetFullPath(s.Flag, Path.GetDirectoryName(filePath) ?? Environment.CurrentDirectory), true),
-            s.Table ?? new Dictionary<string, string>());
+            s.Table ?? []);
     }
 
     private struct Serialisable
     {
         public string? DisplayName;
         public string? Culture;
-        public string? Flag;
         public Dictionary<string, string>? Table;
     }
 }

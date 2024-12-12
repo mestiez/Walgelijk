@@ -1830,6 +1830,18 @@
             Invoked when the scene becomes inactive
             </summary>
         </member>
+        <member name="M:Walgelijk.TextureAtlas.Build(Walgelijk.RenderQueue)">
+            <summary>
+            Add the build task to the RenderQueue
+            </summary>
+            <param name="renderQueue"></param>
+        </member>
+        <member name="M:Walgelijk.TextureAtlas.Build(Walgelijk.IGraphics)">
+            <summary>
+            Render task function that renders the page texture
+            </summary>
+            <param name="graphics"></param>
+        </member>
         <member name="T:Walgelijk.AttributeType">
             <summary>
             Possible vertex attribute types

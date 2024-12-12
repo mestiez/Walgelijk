@@ -2,11 +2,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ApplicationIcon />
     <StartupObject />
     <Nullable>enable</Nullable>
-    <Version>1.26.4</Version>
+    <Version>1.27.0</Version>
     <Authors>mestiez</Authors>
     <Company>Studio Minus</Company>
     <PackageIcon>icon.png</PackageIcon>

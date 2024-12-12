@@ -277,6 +277,14 @@ public static class Draw
     }
 
     /// <summary>
+    /// Clear the screen
+    /// </summary>
+    public static void Clear(Color color = default)
+    {
+        Queue.Add(new ClearRenderTask(color), Order);
+    }
+
+    /// <summary>
     /// Draw a <see cref="DrawingPrimitives.Quad"/>
     /// </summary>
     public static void Quad(Rect rect, float degrees = 0, float roundness = 0) =>

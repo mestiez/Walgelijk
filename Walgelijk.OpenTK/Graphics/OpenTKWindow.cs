@@ -173,21 +173,22 @@ public class OpenTKWindow : Window
     private IReadableTexture customCursor;
     private bool debugOutputFlag = false;
 
-    public OpenTKWindow(string title, Vector2 position, Vector2 size)
+    public OpenTKWindow(string title, Vector2 position, Vector2 size, int samples = 0)
     {
         InitialiseDedicatedGraphics();
         window = new NativeWindow(new NativeWindowSettings
         {
-            Size = new global::OpenTK.Mathematics.Vector2i((int)size.X, (int)size.Y),
+            ClientSize = new global::OpenTK.Mathematics.Vector2i((int)size.X, (int)size.Y),
             Title = title,
             StartVisible = false,
-            NumberOfSamples = 0,
+            NumberOfSamples = samples,
             StencilBits = 8,
+            IsEventDriven = false,
             DepthBits = 24,
             API = ContextAPI.OpenGL
         });
 
-        // window.MakeCurrent();
+        window.MakeCurrent();
 
         if (position.X >= 0 && position.Y >= 0)
             Position = position;
@@ -285,25 +286,14 @@ public class OpenTKWindow : Window
     {
         inputHandler.Reset();
 
-        if (HasFocus && (windowType == WindowType.Fullscreen || WindowType == WindowType.BorderlessFullscreen))
+        if (HasFocus && (windowType is WindowType.Fullscreen or WindowType.BorderlessFullscreen))
             ConfineCursor(widthPadding: 9, heightPadding: 17);
 
         window.Context.SwapBuffers();
         window.ProcessEvents(0);
 
         Game.State.Input = inputHandler.InputState;
-
-        if (Game.Main.DevelopmentMode)
-        {
-            if (!debugOutputFlag)
-            {
-                debugOutputFlag = true;
-            }
-        }
-        else if (debugOutputFlag)
-        {
-            debugOutputFlag = false;
-        }
+        debugOutputFlag = Game.Main.DevelopmentMode;
     }
 
     public override void Deinitialise()
@@ -362,7 +352,7 @@ public class OpenTKWindow : Window
 
         //GL.DebugMessageCallback(OnGLDebugMessage, IntPtr.Zero);
         //GL.Enable(EnableCap.DebugOutput);
-        GL.Enable(EnableCap.Multisample);
+        //GL.Enable(EnableCap.Multisample);
     }
 
     internal void OnWindowClose() => InvokeCloseEvent();

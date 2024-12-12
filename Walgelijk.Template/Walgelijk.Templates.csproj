@@ -7,12 +7,12 @@
     <Authors>mestiez</Authors>
     <Description>Basic Walgelijk game templates.</Description>
     <PackageTags>dotnet-new;templates;studio-minus;games</PackageTags>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <ContentTargetFolders>content</ContentTargetFolders>
     <PackageIcon>icon.png</PackageIcon>
-    <Version>1.7.0</Version>
+    <Version>1.8.0</Version>
   </PropertyGroup>
   <Target Name="PostBuild" Condition="'$(Configuration)'=='Release'" AfterTargets="PostBuildEvent">
     <Exec Command="dotnet pack -c Release --no-restore --no-build --output &quot;$(SolutionDir)OutputPackages&quot;" />
