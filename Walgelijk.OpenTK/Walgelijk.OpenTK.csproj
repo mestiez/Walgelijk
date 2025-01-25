@@ -7,7 +7,7 @@
     <Authors>mestiez</Authors>
     <Company>Studio Minus</Company>
     <RepositoryType>git</RepositoryType>
-    <Version>0.25.0</Version>
+    <Version>0.25.1</Version>
     <PackageIcon>icon.png</PackageIcon>
     <Description>Windowing, input, video, and audio interface for Walgelijk using OpenTK</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -31,7 +31,7 @@
     <DebugType>embedded</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="OpenTK" Version="4.8.2" />
+    <PackageReference Include="OpenTK" Version="4.9.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Walgelijk\Walgelijk.csproj" />
