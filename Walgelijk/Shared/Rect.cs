@@ -151,8 +151,8 @@ public struct Rect : IEquatable<Rect>
     /// <returns></returns>
     public Rect SortComponents()
         => new Rect(
-                MathF.Min(MinX, MaxX), MathF.Min(MinY, MaxY),
-                MathF.Max(MinX, MaxX), MathF.Max(MinY, MaxY));
+                float.Min(MinX, MaxX), float.Min(MinY, MaxY),
+                float.Max(MinX, MaxX), float.Max(MinY, MaxY));
 
     /// <summary>
     /// Identical to <see cref="SDF.Rectangle(Vector2, Vector2, Vector2)"/>

@@ -159,9 +159,7 @@ public class Node
 
     private static void ProcessScrollbars(ControlParams p)
     {
-        /* TODO
-         * Horizontal scrollbar
-         */
+        // TODO Horizontal scrollbar
 
         if (p.Instance.Theme.ShowScrollbars && p.Instance.CaptureFlags.HasFlag(CaptureFlags.Scroll))
         {

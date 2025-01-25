@@ -1842,6 +1842,11 @@
             </summary>
             <param name="graphics"></param>
         </member>
+        <member name="M:Walgelijk.IBinPacker.Pack(System.Span{Walgelijk.IBinPacker.IBin},Walgelijk.Rect@,System.Int32)">
+            <summary>
+            Pack a rectangle into the given container taking all rectangles in <see cref="!:OtherRects"/> into account
+            </summary>
+        </member>
         <member name="T:Walgelijk.AttributeType">
             <summary>
             Possible vertex attribute types
