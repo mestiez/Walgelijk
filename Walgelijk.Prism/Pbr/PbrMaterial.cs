@@ -64,7 +64,7 @@ public class PbrMaterial : IDisposable
         material.SetUniform("normalMap", UpNormalPixel);
         material.SetUniform("world", Resources.Load<Texture>("env.png"));
         material.SetUniform("tint", Colors.White);
-        material.BackfaceCulling = true;
+        material.BackfaceCulling = FaceCulling.Back;
         material.DepthTested = true;
     }
 

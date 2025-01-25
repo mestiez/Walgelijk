@@ -9,7 +9,7 @@ namespace Walgelijk.Audio.SoundCues;
 
 public class AssetCue : SoundEffectCue
 {
-    public override SoundState State => state;
+    public override SoundState State { get => state; protected set => state = value; }
     public GlobalAssetId[] Assets = [];
 
     public AssetCue(GlobalAssetId[] sounds)

@@ -196,13 +196,24 @@ public class OpenTKGraphics : IGraphics
         GPUObjects.MaterialTextureCache.ActivateTexturesFor(loadedShader);
         GL.UseProgram(prog);
 
-        if (material.BackfaceCulling)
+        switch (material.BackfaceCulling)
         {
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
+            case FaceCulling.Front:
+                GL.Enable(EnableCap.CullFace);
+                GL.CullFace(CullFaceMode.Front);
+                break;
+            case FaceCulling.Back:
+                GL.Enable(EnableCap.CullFace);
+                GL.CullFace(CullFaceMode.Back);
+                break;
+            case FaceCulling.FrontBack:
+                GL.Enable(EnableCap.CullFace);
+                GL.CullFace(CullFaceMode.FrontAndBack);
+                break;
+            default:
+                GL.Disable(EnableCap.CullFace);
+                break;
         }
-        else
-            GL.Disable(EnableCap.CullFace);
 
         if (CurrentTarget.Flags.HasFlag(RenderTargetFlags.DepthStencil) && material.DepthTested)
             GL.Enable(EnableCap.DepthTest);

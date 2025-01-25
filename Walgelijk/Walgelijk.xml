@@ -1847,6 +1847,22 @@
             Pack a rectangle into the given container taking all rectangles in <see cref="!:OtherRects"/> into account
             </summary>
         </member>
+        <member name="T:Walgelijk.GravityBinPacker">
+            <summary>
+            Shelf bin packer with gravity
+            Incredibly slow
+            </summary>
+        </member>
+        <member name="T:Walgelijk.ShelfBinPacker">
+            <summary>
+            The most naive bin packer
+            </summary>
+        </member>
+        <member name="T:Walgelijk.GuillotineBinPacker">
+            <summary>
+            Absolutely terrible bin packer
+            </summary>
+        </member>
         <member name="T:Walgelijk.AttributeType">
             <summary>
             Possible vertex attribute types
@@ -2552,7 +2568,7 @@
         </member>
         <member name="P:Walgelijk.Material.BackfaceCulling">
             <summary>
-            The back-facing faces will be culled if this is true
+            Determines what faces to cull during rendering
             </summary>
         </member>
         <member name="F:Walgelijk.Material.InternalUniforms">

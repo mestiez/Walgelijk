@@ -33,9 +33,9 @@ public sealed class Material : IDisposable
     public bool DepthTested { get; set; } = false;
 
     /// <summary>
-    /// The back-facing faces will be culled if this is true
+    /// Determines what faces to cull during rendering
     /// </summary>
-    public bool BackfaceCulling { get; set; } = false;
+    public FaceCulling BackfaceCulling { get; set; } = FaceCulling.None;
 
     /// <summary>
     /// Access the CPU side copy of the uniforms. Only use if you know what you're doing

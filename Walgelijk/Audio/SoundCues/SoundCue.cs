@@ -27,13 +27,13 @@ public abstract class SoundEffectCue : ISoundCue
     public FloatRange Repeat = 0;
     public bool Overlap = true;
 
-    public abstract SoundState State { get; }
+    public abstract SoundState State { get; protected set; }
     public abstract void Play(SoundCueManager manager);
 }
 
 public class SoundCue : SoundEffectCue
 {
-    public override SoundState State { get; private set; }
+    public override SoundState State { get; protected set; }
 
     public override void Play(SoundCueManager manager)
     {
@@ -45,7 +45,7 @@ public class GroupCue : ISoundCue
 {
     public ISoundCue[] Cues { get; }
 
-    public SoundState State { get; private set; }
+    public SoundState State { get; protected set; }
 
     public GroupCue(params ISoundCue[] cues)
     {
