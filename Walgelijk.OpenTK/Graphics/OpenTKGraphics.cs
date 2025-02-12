@@ -200,15 +200,15 @@ public class OpenTKGraphics : IGraphics
         {
             case FaceCulling.Front:
                 GL.Enable(EnableCap.CullFace);
-                GL.CullFace(CullFaceMode.Front);
+                GL.CullFace(TriangleFace.Front);
                 break;
             case FaceCulling.Back:
                 GL.Enable(EnableCap.CullFace);
-                GL.CullFace(CullFaceMode.Back);
+                GL.CullFace(TriangleFace.Back);
                 break;
             case FaceCulling.FrontBack:
                 GL.Enable(EnableCap.CullFace);
-                GL.CullFace(CullFaceMode.FrontAndBack);
+                GL.CullFace(TriangleFace.FrontAndBack);
                 break;
             default:
                 GL.Disable(EnableCap.CullFace);
