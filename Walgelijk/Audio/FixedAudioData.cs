@@ -4,6 +4,8 @@ namespace Walgelijk;
 
 public class FixedAudioData : AudioData
 {
+    private bool disposed;
+
     /// <summary>
     /// Raw data for the audio. This doesn't necessarily contain all audio data as it could be used as a streaming buffer.
     /// </summary>
@@ -33,6 +35,7 @@ public class FixedAudioData : AudioData
 
     public override void DisposeLocalCopy()
     {
+        disposed = true;
         Data = [];
     }
 
@@ -42,4 +45,6 @@ public class FixedAudioData : AudioData
     /// Beep audio data
     /// </summary>
     public static readonly FixedAudioData Beep = AudioGen.SignalGenerator(AudioGen.Sine(0.2f, 750), 44100, TimeSpan.FromSeconds(0.5f));
+
+    public override bool Expired => disposed;
 }

@@ -1,4 +1,8 @@
-﻿namespace Walgelijk.OpenTK
+﻿using OpenTK.Graphics.OpenGL4;
+using System;
+using System.Collections.Generic;
+
+namespace Walgelijk.OpenTK
 {
     public class MaterialTextureCache : Cache<MaterialTexturePair, TextureUnitLink>
     {
@@ -9,7 +13,7 @@
 
         protected override void DisposeOf(TextureUnitLink loaded)
         {
-
+            // we have no ownership over any of the assets in the structure
         }
 
         internal void ActivateTexturesFor(LoadedMaterial material)
@@ -23,6 +27,30 @@
                 unitLink = Load(new MaterialTexturePair(material, loadedTexture, material.GetUniformLocation(pair.Key)));
                 unitLink.Bind();
             }
+        }
+
+        internal void UnloadMaterial(LoadedMaterial loaded)
+        {
+            Queue<MaterialTexturePair> toUnload = [];
+
+            foreach (var item in Loaded)
+                if (item.Key.Material == loaded)
+                    toUnload.Enqueue(item.Key);
+
+            while (toUnload.TryDequeue(out var k))
+                Unload(k);
+        }
+
+        internal void UnloadTexture(LoadedTexture loaded)
+        {
+            Queue<MaterialTexturePair> toUnload = [];
+
+            foreach (var item in Loaded)
+                if (item.Key.Texture == loaded)
+                    toUnload.Enqueue(item.Key);
+
+            while (toUnload.TryDequeue(out var k))
+                Unload(k);
         }
     }
 }

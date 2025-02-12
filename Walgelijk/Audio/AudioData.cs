@@ -32,6 +32,9 @@ public abstract class AudioData : IExternal<float>
     /// </summary>
     public bool DisposeLocalCopyAfterUpload { get; init; }
 
+    /// <inheritdoc/>
+    public abstract bool Expired { get; }
+
     /// <summary>
     /// Remove the data from memory, indicating that the data copy in this structure is no longer needed. This will not affect the actual audio engine.
     /// </summary>

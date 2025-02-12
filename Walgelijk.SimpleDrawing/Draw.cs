@@ -460,5 +460,20 @@ public static class Draw
 
         return new Rect(topLeft.X + imagePos.X, topLeft.Y + imagePos.Y, topLeft.X + imagePos.X + imageSize.X, topLeft.Y + imagePos.Y + imageSize.Y);
     }
+
+    static Draw()
+    {
+        Game.Main.AdditionalLoopEvents.Add(new CleanCaches());
+    }
+
+    private class CleanCaches : IGameLoopEvent
+    {
+        public void FixedUpdate(Game game, float interval) { }
+
+        public void Update(Game game, float dt)
+        {
+            DrawingMaterialCreator.Cache.CleanExpired();
+        }
+    }
 }
 #pragma warning restore CA2211 // Non-constant fields should not be visible

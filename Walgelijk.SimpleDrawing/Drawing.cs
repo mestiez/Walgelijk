@@ -98,7 +98,7 @@ public struct Drawing : IEquatable<Drawing>
     {
         VertexBuffer = vertexBuffer;
         Material = material;
-        Texture = texture;
+        Texture = (texture?.Expired ?? true) ? null : texture;
         ScreenSpace = screenSpace;
         Position = position;
         RotationRadians = rotationRadians;

@@ -1,15 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace Walgelijk;
 
 /// <summary>
-/// A generic cache object that provides a way to load heavy objects based on a lighter key
+/// A concurrent version of <see cref="Cache{UnloadedType, LoadedType}"/>. 
 /// </summary>
 /// <typeparam name="UnloadedType">The key. This object is usually light and cheap to create</typeparam>
 /// <typeparam name="LoadedType">The loaded object. This object is usually heavy and expensive to create</typeparam>
-public abstract class Cache<UnloadedType, LoadedType> where UnloadedType : notnull
+public abstract class ConcurrentCache<UnloadedType, LoadedType> where UnloadedType : notnull
 {
-    protected readonly Dictionary<UnloadedType, LoadedType> Loaded = [];
+    protected readonly ConcurrentDictionary<UnloadedType, LoadedType> Loaded = [];
+    protected readonly SemaphoreSlim LoadingNewLock = new(1);
+    protected readonly SemaphoreSlim AccessReadCacheLock = new(1);
 
     /// <summary>
     /// Load or create a <typeparamref name="LoadedType"/> from an <typeparamref name="UnloadedType"/>
@@ -18,11 +22,16 @@ public abstract class Cache<UnloadedType, LoadedType> where UnloadedType : notnu
     /// <returns></returns>
     public virtual LoadedType Load(UnloadedType obj)
     {
+        using var @lock = new DeferredSemaphore(LoadingNewLock);
+
         if (Loaded.TryGetValue(obj, out var v))
             return v;
 
         v = CreateNew(obj);
-        Loaded.Add(obj, v);
+
+        using var @lock2 = new DeferredSemaphore(AccessReadCacheLock);
+        if (!Loaded.TryAdd(obj, v))
+            throw new global::System.Exception("Failed to add object to cache");
         return v;
     }
 
@@ -44,6 +53,8 @@ public abstract class Cache<UnloadedType, LoadedType> where UnloadedType : notnu
     /// </summary>
     public void Unload(UnloadedType obj)
     {
+        using var @lock = new DeferredSemaphore(AccessReadCacheLock);
+
         if (!Loaded.Remove(obj, out var loadedObj))
         {
             Logger.Error($"Attempt to unload a(n) {typeof(UnloadedType).Name} that isn't loaded");
@@ -63,6 +74,9 @@ public abstract class Cache<UnloadedType, LoadedType> where UnloadedType : notnu
     /// </summary>
     public void UnloadAll()
     {
+        using var @lock1 = new DeferredSemaphore(LoadingNewLock);
+        using var @lock2 = new DeferredSemaphore(AccessReadCacheLock);
+
         foreach (var entry in Loaded)
             DisposeOf(entry.Value);
         Loaded.Clear();
@@ -73,6 +87,8 @@ public abstract class Cache<UnloadedType, LoadedType> where UnloadedType : notnu
     /// </summary>
     public IEnumerable<LoadedType> GetAllLoaded()
     {
+        using var @lock = new DeferredSemaphore(AccessReadCacheLock);
+
         foreach (var item in Loaded)
             yield return item.Value;
     }
@@ -82,6 +98,8 @@ public abstract class Cache<UnloadedType, LoadedType> where UnloadedType : notnu
     /// </summary>
     public IEnumerable<UnloadedType> GetAllUnloaded()
     {
+        using var @lock = new DeferredSemaphore(AccessReadCacheLock);
+
         foreach (var item in Loaded)
             yield return item.Key;
     }
@@ -91,6 +109,8 @@ public abstract class Cache<UnloadedType, LoadedType> where UnloadedType : notnu
     /// </summary>
     public IEnumerable<(UnloadedType, LoadedType)> GetAll()
     {
+        using var @lock = new DeferredSemaphore(AccessReadCacheLock);
+
         foreach (var item in Loaded)
             yield return (item.Key, item.Value);
     }

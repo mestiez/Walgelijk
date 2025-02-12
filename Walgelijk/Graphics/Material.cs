@@ -87,6 +87,10 @@ public sealed class Material : IDisposable
     {
         if (Game.Main == null)
             throw new InvalidOperationException(NoGameExceptionText);
+
+        if (value.Expired)
+            value = Texture.ErrorTexture;
+
         InternalUniforms.SetValue(name, value);
         Game.Main.Window.Graphics.SetUniform(this, name, value);
     }

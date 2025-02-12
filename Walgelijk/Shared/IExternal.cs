@@ -21,4 +21,9 @@ public interface IExternal<T>
     /// Should the local copy of this object be disposed after it's been uploaded? 
     /// </summary>
     public bool DisposeLocalCopyAfterUpload { get; }
+
+    /// <summary>
+    /// If true, this object is considered expired. It should no longer be processed or uploaded.
+    /// </summary>
+    public bool Expired { get; }
 }

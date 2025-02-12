@@ -13,6 +13,8 @@ public class RenderTexture : RenderTarget, IReadableTexture, IDisposable
     private FilterMode filterMode;
     private bool disposed = false;
 
+    bool IExternal<Color>.Expired => disposed;
+
     /// <summary>
     /// Construct a <see cref="RenderTexture"/>
     /// </summary>

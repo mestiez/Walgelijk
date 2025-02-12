@@ -60,7 +60,7 @@ public class OpenTKGraphics : IGraphics
         get => stencil;
         set
         {
-            StencilUpdated = true;// stencil != Stencil;
+            StencilUpdated = value != Stencil;
             stencil = value;
         }
     }

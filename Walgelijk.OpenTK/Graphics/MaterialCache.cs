@@ -27,6 +27,7 @@ namespace Walgelijk.OpenTK
         {
             //TODO ik weet niet of dit goed is
             GL.DeleteProgram(loaded.ProgramHandle);
+            GPUObjects.MaterialTextureCache.UnloadMaterial(loaded);
         }
     }
 }

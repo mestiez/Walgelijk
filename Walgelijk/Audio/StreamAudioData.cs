@@ -4,7 +4,10 @@ namespace Walgelijk;
 
 public class StreamAudioData : AudioData
 {
+    private bool disposed;
+
     public readonly Func<IAudioStream> InputSourceFactory;
+    public override bool Expired => disposed;
 
     public StreamAudioData(Func<IAudioStream> sourceFactory, int sampleRate, int channelCount, long sampleCount)
     {
@@ -25,6 +28,7 @@ public class StreamAudioData : AudioData
     /// </summary>
     public override void DisposeLocalCopy()
     {
+        disposed = true;
     }
 
     /// <summary>

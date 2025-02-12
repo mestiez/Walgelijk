@@ -71,7 +71,9 @@ public class Texture : IReadableTexture, IDisposable
 
     private FilterMode filterMode = FilterMode.Nearest;
     private WrapMode wrapMode = WrapMode.Repeat;
-    private bool disposed = false;
+    private bool disposed;
+
+    bool IExternal<Color>.Expired => disposed;
 
     /// <summary>
     /// Create a texture from a series of pixels

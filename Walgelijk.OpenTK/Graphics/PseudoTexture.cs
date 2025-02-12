@@ -23,6 +23,7 @@ public class PseudoTexture : IReadableTexture
     public bool GenerateMipmaps => throw new NotImplementedException();
     public bool NeedsUpdate { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public bool DisposeLocalCopyAfterUpload => throw new NotImplementedException();
+    public bool Expired => false;
     public void Dispose() => Game.Main.Window.Graphics.Delete(this);
     public void DisposeLocalCopy() => throw new NotImplementedException();
     public ReadOnlyMemory<Color>? GetData() => throw new NotImplementedException();

@@ -10,6 +10,12 @@ public class TextureCache : Cache<IReadableTexture, LoadedTexture>
 
     public override LoadedTexture Load(IReadableTexture raw)
     {
+        if (raw.Expired)
+        {
+            throw new Exception("Attempt to load expired texture");
+            return new LoadedTexture(0, 0, -1);
+        }
+
         if (raw is PseudoTexture ps)
             return new LoadedTexture(ps.Width, ps.Height, ps.TextureHandle);
 
@@ -30,6 +36,9 @@ public class TextureCache : Cache<IReadableTexture, LoadedTexture>
 
     private void UploadTexture(IReadableTexture raw, int index)
     {
+        if (raw.Expired)
+            return;
+
         GL.BindTexture(TextureTarget.Texture2D, index);
 
         SetTextureParameters(raw);
@@ -127,6 +136,7 @@ public class TextureCache : Cache<IReadableTexture, LoadedTexture>
 
     protected override void DisposeOf(LoadedTexture loaded)
     {
+        GPUObjects.MaterialTextureCache.UnloadTexture(loaded);
         GL.DeleteTexture(loaded.Handle);
         Logger.Log($"Deleted texture {loaded.Handle}");
     }

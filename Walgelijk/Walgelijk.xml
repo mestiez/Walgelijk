@@ -34,6 +34,9 @@
             Should the data be cleared from memory and only remain in the audio engine?
             </summary>
         </member>
+        <member name="P:Walgelijk.AudioData.Expired">
+            <inheritdoc/>
+        </member>
         <member name="M:Walgelijk.AudioData.DisposeLocalCopy">
             <summary>
             Remove the data from memory, indicating that the data copy in this structure is no longer needed. This will not affect the actual audio engine.
@@ -3949,63 +3952,6 @@
             Mirrors the UV
             </summary>
         </member>
-        <member name="T:Walgelijk.ConcurrentCache`2">
-            <summary>
-            A concurrent version of <see cref="T:Walgelijk.Cache`2"/>. 
-            </summary>
-            <typeparam name="UnloadedType">The key. This object is usually light and cheap to create</typeparam>
-            <typeparam name="LoadedType">The loaded object. This object is usually heavy and expensive to create</typeparam>
-        </member>
-        <member name="M:Walgelijk.ConcurrentCache`2.Load(`0)">
-            <summary>
-            Load or create a <typeparamref name="LoadedType"/> from an <typeparamref name="UnloadedType"/>
-            </summary>
-            <param name="obj"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Walgelijk.ConcurrentCache`2.CreateNew(`0)">
-            <summary>
-            Determines what must be done when an entirely new <typeparamref name="LoadedType"/> is created
-            </summary>
-            <param name="raw"></param>
-            <returns></returns>
-        </member>
-        <member name="M:Walgelijk.ConcurrentCache`2.DisposeOf(`1)">
-            <summary>
-            Dispose of any resources attached to the loaded type. This is invoked when an entry is unloaded.
-            </summary>
-            <param name="loaded"></param>
-        </member>
-        <member name="M:Walgelijk.ConcurrentCache`2.Unload(`0)">
-            <summary>
-            Unload an entry and dispose of all attached resources
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ConcurrentCache`2.Has(`0)">
-            <summary>
-            Returns if an entry is in the cache
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ConcurrentCache`2.UnloadAll">
-            <summary>
-            Clear the cache
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ConcurrentCache`2.GetAllLoaded">
-            <summary>
-            Returns every loaded item in the cache
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ConcurrentCache`2.GetAllUnloaded">
-            <summary>
-            Returns every unloaded item ever loaded
-            </summary>
-        </member>
-        <member name="M:Walgelijk.ConcurrentCache`2.GetAll">
-            <summary>
-            Returns every unloaded item ever loaded
-            </summary>
-        </member>
         <member name="T:Walgelijk.Cache`2">
             <summary>
             A generic cache object that provides a way to load heavy objects based on a lighter key
@@ -4139,6 +4085,63 @@
             <exception cref="T:System.ArgumentOutOfRangeException">
             Thrown when the specified <paramref name="start"/> or end index is not in the range (&lt;0 or &gt;Length).
             </exception>
+        </member>
+        <member name="T:Walgelijk.ConcurrentCache`2">
+            <summary>
+            A concurrent version of <see cref="T:Walgelijk.Cache`2"/>. 
+            </summary>
+            <typeparam name="UnloadedType">The key. This object is usually light and cheap to create</typeparam>
+            <typeparam name="LoadedType">The loaded object. This object is usually heavy and expensive to create</typeparam>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.Load(`0)">
+            <summary>
+            Load or create a <typeparamref name="LoadedType"/> from an <typeparamref name="UnloadedType"/>
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.CreateNew(`0)">
+            <summary>
+            Determines what must be done when an entirely new <typeparamref name="LoadedType"/> is created
+            </summary>
+            <param name="raw"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.DisposeOf(`1)">
+            <summary>
+            Dispose of any resources attached to the loaded type. This is invoked when an entry is unloaded.
+            </summary>
+            <param name="loaded"></param>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.Unload(`0)">
+            <summary>
+            Unload an entry and dispose of all attached resources
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.Has(`0)">
+            <summary>
+            Returns if an entry is in the cache
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.UnloadAll">
+            <summary>
+            Clear the cache
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.GetAllLoaded">
+            <summary>
+            Returns every loaded item in the cache
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.GetAllUnloaded">
+            <summary>
+            Returns every unloaded item ever loaded
+            </summary>
+        </member>
+        <member name="M:Walgelijk.ConcurrentCache`2.GetAll">
+            <summary>
+            Returns every unloaded item ever loaded
+            </summary>
         </member>
         <member name="T:Walgelijk.Curve`1">
             <summary>
@@ -4483,6 +4486,11 @@
         <member name="P:Walgelijk.IExternal`1.DisposeLocalCopyAfterUpload">
             <summary>
             Should the local copy of this object be disposed after it's been uploaded? 
+            </summary>
+        </member>
+        <member name="P:Walgelijk.IExternal`1.Expired">
+            <summary>
+            If true, this object is considered expired. It should no longer be processed or uploaded.
             </summary>
         </member>
         <member name="T:Walgelijk.Noise">

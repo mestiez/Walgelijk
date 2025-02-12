@@ -54,7 +54,7 @@ public class Program
 
         AssetDeserialisers.SetFallbackForType(typeof(FixedAudioData), FixedAudioData.Beep);
 
-        game.Scene = new AtlasTestScene().Load(game);
+        game.Scene = new ImageMemoryLeak().Load(game);
 
 #if DEBUG
         game.DevelopmentMode = true;
