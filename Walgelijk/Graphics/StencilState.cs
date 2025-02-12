@@ -47,15 +47,19 @@ public struct StencilState : IEquatable<StencilState>
 
     public override bool Equals(object? obj)
     {
-        return obj is StencilState state && Equals(state);
+        return obj is StencilState state &&
+               Enabled == state.Enabled &&
+               ShouldClear == state.ShouldClear &&
+               AccessMode == state.AccessMode &&
+               TestMode == state.TestMode;
     }
 
-    public bool Equals(StencilState other)
+    public bool Equals(StencilState state)
     {
-        return Enabled == other.Enabled &&
-               ShouldClear == other.ShouldClear &&
-               AccessMode == other.AccessMode &&
-               TestMode == other.TestMode;
+        return Enabled == state.Enabled &&
+               ShouldClear == state.ShouldClear &&
+               AccessMode == state.AccessMode &&
+               TestMode == state.TestMode;
     }
 
     public override int GetHashCode()
