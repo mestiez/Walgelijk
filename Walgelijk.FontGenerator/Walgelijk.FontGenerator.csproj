@@ -8,7 +8,7 @@
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
     <PackAsTool>True</PackAsTool>
     <ToolCommandName>wfont</ToolCommandName>
-    <Version>1.5.1</Version>
+    <Version>1.5.2</Version>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageIcon>icon.png</PackageIcon>
     <Description>Tool to turn font files into archives that can be read by Walgelijk</Description>
@@ -32,7 +32,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="HarfBuzzSharp" Version="8.3.0.1" />
+    <PackageReference Include="HarfBuzzSharp" Version="8.3.1.1" />
     <PackageReference Include="System.CommandLine.DragonFruit" Version="0.4.0-alpha.22272.1" />
   </ItemGroup>
   <ItemGroup>

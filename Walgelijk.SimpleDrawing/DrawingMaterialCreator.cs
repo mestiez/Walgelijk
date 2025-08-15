@@ -48,7 +48,7 @@ public static class DrawingMaterialCreator
     /// </summary>
     public static Material BasicMaterial => Cache.Load(Texture.White);
 
-    public static string FragmentShader =
+    public static string FragmentShader { get; set; } =
         @$"#version 330 core
 
 in vec2 uv;
@@ -134,7 +134,7 @@ void main()
     color.a *= shapeBoundary;
 }}";
 
-    public static readonly Shader DefaultShader = new(BuiltInShaders.WorldSpaceVertex, FragmentShader);
+    public static Shader DefaultShader { get; set; } = new(BuiltInShaders.WorldSpaceVertex, FragmentShader);
 
     /// <summary>
     /// Create a material for a texture
