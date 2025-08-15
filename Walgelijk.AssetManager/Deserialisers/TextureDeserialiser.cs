@@ -6,7 +6,7 @@ public class TextureDeserialiser : IAssetDeserialiser<Texture>
     {
         using var b = stream();
         var buffer = new byte[assetMetadata.Size];
-        b.Read(buffer);
+        b.ReadExactly(buffer);
         return TextureLoader.FromBytes(buffer);
     }
 
