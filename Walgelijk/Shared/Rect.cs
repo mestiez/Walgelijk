@@ -31,7 +31,7 @@ public struct Rect : IEquatable<Rect>
     [Newtonsoft.Json.JsonIgnore]
     public float Width
     {
-        get => MaxX - MinX;
+        readonly get => MaxX - MinX;
         set => MaxX = MinX + value;
     }
 
@@ -41,47 +41,47 @@ public struct Rect : IEquatable<Rect>
     [Newtonsoft.Json.JsonIgnore]
     public float Height
     {
-        get => MaxY - MinY;
+        readonly get => MaxY - MinY;
         set => MaxY = MinY + value;
     }
 
     /// <summary>
-    /// The top right of the rectangle
+    /// MaxX, MaxY
     /// </summary>
     [Newtonsoft.Json.JsonIgnore]
     public Vector2 TopRight
     {
-        get => new(MaxX, MaxY);
+        readonly get => new(MaxX, MaxY);
         set { MaxX = value.X; MaxY = value.Y; }
     }
 
     /// <summary>
-    /// The bottom right of the rectangle
+    /// MaxX, MinY
     /// </summary>
     [Newtonsoft.Json.JsonIgnore]
     public Vector2 BottomRight
     {
-        get => new(MaxX, MinY);
+        readonly get => new(MaxX, MinY);
         set { MaxX = value.X; MinY = value.Y; }
     }
 
     /// <summary>
-    /// The top left of the rectangle
+    /// MinX, MaxY
     /// </summary>
     [Newtonsoft.Json.JsonIgnore]
     public Vector2 TopLeft
     {
-        get => new(MinX, MaxY);
+        readonly get => new(MinX, MaxY);
         set { MinX = value.X; MaxY = value.Y; }
     }
 
     /// <summary>
-    /// The bottom left of the rectangle
+    /// MinX, MinY
     /// </summary>
     [Newtonsoft.Json.JsonIgnore]
     public Vector2 BottomLeft
     {
-        get => new(MinX, MinY);
+        readonly get => new(MinX, MinY);
         set { MinX = value.X; MinY = value.Y; }
     }
 
@@ -89,24 +89,23 @@ public struct Rect : IEquatable<Rect>
     /// Equivalent to Width * Height
     /// </summary>
     [Newtonsoft.Json.JsonIgnore]
-    public float Area => Width * Height;
+    public readonly float Area => Width * Height;
 
     /// <summary>
-    /// Returns the center of the rectangle. Calculated using (min + max) * 0.5
+    /// The center of the rectangle
     /// </summary>
-    public readonly Vector2 GetCenter() => new((MinX + MaxX) * 0.5f, (MinY + MaxY) * 0.5f);
-
-    /// <summary>
-    /// Offset the rectangle such that the center is the given point
-    /// </summary>
-    public void SetCenter(Vector2 point)
+    public Vector2 Center
     {
-        var center = GetCenter();
-        var offset = point - center;
-        MaxX += offset.X;
-        MinX += offset.X;
-        MaxY += offset.Y;
-        MinY += offset.Y;
+        readonly get => new((MinX + MaxX) * 0.5f, (MinY + MaxY) * 0.5f);
+        set
+        {
+            var center = Center;
+            var offset = value - center;
+            MaxX += offset.X;
+            MinX += offset.X;
+            MaxY += offset.Y;
+            MinY += offset.Y;
+        }
     }
 
     /// <summary>
@@ -149,7 +148,7 @@ public struct Rect : IEquatable<Rect>
     /// Ensures that the Min and Max components are the minimum and maximum respectively.
     /// </summary>
     /// <returns></returns>
-    public Rect SortComponents()
+    public readonly Rect SortComponents()
         => new Rect(
                 float.Min(MinX, MaxX), float.Min(MinY, MaxY),
                 float.Max(MinX, MaxX), float.Max(MinY, MaxY));
@@ -157,7 +156,7 @@ public struct Rect : IEquatable<Rect>
     /// <summary>
     /// Identical to <see cref="SDF.Rectangle(Vector2, Vector2, Vector2)"/>
     /// </summary>
-    public readonly float SignedDistanceTo(Vector2 p) => SDF.Rectangle(p, GetCenter(), GetSize());
+    public readonly float SignedDistanceTo(Vector2 p) => SDF.Rectangle(p, Center, GetSize());
 
     /// <summary>
     /// Return a copy of the rectangle but translated by the given amount
@@ -241,10 +240,10 @@ public struct Rect : IEquatable<Rect>
     public readonly Rect StretchToContain(Vector2 point)
     {
         return new Rect(
-            MathF.Min(MinX, point.X),
-            MathF.Min(MinY, point.Y),
-            MathF.Max(MaxX, point.X),
-            MathF.Max(MaxY, point.Y));
+            float.Min(MinX, point.X),
+            float.Min(MinY, point.Y),
+            float.Max(MaxX, point.X),
+            float.Max(MaxY, point.Y));
     }
 
     /// <summary>
@@ -260,7 +259,7 @@ public struct Rect : IEquatable<Rect>
     /// </summary>
     public readonly Rect Scale(float scale)
     {
-        return new Rect(GetCenter(), GetSize() * scale);
+        return new Rect(Center, GetSize() * scale);
     }
 
     /// <summary>
@@ -271,7 +270,7 @@ public struct Rect : IEquatable<Rect>
         var v = GetSize();
         v.X *= x;
         v.Y *= y;
-        return new Rect(GetCenter(), v);
+        return new Rect(Center, v);
     }
 
     /// <summary>
@@ -279,11 +278,11 @@ public struct Rect : IEquatable<Rect>
     /// </summary>
     public readonly Rect Intersect(Rect other)
     {
-        float minx = MathF.Max(MinX, other.MinX);
-        float maxx = MathF.Min(MaxX, other.MaxX);
+        float minx = float.Max(MinX, other.MinX);
+        float maxx = float.Min(MaxX, other.MaxX);
 
-        float miny = MathF.Max(MinY, other.MinY);
-        float maxy = MathF.Min(MaxY, other.MaxY);
+        float miny = float.Max(MinY, other.MinY);
+        float maxy = float.Min(MaxY, other.MaxY);
 
         if (minx > maxx)
             maxx = minx;
@@ -295,30 +294,51 @@ public struct Rect : IEquatable<Rect>
         return r;
     }
 
-    public bool Equals(Rect other)
+    /// <summary>
+    /// Returns whether the two rectangles are equal
+    /// </summary>
+    public readonly bool Equals(Rect other)
     {
         return other.MinY == MinY && other.MinX == MinX && other.MaxX == MaxX && other.MaxY == MaxY;
     }
 
-    public override int GetHashCode()
+    /// <inheritdoc/>
+    public readonly override int GetHashCode()
     {
         return HashCode.Combine(MinX, MinY, MaxX, MaxY);
     }
 
+    /// <summary>
+    /// Returns whether the two rectangles are equal
+    /// </summary>
     public static bool operator ==(Rect left, Rect right)
     {
         return left.Equals(right);
     }
 
+    /// <summary>
+    /// Returns whether the two rectangles are not equal
+    /// </summary>
     public static bool operator !=(Rect left, Rect right)
     {
         return !(left == right);
     }
 
-    public override string ToString()
+    /// <summary>
+    /// Returns a string representation of the rectangle
+    /// </summary>
+    public readonly override string ToString()
     {
-        var center = GetCenter();
+        var center = Center;
         var size = GetSize();
         return $"(Center {center.X}, {center.Y}, Size {size.X}, {size.Y})";
+    }
+
+    /// <summary>
+    /// Returns whether the given object is equal to this rectangle
+    /// </summary>
+    public readonly override bool Equals(object? obj)
+    {
+        return obj is Rect rect && Equals(rect);
     }
 }

@@ -132,9 +132,9 @@ public static class Draw
     [Command(Alias = "ClearDrawPools")]
     public static void ClearPools()
     {
-        foreach (var item in TaskPool.GetAllInUse().ToArray())
+        foreach (var item in TaskPool.CurrentlyInUse.ToArray())
             TaskPool.ReturnToPool(item);
-        foreach (var item in PolygonPool.GetAllInUse().ToArray())
+        foreach (var item in PolygonPool.CurrentlyInUse.ToArray())
             PolygonPool.ReturnToPool(item);
 
         TaskPool = new(65536);

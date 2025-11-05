@@ -1,4 +1,5 @@
-﻿using Walgelijk.AssetManager;
+﻿using System.Runtime.InteropServices;
+using Walgelijk.AssetManager;
 using Walgelijk.AssetManager.Deserialisers;
 
 namespace Walgelijk.CommonAssetDeserialisers.Audio;
@@ -48,20 +49,7 @@ public class WaveFixedAudioDeserialiser : IAssetDeserialiser<FixedAudioData>
         if (bitsPerSample != 16)
             throw new Exception($"Input file is not a valid WAVE file: the engine only supports 16 bit WAVE files, this file is {bitsPerSample} bit");
 
-        var buffer = new byte[4];
-        var dataChunk = global::System.Text.Encoding.ASCII.GetBytes("data");
-        // find data chunk
-        while (true)
-        {
-            // find data chunk
-            var b = input.Read(buffer);
-            if (b != 4)
-                throw new Exception("Input file is not a WAVE file: Data chunk could not be found");
-
-            if (buffer.SequenceEqual(dataChunk))
-                break;
-        }
-
+        input.SkipUntil("data");
         int dataChunkSize = input.ReadInt32();
 
         // read actual audio data
@@ -70,16 +58,11 @@ public class WaveFixedAudioDeserialiser : IAssetDeserialiser<FixedAudioData>
         if (actuallyRead != dataChunkSize)
             throw new Exception("Input file is not a valid WAVE file: the reported data chunk size does not match the actually read data size");
 
-        // 16 bit audio, so we have to process two bytes per sample
-        int bi = 0;
-        var floatData = new float[data.Length / 2];
+        // 16 bit audio so each pair of bytes is one sample
+        var shorts = MemoryMarshal.Cast<byte, short>(data);
+        var floatData = new float[shorts.Length];
         for (int i = 0; i < floatData.Length; i++)
-        {
-            var sample = BitConverter.ToInt16(data, bi);
-            bi += 2;
-
-            floatData[i] = sample / (float)short.MaxValue;
-        }
+            floatData[i] = shorts[i] / (float)short.MaxValue;
 
         return new FixedAudioData(floatData, sampleRate, numChannels, floatData.Length / numChannels);
     }

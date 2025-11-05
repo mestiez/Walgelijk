@@ -21,7 +21,7 @@ public class OpenALAudioRenderer : AudioRenderer
     private readonly Dictionary<Sound, AudioTrack?> trackBySound = new();
     private readonly TemporarySource[] temporarySourceBuffer;
 
-    public IEnumerable<TemporarySource> TemporarySourceBuffer => temporarySources.GetAllInUse();
+    public IEnumerable<TemporarySource> TemporarySourceBuffer => temporarySources.CurrentlyInUse;
     public int CreatedTemporarySourceCount => temporarySources.CreatedAmount;
 
     public override float Volume
@@ -301,7 +301,7 @@ public class OpenALAudioRenderer : AudioRenderer
         foreach (var sound in AudioObjects.Sources.GetAllUnloaded())
             Stop(sound);
 
-        foreach (var item in temporarySources.GetAllInUse())
+        foreach (var item in temporarySources.CurrentlyInUse)
         {
             AL.SourceStop(item.Source);
             item.CurrentLifetime = float.MaxValue;
@@ -376,7 +376,7 @@ public class OpenALAudioRenderer : AudioRenderer
         //    streamer.Update();
 
         int i = 0;
-        foreach (var v in temporarySources.GetAllInUse())
+        foreach (var v in temporarySources.CurrentlyInUse)
             temporarySourceBuffer[i++] = v;
 
         for (int j = 0; j < i; j++)

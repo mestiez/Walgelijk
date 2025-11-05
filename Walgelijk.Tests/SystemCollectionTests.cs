@@ -26,7 +26,7 @@ public class SystemCollectionTests
         Assert.IsTrue(coll.Has(typeof(TransformSystem)));
         Assert.AreSame(transformSystem, coll.Get<TransformSystem>());
 
-        Assert.ThrowsException<DuplicateSystemException>(() =>
+        Assert.Throws<DuplicateSystemException>(() =>
         {
             coll.Add(new TransformSystem());
         });
@@ -94,7 +94,7 @@ public class SystemCollectionTests
         Assert.AreEqual(first, coll.First());
         Assert.AreEqual(third, coll.GetAll()[1]);
 
-        Assert.ThrowsException<IndexOutOfRangeException>(() =>
+        Assert.ThrowsExactly<IndexOutOfRangeException>(() =>
         {
             Assert.AreEqual(third, coll.GetAll()[5]); // out of range
         });
@@ -145,14 +145,14 @@ public class SystemCollectionTests
         coll.Add(new DebugCameraSystem());
         coll.Add(new ParticleSystem());
 
-        Assert.ThrowsException<DuplicateSystemException>(() =>
+        Assert.Throws<DuplicateSystemException>(() =>
         {
             coll.Add(new DebugCameraSystem());
         });
 
         coll.Add(new OnionSystem());
 
-        Assert.ThrowsException<Exception>(() => // exceeded capacity
+        Assert.Throws<Exception>(() => // exceeded capacity
         {
             coll.Add(new ShapeRendererSystem());
         });

@@ -23,7 +23,7 @@ public class WaveReaderTests
         Assert.AreEqual(1, file.ChannelCount);
         Assert.AreEqual(48_000, file.SampleRate);
         Assert.AreEqual(26_356, file.SampleCount);
-        Assert.AreEqual(file.SampleCount, file.Data.Length);
+        Assert.HasCount((int)file.SampleCount, file.Data);
     }
 
     [TestMethod]
@@ -45,13 +45,13 @@ public class WaveReaderTests
         Assert.AreEqual(1, file.ChannelCount);
         Assert.AreEqual(44_100, file.SampleRate);
         Assert.AreEqual(33_918, file.SampleCount);
-        Assert.AreEqual(file.SampleCount, file.Data.Length);
+        Assert.HasCount((int)file.SampleCount, file.Data);
     }
 
     [TestMethod]
     public void BitRateFailure()
     {
-        var e = Assert.ThrowsException<Exception>(() =>
+        var e = Assert.Throws<Exception>(() =>
         {
             var file = d.Deserialise(() => File.OpenRead("24bitwave.wav"), default);
 

@@ -1,7 +1,7 @@
 ﻿// These shaders are not used by the game engine by default, because it actually uses built-in embedded shaders
 // accessible from the BuiltInShaders static class. 
 
-//This shader file servers as something to work off of.
+//This shader file serves as something to work off of.
 
 #version 330 core
 

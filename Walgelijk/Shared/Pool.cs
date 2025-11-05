@@ -24,13 +24,14 @@ public abstract class Pool<T, InitialData>
     private readonly List<T> currentlyInUse;
 
     /// <summary>
-    /// Enumerates through all objects currently in use
+    /// Items that are no longer in use and are available for reuse
     /// </summary>
-    public IEnumerable<T> GetAllInUse()
-    {
-        foreach (var item in currentlyInUse)
-            yield return item;
-    }
+    public IEnumerable<T> FreeToUse => currentlyInUse;
+
+    /// <summary>
+    /// Items that are currently in use
+    /// </summary>
+    public IEnumerable<T> CurrentlyInUse => currentlyInUse;
 
     /// <summary>
     /// Create a pool with the given capacity
@@ -135,13 +136,14 @@ public abstract class Pool<T>
     private readonly List<T> currentlyInUse;
 
     /// <summary>
-    /// Enumerates through all objects currently in use
+    /// Items that are no longer in use and are available for reuse
     /// </summary>
-    public IEnumerable<T> GetAllInUse()
-    {
-        foreach (var item in currentlyInUse)
-            yield return item;
-    }
+    public IEnumerable<T> FreeToUse => currentlyInUse;
+
+    /// <summary>
+    /// Items that are currently in use
+    /// </summary>
+    public IEnumerable<T> CurrentlyInUse => currentlyInUse;
 
     /// <summary>
     /// Create a pool with the given capacity

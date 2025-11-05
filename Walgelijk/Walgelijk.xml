@@ -4540,9 +4540,14 @@
             How many objects have been created
             </summary>
         </member>
-        <member name="M:Walgelijk.Pool`2.GetAllInUse">
+        <member name="P:Walgelijk.Pool`2.FreeToUse">
             <summary>
-            Enumerates through all objects currently in use
+            Items that are no longer in use and are available for reuse
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Pool`2.CurrentlyInUse">
+            <summary>
+            Items that are currently in use
             </summary>
         </member>
         <member name="M:Walgelijk.Pool`2.#ctor(System.Int32)">
@@ -4601,9 +4606,14 @@
             How many objects have been created
             </summary>
         </member>
-        <member name="M:Walgelijk.Pool`1.GetAllInUse">
+        <member name="P:Walgelijk.Pool`1.FreeToUse">
             <summary>
-            Enumerates through all objects currently in use
+            Items that are no longer in use and are available for reuse
+            </summary>
+        </member>
+        <member name="P:Walgelijk.Pool`1.CurrentlyInUse">
+            <summary>
+            Items that are currently in use
             </summary>
         </member>
         <member name="M:Walgelijk.Pool`1.#ctor(System.Int32)">
@@ -4786,22 +4796,22 @@
         </member>
         <member name="P:Walgelijk.Rect.TopRight">
             <summary>
-            The top right of the rectangle
+            MaxX, MaxY
             </summary>
         </member>
         <member name="P:Walgelijk.Rect.BottomRight">
             <summary>
-            The bottom right of the rectangle
+            MaxX, MinY
             </summary>
         </member>
         <member name="P:Walgelijk.Rect.TopLeft">
             <summary>
-            The top left of the rectangle
+            MinX, MaxY
             </summary>
         </member>
         <member name="P:Walgelijk.Rect.BottomLeft">
             <summary>
-            The bottom left of the rectangle
+            MinX, MinY
             </summary>
         </member>
         <member name="P:Walgelijk.Rect.Area">
@@ -4809,14 +4819,9 @@
             Equivalent to Width * Height
             </summary>
         </member>
-        <member name="M:Walgelijk.Rect.GetCenter">
+        <member name="P:Walgelijk.Rect.Center">
             <summary>
-            Returns the center of the rectangle. Calculated using (min + max) * 0.5
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Rect.SetCenter(System.Numerics.Vector2)">
-            <summary>
-            Offset the rectangle such that the center is the given point
+            The center of the rectangle
             </summary>
         </member>
         <member name="M:Walgelijk.Rect.GetSize">
@@ -4919,6 +4924,34 @@
         <member name="M:Walgelijk.Rect.Intersect(Walgelijk.Rect)">
             <summary>
             Return the rectangle that represents the intersection between this rectangle and the given rectangle
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.Equals(Walgelijk.Rect)">
+            <summary>
+            Returns whether the two rectangles are equal
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:Walgelijk.Rect.op_Equality(Walgelijk.Rect,Walgelijk.Rect)">
+            <summary>
+            Returns whether the two rectangles are equal
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.op_Inequality(Walgelijk.Rect,Walgelijk.Rect)">
+            <summary>
+            Returns whether the two rectangles are not equal
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.ToString">
+            <summary>
+            Returns a string representation of the rectangle
+            </summary>
+        </member>
+        <member name="M:Walgelijk.Rect.Equals(System.Object)">
+            <summary>
+            Returns whether the given object is equal to this rectangle
             </summary>
         </member>
         <member name="T:Walgelijk.SDF">
@@ -5261,11 +5294,6 @@
         <member name="M:Walgelijk.Utilities.Snap(System.Numerics.Vector3,System.Single)">
             <summary>
             Snap <paramref name="x"/> to a grid of size <paramref name="snapSize"/>
-            </summary>
-        </member>
-        <member name="M:Walgelijk.Utilities.TextEqualsCaseInsensitive(System.ReadOnlySpan{System.Char},System.ReadOnlySpan{System.Char})">
-            <summary>
-            Are the two given character spans the same, regardless of casing? 
             </summary>
         </member>
         <member name="M:Walgelijk.Utilities.Smoothstep(System.Single,System.Single,System.Single)">

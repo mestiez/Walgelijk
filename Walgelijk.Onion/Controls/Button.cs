@@ -57,7 +57,7 @@ public readonly struct Button : IControl
         if (anim.ShouldRenderText(t))
         {
             var ratio = instance.Rects.Rendered.Area / instance.Rects.ComputedGlobal.Area;
-            Draw.Text(instance.Name, instance.Rects.Rendered.GetCenter(), new Vector2(ratio),
+            Draw.Text(instance.Name, instance.Rects.Rendered.Center, new Vector2(ratio),
                 HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.ComputedGlobal.Width);
         }
     }

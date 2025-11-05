@@ -51,7 +51,7 @@ public readonly struct Label : IControl
         anim.AnimateColour(ref Draw.Colour, t);
         anim.AnimateRect(ref instance.Rects.Rendered, t);
 
-        Vector2 pivot = instance.Rects.Rendered.GetCenter();
+        Vector2 pivot = instance.Rects.Rendered.Center;
 
         switch (horizontal)
         {

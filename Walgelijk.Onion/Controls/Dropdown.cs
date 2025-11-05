@@ -73,7 +73,7 @@ public readonly struct Dropdown<T> : IControl
                 {
                     Onion.Layout.Move(0, i * height).Height(height).FitWidth(false).CenterHorizontal();
                     Onion.Theme.SetAll(instance.Theme).OutlineWidth(0).Once();
-                    Onion.Animation.Add(new MoveInAnimation(instance.Rects.ComputedGlobal.GetCenter()));
+                    Onion.Animation.Add(new MoveInAnimation(instance.Rects.ComputedGlobal.Center));
                     if (Button.Click(values[i]?.ToString() ?? "???", i + instance.Identity))
                     {
                         result = true;
@@ -219,7 +219,7 @@ public readonly struct Dropdown<T> : IControl
             if (DrawArrow)
             {
                 const float arrowSize = 16;
-                var arrowPos = arrowRect.GetCenter().Quantise();
+                var arrowPos = arrowRect.Center.Quantise();
                 Draw.Colour = p.Theme.Accent[instance.State];
                 Draw.ImageMode = default;
                 anim.AnimateColour(ref Draw.Colour, t);
@@ -234,7 +234,7 @@ public readonly struct Dropdown<T> : IControl
             Draw.Colour = p.Theme.Text[instance.State];
             anim.AnimateColour(ref Draw.Colour, t);
             var selected = GetValue(currentState.SelectedIndex);
-            Draw.Text(selected, textRect.GetCenter().Quantise(), new Vector2(ratio), HorizontalTextAlign.Center, VerticalTextAlign.Middle, textRect.Width);
+            Draw.Text(selected, textRect.Center.Quantise(), new Vector2(ratio), HorizontalTextAlign.Center, VerticalTextAlign.Middle, textRect.Width);
         }
     }
 

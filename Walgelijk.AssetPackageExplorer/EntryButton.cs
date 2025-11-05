@@ -63,7 +63,7 @@ public readonly struct EntryButton : IControl
             var ratio = instance.Rects.Rendered.Area / instance.Rects.ComputedGlobal.Area;
             Draw.Text(instance.Name, 
                 new Vector2(instance.Rects.Rendered.MinX + p.Theme.Padding, 
-                instance.Rects.Rendered.GetCenter().Y), new Vector2(ratio),
+                instance.Rects.Rendered.                Center.Y), new Vector2(ratio),
                 HorizontalTextAlign.Left, VerticalTextAlign.Middle);
         }
     }

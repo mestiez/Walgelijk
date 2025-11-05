@@ -65,12 +65,12 @@ public struct ImgModeScene : ISceneCreator
             Draw.ImageMode = ImageMode.Stretch;
             var r = new Rect(new Vector2(Window.Width / 4f, Window.Height / 2f), new Vector2(w, h));
             Draw.Quad(r);
-            Draw.Text("Are you sure?", r.GetCenter(), Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, r.Width);
+            Draw.Text("Are you sure?", r.Center, Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, r.Width);
 
             Draw.ImageMode = ImageMode.Slice;
             r = new Rect(new Vector2(Window.Width / 2f + Window.Width / 4f, Window.Height / 2f), new Vector2(w, h));
             Draw.Quad(r);
-            Draw.Text("Are you sure?", r.GetCenter(), Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, r.Width);
+            Draw.Text("Are you sure?", r.Center, Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, r.Width);
 
             Draw.ImageMode = ImageMode.Tiled;
             r = new Rect(new Vector2(Window.Width / 2f, Window.Height / 2f), new Vector2(w, h));

@@ -236,7 +236,7 @@ public class Navigator
                     {
                         if (!node.AliveLastFrame)
                             continue;
-                        var dist = Vector2.DistanceSquared(instance.Rects.Rendered.GetCenter(), input.MousePosition);
+                        var dist = Vector2.DistanceSquared(instance.Rects.Rendered.Center, input.MousePosition);
                         if (dist < minDist)
                         {
                             minDist = dist;
@@ -442,7 +442,7 @@ public class Navigator
 
         var originNode = Onion.Tree.Nodes[origin];
         var originInstance = Onion.Tree.EnsureInstance(origin);
-        var originPos = originInstance.Rects.ComputedGlobal.GetCenter();
+        var originPos = originInstance.Rects.ComputedGlobal.Center;
         var originOrder = originNode.ComputedGlobalOrder;
 
         List<DirectionalNode> found = new();
@@ -467,7 +467,7 @@ public class Navigator
             if (!inst.CaptureFlags.HasFlag(CaptureFlags.Hover))
                 continue;
 
-            var pos = inst.Rects.ComputedGlobal.GetCenter();
+            var pos = inst.Rects.ComputedGlobal.Center;
             var dot = Vector2.Dot(pos - originPos, direction);
 
             if (dot < .5f)

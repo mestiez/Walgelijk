@@ -155,7 +155,7 @@ public readonly struct Slider : IControl
             Draw.Font = p.Theme.Font;
             Draw.Colour = p.Theme.Text[instance.State];
             anim.AnimateColour(ref Draw.Colour, t);
-            Draw.Text(str, instance.Rects.Rendered.GetCenter(), Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.Rendered.Width);
+            Draw.Text(str, instance.Rects.Rendered.Center, Vector2.One, HorizontalTextAlign.Center, VerticalTextAlign.Middle, instance.Rects.Rendered.Width);
         }
     }
 

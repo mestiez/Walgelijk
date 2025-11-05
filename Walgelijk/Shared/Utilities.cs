@@ -592,15 +592,6 @@ public struct Utilities
     public static Vector3 Snap(Vector3 x, float snapSize) => new Vector3(Snap(x.X, snapSize), Snap(x.Y, snapSize), Snap(x.Z, snapSize));
 
     /// <summary>
-    /// Are the two given character spans the same, regardless of casing? 
-    /// </summary>
-    [Obsolete("Just use .Equals with StringComparison.InvariantCultureIgnoreCase")]
-    public static bool TextEqualsCaseInsensitive(ReadOnlySpan<char> a, ReadOnlySpan<char> b)
-    {
-        return a.Equals(b, StringComparison.InvariantCultureIgnoreCase);
-    }
-
-    /// <summary>
     /// Smoothstep function
     /// </summary>
     public static float Smoothstep(float edge0, float edge1, float x)
