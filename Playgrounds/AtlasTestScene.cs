@@ -23,14 +23,10 @@ public struct AtlasTestScene : ISceneCreator
         private IBinPacker[] Packers = Assembly.GetAssembly(typeof(IBinPacker))!
             .GetTypes().Where(t => t.IsAssignableTo(typeof(IBinPacker)) && t.IsClass)
             .Select(Activator.CreateInstance).Cast<IBinPacker>().ToArray();
-
-#pragma warning disable TEXTUREATLAS 
-        private TextureAtlas atlas = new()
+        private TextureAtlas<string> atlas = new()
         {
             BinPacker = new ShelfBinPacker()
         };
-#pragma warning restore TEXTUREATLAS 
-
         private Texture checkerboard = TexGen.Checkerboard(16, 16, 8, Colors.White, Colors.Gray.Brightness(1.5f));
 
         public override void Update()

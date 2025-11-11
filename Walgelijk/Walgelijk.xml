@@ -1833,17 +1833,50 @@
             Invoked when the scene becomes inactive
             </summary>
         </member>
-        <member name="M:Walgelijk.TextureAtlas.Build(Walgelijk.RenderQueue)">
+        <member name="T:Walgelijk.TextureAtlas`1">
+            <summary>
+            Represents a texture atlas that packs multiple textures into a single page texture and provides UV mapping for each
+            entry.
+            </summary>
+            <typeparam name="TKey">The type of the key used to identify individual textures within the atlas. Must be non-nullable.</typeparam>
+        </member>
+        <member name="M:Walgelijk.TextureAtlas`1.Add(Walgelijk.IReadableTexture,`0)">
+            <summary>
+            Adds a texture to the atlas and associates it with the specified key. If an entry with the same key already
+            exists, it is replaced.
+            </summary>
+            <param name="texture">The texture to add to the atlas. Cannot be null.</param>
+            <param name="key">The key to associate with the texture. If the key already exists, its associated texture is updated.</param>
+        </member>
+        <member name="M:Walgelijk.TextureAtlas`1.Clear">
+            <summary>
+            Removes all elements from the collection.
+            </summary>
+        </member>
+        <member name="M:Walgelijk.TextureAtlas`1.GetUvRect(`0@)">
+            <summary>
+            Gets the UV rectangle associated with the specified key.
+            </summary>
+            <param name="key">The key for which to retrieve the UV rectangle.</param>
+            <returns>A <see cref="T:System.Numerics.Vector4"/> representing the UV rectangle for the specified key. Returns a rectangle covering the full
+            texture (0, 0, 1, 1) if the key is not found.</returns>
+        </member>
+        <member name="M:Walgelijk.TextureAtlas`1.Build(Walgelijk.RenderQueue)">
             <summary>
             Add the build task to the RenderQueue
             </summary>
             <param name="renderQueue"></param>
         </member>
-        <member name="M:Walgelijk.TextureAtlas.Build(Walgelijk.IGraphics)">
+        <member name="M:Walgelijk.TextureAtlas`1.Build(Walgelijk.IGraphics)">
             <summary>
             Render task function that renders the page texture
             </summary>
             <param name="graphics"></param>
+        </member>
+        <member name="T:Walgelijk.IBinPacker">
+            <summary>
+            Interface for packing rectangles into a container while considering existing rectangles.
+            </summary>
         </member>
         <member name="M:Walgelijk.IBinPacker.Pack(System.Span{Walgelijk.IBinPacker.IBin},Walgelijk.Rect@,System.Int32)">
             <summary>
