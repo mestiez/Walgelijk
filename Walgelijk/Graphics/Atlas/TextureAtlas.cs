@@ -7,41 +7,61 @@ using static Walgelijk.IBinPacker;
 
 namespace Walgelijk;
 
-public class TextureAtlas
+/// <summary>
+/// Represents a texture atlas that packs multiple textures into a single page texture and provides UV mapping for each
+/// entry.
+/// </summary>
+/// <typeparam name="TKey">The type of the key used to identify individual textures within the atlas. Must be non-nullable.</typeparam>
+public class TextureAtlas<TKey> where TKey : notnull
 {
     public IReadableTexture Page => page ?? (IReadableTexture)Texture.ErrorTexture;
     public int Padding = 0;
     public required IBinPacker BinPacker;
     public int MaxWidth = 256, MaxHeight = int.MaxValue;
 
-    public IEnumerable<string> Entries => packed.Keys;
+    public IEnumerable<TKey> Entries => packed.Keys;
 
     private RenderTexture? page;
-    private readonly Dictionary<string, Entry> packed = [];
+    private readonly Dictionary<TKey, Entry> packed = [];
     private readonly SemaphoreSlim atlasLock = new(1);
 
-    public void Add(IReadableTexture texture, string name)
+    /// <summary>
+    /// Adds a texture to the atlas and associates it with the specified key. If an entry with the same key already
+    /// exists, it is replaced.
+    /// </summary>
+    /// <param name="texture">The texture to add to the atlas. Cannot be null.</param>
+    /// <param name="key">The key to associate with the texture. If the key already exists, its associated texture is updated.</param>
+    public void Add(IReadableTexture texture, TKey key)
     {
         using var l = new DeferredSemaphore(atlasLock);
 
         var entry = new Entry
         {
-            Id = name,
+            Id = key,
             Texture = texture
         };
-        packed.AddOrSet(name, entry);
+        packed.AddOrSet(key, entry);
     }
 
+    /// <summary>
+    /// Removes all elements from the collection.
+    /// </summary>
     public void Clear()
     {
         packed.Clear();
     }
 
-    public Vector4 GetUvRect(in string name)
+    /// <summary>
+    /// Gets the UV rectangle associated with the specified key.
+    /// </summary>
+    /// <param name="key">The key for which to retrieve the UV rectangle.</param>
+    /// <returns>A <see cref="Vector4"/> representing the UV rectangle for the specified key. Returns a rectangle covering the full
+    /// texture (0, 0, 1, 1) if the key is not found.</returns>
+    public Vector4 GetUvRect(in TKey key)
     {
         using var l = new DeferredSemaphore(atlasLock);
 
-        if (packed.TryGetValue(name, out var r))
+        if (packed.TryGetValue(key, out var r))
             return r.UvRect;
 
         return new Vector4(0, 0, 1, 1);
@@ -127,7 +147,7 @@ public class TextureAtlas
 
     private class Entry : IBin
     {
-        public required string Id { init; get; }
+        public required TKey Id { init; get; }
         public required IReadableTexture Texture { init; get; }
 
         Vector2 IBin.Min { get => new Vector2(PackedRect.MinX, PackedRect.MinY); set { PackedRect.MinX = value.X; PackedRect.MinY = value.Y; } }
@@ -138,6 +158,9 @@ public class TextureAtlas
     }
 }
 
+/// <summary>
+/// Interface for packing rectangles into a container while considering existing rectangles.
+/// </summary>
 public interface IBinPacker
 {
     /// <summary>
@@ -208,7 +231,7 @@ public class GravityBinPacker : IBinPacker
                 var bRect = b.AsRect.Expand(padding);
 
                 if (aRect.IntersectsRectangle(bRect.Expand(-1)))
-                    return false;     
+                    return false;
             }
 
             bin.SetFromRect(aRect);
